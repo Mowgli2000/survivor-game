@@ -90,14 +90,20 @@ func _ready() -> void:
 	enemies.name = "Enemies"
 	enemies.setup(player, arena_rect, mini(stage.max_enemies, 200), state.rng, vfx, enemy_projectiles)
 	enemies.elite_scale = stage.elite_scale
-	add_child(enemies)
+	enemies.y_sort_enabled = true
+	# Player and enemies share one y-sorted container: lower on screen = in front.
+	var actors := Node2D.new()
+	actors.name = "Actors"
+	actors.y_sort_enabled = true
+	actors.add_child(enemies)
+	add_child(actors)
 
 	projectiles = ProjectileManager.new()
 	projectiles.name = "Projectiles"
 	projectiles.setup(enemies, arena_rect, 100, vfx)
 	add_child(projectiles)
 
-	add_child(player)
+	actors.add_child(player)
 	add_child(enemy_projectiles)
 	add_child(vfx)
 	add_child(damage_numbers)

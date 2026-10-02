@@ -228,3 +228,11 @@ func test_player_death_ends_the_run() -> void:
 	assert_true(_run.state.is_over)
 	assert_true(get_tree().paused)
 	assert_true(_run.game_over_screen.visible)
+
+
+func test_player_and_enemies_are_depth_sorted_together() -> void:
+	var actors := _run.player.get_parent() as Node2D
+	assert_not_null(actors)
+	assert_true(actors.y_sort_enabled, "actors container sorts by y")
+	assert_eq(_run.enemies.get_parent(), actors)
+	assert_true(_run.enemies.y_sort_enabled, "enemies join the parent's y-sort")
