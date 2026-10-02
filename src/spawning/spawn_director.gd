@@ -59,7 +59,7 @@ func _refresh_eligible() -> void:
 	_eligible.clear()
 	_weights.clear()
 	for entry in _config.spawn_pool:
-		if entry.enemy != null and _state.elapsed >= entry.min_time:
+		if entry.enemy != null and entry.min_wave <= 1 + int(_state.elapsed / 30.0):
 			_eligible.append(entry.enemy)
 			_weights.append(entry.weight)
 
