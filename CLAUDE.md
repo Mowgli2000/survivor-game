@@ -7,7 +7,7 @@ Le développeur n'est pas senior : expliquer les décisions importantes, signale
 
 ## État du projet
 **Lire `PROJECT_STATUS.md` en début de session et le mettre à jour en fin de session** (décisions, changements, retours de playtest, prochaines étapes).
-Phases 0 (setup), 1 (prototype) et 2 (combat : 6 armes à niveaux, statuts, 4 ennemis, rendu néon) terminées. Prochaine : Phase 3 (items, synergies, menus). Roadmap et GDD : `docs/design/gdd.md`. Décisions : `docs/decisions/`.
+Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes à niveaux, statuts, 4 ennemis, rendu néon) et 4 (vagues : 20 vagues, élites, level-up différé — avancée avant la 3) terminées. Prochaine : Phase 3 (objets, synergies, menus). Roadmap et GDD : `docs/design/gdd.md`. Décisions : `docs/decisions/`.
 
 ## Architecture (résumé — détails dans les skills)
 - Autoloads minimaux : ContentDB (existe), puis SceneRouter, Settings, SaveService, Audio, EventBus, Platform quand leur phase arrive. Aucune logique de run dans un autoload.

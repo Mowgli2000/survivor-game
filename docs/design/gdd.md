@@ -38,8 +38,8 @@ Critère de réussite : 5 minutes jouables sans bug, 60 FPS avec 500 ennemis, te
 | **0 Setup** | Dossier, Git, project.godot (InputMap, renderer, locales, stretch), .gitignore/.gitattributes, GUT, CLAUDE.md, 7 skills, scripts tests, GDD squelette, ADRs initiaux, **test d'export Windows** (valider la chaîne de build tôt). | ✅ Terminée. |
 | **1 Prototype** | MVP ci-dessus. | ✅ Terminée — 220 FPS avec 500 ennemis + 1000 projectiles (ADR 0004). |
 | **2 Core combat** | 4-6 comportements d'armes, critiques, statuts (brûlure, ralenti), ennemis à distance/tanks, juice (shake, hit-stop, nombres), Audio + EventBus. | ✅ Terminée — 6 armes (Pulsar, katana, pistolet laser, shuriken, mitraillette, bazooka) à 5 niveaux, brûlure/ralentissement/électrocution, tireur + colosse, rendu néon, ~200 FPS (ADR 0005). |
-| **3 Progression in-run** | Items passifs, modificateurs, raretés, tags/synergies, hooks d'effets, niveaux d'armes, menu principal minimal, Settings. | 20+ items, builds distincts possibles. |
-| **4 Waves** *(avancée avant la boutique)* | `StageData`, vagues chronométrées, scaling, élites, événements. | La boutique a besoin d'un rythme de vagues pour exister. |
+| **3 Progression in-run** *(après la Phase 4, D14)* | Items passifs, modificateurs, raretés, tags/synergies, hooks d'effets, niveaux d'armes, menu principal minimal, Settings. | 20+ items, builds distincts possibles. |
+| **4 Waves** *(avancée avant la Phase 3, D14)* | `StageData`, vagues chronométrées, scaling, élites, événements. | ✅ Terminée — 20 vagues (20 → 60 s), élites dorées, 6 vagues spéciales, level-up différé, soin entre vagues, victoire après la vague 20 (ADR 0006). |
 | **5 Shop** | Logique pure + UI : stock pondéré, reroll, lock, vente/recyclage, économie ; **prototyper 2 variantes** de différenciation (voir ci-dessous). | Choix du design de boutique final. |
 | **6 Boss** | Système de phases/patterns data-driven, boss bar, récompenses ; 1er boss. | Run complète début→boss→victoire. |
 | **6b Vertical slice + page Steam** *(ajout)* | 1 map, 3 persos, ~10 armes, ~30 items, art direction choisie appliquée, trailer brut. Ouvrir la page Steam (les wishlists prennent des mois). | Page "Coming Soon" en ligne. |
@@ -96,7 +96,7 @@ Recommandation : 2 ou 1, testées sur une capture d'écran "horde" avant engagem
 4. Emplacement : **`C:\Users\rapha\Projects\survivor-game\`** (nom de travail, renommable).
 5. Thème de travail : **cyber-samouraï / ninja néon**. Lames et armes de ninja/samouraï futuristes, mais aussi armes à feu high-tech (pistolets laser, mitraillettes, bazookas) et armes imaginaires. Une couleur néon forte par arme (lisibilité). Direction artistique associée : silhouettes sombres + contours néon (option 2), à confirmer avant la fin de la Phase 3.
 
-Décisions volontairement reportées : design final de la boutique (Phase 5), méta-progression (Phase 7), direction artistique (fin Phase 3), level-up immédiat vs différé (le système de file d'attente supporte les deux).
+Décisions volontairement reportées : design final de la boutique (Phase 5), méta-progression (Phase 7), direction artistique (fin Phase 3). Level-up : **différé à la fin de la vague** (ADR 0006).
 
 ---
 
@@ -104,5 +104,4 @@ Décisions volontairement reportées : design final de la boutique (Phase 5), m�
 - Nom du jeu et univers / thème.
 - Direction artistique (avant fin Phase 3).
 - Variante de boutique finale (Phase 5).
-- Level-up immédiat ou différé jusqu'à la boutique.
 - Forme de la méta-progression (Phase 7).
