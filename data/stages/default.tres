@@ -7,6 +7,7 @@
 [ext_resource type="Resource" path="res://data/enemies/runner.tres" id="5_runner"]
 [ext_resource type="Resource" path="res://data/enemies/shooter.tres" id="6_shooter"]
 [ext_resource type="Resource" path="res://data/enemies/tank.tres" id="7_tank"]
+[ext_resource type="Resource" path="res://data/enemies/shogun.tres" id="8_shogun"]
 
 [sub_resource type="Resource" id="Entry_grunt"]
 script = ExtResource("2_entry")
@@ -85,16 +86,25 @@ enemy = ExtResource("7_tank")
 count = 2
 elite = true
 
+[sub_resource type="Resource" id="Event_w20_boss"]
+script = ExtResource("3_event")
+wave = 20
+at_time = 1.0
+enemy = ExtResource("8_shogun")
+count = 1
+
 [resource]
 script = ExtResource("1_stage")
 id = &"default"
 wave_count = 20
 duration_first = 20.0
+duration_step = 5.0
 duration_last = 60.0
+final_wave_duration = 90.0
 spawn_rate_first = 1.5
-spawn_rate_last = 20.0
+spawn_rate_last = 10.0
 hp_multiplier_first = 1.0
-hp_multiplier_last = 5.0
+hp_multiplier_last = 3.0
 spawn_pool = Array[ExtResource("2_entry")]([SubResource("Entry_grunt"), SubResource("Entry_runner"), SubResource("Entry_shooter"), SubResource("Entry_tank")])
 max_enemies = 400
 spawn_distance = 1150.0
@@ -102,4 +112,4 @@ heal_between_waves = 1.0
 elite_hp_multiplier = 5.0
 elite_xp_multiplier = 10.0
 elite_scale = 1.6
-events = Array[ExtResource("3_event")]([SubResource("Event_w5_horde"), SubResource("Event_w8_elite"), SubResource("Event_w10_elites"), SubResource("Event_w12_horde"), SubResource("Event_w15_elites"), SubResource("Event_w18_horde"), SubResource("Event_w18_elites")])
+events = Array[ExtResource("3_event")]([SubResource("Event_w5_horde"), SubResource("Event_w8_elite"), SubResource("Event_w10_elites"), SubResource("Event_w12_horde"), SubResource("Event_w15_elites"), SubResource("Event_w18_horde"), SubResource("Event_w18_elites"), SubResource("Event_w20_boss")])

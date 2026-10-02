@@ -80,6 +80,14 @@ func active_count() -> int:
 	return _active.size()
 
 
+## True while at least one boss is alive. Linear scan: only call it on boss events.
+func has_living_boss() -> bool:
+	for enemy in _active:
+		if enemy.data.boss and enemy.is_alive():
+			return true
+	return false
+
+
 ## Valid until the next physics frame of this manager (indices are compacted then).
 func get_enemy(index: int) -> Enemy:
 	return _active[index]

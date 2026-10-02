@@ -4,7 +4,7 @@ extends Node2D
 ## Godot.exe --path . res://src/debug/vfx_gallery.tscn -- --out=<file.png>
 
 const LOOP := 0.5
-const ENEMY_IDS: Array[StringName] = [&"grunt", &"runner", &"shooter", &"tank"]
+const ENEMY_IDS: Array[StringName] = [&"grunt", &"runner", &"shooter", &"tank", &"shogun"]
 
 var _vfx: Vfx
 var _timer: float = 0.0

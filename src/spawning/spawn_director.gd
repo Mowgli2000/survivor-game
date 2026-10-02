@@ -37,6 +37,8 @@ func _ready() -> void:
 func begin_wave(wave: int) -> void:
 	_wave = wave
 	_accumulator = 0.0
+	_state.wave_spawned = 0
+	_state.wave_kills = 0
 	_pending_events = _stage.events_for(wave)
 	_eligible.clear()
 	_weights.clear()
@@ -61,6 +63,7 @@ func _physics_process(delta: float) -> void:
 		if index < 0:
 			break
 		_enemies.spawn(_eligible[index], _pick_position(), hp_multiplier)
+		_state.wave_spawned += 1
 
 
 func _fire_events(elapsed: float, hp_multiplier: float) -> void:
@@ -76,6 +79,7 @@ func _fire_events(elapsed: float, hp_multiplier: float) -> void:
 			var angle := offset + TAU * k / event.count
 			var pos := _player.global_position + Vector2.from_angle(angle) * _stage.spawn_distance
 			_enemies.spawn(event.enemy, pos.clamp(_arena.position, _arena.end), hp, event.elite)
+		_state.wave_spawned += event.count
 
 
 ## A point at `spawn_distance` from the player, inside the arena when possible.

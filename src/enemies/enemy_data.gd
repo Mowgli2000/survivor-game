@@ -10,6 +10,9 @@ enum Movement {
 @export var id: StringName
 @export var name_key: String
 @export var movement: Movement = Movement.CHASE
+## Killing every living boss ends the current wave at once (Brotato rule:
+## on the last wave, it wins the run before the timer).
+@export var boss: bool = false
 
 @export_group("Stats")
 @export var max_hp: float = 10.0

@@ -1,16 +1,23 @@
 class_name StageData
 extends Resource
-## A stage: a fixed number of timed waves. Wave values are interpolated
-## linearly from the first to the last wave; `events` add scripted spawns.
+## A stage: a fixed number of timed waves. Durations grow by a fixed step up to
+## a cap, Brotato-style (the last wave can have its own duration); spawn rate
+## and HP are interpolated linearly from the first to the last wave.
+## `events` add scripted spawns (hordes, elites, bosses).
 ## Instances live in data/stages/.
 
 @export var id: StringName
 @export var wave_count: int = 20
 
-@export_group("Curves (wave 1 -> last wave)")
-## Wave duration in seconds.
+@export_group("Durations")
+## Wave 1 duration in seconds; each wave adds `duration_step`, up to `duration_last`.
 @export var duration_first: float = 20.0
+@export var duration_step: float = 5.0
 @export var duration_last: float = 60.0
+## Duration of the last wave (boss wave). 0 = same rule as the other waves.
+@export var final_wave_duration: float = 0.0
+
+@export_group("Curves (wave 1 -> last wave)")
 ## Enemies per second.
 @export var spawn_rate_first: float = 1.5
 @export var spawn_rate_last: float = 20.0
@@ -45,7 +52,10 @@ func t_at(wave: int) -> float:
 
 
 func duration_at(wave: int) -> float:
-	return lerpf(duration_first, duration_last, t_at(wave))
+	if wave >= wave_count and final_wave_duration > 0.0:
+		return final_wave_duration
+	var steps := maxi(wave - 1, 0)
+	return minf(duration_first + duration_step * steps, maxf(duration_last, duration_first))
 
 
 func spawn_rate_at(wave: int) -> float:

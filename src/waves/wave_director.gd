@@ -38,6 +38,13 @@ func wave_elapsed() -> float:
 	return _stage.duration_at(wave) - time_left
 
 
+## Ends the current wave on the next physics frame, through the normal path
+## (wave_ended, then run_won on the last wave). Used when every boss is dead.
+func finish_wave() -> void:
+	if in_wave:
+		time_left = 0.0
+
+
 func wave_count() -> int:
 	return _stage.wave_count
 

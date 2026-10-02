@@ -7,6 +7,9 @@ var run_seed: int
 var rng := RandomNumberGenerator.new()
 var elapsed: float = 0.0
 var kills: int = 0
+## Counters of the current wave (balancing: share of spawned enemies killed).
+var wave_spawned: int = 0
+var wave_kills: int = 0
 var is_over: bool = false
 
 

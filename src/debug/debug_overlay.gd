@@ -11,6 +11,9 @@ var _projectiles: ProjectileManager
 var _pickups: PickupManager
 var _enemy_projectiles: EnemyProjectileManager
 var _vfx: Vfx
+var _state: RunState
+var _stage: StageData
+var _waves: WaveDirector
 var _timer: float = 0.0
 
 
@@ -21,6 +24,13 @@ func setup(enemies: EnemyManager, projectiles: ProjectileManager, pickups: Picku
 	_pickups = pickups
 	_enemy_projectiles = enemy_projectiles
 	_vfx = vfx
+
+
+## Optional: adds the current wave line (kills / spawns, spawn rate, HP multiplier).
+func setup_waves(state: RunState, stage: StageData, waves: WaveDirector) -> void:
+	_state = state
+	_stage = stage
+	_waves = waves
 
 
 func _init() -> void:
@@ -56,3 +66,10 @@ func _process(delta: float) -> void:
 		_enemies.active_count(), _projectiles.active_count(), _pickups.active_count(),
 		_enemy_projectiles.active_count(), _vfx.active_count(),
 	]
+	if _state != null and _waves.wave > 0:
+		var spawned := maxi(_state.wave_spawned, 1)
+		_label.text += "\nwave %d: killed %d / %d (%d%%)\nspawn %.1f/s | hp x%.2f" % [
+			_waves.wave, _state.wave_kills, _state.wave_spawned,
+			roundi(100.0 * _state.wave_kills / spawned),
+			_stage.spawn_rate_at(_waves.wave), _stage.hp_multiplier_at(_waves.wave),
+		]

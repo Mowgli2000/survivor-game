@@ -122,6 +122,7 @@ func _ready() -> void:
 
 	var overlay := DebugOverlay.new()
 	overlay.setup(enemies, projectiles, pickups, enemy_projectiles, vfx)
+	overlay.setup_waves(state, stage, waves)
 	add_child(overlay)
 
 	enemies.enemy_killed.connect(_on_enemy_killed)
@@ -146,16 +147,20 @@ func _physics_process(delta: float) -> void:
 
 func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
 	state.kills += 1
+	state.wave_kills += 1
 	var xp := data.xp_value
 	if elite:
 		xp = roundi(xp * stage.elite_xp_multiplier)
 	pickups.spawn_xp(pos, xp)
+	if data.boss and not enemies.has_living_boss():
+		waves.finish_wave()
 
 
 ## End of a wave: clear the arena, collect gems, heal, then resolve level-ups.
-func _on_wave_ended(_wave: int) -> void:
+func _on_wave_ended(wave: int) -> void:
 	if state.is_over:
 		return
+	_log_wave_stats(wave)
 	enemies.clear_all()
 	enemy_projectiles.clear_all()
 	pickups.collect_all()
@@ -166,6 +171,16 @@ func _on_wave_ended(_wave: int) -> void:
 		get_tree().paused = true
 		wave_end_screen.open(waves.wave)
 	_resolve_level_ups()
+
+
+## Balancing aid (debug builds): one line per wave in the output console.
+func _log_wave_stats(wave: int) -> void:
+	if not OS.is_debug_build():
+		return
+	var spawned := maxi(state.wave_spawned, 1)
+	print("[wave %d] %ds | spawned %d | killed %d (%d%%) | left %d | level %d" % [
+		wave, roundi(stage.duration_at(wave)), state.wave_spawned, state.wave_kills,
+		roundi(100.0 * state.wave_kills / spawned), enemies.active_count(), progression.level])
 
 
 ## Offers one level-up at a time until none is pending.
