@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="1_item"]
+[ext_resource type="Script" path="res://src/core/stat_modifier.gd" id="2_mod"]
+
+[sub_resource type="Resource" id="Mod_1"]
+script = ExtResource("2_mod")
+stat = &"attack_speed"
+percent = 0.08
+
+[sub_resource type="Resource" id="Mod_2"]
+script = ExtResource("2_mod")
+stat = &"damage"
+percent = -0.03
+
+[resource]
+script = ExtResource("1_item")
+id = &"neon_coil"
+name_key = "ITEM_NEON_COIL"
+tier = 1
+base_price = 15
+modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2")])

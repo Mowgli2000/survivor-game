@@ -34,6 +34,7 @@ var spawner: SpawnDirector
 var waves: WaveDirector
 var vfx: Vfx
 var damage_numbers: DamageNumbers
+var inventory: Inventory
 var hud: Hud
 var level_up_screen: LevelUpScreen
 var wave_end_screen: WaveEndScreen
@@ -66,6 +67,7 @@ func _ready() -> void:
 	player = Player.new()
 	player.name = "Player"
 	player.setup(config.character, arena_rect)
+	inventory = Inventory.new(player.stats)
 	player.invincible = player_invincible
 	player.bot_input = bot_input
 

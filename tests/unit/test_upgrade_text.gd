@@ -26,3 +26,13 @@ func test_flat_integer_modifier() -> void:
 
 func test_fraction_stat_shown_as_percent() -> void:
 	assert_eq(LevelUpScreen.describe(_upgrade(StatIds.CRIT_CHANCE, 0.05, 0.0)), "+5% Crit chance")
+
+
+func test_describe_modifiers_lists_bonus_and_malus() -> void:
+	var bonus := StatModifier.new()
+	bonus.stat = StatIds.DAMAGE
+	bonus.percent = 0.08
+	var malus := StatModifier.new()
+	malus.stat = StatIds.ATTACK_SPEED
+	malus.percent = -0.03
+	assert_eq(LevelUpScreen.describe_modifiers([bonus, malus]), "+8% Damage\n-3% Attack speed")

@@ -19,7 +19,7 @@ func _assert_common(def: Resource, category: StringName) -> void:
 
 
 func test_expected_categories_exist() -> void:
-	for category in [&"characters", &"weapons", &"enemies", &"upgrades", &"runs", &"stages"]:
+	for category in [&"characters", &"weapons", &"enemies", &"upgrades", &"runs", &"stages", &"items"]:
 		assert_gt(ContentDB.get_all(category).size(), 0, "no content in data/%s" % category)
 
 
@@ -124,3 +124,18 @@ func test_stages() -> void:
 func test_every_stat_has_a_localized_name() -> void:
 	for stat: StringName in StatIds.DEFAULTS:
 		assert_true(_keys.has(StatIds.localization_key(stat)), "missing key for stat '%s'" % stat)
+
+
+func test_items() -> void:
+	var items := ContentDB.get_all(&"items")
+	assert_gte(items.size(), 15)
+	for def in items:
+		var item := def as ItemData
+		assert_not_null(item, "data/items must contain ItemData")
+		_assert_common(item, &"items")
+		assert_between(item.tier, 1, Tiers.COUNT, "%s: tier out of range" % item.id)
+		assert_gt(item.base_price, 0, "%s has no price" % item.id)
+		assert_gte(item.max_count, 0)
+		assert_gt(item.modifiers.size(), 0, "%s has no modifier" % item.id)
+		for mod in item.modifiers:
+			assert_true(StatIds.is_valid(mod.stat), "%s: unknown stat '%s'" % [item.id, mod.stat])

@@ -84,8 +84,13 @@ static func describe_offer(offer: UpgradeOffer) -> PackedStringArray:
 
 
 static func describe(upgrade: UpgradeData) -> String:
+	return describe_modifiers(upgrade.modifiers)
+
+
+## One line per non-zero part of each modifier ("+8% Damage", "-2 Armor").
+static func describe_modifiers(mods: Array[StatModifier]) -> String:
 	var lines: PackedStringArray = []
-	for mod in upgrade.modifiers:
+	for mod in mods:
 		var stat_name := TranslationServer.translate(StatIds.localization_key(mod.stat))
 		if mod.flat != 0.0:
 			lines.append("%s %s" % [_format_flat(mod.stat, mod.flat), stat_name])
