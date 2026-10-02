@@ -23,12 +23,9 @@ damage_percent = 0.2
 [sub_resource type="Resource" id="Resource_l3"]
 script = ExtResource("3_level")
 projectile_count = 1
-
-[sub_resource type="Resource" id="Resource_l4"]
-script = ExtResource("3_level")
 fire_rate_percent = 0.25
 
-[sub_resource type="Resource" id="Resource_l5"]
+[sub_resource type="Resource" id="Resource_l4"]
 script = ExtResource("3_level")
 damage_percent = 0.3
 area_percent = 0.4
@@ -39,7 +36,8 @@ id = &"laser_pistol"
 name_key = "WEAPON_LASER_PISTOL"
 description_key = "WEAPON_LASER_PISTOL_DESC"
 behavior = SubResource("Resource_behavior")
-levels = Array[ExtResource("3_level")]([SubResource("Resource_l2"), SubResource("Resource_l3"), SubResource("Resource_l4"), SubResource("Resource_l5")])
+levels = Array[ExtResource("3_level")]([SubResource("Resource_l2"), SubResource("Resource_l3"), SubResource("Resource_l4")])
+base_price = 18
 base_damage = 9.0
 cooldown = 1.0
 attack_range = 650.0

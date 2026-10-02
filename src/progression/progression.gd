@@ -33,30 +33,15 @@ func add_xp(amount: int) -> void:
 	xp_changed.emit(xp, xp_needed())
 
 
-## Draws `count` distinct offers among: stat upgrades (weight = UpgradeData.weight),
-## next level of each owned weapon below its max (weight = weapon_level_weight),
-## and weapons not owned yet if a slot is free (weight = new_weapon_weight).
-## `owned` maps WeaponData -> current level.
-func roll_offers(stat_pool: Array[UpgradeData], weapon_pool: Array[WeaponData], owned: Dictionary,
-		free_slots: int, count: int, rng: RandomNumberGenerator,
-		new_weapon_weight: float = 1.0, weapon_level_weight: float = 1.5) -> Array[UpgradeOffer]:
-	var candidates: Array[UpgradeOffer] = []
+## Draws `count` distinct stat upgrades (weight = UpgradeData.weight).
+func roll_offers(stat_pool: Array[UpgradeData], count: int,
+		rng: RandomNumberGenerator) -> Array[UpgradeOffer]:
 	var weights := PackedFloat32Array()
 	for upgrade in stat_pool:
-		candidates.append(UpgradeOffer.for_stat(upgrade))
 		weights.append(upgrade.weight)
-	for weapon in weapon_pool:
-		if owned.has(weapon):
-			var level: int = owned[weapon]
-			if level < weapon.max_level():
-				candidates.append(UpgradeOffer.for_weapon_level(weapon, level + 1))
-				weights.append(weapon_level_weight)
-		elif free_slots > 0:
-			candidates.append(UpgradeOffer.for_new_weapon(weapon))
-			weights.append(new_weapon_weight)
 	var result: Array[UpgradeOffer] = []
 	for index in WeightedPicker.pick_distinct(weights, count, rng):
-		result.append(candidates[index])
+		result.append(UpgradeOffer.for_stat(stat_pool[index]))
 	return result
 
 

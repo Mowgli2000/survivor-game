@@ -40,7 +40,6 @@ var wave_end_screen: WaveEndScreen
 var game_over_screen: GameOverScreen
 
 var _upgrade_pool: Array[UpgradeData] = []
-var _weapon_pool: Array[WeaponData] = []
 
 
 func _ready() -> void:
@@ -54,7 +53,6 @@ func _ready() -> void:
 	state = RunState.new(seed_override if seed_override >= 0 else randi())
 	progression = Progression.new(config.xp_base, config.xp_exponent)
 	_upgrade_pool.assign(ContentDB.get_all(&"upgrades"))
-	_weapon_pool.assign(ContentDB.get_all(&"weapons"))
 
 	var arena := Arena.new()
 	arena.setup(arena_rect)
@@ -95,7 +93,8 @@ func _ready() -> void:
 	add_child(enemy_projectiles)
 	add_child(vfx)
 	add_child(damage_numbers)
-	player.weapons.setup(WeaponContext.new(player, player.stats, enemies, projectiles, state.rng, vfx))
+	player.weapons.setup(WeaponContext.new(player, player.stats, enemies, projectiles, state.rng, vfx),
+		config.max_weapon_slots)
 	if config.character.starting_weapon != null:
 		player.weapons.add_weapon(config.character.starting_weapon)
 
@@ -189,10 +188,7 @@ func _resolve_level_ups() -> void:
 	if progression.pending_level_ups <= 0:
 		_on_level_ups_resolved()
 		return
-	var weapons := player.weapons
-	var offers := progression.roll_offers(_upgrade_pool, _weapon_pool, weapons.owned_levels(),
-		config.max_weapon_slots - weapons.slot_count(), config.upgrade_choices, state.rng,
-		config.new_weapon_weight, config.weapon_level_weight)
+	var offers := progression.roll_offers(_upgrade_pool, config.upgrade_choices, state.rng)
 	if offers.is_empty():
 		progression.pending_level_ups = 0
 		_on_level_ups_resolved()
@@ -204,15 +200,7 @@ func _resolve_level_ups() -> void:
 
 
 func _apply_offer(offer: UpgradeOffer) -> void:
-	match offer.kind:
-		UpgradeOffer.Kind.STAT:
-			progression.apply_upgrade(offer.upgrade, player.stats)
-		UpgradeOffer.Kind.NEW_WEAPON:
-			player.weapons.add_weapon(offer.weapon)
-			progression.consume_level_up()
-		UpgradeOffer.Kind.WEAPON_LEVEL:
-			player.weapons.level_up(offer.weapon)
-			progression.consume_level_up()
+	progression.apply_upgrade(offer.upgrade, player.stats)
 	_resolve_level_ups()
 
 

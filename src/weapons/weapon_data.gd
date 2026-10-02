@@ -1,15 +1,17 @@
 class_name WeaponData
 extends Resource
 ## Definition of a weapon. Instances live in data/weapons/.
-## The behavior decides how the weapon attacks; the values below are its level 1
+## The behavior decides how the weapon attacks; the values below are its tier I
 ## tuning, and `levels` describes what each following level adds.
 
 @export var id: StringName
 @export var name_key: String
 @export var description_key: String
 @export var behavior: WeaponBehavior
-## levels[0] = what level 2 adds, levels[1] = level 3, etc.
+## Tiers II..IV: levels[0] = what tier II adds, levels[1] = tier III, levels[2] = tier IV.
 @export var levels: Array[WeaponLevel] = []
+## Shop price of the tier I weapon (higher tiers: ShopConfig.weapon_tier_price).
+@export var base_price: int = 15
 
 @export_group("Stats")
 @export var base_damage: float = 5.0

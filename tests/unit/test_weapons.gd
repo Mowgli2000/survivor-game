@@ -1,5 +1,5 @@
 extends GutTest
-## Weapon levels, effective stats, weapon holder and level-up card texts.
+## Weapon tiers, effective stats, weapon holder (duplicates, merging) and texts.
 
 
 func _weapon() -> WeaponData:
@@ -45,20 +45,76 @@ func test_level_is_clamped_to_max() -> void:
 	assert_true(slot.is_max_level())
 
 
-func test_holder_add_and_level_up() -> void:
+
+func _holder() -> WeaponHolder:
 	var holder := WeaponHolder.new()
+	holder.max_slots = 3
 	autofree(holder)
+	return holder
+
+
+func test_holder_allows_duplicates_up_to_full() -> void:
+	var holder := _holder()
 	var data := _weapon()
 	watch_signals(holder)
 	holder.add_weapon(data)
 	holder.add_weapon(data)
-	assert_eq(holder.slot_count(), 1, "same weapon is never added twice")
-	assert_true(holder.level_up(data))
-	assert_true(holder.level_up(data))
-	assert_false(holder.level_up(data), "already at max level")
-	assert_eq(holder.owned_levels()[data], 3)
-	assert_false(holder.level_up(WeaponData.new()), "not owned")
+	assert_eq(holder.slot_count(), 2, "duplicates take their own slot")
+	assert_false(holder.is_full())
+	holder.add_weapon(data)
+	assert_true(holder.is_full())
 	assert_signal_emit_count(holder, "weapons_changed", 3)
+
+
+func test_merge_two_identical_weapons() -> void:
+	var holder := _holder()
+	var data := _weapon()
+	holder.add_weapon(data)
+	holder.add_weapon(_weapon())  # same stats, different definition: never merges
+	holder.add_weapon(data)
+	assert_eq(holder.find_merge_partner(0), 2)
+	assert_eq(holder.find_merge_partner(1), -1)
+	assert_true(holder.merge(0))
+	assert_eq(holder.slot_count(), 2)
+	assert_eq(holder.get_slots()[0].level, 2)
+	assert_false(holder.merge(0), "no partner left")
+
+
+func test_merge_needs_same_level_and_stops_at_max() -> void:
+	var holder := _holder()
+	var data := _weapon()  # max level 3
+	holder.add_weapon(data, 1)
+	holder.add_weapon(data, 2)
+	assert_false(holder.merge(0), "different levels")
+	holder.add_weapon(data, 2)
+	assert_true(holder.merge(1))
+	assert_eq(holder.get_slots()[1].level, 3)
+	holder.add_weapon(data, 3)
+	assert_eq(holder.find_merge_partner(1), -1, "max level never merges")
+
+
+func test_find_slot_upgrade_and_remove() -> void:
+	var holder := _holder()
+	var data := _weapon()
+	holder.add_weapon(data, 1)
+	holder.add_weapon(data, 2)
+	assert_eq(holder.find_slot(data, 2), 1)
+	assert_eq(holder.find_slot(data, 3), -1)
+	assert_true(holder.upgrade_slot(1))
+	assert_eq(holder.get_slots()[1].level, 3)
+	assert_false(holder.upgrade_slot(1), "already max")
+	assert_eq(holder.find_slot(data, 3), -1, "a max level slot cannot be upgraded")
+	holder.remove_weapon(0)
+	assert_eq(holder.slot_count(), 1)
+	holder.remove_weapon(5)  # out of range: ignored
+	assert_eq(holder.slot_count(), 1)
+
+
+func test_tier_names_and_colors() -> void:
+	assert_eq(Tiers.roman(1), "I")
+	assert_eq(Tiers.roman(4), "IV")
+	assert_eq(Tiers.roman(9), "IV", "clamped")
+	assert_ne(Tiers.color(1), Tiers.color(4))
 
 
 func test_weapon_level_card_text() -> void:
@@ -67,14 +123,3 @@ func test_weapon_level_card_text() -> void:
 	bonus.damage_percent = 0.25
 	bonus.projectile_count = 1
 	assert_eq(LevelUpScreen.describe_weapon_level(bonus), "+25% Damage\n+1 Projectiles")
-
-
-func test_offer_card_texts() -> void:
-	TranslationServer.set_locale("en")
-	var katana: WeaponData = ContentDB.get_def(&"weapons", &"katana")
-	var texts := LevelUpScreen.describe_offer(UpgradeOffer.for_new_weapon(katana))
-	assert_eq(texts[0], "New weapon")
-	assert_eq(texts[1], "Plasma katana")
-	var level_texts := LevelUpScreen.describe_offer(UpgradeOffer.for_weapon_level(katana, 2))
-	assert_eq(level_texts[0], "Level 2")
-	assert_eq(level_texts[2], "+25% Damage")

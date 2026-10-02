@@ -1,6 +1,6 @@
 class_name WeaponSlot
 extends RefCounted
-## A weapon owned by the player: definition, level, effective stats, cooldown.
+## A weapon owned by the player: definition, tier (level 1..4), effective stats, cooldown.
 
 var data: WeaponData
 var level: int = 1

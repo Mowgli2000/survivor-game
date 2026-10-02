@@ -93,16 +93,12 @@ func test_level_ups_are_deferred_to_wave_end() -> void:
 	assert_true(_run.waves.in_wave)
 
 
-func test_level_ups_offer_weapons_and_stats() -> void:
+func test_level_ups_offer_stats_only() -> void:
 	await wait_physics_frames(2)
 	_run.progression.add_xp(5000)
 	await _end_wave()
 	assert_eq(_run.progression.pending_level_ups, 0, "every level-up consumed")
-	var weapon_levels := 0
-	for slot in _run.player.weapons.get_slots():
-		weapon_levels += slot.level
-	assert_gt(weapon_levels, 1, "weapons were gained or levelled up")
-	assert_lte(_run.player.weapons.slot_count(), _run.config.max_weapon_slots)
+	assert_eq(_run.player.weapons.slot_count(), 1, "weapons only come from the shop")
 
 
 func test_wave_end_clears_heals_and_collects() -> void:

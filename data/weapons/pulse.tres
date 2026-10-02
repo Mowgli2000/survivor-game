@@ -14,12 +14,9 @@ projectile_count = 1
 [sub_resource type="Resource" id="Resource_l3"]
 script = ExtResource("3_level")
 damage_percent = 0.25
-
-[sub_resource type="Resource" id="Resource_l4"]
-script = ExtResource("3_level")
 fire_rate_percent = 0.2
 
-[sub_resource type="Resource" id="Resource_l5"]
+[sub_resource type="Resource" id="Resource_l4"]
 script = ExtResource("3_level")
 projectile_count = 1
 pierce = 1
@@ -30,7 +27,8 @@ id = &"pulse"
 name_key = "WEAPON_PULSE"
 description_key = "WEAPON_PULSE_DESC"
 behavior = SubResource("Resource_behavior")
-levels = Array[ExtResource("3_level")]([SubResource("Resource_l2"), SubResource("Resource_l3"), SubResource("Resource_l4"), SubResource("Resource_l5")])
+levels = Array[ExtResource("3_level")]([SubResource("Resource_l2"), SubResource("Resource_l3"), SubResource("Resource_l4")])
+base_price = 15
 base_damage = 6.0
 cooldown = 0.6
 attack_range = 520.0

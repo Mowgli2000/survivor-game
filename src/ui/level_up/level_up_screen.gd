@@ -1,8 +1,7 @@
 class_name LevelUpScreen
 extends CanvasLayer
-## Shown while the game is paused: one neon card per offer (stat upgrade, new
-## weapon, weapon level). Keyboard/gamepad navigable; emits `offer_chosen` and
-## lets run.gd apply it.
+## Shown while the game is paused: one neon card per offer (stat upgrade).
+## Keyboard/gamepad navigable; emits `offer_chosen` and lets run.gd apply it.
 
 signal offer_chosen(offer: UpgradeOffer)
 
@@ -80,18 +79,8 @@ func close() -> void:
 
 ## Card texts: [tag, title, description].
 static func describe_offer(offer: UpgradeOffer) -> PackedStringArray:
-	match offer.kind:
-		UpgradeOffer.Kind.NEW_WEAPON:
-			return PackedStringArray([TranslationServer.translate("UI_NEW_WEAPON"),
-				TranslationServer.translate(offer.weapon.name_key),
-				TranslationServer.translate(offer.weapon.description_key)])
-		UpgradeOffer.Kind.WEAPON_LEVEL:
-			return PackedStringArray(["%s %d" % [TranslationServer.translate("UI_LEVEL"), offer.level],
-				TranslationServer.translate(offer.weapon.name_key),
-				describe_weapon_level(offer.weapon.levels[offer.level - 2])])
-		_:
-			return PackedStringArray([TranslationServer.translate("UI_STAT_UPGRADE"),
-				TranslationServer.translate(offer.upgrade.name_key), describe(offer.upgrade)])
+	return PackedStringArray([TranslationServer.translate("UI_STAT_UPGRADE"),
+		TranslationServer.translate(offer.upgrade.name_key), describe(offer.upgrade)])
 
 
 static func describe(upgrade: UpgradeData) -> String:
@@ -135,7 +124,7 @@ static func _format_flat(stat: StringName, value: float) -> String:
 
 
 func _make_card(offer: UpgradeOffer) -> Button:
-	var accent := STAT_ACCENT if offer.weapon == null else offer.weapon.color
+	var accent := STAT_ACCENT
 	var texts := describe_offer(offer)
 
 	var button := Button.new()

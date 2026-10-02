@@ -41,7 +41,7 @@ func _refresh_weapons() -> void:
 		child.queue_free()
 	for slot in _weapons.get_slots():
 		var label := _make_label(24)
-		label.text = "%s  %d" % [tr(slot.data.name_key), slot.level]
+		label.text = "%s  %s" % [tr(slot.data.name_key), Tiers.roman(slot.level)]
 		label.add_theme_color_override("font_color", slot.data.color)
 		_weapons_box.add_child(label)
 

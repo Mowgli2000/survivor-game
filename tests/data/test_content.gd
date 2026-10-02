@@ -51,7 +51,8 @@ func test_weapons() -> void:
 		assert_gte(weapon.projectile_count, 1)
 		assert_gt(weapon.projectile_lifetime, 0.0)
 		assert_true(_keys.has(weapon.description_key), "%s: missing description key" % weapon.id)
-		assert_gt(weapon.levels.size(), 0, "%s has no levels" % weapon.id)
+		assert_eq(weapon.levels.size(), Tiers.COUNT - 1, "%s: one level entry per tier II..IV" % weapon.id)
+		assert_gt(weapon.base_price, 0, "%s has no price" % weapon.id)
 		for bonus in weapon.levels:
 			assert_not_null(bonus, "%s: empty level entry" % weapon.id)
 		if weapon.behavior is MeleeArcBehavior or weapon.behavior is BeamBehavior:
