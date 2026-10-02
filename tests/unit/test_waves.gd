@@ -53,3 +53,51 @@ func test_events_for_returns_only_that_wave() -> void:
 	assert_eq(stage.events_for(5).size(), 2)
 	assert_eq(stage.events_for(8).size(), 1)
 	assert_eq(stage.events_for(1).size(), 0)
+
+
+func _director(wave_count: int) -> WaveDirector:
+	var director := WaveDirector.new()
+	director.setup(_stage(wave_count))
+	add_child_autofree(director)
+	return director
+
+
+func test_wave_counts_down_and_ends() -> void:
+	var director := _director(3)
+	watch_signals(director)
+	director.start_wave(1)
+	assert_signal_emitted_with_parameters(director, "wave_started", [1])
+	assert_true(director.in_wave)
+	assert_almost_eq(director.time_left, 20.0, 0.001)
+	director.time_left = 0.01
+	await wait_physics_frames(2)
+	assert_signal_emitted_with_parameters(director, "wave_ended", [1])
+	assert_false(director.in_wave)
+	assert_signal_not_emitted(director, "run_won")
+
+
+func test_next_wave_never_starts_by_itself() -> void:
+	var director := _director(3)
+	director.start_wave(1)
+	director.time_left = 0.01
+	await wait_physics_frames(5)
+	assert_eq(director.wave, 1)
+	assert_false(director.in_wave)
+
+
+func test_last_wave_emits_run_won() -> void:
+	var director := _director(3)
+	watch_signals(director)
+	director.start_wave(3)
+	assert_true(director.is_last_wave())
+	director.time_left = 0.01
+	await wait_physics_frames(2)
+	assert_signal_emitted(director, "wave_ended")
+	assert_signal_emit_count(director, "run_won", 1)
+
+
+func test_wave_elapsed() -> void:
+	var director := _director(3)
+	director.start_wave(1)
+	director.time_left = 15.0
+	assert_almost_eq(director.wave_elapsed(), 5.0, 0.001)
