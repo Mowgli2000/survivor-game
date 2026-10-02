@@ -37,3 +37,6 @@ desktop.ini
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Raw third-party asset packs (only processed files under assets/ are committed)
+assets_src/

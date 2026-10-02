@@ -99,6 +99,7 @@ func _physics_process(delta: float) -> void:
 			continue
 		if slot.data.behavior.fire(slot, _ctx):
 			slot.attacks += 1
+			Audio.play(slot.data.fire_sound, slot.data.fire_volume_db)
 			# Keep the remainder so the fire rate does not depend on the frame rate.
 			slot.cooldown = maxf(slot.cooldown + slot.stats.cooldown, 0.0)
 		else:

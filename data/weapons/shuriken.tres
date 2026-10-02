@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="1_weapon"]
 [ext_resource type="Script" path="res://src/weapons/behaviors/projectile_shooter_behavior.gd" id="2_behavior"]
 [ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapon_shuriken.ogg" id="9_sound"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")
@@ -41,4 +42,6 @@ projectile_radius = 8.0
 projectile_lifetime = 1.6
 bounces = 2
 bounce_range = 300.0
+fire_sound = ExtResource("9_sound")
+fire_volume_db = -8.0
 color = Color(1, 0.95, 0.2, 1)

@@ -144,7 +144,7 @@ func _ready() -> void:
 	enemies.enemy_killed.connect(_on_enemy_killed)
 	enemies.enemy_damaged.connect(damage_numbers.spawn)
 	vfx.shake_requested.connect(player.camera.add_trauma)
-	player.damaged.connect(func(_amount: float) -> void: player.camera.add_trauma(PLAYER_HIT_SHAKE))
+	player.damaged.connect(_on_player_damaged)
 	pickups.xp_collected.connect(progression.add_xp)
 	pickups.xp_collected.connect(_on_materials_collected)
 	player.died.connect(_on_player_died)
@@ -155,12 +155,19 @@ func _ready() -> void:
 	waves.wave_ended.connect(_on_wave_ended)
 	waves.run_won.connect(_on_run_won)
 	shop_screen.next_wave_requested.connect(_start_next_wave)
+	waves.wave_started.connect(func(_wave: int) -> void: Audio.play(Sounds.WAVE_START, -6.0))
+	Audio.play_music(Sounds.MUSIC_RUN)
 	waves.start_wave(1)
 
 
 func _physics_process(delta: float) -> void:
 	if not state.is_over and waves.in_wave:
 		state.elapsed += delta
+
+
+func _on_player_damaged(_amount: float) -> void:
+	player.camera.add_trauma(PLAYER_HIT_SHAKE)
+	Audio.play(Sounds.PLAYER_HURT, -4.0)
 
 
 func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
@@ -185,6 +192,7 @@ func _on_wave_ended(wave: int) -> void:
 	player.heal(player.stats.get_value(StatIds.MAX_HP) * stage.heal_between_waves)
 	if waves.is_last_wave():
 		return  # _on_run_won follows
+	Audio.play(Sounds.WAVE_END, -6.0)
 	if not auto_choose_upgrades:
 		get_tree().paused = true
 		wave_end_screen.open(waves.wave)
@@ -226,6 +234,7 @@ func _resolve_level_ups() -> void:
 
 
 func _apply_offer(offer: UpgradeOffer) -> void:
+	Audio.play(Sounds.LEVEL_UP, -6.0)
 	progression.apply_offer(offer, player.stats)
 	_resolve_level_ups()
 
@@ -237,7 +246,9 @@ func _level_up_reroll_cost() -> int:
 ## Paid reroll of the current level-up cards (same cost rule as the shop).
 func _on_level_up_reroll() -> void:
 	if not state.wallet.spend(_level_up_reroll_cost()):
+		Audio.play(Sounds.UI_ERROR, -8.0)
 		return
+	Audio.play(Sounds.UI_REROLL, -6.0)
 	_level_up_rerolls += 1
 	_resolve_level_ups()
 
@@ -271,12 +282,16 @@ func _on_run_won() -> void:
 	if state.is_over:
 		return
 	state.is_over = true
+	Audio.stop_music()
+	Audio.play(Sounds.VICTORY)
 	get_tree().paused = true
 	game_over_screen.open(state.elapsed, progression.level, state.kills, waves.wave, true)
 
 
 func _on_player_died() -> void:
 	state.is_over = true
+	Audio.stop_music()
+	Audio.play(Sounds.DEFEAT)
 	get_tree().paused = true
 	game_over_screen.open(state.elapsed, progression.level, state.kills, waves.wave)
 

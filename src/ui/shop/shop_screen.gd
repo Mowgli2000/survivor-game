@@ -277,21 +277,23 @@ func _accepting() -> bool:
 
 func _on_buy(index: int) -> void:
 	if _accepting():
-		_shop.buy(index)
+		_play(Sounds.UI_BUY if _shop.buy(index) else Sounds.UI_ERROR)
 
 
 func _on_lock(index: int) -> void:
 	if _accepting():
 		_shop.toggle_lock(index)
+		_play(Sounds.UI_LOCK)
 
 
 func _on_reroll() -> void:
 	if _accepting():
-		_shop.reroll()
+		_play(Sounds.UI_REROLL if _shop.reroll() else Sounds.UI_ERROR)
 
 
 func _on_weapon_selected(index: int) -> void:
 	_selected_weapon = -1 if index == _selected_weapon else index
+	_play(Sounds.UI_SELECT)
 	_focus_key = "weapon:%d" % index
 	_focus_forced = true
 	_rebuild()
@@ -301,7 +303,10 @@ func _on_sell() -> void:
 	if not _accepting():
 		return
 	var index := _clear_weapon_selection()
-	if _shop.sell_weapon(index) <= 0:
+	if _shop.sell_weapon(index) > 0:
+		_play(Sounds.UI_SELL)
+	else:
+		_play(Sounds.UI_ERROR)
 		_rebuild()
 
 
@@ -309,7 +314,10 @@ func _on_merge() -> void:
 	if not _accepting():
 		return
 	var index := _clear_weapon_selection()
-	if not _shop.merge_weapon(index):
+	if _shop.merge_weapon(index):
+		_play(Sounds.UI_MERGE)
+	else:
+		_play(Sounds.UI_ERROR)
 		_rebuild()
 
 
@@ -325,7 +333,12 @@ func _clear_weapon_selection() -> int:
 
 func _on_next() -> void:
 	if _accepting():
+		_play(Sounds.UI_NEXT)
 		next_wave_requested.emit()
+
+
+func _play(stream: AudioStream) -> void:
+	Audio.play(stream, -6.0, 0.0)
 
 
 func _label(size: int, color: Color) -> Label:

@@ -13,6 +13,8 @@ var _max_gems: int = 300
 var _active: Array[XpGem] = []
 var _pool: ObjectPool
 var _merge_cursor: int = 0
+## Physics frame of the last pickup sound request.
+var _sound_frame: int = -1
 
 
 func setup(player: Player, max_gems: int) -> void:
@@ -77,6 +79,9 @@ func _physics_process(delta: float) -> void:
 			_active.pop_back()
 			_pool.release(gem)
 			xp_collected.emit(value)
+			if Engine.get_physics_frames() != _sound_frame:
+				_sound_frame = Engine.get_physics_frames()
+				Audio.play(Sounds.PICKUP, -16.0, 0.15)
 
 
 func _create_gem() -> XpGem:

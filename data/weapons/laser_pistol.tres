@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://src/weapons/behaviors/beam_behavior.gd" id="2_behavior"]
 [ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
 [ext_resource type="Script" path="res://src/weapons/status_data.gd" id="4_status"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapon_laser.ogg" id="9_sound"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")
@@ -48,4 +49,6 @@ spread_deg = 12.0
 area = 10.0
 status = SubResource("Resource_shock")
 status_chance = 0.3
+fire_sound = ExtResource("9_sound")
+fire_volume_db = -6.0
 color = Color(0.2, 0.95, 1, 1)

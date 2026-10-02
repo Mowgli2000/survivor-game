@@ -19,6 +19,7 @@ config/features=PackedStringArray("4.7", "GL Compatibility")
 [autoload]
 
 ContentDB="*res://src/autoload/content_db.gd"
+Audio="*res://src/audio/audio.gd"
 
 [display]
 

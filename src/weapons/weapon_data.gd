@@ -48,6 +48,10 @@ extends Resource
 @export var status: StatusData
 @export_range(0.0, 1.0) var status_chance: float = 1.0
 
+@export_group("Audio")
+@export var fire_sound: AudioStream
+@export var fire_volume_db: float = -6.0
+
 @export_group("Visual")
 @export var color: Color = Color(1.0, 0.9, 0.4)
 

@@ -104,3 +104,4 @@ func _explode(p: Projectile) -> void:
 		p.status, p.status_chance)
 	if _vfx != null:
 		_vfx.explosion(p.position, p.explosion_radius, p.color, true)
+	Audio.play(Sounds.EXPLOSION, -6.0)

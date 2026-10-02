@@ -48,6 +48,9 @@ var _area_hits: Array[int] = []
 var _chain_hits: Array[int] = []
 var _chain_ids: Array[int] = []
 var _query: Array[int] = []
+## Physics frame of the last hit / death sound request (hundreds of hits per frame).
+var _hit_sound_frame: int = -1
+var _death_sound_frame: int = -1
 
 
 func setup(player: Player, arena: Rect2, prewarm: int, rng: RandomNumberGenerator = null,
@@ -196,10 +199,21 @@ func clear_all() -> void:
 func _lose_hp(enemy: Enemy, amount: float) -> void:
 	enemy.hp -= amount
 	if enemy.is_alive():
+		var frame := Engine.get_physics_frames()
+		if frame != _hit_sound_frame:
+			_hit_sound_frame = frame
+			Audio.play(Sounds.ENEMY_HIT, -10.0)
 		return
 	enemy.visible = false
 	if _vfx != null:
 		_vfx.explosion(enemy.position, enemy.radius * 1.8, enemy.data.color, false)
+	if enemy.elite or enemy.data.boss:
+		Audio.play(Sounds.ELITE_DEATH, -2.0)
+	else:
+		var frame := Engine.get_physics_frames()
+		if frame != _death_sound_frame:
+			_death_sound_frame = frame
+			Audio.play(Sounds.ENEMY_DEATH, -8.0)
 	enemy_killed.emit(enemy.data, enemy.position, enemy.elite)
 
 
