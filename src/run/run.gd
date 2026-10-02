@@ -1,8 +1,8 @@
 class_name Run
 extends Node2D
 ## Composition root of a run: creates every run system, wires their signals,
-## and handles the run flow (waves, between-waves screen and deferred
-## level-ups, game over, victory, retry).
+## and handles the run flow (waves, between-waves screen, deferred level-ups,
+## shop, game over, victory, retry).
 ## Contains no gameplay rules itself.
 
 signal retry_requested
@@ -38,6 +38,8 @@ var inventory: Inventory
 var hud: Hud
 var level_up_screen: LevelUpScreen
 var wave_end_screen: WaveEndScreen
+var shop: Shop
+var shop_screen: ShopScreen
 var game_over_screen: GameOverScreen
 
 var _upgrade_pool: Array[UpgradeData] = []
@@ -49,6 +51,8 @@ func _ready() -> void:
 	assert(config != null, "Run: no RunConfig (expected data/runs/default.tres)")
 	stage = config.stage
 	assert(stage != null, "Run: RunConfig has no stage")
+	if config.shop == null:
+		config.shop = ContentDB.get_def(&"shop", &"default")
 	var arena_rect := Rect2(-config.arena_size * 0.5, config.arena_size)
 
 	state = RunState.new(seed_override if seed_override >= 0 else randi())
@@ -97,6 +101,12 @@ func _ready() -> void:
 	add_child(damage_numbers)
 	player.weapons.setup(WeaponContext.new(player, player.stats, enemies, projectiles, state.rng, vfx),
 		config.max_weapon_slots)
+	var weapon_pool: Array[WeaponData] = []
+	weapon_pool.assign(ContentDB.get_all(&"weapons"))
+	var item_pool: Array[ItemData] = []
+	item_pool.assign(ContentDB.get_all(&"items"))
+	shop = Shop.new(config.shop, state.wallet, inventory, player.weapons, weapon_pool, item_pool, state.rng)
+	state.wallet.add(config.shop.starting_materials)
 	if config.character.starting_weapon != null:
 		player.weapons.add_weapon(config.character.starting_weapon)
 
@@ -118,6 +128,9 @@ func _ready() -> void:
 	add_child(level_up_screen)
 	wave_end_screen = WaveEndScreen.new()
 	add_child(wave_end_screen)
+	shop_screen = ShopScreen.new()
+	add_child(shop_screen)
+	shop_screen.setup(shop, state.wallet, inventory, player.weapons)
 	game_over_screen = GameOverScreen.new()
 	add_child(game_over_screen)
 
@@ -138,7 +151,7 @@ func _ready() -> void:
 	waves.wave_started.connect(spawner.begin_wave)
 	waves.wave_ended.connect(_on_wave_ended)
 	waves.run_won.connect(_on_run_won)
-	wave_end_screen.next_wave_requested.connect(_start_next_wave)
+	shop_screen.next_wave_requested.connect(_start_next_wave)
 	waves.start_wave(1)
 
 
@@ -208,14 +221,25 @@ func _apply_offer(offer: UpgradeOffer) -> void:
 
 func _on_level_ups_resolved() -> void:
 	level_up_screen.close()
+	shop.open(waves.wave)
 	if auto_choose_upgrades:
+		_auto_buy()
 		_start_next_wave()
-	else:
-		wave_end_screen.show_next_button()
+		return
+	wave_end_screen.close()
+	shop_screen.open()
+
+
+## Bots and tests: buys the first affordable slot.
+func _auto_buy() -> void:
+	for i in shop.offers.size():
+		if shop.buy(i):
+			return
 
 
 func _start_next_wave() -> void:
 	wave_end_screen.close()
+	shop_screen.close()
 	get_tree().paused = false
 	waves.start_wave(waves.wave + 1)
 

@@ -81,3 +81,15 @@ ITEM_SPLIT_BARREL,Split barrel,Canon fendu
 ITEM_PLASMA_RING,Plasma ring,Anneau plasma
 ITEM_ONI_MASK,Oni mask,Masque oni
 ITEM_PHANTOM_DRIVE,Phantom drive,Moteur fantôme
+UI_SHOP_TITLE,Shop — Wave %d,Boutique — Vague %d
+UI_SHOP_WEAPON,Weapon,Arme
+UI_SHOP_ITEM,Item,Objet
+UI_SHOP_BUY,Buy — %d,Acheter — %d
+UI_SHOP_LOCK,Lock,Verrouiller
+UI_SHOP_UNLOCK,Unlock,Déverrouiller
+UI_SHOP_SOLD,Sold,Vendu
+UI_SHOP_REROLL,Reroll — %d,Relancer — %d
+UI_SHOP_WEAPONS,Weapons,Armes
+UI_SHOP_SELL,Sell (+%d),Vendre (+%d)
+UI_SHOP_MERGE,Merge,Fusionner
+UI_SHOP_ITEMS,Items:,Objets :

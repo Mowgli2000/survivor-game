@@ -117,7 +117,7 @@ func test_wave_end_clears_heals_and_collects() -> void:
 	assert_gt(_run.state.wallet.amount, 0, "gems also give materials")
 
 
-func test_manual_wave_end_shows_screen_then_next_wave() -> void:
+func test_manual_wave_end_level_ups_then_shop_then_next_wave() -> void:
 	var run := _swap_run(true, false)
 	await wait_physics_frames(2)
 	run.progression.add_xp(20)
@@ -125,14 +125,32 @@ func test_manual_wave_end_shows_screen_then_next_wave() -> void:
 	assert_true(get_tree().paused)
 	assert_true(run.wave_end_screen.visible)
 	assert_true(run.level_up_screen.visible, "pending level-ups are offered")
+	assert_false(run.shop_screen.visible, "shop waits for the level-ups")
 	while run.level_up_screen.visible:
 		run.level_up_screen.offer_chosen.emit(run.level_up_screen._offers[0])
 		await wait_process_frames(1)
-	run.wave_end_screen.next_wave_requested.emit()
+	assert_true(run.shop_screen.visible, "shop after the level-ups")
+	assert_eq(run.shop.offers.size(), run.config.shop.slot_count)
+	run.shop_screen.next_wave_requested.emit()
 	await wait_physics_frames(2)
 	assert_false(get_tree().paused)
+	assert_false(run.shop_screen.visible)
 	assert_false(run.wave_end_screen.visible)
 	assert_eq(run.waves.wave, 2)
+
+
+func test_run_starts_with_materials() -> void:
+	await wait_physics_frames(1)
+	assert_eq(_run.state.wallet.amount, _run.config.shop.starting_materials)
+
+
+func test_auto_mode_buys_in_the_shop() -> void:
+	await wait_physics_frames(2)
+	_run.state.wallet.add(1000)
+	await _end_wave()
+	var bought := _run.inventory.get_items().size() + _run.player.weapons.slot_count() - 1
+	assert_gt(bought, 0, "something was bought")
+	assert_eq(_run.waves.wave, 2)
 
 
 func test_last_wave_wins_the_run() -> void:
