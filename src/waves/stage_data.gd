@@ -23,6 +23,11 @@ extends Resource
 @export var spawn_rate_last: float = 20.0
 @export var hp_multiplier_first: float = 1.0
 @export var hp_multiplier_last: float = 5.0
+## > 1: the spawn rate ramps up late (t^curve), 1 = linear.
+@export var spawn_rate_curve: float = 1.0
+## Materials per XP point collected (the XP itself is never reduced).
+@export var material_rate_first: float = 1.0
+@export var material_rate_last: float = 1.0
 
 @export_group("Spawning")
 @export var spawn_pool: Array[SpawnEntry] = []
@@ -59,7 +64,7 @@ func duration_at(wave: int) -> float:
 
 
 func spawn_rate_at(wave: int) -> float:
-	return lerpf(spawn_rate_first, spawn_rate_last, t_at(wave))
+	return lerpf(spawn_rate_first, spawn_rate_last, pow(t_at(wave), spawn_rate_curve))
 
 
 func hp_multiplier_at(wave: int) -> float:
@@ -72,3 +77,7 @@ func events_for(wave: int) -> Array[WaveEvent]:
 		if event != null and event.wave == wave:
 			result.append(event)
 	return result
+
+
+func material_rate_at(wave: int) -> float:
+	return lerpf(material_rate_first, material_rate_last, t_at(wave))

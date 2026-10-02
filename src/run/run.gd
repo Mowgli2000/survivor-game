@@ -132,7 +132,7 @@ func _ready() -> void:
 	add_child(wave_end_screen)
 	shop_screen = ShopScreen.new()
 	add_child(shop_screen)
-	shop_screen.setup(shop, state.wallet, inventory, player.weapons)
+	shop_screen.setup(shop, state.wallet, inventory, player.weapons, player.stats)
 	game_over_screen = GameOverScreen.new()
 	add_child(game_over_screen)
 
@@ -146,7 +146,7 @@ func _ready() -> void:
 	vfx.shake_requested.connect(player.camera.add_trauma)
 	player.damaged.connect(func(_amount: float) -> void: player.camera.add_trauma(PLAYER_HIT_SHAKE))
 	pickups.xp_collected.connect(progression.add_xp)
-	pickups.xp_collected.connect(state.wallet.add)
+	pickups.xp_collected.connect(_on_materials_collected)
 	player.died.connect(_on_player_died)
 	level_up_screen.offer_chosen.connect(_apply_offer)
 	level_up_screen.reroll_requested.connect(_on_level_up_reroll)
@@ -190,6 +190,11 @@ func _on_wave_ended(wave: int) -> void:
 		wave_end_screen.open(waves.wave)
 	_level_up_rerolls = 0
 	_resolve_level_ups()
+
+
+## XP pickups are also materials, fewer per pickup as the run goes on.
+func _on_materials_collected(amount: int) -> void:
+	state.wallet.add_scaled(amount, stage.material_rate_at(waves.wave))
 
 
 ## Balancing aid (debug builds): one line per wave in the output console.

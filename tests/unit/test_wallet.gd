@@ -26,3 +26,12 @@ func test_negative_values_are_ignored() -> void:
 	assert_eq(wallet.amount, 0)
 	assert_false(wallet.spend(-1))
 	assert_eq(wallet.amount, 0)
+
+
+func test_scaled_amounts_keep_their_fraction() -> void:
+	var wallet := Wallet.new()
+	for i in 10:
+		wallet.add_scaled(1, 0.6)
+	assert_eq(wallet.amount, 6, "0.6 x 10 pickups = 6, nothing lost to rounding")
+	wallet.add_scaled(5, 1.0)
+	assert_eq(wallet.amount, 11)

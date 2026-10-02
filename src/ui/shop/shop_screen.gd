@@ -1,7 +1,7 @@
 class_name ShopScreen
 extends CanvasLayer
 ## Between waves, after the level-ups: shop slots (buy, lock), reroll, owned
-## weapons (sell, merge), owned items, and the "Next wave" button.
+## weapons (sell, merge), owned items, player stats and the "Next wave" button.
 ## Reads Shop / Wallet / Inventory / WeaponHolder and only calls Shop's API.
 ## Keyboard/gamepad navigable; focus is restored after each rebuild.
 
@@ -18,6 +18,7 @@ var _shop: Shop
 var _wallet: Wallet
 var _inventory: Inventory
 var _weapons: WeaponHolder
+var stats_panel: StatsPanel
 var _title: Label
 var _materials: Label
 var _cards: HBoxContainer
@@ -36,7 +37,9 @@ var _accept_after: int = 0
 var _controls: Dictionary[String, Control] = {}
 
 
-func setup(shop: Shop, wallet: Wallet, inventory: Inventory, weapons: WeaponHolder) -> void:
+func setup(shop: Shop, wallet: Wallet, inventory: Inventory, weapons: WeaponHolder,
+		stats: StatBlock) -> void:
+	stats_panel.setup(stats)
 	_shop = shop
 	_wallet = wallet
 	_inventory = inventory
@@ -60,7 +63,13 @@ func _init() -> void:
 
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 24)
-	center.add_child(box)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 40)
+	center.add_child(row)
+	row.add_child(box)
+	stats_panel = StatsPanel.new()
+	stats_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(stats_panel)
 
 	var header := HBoxContainer.new()
 	header.add_theme_constant_override("separation", 48)

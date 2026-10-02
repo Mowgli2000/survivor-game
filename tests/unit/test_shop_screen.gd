@@ -57,7 +57,7 @@ func _open_screen(money: int) -> void:
 		offer.price = 10
 	_screen = ShopScreen.new()
 	add_child_autofree(_screen)
-	_screen.setup(_shop, _wallet, inventory, _weapons)
+	_screen.setup(_shop, _wallet, inventory, _weapons, stats)
 	_screen.open()
 	_screen._accept_after = 0
 

@@ -167,6 +167,14 @@ func test_level_up_reroll_costs_materials() -> void:
 	assert_true(run.level_up_screen.visible)
 
 
+func test_shop_shows_the_stats_panel() -> void:
+	var run := _swap_run(true, false)
+	await wait_physics_frames(2)
+	await _end_wave()
+	assert_true(run.shop_screen.visible)
+	assert_true(run.shop_screen.stats_panel.is_visible_in_tree())
+
+
 func test_last_wave_wins_the_run() -> void:
 	var run := _swap_run(true, true)
 	await wait_physics_frames(2)

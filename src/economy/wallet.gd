@@ -6,6 +6,8 @@ signal changed(amount: int)
 
 var amount: int = 0
 
+var _fraction: float = 0.0
+
 
 func add(value: int) -> void:
 	if value <= 0:
@@ -25,3 +27,13 @@ func spend(cost: int) -> bool:
 	amount -= cost
 	changed.emit(amount)
 	return true
+
+
+## Adds `value * rate`, keeping the fractional part for the next call
+## (materials per pickup that drop below 1 over the run).
+func add_scaled(value: int, rate: float) -> void:
+	_fraction += value * rate
+	# Epsilon: 0.6 added ten times must give 6, not 5.999...
+	var whole := floori(_fraction + 0.0001)
+	_fraction -= whole
+	add(whole)

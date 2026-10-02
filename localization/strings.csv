@@ -93,3 +93,5 @@ UI_SHOP_WEAPONS,Weapons,Armes
 UI_SHOP_SELL,Sell (+%d),Vendre (+%d)
 UI_SHOP_MERGE,Merge,Fusionner
 UI_SHOP_ITEMS,Items:,Objets :
+UI_STATS,Stats,Statistiques
+UI_STATS_HINT,[Tab] Stats,[Tab] Statistiques

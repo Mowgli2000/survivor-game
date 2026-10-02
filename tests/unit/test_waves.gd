@@ -263,3 +263,21 @@ func test_has_living_boss() -> void:
 	assert_true(enemies.has_living_boss())
 	boss.hp = 0.0
 	assert_false(enemies.has_living_boss(), "a dead boss does not count")
+
+
+func test_spawn_rate_curve_ramps_up_late() -> void:
+	var stage := _stage(20)
+	stage.spawn_rate_last = 24.0
+	stage.spawn_rate_curve = 1.8
+	assert_almost_eq(stage.spawn_rate_at(1), 1.5, 0.001)
+	assert_almost_eq(stage.spawn_rate_at(20), 24.0, 0.001)
+	assert_lt(stage.spawn_rate_at(5), 3.5, "early waves barely change")
+	assert_gt(stage.spawn_rate_at(15), 13.0, "late waves get crowded")
+
+
+func test_material_rate_drops_over_the_run() -> void:
+	var stage := _stage(20)
+	stage.material_rate_first = 1.0
+	stage.material_rate_last = 0.6
+	assert_almost_eq(stage.material_rate_at(1), 1.0, 0.001)
+	assert_almost_eq(stage.material_rate_at(20), 0.6, 0.001)

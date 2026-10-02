@@ -2,6 +2,7 @@ class_name Hud
 extends CanvasLayer
 ## In-run HUD: XP bar (top), HP bar + level, pending level-ups and materials (top left),
 ## wave and wave countdown (top center), owned weapons with their tier (bottom left).
+## Holding `show_stats` (Tab / gamepad Select) shows the stats panel.
 ## Read-only: listens to signals and reads state, never changes it.
 
 var _weapons: WeaponHolder
@@ -11,6 +12,11 @@ var _hp_label: Label
 var _xp_bar: ProgressBar
 var _level_label: Label
 var _materials_label: Label
+## Materials to display; the label is refreshed once per frame (pickups can
+## change the amount many times per frame).
+var _materials: int = 0
+var _shown_materials: int = -1
+var _stats_panel: StatsPanel
 var _timer_label: Label
 var _wave_label: Label
 var _waves: WaveDirector
@@ -31,6 +37,7 @@ func setup(player: Player, progression: Progression, waves: WaveDirector, wallet
 	_on_leveled_up(progression.level)
 	wallet.changed.connect(_on_materials_changed)
 	_on_materials_changed(wallet.amount)
+	_stats_panel.setup(player.stats)
 	_weapons = player.weapons
 	_weapons.weapons_changed.connect(_refresh_weapons)
 	_refresh_weapons()
@@ -101,8 +108,30 @@ func _init() -> void:
 	_weapons_box.add_theme_constant_override("separation", 2)
 	root.add_child(_weapons_box)
 
+	_stats_panel = StatsPanel.new()
+	_stats_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
+	_stats_panel.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	_stats_panel.grow_vertical = Control.GROW_DIRECTION_BOTH
+	_stats_panel.offset_right = -32
+	_stats_panel.visible = false
+	root.add_child(_stats_panel)
+
+	var hint := _make_label(18)
+	hint.text = "UI_STATS_HINT"
+	hint.add_theme_color_override("font_color", Color(1, 1, 1, 0.5))
+	hint.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
+	hint.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	hint.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	hint.offset_right = -24
+	hint.offset_bottom = -16
+	root.add_child(hint)
+
 
 func _process(_delta: float) -> void:
+	_stats_panel.visible = Input.is_action_pressed("show_stats")
+	if _materials != _shown_materials:
+		_shown_materials = _materials
+		_materials_label.text = "%s %d" % [tr("UI_MATERIALS"), _materials]
 	if _waves == null:
 		return
 	var seconds := ceili(_waves.time_left)
@@ -127,7 +156,7 @@ func _on_health_changed(hp: float, max_hp: float) -> void:
 
 
 func _on_materials_changed(amount: int) -> void:
-	_materials_label.text = "%s %d" % [tr("UI_MATERIALS"), amount]
+	_materials = amount
 
 
 func _on_xp_changed(xp: int, needed: int) -> void:
