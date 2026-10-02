@@ -1,0 +1,12 @@
+{
+  "pack": "assets_src/third_party/rgs_characters/Free 2D Animated Vector Game Character Sprites",
+  "height": 128,
+  "ground": "Environment/ground_white.png",
+  "sprites": {
+    "player":  { "src": "Full body animated characters/Char 1/no hands", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#4de6ff" },
+    "grunt":   { "src": "Full body animated characters/Enemies/Enemy 1", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#d94d59", "elite": true },
+    "runner":  { "src": "Full body animated characters/Enemies/Enemy 3", "anims": { "walk": "fly:6:14" }, "glow": "#f2a633", "elite": true },
+    "shooter": { "src": "Full body animated characters/Enemies/Enemy 2", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#bf59ff", "elite": true },
+    "tank":    { "src": "Full body animated characters/Enemies/Enemy 4", "anims": { "idle": "idle:6:6", "walk": "walk:8:9" }, "glow": "#ff5933", "elite": true }
+  }
+}
