@@ -3,7 +3,7 @@
 > Journal de suivi entre les sessions : état actuel, décisions prises, changements, retours de playtest et prochaines étapes.
 > **À lire au début de chaque session, à mettre à jour à la fin.** Les règles de développement sont dans `CLAUDE.md`, le design dans `docs/design/gdd.md`, les décisions techniques détaillées dans `docs/decisions/`.
 
-Dernière mise à jour : 2026-10-02 (session 3)
+Dernière mise à jour : 2026-10-03 (session 3)
 
 ---
 
@@ -14,8 +14,8 @@ Dernière mise à jour : 2026-10-02 (session 3)
 | **Phase actuelle** | Phase 5 (boutique façon Brotato) : socle livré → playtest du dev, puis Phase 3 (objets à effets, menus) |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 136/136 (GUT : unitaires, données, parties simulées) |
-| **Performance (stress test)** | ~185-190 FPS moyen, min ~130-150 — 500 ennemis, ~1000 projectiles, 6 armes niveau max (ADR 0006) |
+| **Tests** | 148/148 (GUT : unitaires, données, parties simulées) |
+| **Performance (stress test)** | ~175-184 FPS moyen, min ~130-140 — 500 ennemis, ~1000 projectiles, 6 armes rang IV (mesure 2026-10-03, machine libre ; avant la boutique : ~180 FPS) |
 
 **Emplacements**
 - Projet local : `C:\Users\rapha\Projects\survivor-game` (ouvrir `project.godot` dans Godot)
@@ -56,6 +56,8 @@ Dernière mise à jour : 2026-10-02 (session 3)
 | D26 | 2026-10-02 | **Armes en double, 4 rangs (I gris, II bleu, III violet, IV rouge), fusion** | 6 emplacements ; 2 armes identiques de même rang → rang supérieur ; achat avec emplacements pleins = fusion directe ; vente à 25 % |
 | D27 | 2026-10-02 | **15 objets de stats simples** (bonus/malus, rang fixe) | Effets spéciaux et synergies plus tard (Phase 3) |
 | D28 | 2026-10-02 | **Level-up = stats seulement, 4 cartes à rang, relance payante** | Bonus ×1 / ×1,6 / ×2,4 / ×3,2 selon le rang ; même coût de relance que la boutique |
+| D29 | 2026-10-03 | **On reste en 2D** (abandon du prototype 3D/2.5D) | Décision du dev : la 2D convient au genre et facilitera une version mobile |
+| D30 | 2026-10-03 | **Plus d'ennemis en fin de partie, moins de matériaux, builds intacts** | Apparitions en courbe (≈3/s vague 5, 7/s vague 10, 15/s vague 15, 24/s vague 20), plafond 500 ; matériaux par XP 100 % → 60 % ; PV des ennemis inchangés. Objectif : beaucoup de monstres, beaucoup de chiffres |
 
 ### Décisions volontairement reportées
 | Sujet | Quand | Options / notes |
@@ -63,7 +65,6 @@ Dernière mise à jour : 2026-10-02 (session 3)
 | Nom du jeu et univers détaillé | Avant la page Steam | — |
 | Direction artistique définitive | Fin Phase 3 | Piste actuelle : silhouettes sombres + contours néon (produisible en grande partie par Claude) |
 | Design final de la boutique | Phase 5 | 1. Boutique classique entre vagues (socle) · 2. Économie à risque (intérêts sur l'or) · 3. Stock influencé par les ennemis tués · 4. Marchand pendant la vague. Reco : 1 comme base, prototyper 2+3 |
-| **Rendu 3D / 2.5D** (le dev trouve la 3D plus immersive) | Après la Phase 4 (vagues) | Logique conservée (plan au sol en `Vector2`), seule la couche de rendu change. Prototype jetable 1-2 jours : 500 ennemis + projectiles en 3D néon avec bloom, stress test + capture, à comparer à la 2D. Assets 3D faciles à trouver (Kenney, Quaternius CC0, Synty). Impacts : ADR 0001 (Compatibility vs Forward+), ~1 phase de travail |
 | Forme de la méta-progression | Phase 7 | Préférer débloquer du contenu plutôt que des bonus de stats permanents |
 
 ---
@@ -99,6 +100,7 @@ Dernière mise à jour : 2026-10-02 (session 3)
 - Outils : installation de Python 3.12, jq et des fichiers manquants de Claude Code Game Studios (hooks, registres, docs moteur)
 - **Après playtest Phase 4** : compteur de vague dans l'overlay F3 (tués / apparus, apparitions/s, PV) + une ligne `[wave N]` par vague dans la console ; durées de vague à la Brotato ; densité réduite (D24) ; boss provisoire Shogun (D23)
 - **Phase 5 avancée — Boutique façon Brotato** (spec + plan dans `docs/superpowers/`, ADR 0007) : matériaux, armes à 4 rangs en double avec fusion, 15 objets de stats, boutique entre les vagues (4 emplacements, relance, verrouillage, vente, fusion), level-up à 4 cartes à rang avec relance payante. 136 tests
+- **Après playtest Phase 5** (2026-10-03) : correction du bazooka (la portée allongeait la visée mais pas le vol des projectiles : explosions dans le vide), panneau de stats (boutique + Tab en jeu), courbe d'apparition et taux de matériaux (D30), focus clavier/manette de la boutique corrigé (plus de « Vague suivante » par accident). 148 tests
 
 ---
 
@@ -109,6 +111,7 @@ Dernière mise à jour : 2026-10-02 (session 3)
 | 2026-10-02 | Phase 1 | « Jouabilité correcte, mais difficile à jauger avec une seule arme ; ça devient compliqué avec le temps » | Phase 2 : armes multiples et niveaux d'armes |
 | 2026-10-02 | Phase 2 | « Les chiffres de dégâts sont un peu trop petits et pas assez impactants » ; sinon OK | Chiffres plus grands (30/48), police grasse, effet « pop », critiques jaunes avec secousse (sans « ! », retiré à la demande du dev), taille selon le montant |
 | 2026-10-02 | Phase 4 | « Arrivé à la vague 20, pas de boss. J'ai survécu en fuyant, pas en écrasant les mobs ; à la fin du chrono il en restait beaucoup. » Fuite dès la vague 10 | Boss provisoire (D23), densité réduite (D24), compteur F3 pour mesurer. Le dev accepte que la puissance viendra de la boutique |
+| 2026-10-03 | Phase 5 | « Le bazooka avec plus de portée explose après une certaine distance, pas au contact. » « Voir mes stats (dégâts, vitesse, projectiles). » « Dès la vague 10 le build est trop fort : plus d'ennemis, pas moins de puissance ; trop de matériaux en vagues 15-20. » « Laisse tomber la 3D. » | Bug de portée corrigé ; panneau de stats ; D30 ; D29 |
 
 ---
 
@@ -119,7 +122,6 @@ Dernière mise à jour : 2026-10-02 (session 3)
 - **Pas d'audio** (prévu Phase 2 initialement, reporté avec l'autoload `Audio`).
 - **Équilibrage = premières estimations** (dégâts, courbe d'XP, poids des cartes, apparition des ennemis, prix, chances de rang, objets).
 - **Boutique, socle seulement** : objets sans effets spéciaux ni synergies, pas de caisses lâchées par les élites, pas de stat « récolte » ni « chance », visuel des matériaux provisoire (gemmes d'XP).
-- **Stress test à re-mesurer sur une machine libre** : pendant la session 3, un jeu tournait en parallèle (29,5 FPS avant la boutique, 40-55 après, à charge égale : pas de régression mesurée).
 - Boss provisoire seulement : pas de barre de vie de boss, pas d'attaque spéciale, même taille qu'un Colosse élite (rayon max de la grille : 48).
 - Valeurs des vagues = premières estimations (durées, densité, PV, vagues spéciales) : à régler après playtest.
 - FPS minimum au stress test ~10 % plus bas qu'avant les vagues (moyenne inchangée) : à surveiller.
@@ -131,9 +133,9 @@ Dernière mise à jour : 2026-10-02 (session 3)
 
 ## 6. Prochaines étapes
 
-1. **Dev** : jouer une run complète avec la boutique (F3 affiché) : prix, relance, fusion, puissance ressentie, vagues 10 et 20 (section 4).
-2. **Claude** : re-mesurer le stress test machine libre (référence ~185 FPS).
-3. Équilibrage après ce playtest (remonter la densité D24 si la boutique rend assez fort).
+1. **Dev** : rejouer une run complète (F3 affiché) : densité des vagues 10-20, matériaux en fin de partie, panneau de stats (Tab).
+2. Vérifier en jeu les vagues 15-20 avec 500 ennemis (FPS dans F3).
+3. Ajuster D30 selon ce playtest.
 4. **Phase 3 — Objets à effets et synergies** (vendus par la boutique), puis **menus** (principal, pause, paramètres).
 5. Phase 6 (vrai boss). Roadmap complète : `docs/design/gdd.md`.
 

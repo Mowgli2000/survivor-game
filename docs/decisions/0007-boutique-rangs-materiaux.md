@@ -41,5 +41,5 @@ Playtest de la Phase 4 : le joueur survit en fuyant, sans sensation de puissance
 - Ajouter un objet = un `.tres` dans `data/items/` + une clé de traduction. Les objets à effets (Phase 3) passeront par la même boutique.
 - `ContentDB` charge deux nouvelles catégories : `items` et `shop`. `RunConfig.shop` référence le réglage de boutique (repli sur `data/shop/default.tres`).
 - Le rang IV d'une arme garde la puissance de l'ancien niveau 5 : le stress test (6 armes au rang max) reste comparable.
-- **Performance** : aucun changement dans les boucles chaudes. Le stress test n'a pas pu être mesuré sur une machine au repos (un jeu tournait en parallèle). À charge égale, il donne 29,5 FPS avant ce travail et 40 à 55 FPS après : pas de régression. **À re-mesurer machine libre** (référence ADR 0006 : environ 185 FPS de moyenne).
+- **Performance** : aucun changement dans les boucles chaudes. Mesure du 2026-10-03, machine libre : ~175-184 FPS de moyenne (contre ~180 avant ce travail, sur la même machine). Une petite régression venait du compteur de matériaux du HUD, réécrit à chaque gemme : il est désormais mis à jour une fois par image.
 - Équilibrage (prix, chances de rang, valeurs des objets et des cartes) = premières estimations, à régler après playtest.
