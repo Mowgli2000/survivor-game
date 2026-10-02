@@ -8,7 +8,8 @@ func fire(slot: WeaponSlot, ctx: WeaponContext) -> bool:
 	var s := slot.stats
 	var stats := ctx.stats
 	var origin := ctx.owner.global_position
-	var target := ctx.enemies.find_nearest(origin, s.attack_range * stats.get_value(StatIds.RANGE))
+	var range_multiplier := stats.get_value(StatIds.RANGE)
+	var target := ctx.enemies.find_nearest(origin, s.attack_range * range_multiplier)
 	if target < 0:
 		return false
 
@@ -27,5 +28,5 @@ func fire(slot: WeaponSlot, ctx: WeaponContext) -> bool:
 			angle += ctx.rng.randf_range(-inaccuracy, inaccuracy)
 		var crit := ctx.roll_crit(s)
 		ctx.projectiles.spawn(origin, Vector2.from_angle(angle) * speed, ctx.hit_damage(s, crit), crit,
-			pierce, knockback, area, s)
+			pierce, knockback, area, s, range_multiplier)
 	return true

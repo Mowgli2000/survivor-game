@@ -27,9 +27,11 @@ func _ready() -> void:
 
 
 func spawn(pos: Vector2, velocity: Vector2, damage: float, crit: bool, pierce: int,
-		knockback: float, area_multiplier: float, weapon: WeaponStats) -> void:
+		knockback: float, area_multiplier: float, weapon: WeaponStats,
+		range_multiplier: float = 1.0) -> void:
 	var projectile: Projectile = _pool.acquire()
-	projectile.reset(pos, velocity, damage, crit, pierce, knockback, area_multiplier, weapon)
+	projectile.reset(pos, velocity, damage, crit, pierce, knockback, area_multiplier, weapon,
+		range_multiplier)
 	_active.append(projectile)
 
 

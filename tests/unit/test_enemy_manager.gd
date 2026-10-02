@@ -227,3 +227,27 @@ func test_enemy_projectiles_clear_all() -> void:
 	_enemy_shots.spawn(Vector2(-500, 0), Vector2.RIGHT * 10.0, 5.0, 8.0)
 	_enemy_shots.clear_all()
 	assert_eq(_enemy_shots.active_count(), 0)
+
+
+## Regression: the range stat let weapons aim farther than their projectiles fly,
+## so rockets exploded in empty space before reaching the target.
+func test_range_stat_extends_projectile_flight() -> void:
+	watch_signals(_enemies)
+	var target := _enemy_data(1000.0, 0.0)
+	_enemies.spawn(target, Vector2(350, 0))
+	await wait_physics_frames(1)
+	var stats := StatBlock.from_defaults()
+	var bonus := StatModifier.new()
+	bonus.stat = StatIds.RANGE
+	bonus.percent = 1.0  # x2: aims up to 800 px
+	stats.add_modifier(bonus)
+	var data := WeaponData.new()
+	data.behavior = ProjectileShooterBehavior.new()
+	data.attack_range = 400.0
+	data.projectile_speed = 400.0
+	data.projectile_lifetime = 0.5  # 200 px of flight without the range bonus
+	data.explosion_radius = 40.0
+	var ctx := WeaponContext.new(_player, stats, _enemies, _projectiles, RandomNumberGenerator.new())
+	assert_true(data.behavior.fire(WeaponSlot.new(data), ctx))
+	await wait_physics_frames(60)
+	assert_signal_emitted(_enemies, "enemy_damaged", "the rocket reaches the enemy it aimed at")

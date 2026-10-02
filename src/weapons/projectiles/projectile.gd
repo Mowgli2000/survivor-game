@@ -25,8 +25,11 @@ var hit_ids: Array[int] = []
 
 ## Player projectile fired by a weapon. `area_multiplier` scales explosions.
 func reset(pos: Vector2, p_velocity: Vector2, p_damage: float, p_crit: bool, pierce: int,
-		p_knockback: float, area_multiplier: float, weapon: WeaponStats) -> void:
-	reset_basic(pos, p_velocity, p_damage, weapon.projectile_radius, weapon.projectile_lifetime,
+		p_knockback: float, area_multiplier: float, weapon: WeaponStats,
+		range_multiplier: float = 1.0) -> void:
+	# The range stat stretches the flight too: a weapon never aims farther than it can reach.
+	reset_basic(pos, p_velocity, p_damage, weapon.projectile_radius,
+		weapon.projectile_lifetime * maxf(range_multiplier, 1.0),
 		CRIT_COLOR if p_crit else weapon.color)
 	crit = p_crit
 	pierce_left = pierce
