@@ -1,0 +1,39 @@
+# Godot cache / generated
+.godot/
+.import/
+*.translation
+*.tmp
+*.TMP
+
+# Builds & exports
+builds/
+export/
+*.pck
+*.exe
+*.zip
+
+# Export credentials / secrets (never commit)
+export_credentials.cfg
+.env
+*.env
+**/steamcmd_credentials*
+**/*secret*
+**/*.key
+
+# Steam dev file (keep local only)
+steam_appid.txt
+
+# Mono / C# (not used, safety)
+.mono/
+data_*/
+mono_crash.*.json
+
+# OS / editors
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+*.swp
+
+# Claude Code local settings
+.claude/settings.local.json
