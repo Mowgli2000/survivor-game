@@ -19,7 +19,7 @@ func _assert_common(def: Resource, category: StringName) -> void:
 
 
 func test_expected_categories_exist() -> void:
-	for category in [&"characters", &"weapons", &"enemies", &"upgrades", &"runs"]:
+	for category in [&"characters", &"weapons", &"enemies", &"upgrades", &"runs", &"stages"]:
 		assert_gt(ContentDB.get_all(category).size(), 0, "no content in data/%s" % category)
 
 
@@ -88,10 +88,36 @@ func test_runs() -> void:
 		var run := def as RunConfig
 		assert_not_null(run, "data/runs must contain RunConfig")
 		assert_not_null(run.character)
-		assert_gt(run.spawn_pool.size(), 0)
-		for entry in run.spawn_pool:
-			assert_not_null(entry.enemy, "%s: spawn entry without enemy" % run.id)
+		assert_not_null(run.stage, "%s has no stage" % run.id)
 		assert_gt(run.upgrade_choices, 0)
+
+
+func test_stages() -> void:
+	for def in ContentDB.get_all(&"stages"):
+		var stage := def as StageData
+		assert_not_null(stage, "data/stages must contain StageData")
+		assert_eq(String(stage.id), stage.resource_path.get_file().get_basename())
+		assert_gte(stage.wave_count, 1)
+		assert_gt(stage.duration_first, 0.0)
+		assert_gt(stage.duration_last, 0.0)
+		assert_gt(stage.spawn_pool.size(), 0, "%s: empty spawn pool" % stage.id)
+		assert_gt(stage.max_enemies, 0)
+		assert_gte(stage.heal_between_waves, 0.0)
+		assert_gte(stage.elite_scale, 1.0)
+		for entry in stage.spawn_pool:
+			assert_not_null(entry.enemy, "%s: spawn entry without enemy" % stage.id)
+			assert_between(entry.min_wave, 1, stage.wave_count, "%s: min_wave out of range" % stage.id)
+			assert_lte(entry.enemy.radius * stage.elite_scale, EnemyManager.MAX_ENEMY_RADIUS,
+				"%s: elite %s too big for the spatial grid" % [stage.id, entry.enemy.id])
+		for event in stage.events:
+			assert_not_null(event, "%s: empty event" % stage.id)
+			assert_not_null(event.enemy, "%s: event without enemy" % stage.id)
+			assert_between(event.wave, 1, stage.wave_count, "%s: event wave out of range" % stage.id)
+			assert_gt(event.count, 0)
+			assert_lt(event.at_time, stage.duration_at(event.wave),
+				"%s: event of wave %d would never fire" % [stage.id, event.wave])
+			if event.elite:
+				assert_lte(event.enemy.radius * stage.elite_scale, EnemyManager.MAX_ENEMY_RADIUS)
 
 
 func test_every_stat_has_a_localized_name() -> void:

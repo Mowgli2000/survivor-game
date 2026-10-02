@@ -1,24 +1,12 @@
 class_name RunConfig
 extends Resource
-## Tuning of a run (prototype). Will be split into StageData when waves arrive.
+## Tuning of a run: character, arena, stage (waves), progression and weapons.
 
 @export var id: StringName
 @export var character: CharacterData
 @export var arena_size: Vector2 = Vector2(3200, 3200)
-
-@export_group("Spawning")
-@export var spawn_pool: Array[SpawnEntry] = []
-## Enemies per second at the start of the run.
-@export var spawn_rate_start: float = 1.0
-## Enemies per second added every minute.
-@export var spawn_rate_per_minute: float = 1.0
-@export var spawn_rate_max: float = 20.0
-@export var max_enemies: int = 400
-## Distance from the player where enemies appear (just outside the screen).
-@export var spawn_distance: float = 1150.0
-@export var enemy_hp_multiplier: float = 1.0
-## Enemy HP multiplier added every minute.
-@export var enemy_hp_per_minute: float = 0.25
+## Waves, enemies and difficulty of the run (data/stages/).
+@export var stage: StageData
 
 @export_group("Progression")
 ## XP needed for level n -> n+1 = round(xp_base * n ^ xp_exponent).

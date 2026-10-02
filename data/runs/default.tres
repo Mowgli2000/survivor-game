@@ -1,50 +1,15 @@
 [gd_resource type="Resource" script_class="RunConfig" format=3]
 
 [ext_resource type="Script" path="res://src/run/run_config.gd" id="1_config"]
-[ext_resource type="Script" path="res://src/spawning/spawn_entry.gd" id="2_entry"]
-[ext_resource type="Resource" path="res://data/characters/drifter.tres" id="3_drifter"]
-[ext_resource type="Resource" path="res://data/enemies/grunt.tres" id="4_grunt"]
-[ext_resource type="Resource" path="res://data/enemies/runner.tres" id="5_runner"]
-[ext_resource type="Resource" path="res://data/enemies/shooter.tres" id="6_shooter"]
-[ext_resource type="Resource" path="res://data/enemies/tank.tres" id="7_tank"]
-
-[sub_resource type="Resource" id="Resource_grunt"]
-script = ExtResource("2_entry")
-enemy = ExtResource("4_grunt")
-weight = 3.0
-min_time = 0.0
-
-[sub_resource type="Resource" id="Resource_runner"]
-script = ExtResource("2_entry")
-enemy = ExtResource("5_runner")
-weight = 1.0
-min_time = 30.0
-
-[sub_resource type="Resource" id="Resource_shooter"]
-script = ExtResource("2_entry")
-enemy = ExtResource("6_shooter")
-weight = 0.8
-min_time = 45.0
-
-[sub_resource type="Resource" id="Resource_tank"]
-script = ExtResource("2_entry")
-enemy = ExtResource("7_tank")
-weight = 0.5
-min_time = 75.0
+[ext_resource type="Resource" path="res://data/characters/drifter.tres" id="2_drifter"]
+[ext_resource type="Resource" path="res://data/stages/default.tres" id="3_stage"]
 
 [resource]
 script = ExtResource("1_config")
 id = &"default"
-character = ExtResource("3_drifter")
+character = ExtResource("2_drifter")
 arena_size = Vector2(3200, 3200)
-spawn_pool = Array[ExtResource("2_entry")]([SubResource("Resource_grunt"), SubResource("Resource_runner"), SubResource("Resource_shooter"), SubResource("Resource_tank")])
-spawn_rate_start = 1.2
-spawn_rate_per_minute = 1.5
-spawn_rate_max = 25.0
-max_enemies = 400
-spawn_distance = 1150.0
-enemy_hp_multiplier = 1.0
-enemy_hp_per_minute = 0.3
+stage = ExtResource("3_stage")
 xp_base = 5.0
 xp_exponent = 1.35
 upgrade_choices = 3

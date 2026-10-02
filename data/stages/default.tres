@@ -1,0 +1,105 @@
+[gd_resource type="Resource" script_class="StageData" format=3]
+
+[ext_resource type="Script" path="res://src/waves/stage_data.gd" id="1_stage"]
+[ext_resource type="Script" path="res://src/spawning/spawn_entry.gd" id="2_entry"]
+[ext_resource type="Script" path="res://src/waves/wave_event.gd" id="3_event"]
+[ext_resource type="Resource" path="res://data/enemies/grunt.tres" id="4_grunt"]
+[ext_resource type="Resource" path="res://data/enemies/runner.tres" id="5_runner"]
+[ext_resource type="Resource" path="res://data/enemies/shooter.tres" id="6_shooter"]
+[ext_resource type="Resource" path="res://data/enemies/tank.tres" id="7_tank"]
+
+[sub_resource type="Resource" id="Entry_grunt"]
+script = ExtResource("2_entry")
+enemy = ExtResource("4_grunt")
+weight = 3.0
+min_wave = 1
+
+[sub_resource type="Resource" id="Entry_runner"]
+script = ExtResource("2_entry")
+enemy = ExtResource("5_runner")
+weight = 1.0
+min_wave = 3
+
+[sub_resource type="Resource" id="Entry_shooter"]
+script = ExtResource("2_entry")
+enemy = ExtResource("6_shooter")
+weight = 0.8
+min_wave = 4
+
+[sub_resource type="Resource" id="Entry_tank"]
+script = ExtResource("2_entry")
+enemy = ExtResource("7_tank")
+weight = 0.5
+min_wave = 6
+
+[sub_resource type="Resource" id="Event_w5_horde"]
+script = ExtResource("3_event")
+wave = 5
+at_time = 5.0
+enemy = ExtResource("5_runner")
+count = 40
+
+[sub_resource type="Resource" id="Event_w8_elite"]
+script = ExtResource("3_event")
+wave = 8
+at_time = 10.0
+enemy = ExtResource("7_tank")
+count = 1
+elite = true
+
+[sub_resource type="Resource" id="Event_w10_elites"]
+script = ExtResource("3_event")
+wave = 10
+at_time = 10.0
+enemy = ExtResource("6_shooter")
+count = 2
+elite = true
+
+[sub_resource type="Resource" id="Event_w12_horde"]
+script = ExtResource("3_event")
+wave = 12
+at_time = 5.0
+enemy = ExtResource("4_grunt")
+count = 60
+
+[sub_resource type="Resource" id="Event_w15_elites"]
+script = ExtResource("3_event")
+wave = 15
+at_time = 10.0
+enemy = ExtResource("7_tank")
+count = 3
+elite = true
+
+[sub_resource type="Resource" id="Event_w18_horde"]
+script = ExtResource("3_event")
+wave = 18
+at_time = 5.0
+enemy = ExtResource("5_runner")
+count = 80
+
+[sub_resource type="Resource" id="Event_w18_elites"]
+script = ExtResource("3_event")
+wave = 18
+at_time = 20.0
+enemy = ExtResource("7_tank")
+count = 2
+elite = true
+
+[resource]
+script = ExtResource("1_stage")
+id = &"default"
+wave_count = 20
+duration_first = 20.0
+duration_last = 60.0
+spawn_rate_first = 1.5
+spawn_rate_last = 20.0
+hp_multiplier_first = 1.0
+hp_multiplier_last = 5.0
+spawn_pool = Array[ExtResource("2_entry")]([SubResource("Entry_grunt"), SubResource("Entry_runner"), SubResource("Entry_shooter"), SubResource("Entry_tank")])
+max_enemies = 400
+spawn_distance = 1150.0
+heal_between_waves = 1.0
+elite_hp_multiplier = 5.0
+elite_xp_multiplier = 10.0
+elite_scale = 1.6
+events = Array[ExtResource("3_event")]([SubResource("Event_w5_horde"), SubResource("Event_w8_elite"), SubResource("Event_w10_elites"), SubResource("Event_w12_horde"), SubResource("Event_w15_elites"), SubResource("Event_w18_horde"), SubResource("Event_w18_elites")])

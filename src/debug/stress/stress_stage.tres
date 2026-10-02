@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="StageData" format=3]
+
+[ext_resource type="Script" path="res://src/waves/stage_data.gd" id="1_stage"]
+[ext_resource type="Script" path="res://src/spawning/spawn_entry.gd" id="2_entry"]
+[ext_resource type="Resource" path="res://data/enemies/grunt.tres" id="3_grunt"]
+[ext_resource type="Resource" path="res://data/enemies/runner.tres" id="4_runner"]
+
+[sub_resource type="Resource" id="Entry_grunt"]
+script = ExtResource("2_entry")
+enemy = ExtResource("3_grunt")
+weight = 2.0
+
+[sub_resource type="Resource" id="Entry_runner"]
+script = ExtResource("2_entry")
+enemy = ExtResource("4_runner")
+
+[resource]
+script = ExtResource("1_stage")
+id = &"stress"
+wave_count = 1
+duration_first = 600.0
+duration_last = 600.0
+spawn_rate_first = 150.0
+spawn_rate_last = 150.0
+hp_multiplier_first = 40.0
+hp_multiplier_last = 40.0
+spawn_pool = Array[ExtResource("2_entry")]([SubResource("Entry_grunt"), SubResource("Entry_runner")])
+max_enemies = 500
+spawn_distance = 900.0

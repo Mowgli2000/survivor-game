@@ -1,29 +1,11 @@
 [gd_resource type="Resource" script_class="RunConfig" format=3 uid="uid://c2xi8j8n3squc"]
 
 [ext_resource type="Script" uid="uid://dxyrn7lm0hlyq" path="res://src/run/run_config.gd" id="1_config"]
-[ext_resource type="Script" uid="uid://cygmx0fk3h7dd" path="res://src/spawning/spawn_entry.gd" id="2_entry"]
-[ext_resource type="Resource" path="res://src/debug/stress/stress_character.tres" id="3_char"]
-[ext_resource type="Resource" path="res://data/enemies/grunt.tres" id="4_grunt"]
-[ext_resource type="Resource" path="res://data/enemies/runner.tres" id="5_runner"]
-
-[sub_resource type="Resource" id="Resource_grunt"]
-script = ExtResource("2_entry")
-enemy = ExtResource("4_grunt")
-weight = 2.0
-
-[sub_resource type="Resource" id="Resource_runner"]
-script = ExtResource("2_entry")
-enemy = ExtResource("5_runner")
+[ext_resource type="Resource" path="res://src/debug/stress/stress_character.tres" id="2_char"]
+[ext_resource type="Resource" path="res://src/debug/stress/stress_stage.tres" id="3_stage"]
 
 [resource]
 script = ExtResource("1_config")
 id = &"stress"
-character = ExtResource("3_char")
-spawn_pool = Array[ExtResource("2_entry")]([SubResource("Resource_grunt"), SubResource("Resource_runner")])
-spawn_rate_start = 150.0
-spawn_rate_per_minute = 0.0
-spawn_rate_max = 150.0
-max_enemies = 500
-spawn_distance = 900.0
-enemy_hp_multiplier = 40.0
-enemy_hp_per_minute = 0.0
+character = ExtResource("2_char")
+stage = ExtResource("3_stage")

@@ -22,6 +22,7 @@ const PLAYER_HIT_SHAKE := 0.35
 var bot_input: Callable
 
 var state: RunState
+var stage: StageData
 var progression: Progression
 var player: Player
 var enemies: EnemyManager
@@ -29,6 +30,7 @@ var enemy_projectiles: EnemyProjectileManager
 var projectiles: ProjectileManager
 var pickups: PickupManager
 var spawner: SpawnDirector
+var waves: WaveDirector
 var vfx: Vfx
 var damage_numbers: DamageNumbers
 var hud: Hud
@@ -44,6 +46,8 @@ func _ready() -> void:
 	if config == null:
 		config = ContentDB.get_def(&"runs", DEFAULT_CONFIG_ID)
 	assert(config != null, "Run: no RunConfig (expected data/runs/default.tres)")
+	stage = config.stage
+	assert(stage != null, "Run: RunConfig has no stage")
 	var arena_rect := Rect2(-config.arena_size * 0.5, config.arena_size)
 
 	state = RunState.new(seed_override if seed_override >= 0 else randi())
@@ -77,7 +81,8 @@ func _ready() -> void:
 
 	enemies = EnemyManager.new()
 	enemies.name = "Enemies"
-	enemies.setup(player, arena_rect, mini(config.max_enemies, 200), state.rng, vfx, enemy_projectiles)
+	enemies.setup(player, arena_rect, mini(stage.max_enemies, 200), state.rng, vfx, enemy_projectiles)
+	enemies.elite_scale = stage.elite_scale
 	add_child(enemies)
 
 	projectiles = ProjectileManager.new()
@@ -93,9 +98,14 @@ func _ready() -> void:
 	if config.character.starting_weapon != null:
 		player.weapons.add_weapon(config.character.starting_weapon)
 
+	waves = WaveDirector.new()
+	waves.name = "WaveDirector"
+	waves.setup(stage)
+	add_child(waves)
+
 	spawner = SpawnDirector.new()
 	spawner.name = "SpawnDirector"
-	spawner.setup(config, state, enemies, player, arena_rect)
+	spawner.setup(stage, state, enemies, player, arena_rect, waves)
 	add_child(spawner)
 
 	hud = Hud.new()
@@ -120,16 +130,29 @@ func _ready() -> void:
 	player.died.connect(_on_player_died)
 	level_up_screen.offer_chosen.connect(_apply_offer)
 	game_over_screen.retry_requested.connect(_on_retry_requested)
+	waves.wave_started.connect(spawner.begin_wave)
+	waves.wave_ended.connect(_on_wave_ended)
+	waves.start_wave(1)
 
 
 func _physics_process(delta: float) -> void:
-	if not state.is_over:
+	if not state.is_over and waves.in_wave:
 		state.elapsed += delta
 
 
-func _on_enemy_killed(data: EnemyData, pos: Vector2, _elite: bool) -> void:
+func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
 	state.kills += 1
-	pickups.spawn_xp(pos, data.xp_value)
+	var xp := data.xp_value
+	if elite:
+		xp = roundi(xp * stage.elite_xp_multiplier)
+	pickups.spawn_xp(pos, xp)
+
+
+# Provisional: chains waves without a screen (full flow in the next task).
+func _on_wave_ended(wave: int) -> void:
+	if state.is_over or waves.is_last_wave():
+		return
+	waves.start_wave(wave + 1)
 
 
 func _on_leveled_up(_level: int) -> void:

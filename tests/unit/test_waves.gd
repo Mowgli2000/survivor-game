@@ -120,3 +120,78 @@ func test_collect_all_returns_total_xp() -> void:
 	assert_eq(pickups.active_count(), 0)
 	assert_signal_emit_count(pickups, "xp_collected", 1)
 	assert_signal_emitted_with_parameters(pickups, "xp_collected", [12])
+
+
+func _spawn_setup(stage: StageData) -> Array:
+	var arena := Rect2(-3000, -3000, 6000, 6000)
+	var player := Player.new()
+	player.setup(CharacterData.new(), arena)
+	player.invincible = true
+	player.bot_input = func() -> Vector2: return Vector2.ZERO
+	add_child_autofree(player)
+	var enemies := EnemyManager.new()
+	enemies.setup(player, arena, 8)
+	add_child_autofree(enemies)
+	var director := WaveDirector.new()
+	director.setup(stage)
+	add_child_autofree(director)
+	var spawner := SpawnDirector.new()
+	spawner.setup(stage, RunState.new(1), enemies, player, arena, director)
+	add_child_autofree(spawner)
+	return [director, spawner, enemies]
+
+
+func test_wave_event_spawns_once_at_its_time() -> void:
+	var stage := _stage(3)
+	stage.spawn_rate_first = 0.0
+	stage.spawn_rate_last = 0.0
+	var event := _event(1, 0.0)
+	event.elite = true
+	stage.events = [event]
+	var parts := _spawn_setup(stage)
+	var director: WaveDirector = parts[0]
+	var spawner: SpawnDirector = parts[1]
+	var enemies: EnemyManager = parts[2]
+	director.start_wave(1)
+	spawner.begin_wave(1)
+	await wait_physics_frames(3)
+	assert_eq(enemies.active_count(), 3)
+	assert_true(enemies.get_enemy(0).elite)
+	await wait_physics_frames(3)
+	assert_eq(enemies.active_count(), 3, "an event fires only once")
+
+
+func test_spawn_pool_respects_min_wave() -> void:
+	var stage := _stage(10)
+	stage.spawn_rate_first = 60.0
+	stage.spawn_rate_last = 60.0
+	var early := SpawnEntry.new()
+	early.enemy = EnemyData.new()
+	early.min_wave = 1
+	var late := SpawnEntry.new()
+	late.enemy = EnemyData.new()
+	late.min_wave = 5
+	stage.spawn_pool = [early, late]
+	var parts := _spawn_setup(stage)
+	var director: WaveDirector = parts[0]
+	var spawner: SpawnDirector = parts[1]
+	var enemies: EnemyManager = parts[2]
+	director.start_wave(1)
+	spawner.begin_wave(1)
+	await wait_physics_frames(30)
+	assert_gt(enemies.active_count(), 0)
+	for i in enemies.active_count():
+		assert_eq(enemies.get_enemy(i).data, early.enemy, "wave 1 only spawns early enemies")
+
+
+func test_no_spawn_between_waves() -> void:
+	var stage := _stage(3)
+	stage.spawn_rate_first = 60.0
+	stage.spawn_rate_last = 60.0
+	var entry := SpawnEntry.new()
+	entry.enemy = EnemyData.new()
+	stage.spawn_pool = [entry]
+	var parts := _spawn_setup(stage)
+	var enemies: EnemyManager = parts[2]
+	await wait_physics_frames(30)  # no wave started
+	assert_eq(enemies.active_count(), 0)

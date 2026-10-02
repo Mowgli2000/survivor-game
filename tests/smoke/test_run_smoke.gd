@@ -42,7 +42,7 @@ func test_all_weapons_at_max_level() -> void:
 	for def in ContentDB.get_all(&"weapons"):
 		var weapon := def as WeaponData
 		_run.player.weapons.add_weapon(weapon, weapon.max_level())
-	_run.state.elapsed = 90.0  # every enemy type can spawn (ranged, tank)
+	_run.waves.start_wave(6)  # every enemy type can spawn (ranged, tank)
 	await wait_physics_frames(360)  # ~24 s of game time
 	assert_gt(_run.state.kills, 20, "the arsenal kills enemies")
 	assert_false(_run.state.is_over)
