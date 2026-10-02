@@ -1,7 +1,7 @@
 class_name Hud
 extends CanvasLayer
-## In-run HUD: XP bar (top), HP bar + level (top left), timer (top center),
-## owned weapons with their level (bottom left).
+## In-run HUD: XP bar (top), HP bar + level and pending level-ups (top left),
+## wave and wave countdown (top center), owned weapons with their level (bottom left).
 ## Read-only: listens to signals and reads state, never changes it.
 
 var _weapons: WeaponHolder
@@ -11,12 +11,17 @@ var _hp_label: Label
 var _xp_bar: ProgressBar
 var _level_label: Label
 var _timer_label: Label
-var _state: RunState
+var _wave_label: Label
+var _waves: WaveDirector
+var _progression: Progression
 var _last_second: int = -1
+var _last_pending: int = -1
+var _level: int = 1
 
 
-func setup(player: Player, progression: Progression, state: RunState) -> void:
-	_state = state
+func setup(player: Player, progression: Progression, waves: WaveDirector) -> void:
+	_waves = waves
+	_progression = progression
 	player.health_changed.connect(_on_health_changed)
 	progression.xp_changed.connect(_on_xp_changed)
 	progression.leveled_up.connect(_on_leveled_up)
@@ -67,10 +72,17 @@ func _init() -> void:
 	_level_label = _make_label(28)
 	box.add_child(_level_label)
 
+	_wave_label = _make_label(28)
+	_wave_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	_wave_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_wave_label.offset_top = 24
+	_wave_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	root.add_child(_wave_label)
+
 	_timer_label = _make_label(40)
 	_timer_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
 	_timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_timer_label.offset_top = 28
+	_timer_label.offset_top = 60
 	_timer_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	root.add_child(_timer_label)
 
@@ -84,12 +96,16 @@ func _init() -> void:
 
 
 func _process(_delta: float) -> void:
-	if _state == null:
+	if _waves == null:
 		return
-	var seconds := int(_state.elapsed)
+	var seconds := ceili(_waves.time_left)
 	if seconds != _last_second:
 		_last_second = seconds
-		_timer_label.text = format_time(_state.elapsed)
+		_timer_label.text = format_time(seconds)
+		_wave_label.text = "%s %d/%d" % [tr("UI_WAVE"), _waves.wave, _waves.wave_count()]
+	if _progression.pending_level_ups != _last_pending:
+		_last_pending = _progression.pending_level_ups
+		_refresh_level()
 
 
 static func format_time(seconds: float) -> String:
@@ -109,7 +125,15 @@ func _on_xp_changed(xp: int, needed: int) -> void:
 
 
 func _on_leveled_up(level: int) -> void:
-	_level_label.text = "%s %d" % [tr("UI_LEVEL"), level]
+	_level = level
+	_refresh_level()
+
+
+func _refresh_level() -> void:
+	var pending := _progression.pending_level_ups if _progression != null else 0
+	_level_label.text = "%s %d" % [tr("UI_LEVEL"), _level]
+	if pending > 0:
+		_level_label.text += "  (+%d)" % pending
 
 
 func _make_bar(fill_color: Color) -> ProgressBar:

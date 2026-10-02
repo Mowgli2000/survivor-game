@@ -59,3 +59,8 @@ WEAPON_BAZOOKA_DESC,Slow rocket that explodes and slows enemies.,Roquette lente 
 ENEMY_SHOOTER,Gunner,Tireur
 ENEMY_TANK,Juggernaut,Colosse
 WEAPON_STRESS,Stress test gun,Arme de test
+UI_WAVE,Wave,Vague
+UI_WAVE_CLEARED,Wave %d cleared!,Vague %d terminée !
+UI_NEXT_WAVE,Next wave,Vague suivante
+UI_VICTORY,Victory!,Victoire !
+UI_WAVE_REACHED,Wave reached:,Vague atteinte :

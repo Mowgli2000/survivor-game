@@ -10,17 +10,49 @@ var _time: float = 0.0
 func before_each() -> void:
 	_time = 0.0
 	Engine.time_scale = 4.0
-	_run = RUN_SCENE.instantiate()
-	_run.seed_override = 12345
-	_run.player_invincible = true
-	_run.auto_choose_upgrades = true
-	_run.bot_input = _bot_input
+	_run = _new_run(false, true)
 	add_child_autofree(_run)
 
 
 func after_each() -> void:
 	Engine.time_scale = 1.0
 	get_tree().paused = false
+
+
+func _new_run(short_stage: bool, auto_choose: bool) -> Run:
+	var run: Run = RUN_SCENE.instantiate()
+	run.seed_override = 12345
+	run.player_invincible = true
+	run.auto_choose_upgrades = auto_choose
+	run.bot_input = _bot_input
+	if short_stage:
+		_use_short_stage(run)
+	return run
+
+
+## 3 short waves so a whole run fits in a test.
+func _use_short_stage(run: Run) -> void:
+	var config: RunConfig = ContentDB.get_def(&"runs", Run.DEFAULT_CONFIG_ID).duplicate()
+	var stage: StageData = config.stage.duplicate()
+	stage.wave_count = 3
+	stage.duration_first = 2.0
+	stage.duration_last = 2.0
+	stage.events = []
+	config.stage = stage
+	run.config = config
+
+
+## Replaces the default run by a fresh one.
+func _swap_run(short_stage: bool, auto_choose: bool) -> Run:
+	_run.queue_free()
+	_run = _new_run(short_stage, auto_choose)
+	add_child_autofree(_run)
+	return _run
+
+
+func _end_wave() -> void:
+	_run.waves.time_left = 0.01
+	await wait_physics_frames(2)
 
 
 ## Walks in a slow circle.
@@ -48,9 +80,21 @@ func test_all_weapons_at_max_level() -> void:
 	assert_false(_run.state.is_over)
 
 
+func test_level_ups_are_deferred_to_wave_end() -> void:
+	await wait_physics_frames(2)
+	_run.progression.add_xp(200)
+	assert_gt(_run.progression.pending_level_ups, 0, "level-ups wait for the wave end")
+	assert_false(get_tree().paused, "no pause during a wave")
+	await _end_wave()
+	assert_eq(_run.progression.pending_level_ups, 0, "every level-up consumed at wave end")
+	assert_eq(_run.waves.wave, 2, "auto mode starts the next wave")
+	assert_true(_run.waves.in_wave)
+
+
 func test_level_ups_offer_weapons_and_stats() -> void:
 	await wait_physics_frames(2)
 	_run.progression.add_xp(5000)
+	await _end_wave()
 	assert_eq(_run.progression.pending_level_ups, 0, "every level-up consumed")
 	var weapon_levels := 0
 	for slot in _run.player.weapons.get_slots():
@@ -59,12 +103,60 @@ func test_level_ups_offer_weapons_and_stats() -> void:
 	assert_lte(_run.player.weapons.slot_count(), _run.config.max_weapon_slots)
 
 
-func test_level_up_applies_an_upgrade() -> void:
+func test_wave_end_clears_heals_and_collects() -> void:
+	await wait_physics_frames(60)
+	assert_gt(_run.enemies.active_count(), 0)
+	_run.player.invincible = false
+	_run.player.take_damage(30.0)
+	_run.player.invincible = true
+	_run.pickups.spawn_xp(_run.player.global_position + Vector2(800, 0), 3)
+	watch_signals(_run.pickups)
+	await _end_wave()
+	assert_lt(_run.enemies.active_count(), 5, "previous enemies removed (a few new ones may spawn)")
+	assert_eq(_run.pickups.active_count(), 0, "gems collected")
+	assert_almost_eq(_run.player.hp, _run.player.stats.get_value(StatIds.MAX_HP), 0.001, "healed")
+	assert_signal_emitted(_run.pickups, "xp_collected", "gem XP collected")
+
+
+func test_manual_wave_end_shows_screen_then_next_wave() -> void:
+	var run := _swap_run(true, false)
 	await wait_physics_frames(2)
-	_run.progression.add_xp(200)
-	assert_gt(_run.progression.level, 3)
-	assert_eq(_run.progression.pending_level_ups, 0, "every level-up consumed")
+	run.progression.add_xp(20)
+	await _end_wave()
+	assert_true(get_tree().paused)
+	assert_true(run.wave_end_screen.visible)
+	assert_true(run.level_up_screen.visible, "pending level-ups are offered")
+	while run.level_up_screen.visible:
+		run.level_up_screen.offer_chosen.emit(run.level_up_screen._offers[0])
+		await wait_frames(1)
+	run.wave_end_screen.next_wave_requested.emit()
+	await wait_physics_frames(2)
 	assert_false(get_tree().paused)
+	assert_false(run.wave_end_screen.visible)
+	assert_eq(run.waves.wave, 2)
+
+
+func test_last_wave_wins_the_run() -> void:
+	var run := _swap_run(true, true)
+	await wait_physics_frames(2)
+	for i in 3:
+		await _end_wave()
+	assert_true(run.state.is_over)
+	assert_true(get_tree().paused)
+	assert_true(run.game_over_screen.visible)
+	assert_true(run.game_over_screen.is_victory)
+
+
+func test_death_on_wave_end_keeps_game_over() -> void:
+	await wait_physics_frames(2)
+	_run.player.invincible = false
+	_run.player.take_damage(100000.0)
+	_run.waves.time_left = 0.01
+	await wait_physics_frames(3)
+	assert_true(_run.game_over_screen.visible)
+	assert_false(_run.game_over_screen.is_victory)
+	assert_false(_run.wave_end_screen.visible)
+	assert_eq(_run.player.hp, 0.0, "no heal after death")
 
 
 func test_player_death_ends_the_run() -> void:

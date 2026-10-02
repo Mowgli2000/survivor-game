@@ -38,6 +38,10 @@ func wave_elapsed() -> float:
 	return _stage.duration_at(wave) - time_left
 
 
+func wave_count() -> int:
+	return _stage.wave_count
+
+
 func is_last_wave() -> bool:
 	return wave >= _stage.wave_count
 

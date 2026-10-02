@@ -66,10 +66,12 @@ func open(offers: Array[UpgradeOffer]) -> void:
 		buttons.append(button)
 	visible = true
 	await get_tree().create_timer(INPUT_DELAY, true).timeout
+	# A newer open() may have replaced these cards during the delay.
+	if buttons.is_empty() or not is_instance_valid(buttons[0]) or buttons[0].is_queued_for_deletion():
+		return
 	for button in buttons:
 		button.disabled = false
-	if not buttons.is_empty():
-		buttons[0].grab_focus()
+	buttons[0].grab_focus()
 
 
 func close() -> void:

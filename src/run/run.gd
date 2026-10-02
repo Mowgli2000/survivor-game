@@ -1,7 +1,8 @@
 class_name Run
 extends Node2D
 ## Composition root of a run: creates every run system, wires their signals,
-## and handles the run flow (level-up pause, game over, retry).
+## and handles the run flow (waves, between-waves screen and deferred
+## level-ups, game over, victory, retry).
 ## Contains no gameplay rules itself.
 
 signal retry_requested
@@ -35,11 +36,11 @@ var vfx: Vfx
 var damage_numbers: DamageNumbers
 var hud: Hud
 var level_up_screen: LevelUpScreen
+var wave_end_screen: WaveEndScreen
 var game_over_screen: GameOverScreen
 
 var _upgrade_pool: Array[UpgradeData] = []
 var _weapon_pool: Array[WeaponData] = []
-var _choosing: bool = false
 
 
 func _ready() -> void:
@@ -110,10 +111,12 @@ func _ready() -> void:
 
 	hud = Hud.new()
 	add_child(hud)
-	hud.setup(player, progression, state)
+	hud.setup(player, progression, waves)
 
 	level_up_screen = LevelUpScreen.new()
 	add_child(level_up_screen)
+	wave_end_screen = WaveEndScreen.new()
+	add_child(wave_end_screen)
 	game_over_screen = GameOverScreen.new()
 	add_child(game_over_screen)
 
@@ -126,12 +129,13 @@ func _ready() -> void:
 	vfx.shake_requested.connect(player.camera.add_trauma)
 	player.damaged.connect(func(_amount: float) -> void: player.camera.add_trauma(PLAYER_HIT_SHAKE))
 	pickups.xp_collected.connect(progression.add_xp)
-	progression.leveled_up.connect(_on_leveled_up)
 	player.died.connect(_on_player_died)
 	level_up_screen.offer_chosen.connect(_apply_offer)
 	game_over_screen.retry_requested.connect(_on_retry_requested)
 	waves.wave_started.connect(spawner.begin_wave)
 	waves.wave_ended.connect(_on_wave_ended)
+	waves.run_won.connect(_on_run_won)
+	wave_end_screen.next_wave_requested.connect(_start_next_wave)
 	waves.start_wave(1)
 
 
@@ -148,31 +152,38 @@ func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
 	pickups.spawn_xp(pos, xp)
 
 
-# Provisional: chains waves without a screen (full flow in the next task).
-func _on_wave_ended(wave: int) -> void:
-	if state.is_over or waves.is_last_wave():
+## End of a wave: clear the arena, collect gems, heal, then resolve level-ups.
+func _on_wave_ended(_wave: int) -> void:
+	if state.is_over:
 		return
-	waves.start_wave(wave + 1)
+	enemies.clear_all()
+	enemy_projectiles.clear_all()
+	pickups.collect_all()
+	player.heal(player.stats.get_value(StatIds.MAX_HP) * stage.heal_between_waves)
+	if waves.is_last_wave():
+		return  # _on_run_won follows
+	if not auto_choose_upgrades:
+		get_tree().paused = true
+		wave_end_screen.open(waves.wave)
+	_resolve_level_ups()
 
 
-func _on_leveled_up(_level: int) -> void:
-	if not _choosing:
-		_offer_upgrades()
-
-
-func _offer_upgrades() -> void:
+## Offers one level-up at a time until none is pending.
+func _resolve_level_ups() -> void:
+	if progression.pending_level_ups <= 0:
+		_on_level_ups_resolved()
+		return
 	var weapons := player.weapons
 	var offers := progression.roll_offers(_upgrade_pool, _weapon_pool, weapons.owned_levels(),
 		config.max_weapon_slots - weapons.slot_count(), config.upgrade_choices, state.rng,
 		config.new_weapon_weight, config.weapon_level_weight)
 	if offers.is_empty():
 		progression.pending_level_ups = 0
+		_on_level_ups_resolved()
 		return
 	if auto_choose_upgrades:
 		_apply_offer(offers[0])
 		return
-	_choosing = true
-	get_tree().paused = true
 	level_up_screen.open(offers)
 
 
@@ -186,20 +197,35 @@ func _apply_offer(offer: UpgradeOffer) -> void:
 		UpgradeOffer.Kind.WEAPON_LEVEL:
 			player.weapons.level_up(offer.weapon)
 			progression.consume_level_up()
-	if progression.pending_level_ups > 0 and not state.is_over:
-		_choosing = false
-		_offer_upgrades()
-		return
-	_choosing = false
+	_resolve_level_ups()
+
+
+func _on_level_ups_resolved() -> void:
 	level_up_screen.close()
-	if not state.is_over:
-		get_tree().paused = false
+	if auto_choose_upgrades:
+		_start_next_wave()
+	else:
+		wave_end_screen.show_next_button()
+
+
+func _start_next_wave() -> void:
+	wave_end_screen.close()
+	get_tree().paused = false
+	waves.start_wave(waves.wave + 1)
+
+
+func _on_run_won() -> void:
+	if state.is_over:
+		return
+	state.is_over = true
+	get_tree().paused = true
+	game_over_screen.open(state.elapsed, progression.level, state.kills, waves.wave, true)
 
 
 func _on_player_died() -> void:
 	state.is_over = true
 	get_tree().paused = true
-	game_over_screen.open(state.elapsed, progression.level, state.kills)
+	game_over_screen.open(state.elapsed, progression.level, state.kills, waves.wave)
 
 
 func _on_retry_requested() -> void:

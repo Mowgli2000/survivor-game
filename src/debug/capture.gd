@@ -1,7 +1,7 @@
 extends Node
 ## Plays a run with a bot and saves a screenshot, so visuals can be checked
 ## without a human at the keyboard (used by Claude Code).
-## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--die]
+## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--die]
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
 const STRESS_CONFIG := preload("res://src/debug/stress/stress_run.tres")
@@ -25,7 +25,7 @@ func _ready() -> void:
 			_out = arg.trim_prefix("--out=")
 		elif arg == "--stress":
 			stress = true
-		elif arg in ["--levelup", "--die"]:
+		elif arg in ["--levelup", "--die", "--waveend"]:
 			_mode = arg
 		elif arg == "--allweapons":
 			all_weapons = true
@@ -34,7 +34,7 @@ func _ready() -> void:
 		_run.config = STRESS_CONFIG
 	_run.seed_override = 7
 	_run.player_invincible = true
-	_run.auto_choose_upgrades = _mode != "--levelup"
+	_run.auto_choose_upgrades = _mode not in ["--levelup", "--waveend"]
 	_run.bot_input = func() -> Vector2: return Vector2.from_angle(_time * 0.5)
 	add_child(_run)
 	if all_weapons:
@@ -49,7 +49,12 @@ func _process(delta: float) -> void:
 		return
 	if _mode == "--levelup" and not get_tree().paused:
 		_run.progression.add_xp(_run.progression.xp_needed())
-		_capture_at = _time + 0.6
+		_run.waves.time_left = 0.05  # level-ups are shown at the end of the wave
+		_capture_at = _time + 0.8
+		return
+	if _mode == "--waveend" and not get_tree().paused:
+		_run.waves.time_left = 0.05
+		_capture_at = _time + 0.8
 		return
 	if _mode == "--die" and not _run.state.is_over:
 		_run.player.invincible = false
