@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://src/run/run_config.gd" id="1_config"]
 [ext_resource type="Resource" path="res://data/characters/drifter.tres" id="2_drifter"]
 [ext_resource type="Resource" path="res://data/stages/default.tres" id="3_stage"]
+[ext_resource type="Resource" path="res://data/shop/default.tres" id="4_shop"]
 
 [resource]
 script = ExtResource("1_config")
@@ -10,6 +11,7 @@ id = &"default"
 character = ExtResource("2_drifter")
 arena_size = Vector2(3200, 3200)
 stage = ExtResource("3_stage")
+shop = ExtResource("4_shop")
 xp_base = 5.0
 xp_exponent = 1.35
 upgrade_choices = 3

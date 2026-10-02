@@ -7,6 +7,8 @@ extends Resource
 @export var arena_size: Vector2 = Vector2(3200, 3200)
 ## Waves, enemies and difficulty of the run (data/stages/).
 @export var stage: StageData
+## Shop and tier tuning (data/shop/).
+@export var shop: ShopConfig
 
 @export_group("Progression")
 ## XP needed for level n -> n+1 = round(xp_base * n ^ xp_exponent).

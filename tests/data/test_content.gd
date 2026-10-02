@@ -19,7 +19,7 @@ func _assert_common(def: Resource, category: StringName) -> void:
 
 
 func test_expected_categories_exist() -> void:
-	for category in [&"characters", &"weapons", &"enemies", &"upgrades", &"runs", &"stages", &"items"]:
+	for category in [&"characters", &"weapons", &"enemies", &"upgrades", &"runs", &"stages", &"items", &"shop"]:
 		assert_gt(ContentDB.get_all(category).size(), 0, "no content in data/%s" % category)
 
 
@@ -139,3 +139,15 @@ func test_items() -> void:
 		assert_gt(item.modifiers.size(), 0, "%s has no modifier" % item.id)
 		for mod in item.modifiers:
 			assert_true(StatIds.is_valid(mod.stat), "%s: unknown stat '%s'" % [item.id, mod.stat])
+
+
+func test_shop_configs() -> void:
+	for def in ContentDB.get_all(&"shop"):
+		var shop := def as ShopConfig
+		assert_not_null(shop, "data/shop must contain ShopConfig")
+		assert_gt(shop.slot_count, 0)
+		for array in [shop.weapon_tier_price, shop.tier_min_wave, shop.tier_base_chance,
+				shop.tier_chance_per_wave, shop.tier_max_chance]:
+			assert_eq(array.size(), Tiers.COUNT, "%s: one value per tier" % shop.resource_path)
+	for def in ContentDB.get_all(&"runs"):
+		assert_not_null((def as RunConfig).shop, "%s has no shop config" % def.resource_path)

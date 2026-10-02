@@ -3,9 +3,11 @@
 [ext_resource type="Script" uid="uid://dxyrn7lm0hlyq" path="res://src/run/run_config.gd" id="1_config"]
 [ext_resource type="Resource" path="res://src/debug/stress/stress_character.tres" id="2_char"]
 [ext_resource type="Resource" path="res://src/debug/stress/stress_stage.tres" id="3_stage"]
+[ext_resource type="Resource" path="res://data/shop/default.tres" id="4_shop"]
 
 [resource]
 script = ExtResource("1_config")
 id = &"stress"
 character = ExtResource("2_char")
 stage = ExtResource("3_stage")
+shop = ExtResource("4_shop")
