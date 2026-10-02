@@ -10,7 +10,7 @@ Le développeur n'est pas senior : expliquer les décisions importantes, signale
 Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes, statuts, 4 ennemis, rendu néon), 4 (vagues : 20 vagues, élites, boss provisoire) et 5 (socle de boutique façon Brotato : matériaux, armes à 4 rangs en double, objets de stats, level-up à rang) terminées. Prochaine : Phase 3 (objets à effets, synergies, menus). Roadmap et GDD : `docs/design/gdd.md`. Décisions : `docs/decisions/`.
 
 ## Architecture (résumé — détails dans les skills)
-- Autoloads minimaux : ContentDB (existe), puis SceneRouter, Settings, SaveService, Audio, EventBus, Platform quand leur phase arrive. Aucune logique de run dans un autoload.
+- Autoloads minimaux : ContentDB et Audio (ADR 0008 : `Audio.play(stream)`, catalogue `Sounds`, son de tir dans `WeaponData`) existent ; puis SceneRouter, Settings, SaveService, EventBus, Platform quand leur phase arrive. Aucune logique de run dans un autoload.
 - `src/run/run.gd` = racine de composition d'une partie : crée et branche les systèmes (EnemyManager, ProjectileManager, PickupManager, SpawnDirector, Progression, Shop…).
 - Ennemis/projectiles/pickups : gérés en lot par leur manager + `SpatialGrid` + `ObjectPool`. Jamais de `_process` par entité, jamais d'Area2D/physique pour les hits de masse. Seul le Player est un CharacterBody2D. Projectiles = données rendues par un seul MultiMesh (ADR 0004). Ennemis = une texture néon précalculée par type (ADR 0005).
 - Code pur testable dans `src/core/` (StatBlock, CombatMath, SpatialGrid, ObjectPool, WeightedPicker).

@@ -14,7 +14,7 @@ Dernière mise à jour : 2026-10-03 (session 3)
 | **Phase actuelle** | Phase 5 (boutique façon Brotato) : socle livré → playtest du dev, puis Phase 3 (objets à effets, menus) |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 148/148 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 153/153 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~175-184 FPS moyen, min ~130-140 — 500 ennemis, ~1000 projectiles, 6 armes rang IV (mesure 2026-10-03, machine libre ; avant la boutique : ~180 FPS) |
 
 **Emplacements**
@@ -58,6 +58,8 @@ Dernière mise à jour : 2026-10-03 (session 3)
 | D28 | 2026-10-02 | **Level-up = stats seulement, 4 cartes à rang, relance payante** | Bonus ×1 / ×1,6 / ×2,4 / ×3,2 selon le rang ; même coût de relance que la boutique |
 | D29 | 2026-10-03 | **On reste en 2D** (abandon du prototype 3D/2.5D) | Décision du dev : la 2D convient au genre et facilitera une version mobile |
 | D30 | 2026-10-03 | **Plus d'ennemis en fin de partie, moins de matériaux, builds intacts** | Apparitions en courbe (≈3/s vague 5, 7/s vague 10, 15/s vague 15, 24/s vague 20), plafond 500 ; matériaux par XP 100 % → 60 % ; PV des ennemis inchangés. Objectif : beaucoup de monstres, beaucoup de chiffres |
+| D31 | 2026-10-03 | **Direction artistique : chibi façon Dofus × néon, assets gratuits, vue de dessus** | Personnages vectoriels chibi (pack CC0 RGS_Dev en premier test), néon ajouté par le jeu (contour lumineux, une couleur par menace). Packs bruts dans `assets_src/` (ignoré par git) |
+| D32 | 2026-10-03 | **Audio : autoload `Audio`, sons Kenney CC0, musique synthwave CC0** | Sons de tir par arme, impacts, morts, explosions, UI, jingles. Anti-saturation. ADR 0008 |
 
 ### Décisions volontairement reportées
 | Sujet | Quand | Options / notes |
@@ -101,6 +103,7 @@ Dernière mise à jour : 2026-10-03 (session 3)
 - **Après playtest Phase 4** : compteur de vague dans l'overlay F3 (tués / apparus, apparitions/s, PV) + une ligne `[wave N]` par vague dans la console ; durées de vague à la Brotato ; densité réduite (D24) ; boss provisoire Shogun (D23)
 - **Phase 5 avancée — Boutique façon Brotato** (spec + plan dans `docs/superpowers/`, ADR 0007) : matériaux, armes à 4 rangs en double avec fusion, 15 objets de stats, boutique entre les vagues (4 emplacements, relance, verrouillage, vente, fusion), level-up à 4 cartes à rang avec relance payante. 136 tests
 - **Après playtest Phase 5** (2026-10-03) : correction du bazooka (la portée allongeait la visée mais pas le vol des projectiles : explosions dans le vide), panneau de stats (boutique + Tab en jeu), courbe d'apparition et taux de matériaux (D30), focus clavier/manette de la boutique corrigé (plus de « Vague suivante » par accident). 148 tests
+- **Audio** (ADR 0008) : musique en boucle, son de tir par arme, impacts, morts, explosions, ramassages, sons de boutique et de level-up, jingles de vague, victoire et défaite. 153 tests
 
 ---
 
@@ -119,7 +122,7 @@ Dernière mise à jour : 2026-10-03 (session 3)
 
 - **Pas de menu pause** : Échap ne fait rien pour l'instant (prévu avec les menus, Phase 3).
 - **Pas de menu de paramètres** : les options « tremblement d'écran » et « chiffres de dégâts » existent dans le code, sans interface.
-- **Pas d'audio** (prévu Phase 2 initialement, reporté avec l'autoload `Audio`).
+- **Audio provisoire** : sons choisis sans écoute (Kenney), à remplacer au goût du dev ; pas encore de réglage de volume (menu paramètres).
 - **Équilibrage = premières estimations** (dégâts, courbe d'XP, poids des cartes, apparition des ennemis, prix, chances de rang, objets).
 - **Boutique, socle seulement** : objets sans effets spéciaux ni synergies, pas de caisses lâchées par les élites, pas de stat « récolte » ni « chance », visuel des matériaux provisoire (gemmes d'XP).
 - Boss provisoire seulement : pas de barre de vie de boss, pas d'attaque spéciale, même taille qu'un Colosse élite (rayon max de la grille : 48).
@@ -133,11 +136,11 @@ Dernière mise à jour : 2026-10-03 (session 3)
 
 ## 6. Prochaines étapes
 
-1. **Dev** : rejouer une run complète (F3 affiché) : densité des vagues 10-20, matériaux en fin de partie, panneau de stats (Tab).
-2. Vérifier en jeu les vagues 15-20 avec 500 ennemis (FPS dans F3).
-3. Ajuster D30 selon ce playtest.
-4. **Phase 3 — Objets à effets et synergies** (vendus par la boutique), puis **menus** (principal, pause, paramètres).
-5. Phase 6 (vrai boss). Roadmap complète : `docs/design/gdd.md`.
+1. **Dev** : télécharger le pack RGS_Dev dans `assets_src/third_party/rgs_characters/`, écouter le son en jeu (sons à changer ?).
+2. **Direction artistique** (D31) : inventaire du pack, art bible néon × Dofus, capture test d'une horde, puis intégration des sprites.
+3. **Dev** : rejouer une run complète (F3) : densité des vagues 10-20, matériaux, panneau de stats (Tab) ; ajuster D30.
+4. **Phase 3 — Objets à effets et synergies** (vendus par la boutique), puis **menus** (principal, pause, paramètres avec volumes).
+5. Phase 6 (vrai boss), puis 6b (vertical slice + page Steam). Roadmap complète : `docs/design/gdd.md`.
 
 ---
 
