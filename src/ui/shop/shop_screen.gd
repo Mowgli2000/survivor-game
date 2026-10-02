@@ -29,6 +29,9 @@ var _next: Button
 var _selected_weapon: int = -1
 ## Identifies the focused control across rebuilds ("buy:2", "weapon:1", "next"...).
 var _focus_key: String = ""
+## True when _focus_key was chosen by code: the next rebuild must not overwrite it
+## with the control that happens to be focused.
+var _focus_forced: bool = false
 var _accept_after: int = 0
 var _controls: Dictionary[String, Control] = {}
 
@@ -105,6 +108,7 @@ func _init() -> void:
 func open() -> void:
 	_selected_weapon = -1
 	_focus_key = "buy:0"
+	_focus_forced = true
 	_accept_after = Time.get_ticks_msec() + INPUT_DELAY_MS
 	visible = true
 	_rebuild()
@@ -128,10 +132,12 @@ static func describe(offer: ShopOffer) -> PackedStringArray:
 func _rebuild() -> void:
 	if not visible or _shop == null:
 		return
-	var focused := get_viewport().gui_get_focus_owner() if is_inside_tree() else null
-	for key in _controls:
-		if _controls[key] == focused:
-			_focus_key = key
+	if not _focus_forced:
+		var focused := get_viewport().gui_get_focus_owner() if is_inside_tree() else null
+		for key in _controls:
+			if _controls[key] == focused:
+				_focus_key = key
+	_focus_forced = false
 	_controls.clear()
 	_title.text = tr("UI_SHOP_TITLE") % _shop.wave
 	_materials.text = "%s %d" % [tr("UI_MATERIALS"), _wallet.amount]
@@ -142,10 +148,31 @@ func _rebuild() -> void:
 	_rebuild_cards()
 	_rebuild_weapons()
 	_rebuild_items()
-	var target: Control = _controls.get(_focus_key)
-	if target == null or (target is Button and (target as Button).disabled):
-		target = _next
-	target.grab_focus()
+	_focus_target().grab_focus()
+
+
+## The control named by _focus_key, or the nearest sensible one. "Next wave" is
+## the last resort: a stray confirm press there would skip the whole shop.
+func _focus_target() -> Control:
+	if _is_focusable(_controls.get(_focus_key)):
+		return _controls[_focus_key]
+	var card := 0
+	if _focus_key.begins_with("buy:") or _focus_key.begins_with("lock:"):
+		card = int(_focus_key.get_slice(":", 1))
+	for prefix in ["buy:", "lock:"]:
+		for distance in _shop.offers.size():
+			for index in [card + distance, card - distance]:
+				var control: Control = _controls.get("%s%d" % [prefix, index])
+				if _is_focusable(control):
+					return control
+	for key in ["weapon:0", "reroll"]:
+		if _is_focusable(_controls.get(key)):
+			return _controls[key]
+	return _next
+
+
+func _is_focusable(control: Control) -> bool:
+	return control != null and not (control is Button and (control as Button).disabled)
 
 
 func _rebuild_cards() -> void:
@@ -257,21 +284,34 @@ func _on_reroll() -> void:
 func _on_weapon_selected(index: int) -> void:
 	_selected_weapon = -1 if index == _selected_weapon else index
 	_focus_key = "weapon:%d" % index
+	_focus_forced = true
 	_rebuild()
 
 
 func _on_sell() -> void:
-	if _accepting() and _shop.sell_weapon(_selected_weapon) > 0:
-		_selected_weapon = -1
-		_focus_key = "weapon:0"
+	if not _accepting():
+		return
+	var index := _clear_weapon_selection()
+	if _shop.sell_weapon(index) <= 0:
 		_rebuild()
 
 
 func _on_merge() -> void:
-	if _accepting() and _shop.merge_weapon(_selected_weapon):
-		_selected_weapon = -1
-		_focus_key = "weapon:0"
+	if not _accepting():
+		return
+	var index := _clear_weapon_selection()
+	if not _shop.merge_weapon(index):
 		_rebuild()
+
+
+## Before a Shop call: the rebuild it triggers shows no selection and focuses
+## the weapon row. Returns the slot that was selected.
+func _clear_weapon_selection() -> int:
+	var index := _selected_weapon
+	_selected_weapon = -1
+	_focus_key = "weapon:0"
+	_focus_forced = true
+	return index
 
 
 func _on_next() -> void:
