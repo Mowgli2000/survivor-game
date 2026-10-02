@@ -118,6 +118,7 @@ func test_wave_end_clears_heals_and_collects() -> void:
 	assert_eq(_run.pickups.active_count(), 0, "gems collected")
 	assert_almost_eq(_run.player.hp, _run.player.stats.get_value(StatIds.MAX_HP), 0.001, "healed")
 	assert_signal_emitted(_run.pickups, "xp_collected", "gem XP collected")
+	assert_gt(_run.state.wallet.amount, 0, "gems also give materials")
 
 
 func test_manual_wave_end_shows_screen_then_next_wave() -> void:

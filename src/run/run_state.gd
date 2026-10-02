@@ -10,6 +10,8 @@ var kills: int = 0
 ## Counters of the current wave (balancing: share of spawned enemies killed).
 var wave_spawned: int = 0
 var wave_kills: int = 0
+## Materials (currency) of the run.
+var wallet := Wallet.new()
 var is_over: bool = false
 
 

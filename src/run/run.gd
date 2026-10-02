@@ -111,7 +111,7 @@ func _ready() -> void:
 
 	hud = Hud.new()
 	add_child(hud)
-	hud.setup(player, progression, waves)
+	hud.setup(player, progression, waves, state.wallet)
 
 	level_up_screen = LevelUpScreen.new()
 	add_child(level_up_screen)
@@ -130,6 +130,7 @@ func _ready() -> void:
 	vfx.shake_requested.connect(player.camera.add_trauma)
 	player.damaged.connect(func(_amount: float) -> void: player.camera.add_trauma(PLAYER_HIT_SHAKE))
 	pickups.xp_collected.connect(progression.add_xp)
+	pickups.xp_collected.connect(state.wallet.add)
 	player.died.connect(_on_player_died)
 	level_up_screen.offer_chosen.connect(_apply_offer)
 	game_over_screen.retry_requested.connect(_on_retry_requested)
