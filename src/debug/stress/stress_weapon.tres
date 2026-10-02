@@ -9,7 +9,7 @@ script = ExtResource("2_shooter")
 [resource]
 script = ExtResource("1_weapon")
 id = &"stress_weapon"
-name_key = "WEAPON_PULSE"
+name_key = "WEAPON_STRESS"
 behavior = SubResource("Resource_shooter")
 base_damage = 1.0
 cooldown = 0.016

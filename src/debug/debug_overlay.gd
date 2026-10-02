@@ -9,13 +9,18 @@ var _label: Label
 var _enemies: EnemyManager
 var _projectiles: ProjectileManager
 var _pickups: PickupManager
+var _enemy_projectiles: EnemyProjectileManager
+var _vfx: Vfx
 var _timer: float = 0.0
 
 
-func setup(enemies: EnemyManager, projectiles: ProjectileManager, pickups: PickupManager) -> void:
+func setup(enemies: EnemyManager, projectiles: ProjectileManager, pickups: PickupManager,
+		enemy_projectiles: EnemyProjectileManager, vfx: Vfx) -> void:
 	_enemies = enemies
 	_projectiles = projectiles
 	_pickups = pickups
+	_enemy_projectiles = enemy_projectiles
+	_vfx = vfx
 
 
 func _init() -> void:
@@ -44,9 +49,10 @@ func _process(delta: float) -> void:
 	if not visible or _timer > 0.0 or _enemies == null:
 		return
 	_timer = REFRESH_INTERVAL
-	_label.text = "FPS %d\nprocess %.2f ms | physics %.2f ms\nenemies %d | projectiles %d | gems %d" % [
+	_label.text = "FPS %d\nprocess %.2f ms | physics %.2f ms\nenemies %d | projectiles %d | gems %d\nenemy shots %d | vfx %d" % [
 		Engine.get_frames_per_second(),
 		Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0,
 		Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0,
 		_enemies.active_count(), _projectiles.active_count(), _pickups.active_count(),
+		_enemy_projectiles.active_count(), _vfx.active_count(),
 	]

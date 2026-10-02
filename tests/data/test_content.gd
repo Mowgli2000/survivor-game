@@ -33,6 +33,10 @@ func test_enemies() -> void:
 		assert_lte(enemy.radius, EnemyManager.MAX_ENEMY_RADIUS, "%s radius above MAX_ENEMY_RADIUS" % enemy.id)
 		assert_gte(enemy.speed, 0.0)
 		assert_gte(enemy.xp_value, 0)
+		if enemy.movement == EnemyData.Movement.RANGED:
+			assert_gt(enemy.preferred_distance, 0.0, "%s: ranged without distance" % enemy.id)
+			assert_gt(enemy.fire_cooldown, 0.0)
+			assert_gt(enemy.projectile_speed, 0.0)
 
 
 func test_weapons() -> void:
@@ -46,6 +50,15 @@ func test_weapons() -> void:
 		assert_gt(weapon.attack_range, 0.0)
 		assert_gte(weapon.projectile_count, 1)
 		assert_gt(weapon.projectile_lifetime, 0.0)
+		assert_true(_keys.has(weapon.description_key), "%s: missing description key" % weapon.id)
+		assert_gt(weapon.levels.size(), 0, "%s has no levels" % weapon.id)
+		for bonus in weapon.levels:
+			assert_not_null(bonus, "%s: empty level entry" % weapon.id)
+		if weapon.behavior is MeleeArcBehavior or weapon.behavior is BeamBehavior:
+			assert_gt(weapon.area, 0.0, "%s: arc/beam weapons need an area" % weapon.id)
+		if weapon.status != null:
+			assert_gt(weapon.status_chance, 0.0)
+			assert_gt(weapon.status.power, 0.0, "%s: status without power" % weapon.id)
 
 
 func test_characters() -> void:

@@ -7,12 +7,25 @@ var stats: StatBlock
 var enemies: EnemyManager
 var projectiles: ProjectileManager
 var rng: RandomNumberGenerator
+## May be null (tests).
+var vfx: Vfx
 
 
 func _init(p_owner: Node2D, p_stats: StatBlock, p_enemies: EnemyManager,
-		p_projectiles: ProjectileManager, p_rng: RandomNumberGenerator) -> void:
+		p_projectiles: ProjectileManager, p_rng: RandomNumberGenerator, p_vfx: Vfx = null) -> void:
 	owner = p_owner
 	stats = p_stats
 	enemies = p_enemies
 	projectiles = p_projectiles
 	rng = p_rng
+	vfx = p_vfx
+
+
+func roll_crit(weapon: WeaponStats) -> bool:
+	return CombatMath.is_crit(weapon.crit_chance + stats.get_value(StatIds.CRIT_CHANCE), rng.randf())
+
+
+## Damage of one hit of `weapon`, with the owner's damage stats applied.
+func hit_damage(weapon: WeaponStats, crit: bool) -> float:
+	return CombatMath.outgoing_damage(weapon.damage, stats.get_value(StatIds.DAMAGE),
+		crit, stats.get_value(StatIds.CRIT_DAMAGE))

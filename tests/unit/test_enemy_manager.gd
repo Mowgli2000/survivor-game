@@ -1,9 +1,11 @@
 extends GutTest
-## EnemyManager + ProjectileManager working together, without the full run.
+## EnemyManager (damage API, statuses, ranged enemies) and the projectile
+## managers working together, without the full run.
 
 var _player: Player
 var _enemies: EnemyManager
 var _projectiles: ProjectileManager
+var _enemy_shots: EnemyProjectileManager
 var _data: EnemyData
 
 
@@ -14,16 +16,42 @@ func before_each() -> void:
 	_player.invincible = true
 	_player.bot_input = func() -> Vector2: return Vector2.ZERO
 	add_child_autofree(_player)
+	_enemy_shots = EnemyProjectileManager.new()
+	_enemy_shots.setup(_player, arena)
+	add_child_autofree(_enemy_shots)
 	_enemies = EnemyManager.new()
-	_enemies.setup(_player, arena, 4)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 1
+	_enemies.setup(_player, arena, 4, rng, null, _enemy_shots)
 	add_child_autofree(_enemies)
 	_projectiles = ProjectileManager.new()
 	_projectiles.setup(_enemies, arena, 4)
 	add_child_autofree(_projectiles)
-	_data = EnemyData.new()
-	_data.max_hp = 10.0
-	_data.speed = 0.0
-	_data.radius = 16.0
+	_data = _enemy_data(10.0, 0.0)
+
+
+func _enemy_data(hp: float, speed: float) -> EnemyData:
+	var data := EnemyData.new()
+	data.max_hp = hp
+	data.speed = speed
+	data.radius = 16.0
+	return data
+
+
+func _status(type: StatusData.Type, power: float, duration: float) -> StatusData:
+	var status := StatusData.new()
+	status.type = type
+	status.power = power
+	status.duration = duration
+	return status
+
+
+func _weapon(setup: Callable) -> WeaponStats:
+	var data := WeaponData.new()
+	data.projectile_radius = 6.0
+	data.projectile_lifetime = 2.0
+	setup.call(data)
+	return WeaponStats.compute(data, 1)
 
 
 func test_damage_kills_and_emits() -> void:
@@ -55,13 +83,108 @@ func test_find_nearest_after_grid_rebuild() -> void:
 	assert_eq(_enemies.find_nearest(Vector2.ZERO, 50.0), -1)
 
 
+func test_arc_only_hits_enemies_in_front() -> void:
+	_enemies.spawn(_data, Vector2(100, 0))   # in front
+	_enemies.spawn(_data, Vector2(-100, 0))  # behind
+	_enemies.spawn(_data, Vector2(400, 0))   # too far
+	await wait_physics_frames(1)
+	var hits := _enemies.damage_in_radius(Vector2.ZERO, 150.0, 1.0, false, 0.0, null, 1.0,
+		Vector2.RIGHT, cos(deg_to_rad(60.0)))
+	assert_eq(hits, 1)
+
+
+func test_segment_hits_enemies_along_the_line() -> void:
+	_enemies.spawn(_data, Vector2(100, 5))
+	_enemies.spawn(_data, Vector2(300, -10))
+	_enemies.spawn(_data, Vector2(200, 200))  # off the line
+	await wait_physics_frames(1)
+	var hits := _enemies.damage_along_segment(Vector2.ZERO, Vector2(600, 0), 5.0, 1.0, false, 0.0)
+	assert_eq(hits, 2)
+
+
+func test_burn_deals_damage_over_time_and_can_kill() -> void:
+	watch_signals(_enemies)
+	_enemies.spawn(_enemy_data(10.0, 0.0), Vector2(500, 0))
+	# 1 damage hit, burn = 1 x 5.0 = 5 dps for 3 s -> dies after ~2 s.
+	_enemies.damage_enemy(0, 1.0, false, Vector2.ZERO, 0.0, _status(StatusData.Type.BURN, 5.0, 3.0))
+	assert_gt(_enemies.get_enemy(0).burn_time, 0.0)
+	await wait_physics_frames(150)
+	assert_signal_emit_count(_enemies, "enemy_killed", 1)
+
+
+func test_slow_reduces_speed_then_expires() -> void:
+	_enemies.spawn(_enemy_data(100.0, 100.0), Vector2(600, 0))
+	_enemies.damage_enemy(0, 1.0, false, Vector2.ZERO, 0.0, _status(StatusData.Type.SLOW, 0.5, 0.5))
+	var start := _enemies.get_enemy(0).position.x
+	await wait_physics_frames(15)  # 0.25 s at half speed -> ~12.5 px
+	var travelled := start - _enemies.get_enemy(0).position.x
+	assert_almost_eq(travelled, 12.5, 4.0)
+	await wait_physics_frames(30)
+	assert_eq(_enemies.get_enemy(0).slow_time, 0.0)
+
+
+func test_shock_chains_to_nearby_enemies() -> void:
+	watch_signals(_enemies)
+	_enemies.spawn(_enemy_data(100.0, 0.0), Vector2(300, 0))
+	_enemies.spawn(_enemy_data(100.0, 0.0), Vector2(400, 0))
+	_enemies.spawn(_enemy_data(100.0, 0.0), Vector2(500, 0))
+	_enemies.spawn(_enemy_data(100.0, 0.0), Vector2(900, 0))  # out of chain range
+	await wait_physics_frames(1)
+	var shock := _status(StatusData.Type.SHOCK, 0.5, 0.0)
+	shock.chain_count = 3
+	shock.chain_range = 150.0
+	_enemies.damage_enemy(0, 10.0, false, Vector2.ZERO, 0.0, shock)
+	assert_signal_emit_count(_enemies, "enemy_damaged", 3, "first hit + 2 jumps")
+	assert_eq(_enemies.get_enemy(2).hp, 95.0)
+	assert_eq(_enemies.get_enemy(3).hp, 100.0)
+
+
 func test_projectile_hits_and_pierce() -> void:
 	watch_signals(_enemies)
 	_enemies.spawn(_data, Vector2(200, 0))
 	_enemies.spawn(_data, Vector2(300, 0))
 	await wait_physics_frames(1)
-	# Pierce 1: hits both enemies in a line then disappears.
-	_projectiles.spawn(Vector2(150, 0), Vector2(600, 0), 3.0, false, 1, 0.0, 6.0, 2.0, Color.WHITE)
+	_projectiles.spawn(Vector2(150, 0), Vector2(600, 0), 3.0, false, 1, 0.0, 1.0, _weapon(func(_d: WeaponData) -> void: pass))
 	await wait_physics_frames(30)
 	assert_signal_emit_count(_enemies, "enemy_damaged", 2)
 	assert_eq(_projectiles.active_count(), 0)
+
+
+func test_projectile_bounces_to_another_enemy() -> void:
+	watch_signals(_enemies)
+	_enemies.spawn(_enemy_data(100.0, 0.0), Vector2(200, 0))
+	_enemies.spawn(_enemy_data(100.0, 0.0), Vector2(200, 150))  # not in the initial line
+	await wait_physics_frames(1)
+	var weapon := _weapon(func(d: WeaponData) -> void:
+		d.bounces = 1
+		d.bounce_range = 300.0)
+	_projectiles.spawn(Vector2(100, 0), Vector2(600, 0), 3.0, false, 0, 0.0, 1.0, weapon)
+	await wait_physics_frames(40)
+	assert_signal_emit_count(_enemies, "enemy_damaged", 2)
+
+
+func test_explosion_damages_the_area() -> void:
+	watch_signals(_enemies)
+	_enemies.spawn(_enemy_data(100.0, 0.0), Vector2(200, 0))
+	_enemies.spawn(_enemy_data(100.0, 0.0), Vector2(240, 60))
+	_enemies.spawn(_enemy_data(100.0, 0.0), Vector2(600, 600))  # far away
+	await wait_physics_frames(1)
+	var weapon := _weapon(func(d: WeaponData) -> void: d.explosion_radius = 100.0)
+	_projectiles.spawn(Vector2(100, 0), Vector2(600, 0), 5.0, false, 0, 0.0, 1.0, weapon)
+	await wait_physics_frames(20)
+	assert_signal_emit_count(_enemies, "enemy_damaged", 2)
+	assert_eq(_projectiles.active_count(), 0)
+
+
+func test_ranged_enemy_keeps_distance_and_shoots() -> void:
+	var data := _enemy_data(10.0, 200.0)
+	data.movement = EnemyData.Movement.RANGED
+	data.preferred_distance = 300.0
+	data.fire_cooldown = 0.2
+	data.projectile_damage = 7.0
+	data.projectile_speed = 900.0
+	_player.invincible = false
+	_enemies.spawn(data, Vector2(120, 0))  # too close: should back off
+	await wait_physics_frames(60)
+	assert_gt(_enemies.get_enemy(0).position.length(), 200.0, "ranged enemy backed off")
+	assert_lt(_player.hp, 100.0, "its shots hit the player")

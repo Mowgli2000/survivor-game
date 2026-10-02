@@ -7,6 +7,7 @@ extends Node2D
 signal retry_requested
 
 const DEFAULT_CONFIG_ID := &"default"
+const PLAYER_HIT_SHAKE := 0.35
 
 ## Leave empty to use data/runs/default.tres.
 @export var config: RunConfig
@@ -15,7 +16,7 @@ const DEFAULT_CONFIG_ID := &"default"
 
 @export_group("Debug / tests")
 @export var player_invincible: bool = false
-## Picks the first upgrade automatically instead of pausing on level-up.
+## Picks the first offer automatically instead of pausing on level-up.
 @export var auto_choose_upgrades: bool = false
 ## When valid, drives the player instead of the input (bots, tests, stress test).
 var bot_input: Callable
@@ -24,14 +25,18 @@ var state: RunState
 var progression: Progression
 var player: Player
 var enemies: EnemyManager
+var enemy_projectiles: EnemyProjectileManager
 var projectiles: ProjectileManager
 var pickups: PickupManager
 var spawner: SpawnDirector
+var vfx: Vfx
+var damage_numbers: DamageNumbers
 var hud: Hud
 var level_up_screen: LevelUpScreen
 var game_over_screen: GameOverScreen
 
 var _upgrade_pool: Array[UpgradeData] = []
+var _weapon_pool: Array[WeaponData] = []
 var _choosing: bool = false
 
 
@@ -44,10 +49,16 @@ func _ready() -> void:
 	state = RunState.new(seed_override if seed_override >= 0 else randi())
 	progression = Progression.new(config.xp_base, config.xp_exponent)
 	_upgrade_pool.assign(ContentDB.get_all(&"upgrades"))
+	_weapon_pool.assign(ContentDB.get_all(&"weapons"))
 
 	var arena := Arena.new()
 	arena.setup(arena_rect)
 	add_child(arena)
+
+	vfx = Vfx.new()
+	vfx.name = "Vfx"
+	damage_numbers = DamageNumbers.new()
+	damage_numbers.name = "DamageNumbers"
 
 	player = Player.new()
 	player.name = "Player"
@@ -60,18 +71,25 @@ func _ready() -> void:
 	pickups.setup(player, config.max_xp_gems)
 	add_child(pickups)
 
+	enemy_projectiles = EnemyProjectileManager.new()
+	enemy_projectiles.name = "EnemyProjectiles"
+	enemy_projectiles.setup(player, arena_rect)
+
 	enemies = EnemyManager.new()
 	enemies.name = "Enemies"
-	enemies.setup(player, arena_rect, mini(config.max_enemies, 200))
+	enemies.setup(player, arena_rect, mini(config.max_enemies, 200), state.rng, vfx, enemy_projectiles)
 	add_child(enemies)
 
 	projectiles = ProjectileManager.new()
 	projectiles.name = "Projectiles"
-	projectiles.setup(enemies, arena_rect, 100)
+	projectiles.setup(enemies, arena_rect, 100, vfx)
 	add_child(projectiles)
 
 	add_child(player)
-	player.weapons.setup(WeaponContext.new(player, player.stats, enemies, projectiles, state.rng))
+	add_child(enemy_projectiles)
+	add_child(vfx)
+	add_child(damage_numbers)
+	player.weapons.setup(WeaponContext.new(player, player.stats, enemies, projectiles, state.rng, vfx))
 	if config.character.starting_weapon != null:
 		player.weapons.add_weapon(config.character.starting_weapon)
 
@@ -90,14 +108,17 @@ func _ready() -> void:
 	add_child(game_over_screen)
 
 	var overlay := DebugOverlay.new()
-	overlay.setup(enemies, projectiles, pickups)
+	overlay.setup(enemies, projectiles, pickups, enemy_projectiles, vfx)
 	add_child(overlay)
 
 	enemies.enemy_killed.connect(_on_enemy_killed)
+	enemies.enemy_damaged.connect(damage_numbers.spawn)
+	vfx.shake_requested.connect(player.camera.add_trauma)
+	player.damaged.connect(func(_amount: float) -> void: player.camera.add_trauma(PLAYER_HIT_SHAKE))
 	pickups.xp_collected.connect(progression.add_xp)
 	progression.leveled_up.connect(_on_leveled_up)
 	player.died.connect(_on_player_died)
-	level_up_screen.upgrade_chosen.connect(_on_upgrade_chosen)
+	level_up_screen.offer_chosen.connect(_apply_offer)
 	game_over_screen.retry_requested.connect(_on_retry_requested)
 
 
@@ -117,24 +138,31 @@ func _on_leveled_up(_level: int) -> void:
 
 
 func _offer_upgrades() -> void:
-	var choices := progression.roll_choices(_upgrade_pool, config.upgrade_choices, state.rng)
-	if choices.is_empty():
+	var weapons := player.weapons
+	var offers := progression.roll_offers(_upgrade_pool, _weapon_pool, weapons.owned_levels(),
+		config.max_weapon_slots - weapons.slot_count(), config.upgrade_choices, state.rng,
+		config.new_weapon_weight, config.weapon_level_weight)
+	if offers.is_empty():
 		progression.pending_level_ups = 0
 		return
 	if auto_choose_upgrades:
-		_apply_upgrade(choices[0])
+		_apply_offer(offers[0])
 		return
 	_choosing = true
 	get_tree().paused = true
-	level_up_screen.open(choices)
+	level_up_screen.open(offers)
 
 
-func _on_upgrade_chosen(upgrade: UpgradeData) -> void:
-	_apply_upgrade(upgrade)
-
-
-func _apply_upgrade(upgrade: UpgradeData) -> void:
-	progression.apply_upgrade(upgrade, player.stats)
+func _apply_offer(offer: UpgradeOffer) -> void:
+	match offer.kind:
+		UpgradeOffer.Kind.STAT:
+			progression.apply_upgrade(offer.upgrade, player.stats)
+		UpgradeOffer.Kind.NEW_WEAPON:
+			player.weapons.add_weapon(offer.weapon)
+			progression.consume_level_up()
+		UpgradeOffer.Kind.WEAPON_LEVEL:
+			player.weapons.level_up(offer.weapon)
+			progression.consume_level_up()
 	if progression.pending_level_ups > 0 and not state.is_over:
 		_choosing = false
 		_offer_upgrades()

@@ -17,6 +17,7 @@ var invincible: bool = false
 var bot_input: Callable
 
 var weapons: WeaponHolder
+var camera: GameCamera
 
 var _data: CharacterData
 var _arena: Rect2
@@ -47,9 +48,7 @@ func _ready() -> void:
 	weapons.name = "Weapons"
 	add_child(weapons)
 
-	var camera := Camera2D.new()
-	camera.position_smoothing_enabled = true
-	camera.position_smoothing_speed = 10.0
+	camera = GameCamera.new()
 	add_child(camera)
 
 
@@ -116,6 +115,8 @@ func _on_stat_changed(stat: StringName) -> void:
 
 func _draw() -> void:
 	var color := _data.color if _data != null else Color.WHITE
+	var neon := Color(0.3, 0.9, 1.0)
+	draw_arc(Vector2.ZERO, radius + 4.0, 0.0, TAU, 32, Color(neon, 0.3), 6.0, true)
 	draw_circle(Vector2.ZERO, radius, color)
-	draw_arc(Vector2.ZERO, radius, 0.0, TAU, 32, Color(0.05, 0.05, 0.08), 3.0)
+	draw_arc(Vector2.ZERO, radius - 1.0, 0.0, TAU, 32, neon, 3.0, true)
 	draw_circle(Vector2(radius * 0.45, 0.0), radius * 0.25, Color(0.05, 0.05, 0.08))

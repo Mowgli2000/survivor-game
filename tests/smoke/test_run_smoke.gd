@@ -37,6 +37,28 @@ func test_run_plays_without_errors() -> void:
 	assert_false(_run.state.is_over)
 
 
+func test_all_weapons_at_max_level() -> void:
+	await wait_physics_frames(2)
+	for def in ContentDB.get_all(&"weapons"):
+		var weapon := def as WeaponData
+		_run.player.weapons.add_weapon(weapon, weapon.max_level())
+	_run.state.elapsed = 90.0  # every enemy type can spawn (ranged, tank)
+	await wait_physics_frames(360)  # ~24 s of game time
+	assert_gt(_run.state.kills, 20, "the arsenal kills enemies")
+	assert_false(_run.state.is_over)
+
+
+func test_level_ups_offer_weapons_and_stats() -> void:
+	await wait_physics_frames(2)
+	_run.progression.add_xp(5000)
+	assert_eq(_run.progression.pending_level_ups, 0, "every level-up consumed")
+	var weapon_levels := 0
+	for slot in _run.player.weapons.get_slots():
+		weapon_levels += slot.level
+	assert_gt(weapon_levels, 1, "weapons were gained or levelled up")
+	assert_lte(_run.player.weapons.slot_count(), _run.config.max_weapon_slots)
+
+
 func test_level_up_applies_an_upgrade() -> void:
 	await wait_physics_frames(2)
 	_run.progression.add_xp(200)

@@ -19,8 +19,12 @@ Player, ennemis, armes, projectiles, dégâts, statuts, XP, level-up, pickups, s
 - `ObjectPool` pour toute entité créée en masse.
 - Stats : `StatBlock` (base + modificateurs plats et %, valeur finale en cache, signal `changed`). IDs de stats dans `stat_ids.gd`. Formule : `(base + somme_plats) * (1 + somme_pourcentages)`, puis bornes par stat.
 - Dégâts : `CombatMath` (fonctions statiques pures). Pipeline : dégâts de base de l'arme × stats du porteur → critique → armure/résistance de la cible → application → knockback → feedback (signal).
-- Armes : `WeaponData` (stats) + `behavior: WeaponBehavior` (Resource strategy : ProjectileShooter, Orbit, Aura, MeleeArc…). Visée **100 % automatique** : le behavior choisit sa cible (plus proche, aléatoire, direction du mouvement…), recalculée au moment du tir seulement.
-- Level-up : `Progression` empile des level-ups en attente ; l'UI les consomme un par un (permet level-up immédiat ou différé à la boutique).
+- Armes : `WeaponData` (niveau 1) + `levels: Array[WeaponLevel]` (ce que chaque niveau ajoute) + `behavior: WeaponBehavior`. `WeaponSlot` (arme possédée : niveau, cooldown) calcule `WeaponStats` (valeurs effectives) ; `WeaponHolder` déclenche `behavior.fire(slot, ctx)`. Les stats du joueur (DAMAGE, AREA, RANGE…) s'appliquent dans le behavior via `WeaponContext` (`roll_crit`, `hit_damage`). Visée **100 % automatique**, cible recalculée au moment du tir seulement.
+- Behaviors existants : `ProjectileShooterBehavior` (options de projectile : pierce, `bounces` ricochet, `explosion_radius`, `inaccuracy_deg`), `MeleeArcBehavior` (arc = `area` + `arc_degrees`), `BeamBehavior` (rayon de largeur `area`). Une nouvelle arme réutilise d'abord ceux-ci.
+- **Dégâts : toujours via l'API d'`EnemyManager`** — `damage_enemy`, `damage_in_radius` (cercle ou arc), `damage_along_segment`. Jamais modifier `enemy.hp` ailleurs. Statuts (`StatusData` : BURN, SLOW, SHOCK) passés en paramètre avec leur probabilité.
+- Ennemis : `EnemyData.movement` = CHASE ou RANGED (garde ses distances, tire via `EnemyProjectileManager`). Nouveau type d'ennemi = un `.tres` + entrée dans le `spawn_pool` d'un `RunConfig`.
+- Feedback : `Vfx` (slash, beam, explosion, hit, lightning), `DamageNumbers` (via le signal `enemy_damaged`), `GameCamera.add_trauma()`.
+- Level-up : `Progression` empile des level-ups en attente ; `roll_offers` mélange améliorations de stats, nouvelles armes (si emplacement libre) et niveaux d'armes (`UpgradeOffer`). L'UI les consomme un par un.
 - Items (Phase 3) : `ItemData` = liste de `StatModifier` + liste d'`ItemEffect` déclenchés sur hooks (`on_hit`, `on_kill`, `on_wave_start`, `on_damage_taken`…). Tags pour les synergies.
 
 ## Règles

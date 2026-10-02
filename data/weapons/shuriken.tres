@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="1_weapon"]
+[ext_resource type="Script" path="res://src/weapons/behaviors/projectile_shooter_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
+
+[sub_resource type="Resource" id="Resource_behavior"]
+script = ExtResource("2_behavior")
+
+[sub_resource type="Resource" id="Resource_l2"]
+script = ExtResource("3_level")
+bounces = 1
+
+[sub_resource type="Resource" id="Resource_l3"]
+script = ExtResource("3_level")
+projectile_count = 1
+
+[sub_resource type="Resource" id="Resource_l4"]
+script = ExtResource("3_level")
+damage_percent = 0.25
+
+[sub_resource type="Resource" id="Resource_l5"]
+script = ExtResource("3_level")
+bounces = 2
+
+[resource]
+script = ExtResource("1_weapon")
+id = &"shuriken"
+name_key = "WEAPON_SHURIKEN"
+description_key = "WEAPON_SHURIKEN_DESC"
+behavior = SubResource("Resource_behavior")
+levels = Array[ExtResource("3_level")]([SubResource("Resource_l2"), SubResource("Resource_l3"), SubResource("Resource_l4"), SubResource("Resource_l5")])
+base_damage = 7.0
+cooldown = 0.9
+attack_range = 450.0
+crit_chance = 0.08
+knockback = 80.0
+projectile_speed = 650.0
+projectile_count = 1
+spread_deg = 20.0
+pierce = 0
+projectile_radius = 8.0
+projectile_lifetime = 1.6
+bounces = 2
+bounce_range = 300.0
+color = Color(1, 0.95, 0.2, 1)

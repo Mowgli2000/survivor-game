@@ -29,6 +29,10 @@ func _ready() -> void:
 	_run.auto_choose_upgrades = true
 	_run.bot_input = func() -> Vector2: return Vector2.from_angle(_time * 0.5)
 	add_child(_run)
+	# Every real weapon at max level on top of the stress weapon: worst case for effects.
+	for def in ContentDB.get_all(&"weapons"):
+		var weapon := def as WeaponData
+		_run.player.weapons.add_weapon(weapon, weapon.max_level())
 
 
 func _process(delta: float) -> void:
@@ -50,8 +54,8 @@ func _process(delta: float) -> void:
 
 func _report() -> void:
 	print("=== STRESS TEST (%.0f s) ===" % _duration)
-	print("enemies max %d | projectiles max %d | gems %d" % [
-		_max_enemies, _max_projectiles, _run.pickups.active_count()])
+	print("enemies max %d | projectiles max %d | gems %d | vfx %d" % [
+		_max_enemies, _max_projectiles, _run.pickups.active_count(), _run.vfx.active_count()])
 	print("FPS        avg %.1f | min %.1f" % [_avg(_samples_fps), _min(_samples_fps)])
 	print("physics ms avg %.2f | max %.2f" % [_avg(_samples_physics), _max(_samples_physics)])
 	print("process ms avg %.2f | max %.2f" % [_avg(_samples_process), _max(_samples_process)])

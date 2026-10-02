@@ -1,7 +1,7 @@
 extends Node
 ## Plays a run with a bot and saves a screenshot, so visuals can be checked
 ## without a human at the keyboard (used by Claude Code).
-## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--levelup] [--die]
+## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--die]
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
 const STRESS_CONFIG := preload("res://src/debug/stress/stress_run.tres")
@@ -17,6 +17,7 @@ var _done: bool = false
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	var stress := false
+	var all_weapons := false
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--time="):
 			_capture_at = arg.trim_prefix("--time=").to_float()
@@ -26,6 +27,8 @@ func _ready() -> void:
 			stress = true
 		elif arg in ["--levelup", "--die"]:
 			_mode = arg
+		elif arg == "--allweapons":
+			all_weapons = true
 	_run = RUN_SCENE.instantiate()
 	if stress:
 		_run.config = STRESS_CONFIG
@@ -34,6 +37,10 @@ func _ready() -> void:
 	_run.auto_choose_upgrades = _mode != "--levelup"
 	_run.bot_input = func() -> Vector2: return Vector2.from_angle(_time * 0.5)
 	add_child(_run)
+	if all_weapons:
+		for def in ContentDB.get_all(&"weapons"):
+			var weapon := def as WeaponData
+			_run.player.weapons.add_weapon(weapon, weapon.max_level())
 
 
 func _process(delta: float) -> void:

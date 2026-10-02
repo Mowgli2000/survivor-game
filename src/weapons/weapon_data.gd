@@ -1,16 +1,21 @@
 class_name WeaponData
 extends Resource
 ## Definition of a weapon. Instances live in data/weapons/.
-## The behavior decides how the weapon fires; the values below are its tuning.
+## The behavior decides how the weapon attacks; the values below are its level 1
+## tuning, and `levels` describes what each following level adds.
 
 @export var id: StringName
 @export var name_key: String
+@export var description_key: String
 @export var behavior: WeaponBehavior
+## levels[0] = what level 2 adds, levels[1] = level 3, etc.
+@export var levels: Array[WeaponLevel] = []
 
 @export_group("Stats")
 @export var base_damage: float = 5.0
-## Seconds between two shots at 100 % attack speed.
+## Seconds between two attacks at 100 % attack speed.
 @export var cooldown: float = 1.0
+## Distance at which the weapon looks for a target.
 @export var attack_range: float = 500.0
 @export var crit_chance: float = 0.05
 @export var knockback: float = 100.0
@@ -20,9 +25,30 @@ extends Resource
 @export var projectile_count: int = 1
 ## Angle in degrees between two projectiles of the same volley.
 @export var spread_deg: float = 10.0
+## Random deviation in degrees applied to each projectile.
+@export var inaccuracy_deg: float = 0.0
 @export var pierce: int = 0
 @export var projectile_radius: float = 6.0
 @export var projectile_lifetime: float = 1.0
+## Number of times a projectile jumps to another enemy after a hit.
+@export var bounces: int = 0
+@export var bounce_range: float = 300.0
+## > 0: the projectile explodes on impact (or at the end of its life).
+@export var explosion_radius: float = 0.0
 
-@export_group("Visual (placeholder)")
+@export_group("Area")
+## Radius of a melee arc, or width of a beam.
+@export var area: float = 0.0
+## Opening of a melee arc, in degrees.
+@export var arc_degrees: float = 120.0
+
+@export_group("Status")
+@export var status: StatusData
+@export_range(0.0, 1.0) var status_chance: float = 1.0
+
+@export_group("Visual")
 @export var color: Color = Color(1.0, 0.9, 0.4)
+
+
+func max_level() -> int:
+	return levels.size() + 1

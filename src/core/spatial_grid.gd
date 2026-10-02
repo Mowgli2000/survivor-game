@@ -73,6 +73,26 @@ func query_radius(center: Vector2, radius: float, out: Array[int]) -> int:
 	return out.size()
 
 
+## Fills `out` with every item whose position is within `radius` of the segment [a, b].
+## Returns the number of results.
+func query_segment(a: Vector2, b: Vector2, radius: float, out: Array[int]) -> int:
+	out.clear()
+	var r2 := radius * radius
+	var min_x := _col_of(minf(a.x, b.x) - radius)
+	var max_x := _col_of(maxf(a.x, b.x) + radius)
+	var min_y := _row_of(minf(a.y, b.y) - radius)
+	var max_y := _row_of(maxf(a.y, b.y) + radius)
+	for cy in range(min_y, max_y + 1):
+		for cx in range(min_x, max_x + 1):
+			var c := cy * cols + cx
+			for k in range(_cell_start[c], _cell_start[c + 1]):
+				var item := _cell_items[k]
+				var p := _positions[item]
+				if p.distance_squared_to(Geometry2D.get_closest_point_to_segment(p, a, b)) <= r2:
+					out.append(item)
+	return out.size()
+
+
 ## Index of the closest item within `max_radius`, or -1. Searches rings of cells
 ## outward and stops as soon as no closer item can exist.
 func nearest(center: Vector2, max_radius: float) -> int:

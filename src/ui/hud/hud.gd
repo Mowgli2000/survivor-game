@@ -1,8 +1,11 @@
 class_name Hud
 extends CanvasLayer
-## In-run HUD: XP bar (top), HP bar + level (top left), timer (top center).
+## In-run HUD: XP bar (top), HP bar + level (top left), timer (top center),
+## owned weapons with their level (bottom left).
 ## Read-only: listens to signals and reads state, never changes it.
 
+var _weapons: WeaponHolder
+var _weapons_box: VBoxContainer
 var _hp_bar: ProgressBar
 var _hp_label: Label
 var _xp_bar: ProgressBar
@@ -20,6 +23,19 @@ func setup(player: Player, progression: Progression, state: RunState) -> void:
 	_on_health_changed(player.hp, player.stats.get_value(StatIds.MAX_HP))
 	_on_xp_changed(progression.xp, progression.xp_needed())
 	_on_leveled_up(progression.level)
+	_weapons = player.weapons
+	_weapons.weapons_changed.connect(_refresh_weapons)
+	_refresh_weapons()
+
+
+func _refresh_weapons() -> void:
+	for child in _weapons_box.get_children():
+		child.queue_free()
+	for slot in _weapons.get_slots():
+		var label := _make_label(24)
+		label.text = "%s  %d" % [tr(slot.data.name_key), slot.level]
+		label.add_theme_color_override("font_color", slot.data.color)
+		_weapons_box.add_child(label)
 
 
 func _init() -> void:
@@ -57,6 +73,14 @@ func _init() -> void:
 	_timer_label.offset_top = 28
 	_timer_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	root.add_child(_timer_label)
+
+	_weapons_box = VBoxContainer.new()
+	_weapons_box.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
+	_weapons_box.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_weapons_box.offset_left = 32
+	_weapons_box.offset_bottom = -32
+	_weapons_box.add_theme_constant_override("separation", 2)
+	root.add_child(_weapons_box)
 
 
 func _process(_delta: float) -> void:

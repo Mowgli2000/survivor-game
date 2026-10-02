@@ -1,19 +1,22 @@
 # Survivor Game (titre de travail) — Guide Claude Code
 
-Survivor-like / roguelite 2D vue de dessus pour PC/Steam. Arène bornée, vagues chronométrées, **boutique entre les vagues** (pilier du design). Attaque 100 % automatique : le joueur ne contrôle que le déplacement.
+Survivor-like / roguelite 2D vue de dessus pour PC/Steam. Arène bornée, vagues chronométrées, **boutique entre les vagues** (pilier du design). Attaque 100 % automatique : le joueur ne contrôle que le déplacement. Thème de travail : **cyber-samouraï / ninja néon** (lames, armes high-tech et imaginaires, couleurs néon : une couleur forte par arme).
 Boucle : combat → ressources → boutique/choix → build → combat plus dur → boss → récompense.
 Moteur : Godot 4.7.2 · GDScript typé · renderer Compatibility · cible 60 FPS avec 500+ ennemis.
 Le développeur n'est pas senior : expliquer les décisions importantes, signaler les problèmes, préférer la solution simple.
 
 ## État du projet
-Phases 0 (setup) et 1 (prototype jouable) terminées. Prochaine : Phase 2 (core combat). Roadmap et GDD : `docs/design/gdd.md`. Décisions : `docs/decisions/`.
+Phases 0 (setup), 1 (prototype) et 2 (combat : 6 armes à niveaux, statuts, 4 ennemis, rendu néon) terminées. Prochaine : Phase 3 (items, synergies, menus). Roadmap et GDD : `docs/design/gdd.md`. Décisions : `docs/decisions/`.
 
 ## Architecture (résumé — détails dans les skills)
 - Autoloads minimaux : ContentDB (existe), puis SceneRouter, Settings, SaveService, Audio, EventBus, Platform quand leur phase arrive. Aucune logique de run dans un autoload.
 - `src/run/run.gd` = racine de composition d'une partie : crée et branche les systèmes (EnemyManager, ProjectileManager, PickupManager, SpawnDirector, Progression, Shop…).
-- Ennemis/projectiles/pickups : gérés en lot par leur manager + `SpatialGrid` + `ObjectPool`. Jamais de `_process` par entité, jamais d'Area2D/physique pour les hits de masse. Seul le Player est un CharacterBody2D. Projectiles = données rendues par un seul MultiMesh (ADR 0004).
+- Ennemis/projectiles/pickups : gérés en lot par leur manager + `SpatialGrid` + `ObjectPool`. Jamais de `_process` par entité, jamais d'Area2D/physique pour les hits de masse. Seul le Player est un CharacterBody2D. Projectiles = données rendues par un seul MultiMesh (ADR 0004). Ennemis = une texture néon précalculée par type (ADR 0005).
 - Code pur testable dans `src/core/` (StatBlock, CombatMath, SpatialGrid, ObjectPool, WeightedPicker).
 - Contenu = Resources `.tres` dans `data/<catégorie>/`, classes de définition dans `src/**/<x>_data.gd`, accès via `ContentDB.get_def(&"weapons", &"id")`. Comportements = Resources strategy dans `behaviors/`.
+- Armes : `WeaponData` (niveau 1 + `levels`) -> `WeaponStats` via `WeaponSlot` ; `WeaponHolder` les déclenche. Ajouter une arme = un `.tres`.
+- **Tous les dégâts passent par l'API d'`EnemyManager`** (`damage_enemy`, `damage_in_radius`, `damage_along_segment`) : armure, statuts, recul et feedback au même endroit (ADR 0005).
+- Feedback : `Vfx` (effets additifs, un seul nœud), `DamageNumbers`, `GameCamera.add_trauma()`. Pas de `draw_*` anticrénelé par entité de masse : précalculer en texture.
 - UI : lit l'état, écoute les signaux, appelle l'API publique des systèmes. Ne modifie jamais l'état directement.
 - Sauvegarde : JSON versionné dans `user://`. **Ne jamais charger de `.tres`/`.res` depuis `user://`** (exécution de code possible).
 - Steam : uniquement derrière l'autoload `Platform` (Phase 10). Le jeu doit tourner sans Steam.
@@ -45,13 +48,15 @@ Phases 0 (setup) et 1 (prototype jouable) terminées. Prochaine : Phase 2 (core 
 - Stress test (500 ennemis + 1000 projectiles, imprime FPS/ms) : `& "C:\Program Files\Godot\Godot.exe" --path . res://src/debug/stress_test.tscn -- --duration=20`
 - Capture d'écran automatique (pour vérifier un visuel) : `... res://src/debug/capture.tscn -- --time=20 --out=<chemin.png> [--stress] [--levelup] [--die]`
 - Overlay debug en jeu : F3 (action `debug_toggle`).
+- Galerie d'effets et d'ennemis (direction artistique) : `... res://src/debug/vfx_gallery.tscn [-- --out=<chemin.png>]`
 - Chemin Godot surchargeable via la variable d'env `GODOT_BIN`.
 
 ## Performance
-Profiler avant d'optimiser. Pas d'allocation dans les boucles chaudes. Après tout changement touchant ennemis/projectiles/pickups : vérifier le stress test et comparer aux chiffres de référence de l'ADR 0004 (~220 FPS moyen, physique ~7 ms).
+Profiler avant d'optimiser. Pas d'allocation dans les boucles chaudes. Après tout changement touchant ennemis/projectiles/pickups : vérifier le stress test et comparer aux chiffres de référence de l'ADR 0005 (~200 FPS moyen avec les 6 armes niveau max, physique ~8 ms).
 
 ## Git
-Commits petits et logiques (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`). Branche par fonctionnalité importante. Jamais de secrets, clés Steam, credentials, `.godot/`, builds. Commit/push uniquement sur demande. Les fichiers `.uid` sont commités.
+- **On travaille sur la branche `develop`** (remote `origin` = github.com/Mowgli2000/survivor-game). `main` ne reçoit que des versions validées, sur demande explicite du dev. Ne jamais commiter directement sur `main`.
+- Commits petits et logiques (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`). Jamais de secrets, clés Steam, credentials, `.godot/`, builds. Commit/push uniquement sur demande. Les fichiers `.uid` sont commités.
 
 ## Skills (`.claude/skills/`)
 godot-development · gameplay-programming · game-design · performance · ui-ux · testing · steam-release (Phase 10+ uniquement).

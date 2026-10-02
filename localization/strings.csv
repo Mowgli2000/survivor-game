@@ -39,3 +39,23 @@ ENEMY_GRUNT,Grunt,Rôdeur
 ENEMY_RUNNER,Runner,Coureur
 CHARACTER_DRIFTER,Drifter,Vagabond
 UI_LEVEL_LABEL,Level:,Niveau :
+UI_NEW_WEAPON,New weapon,Nouvelle arme
+UI_STAT_UPGRADE,Upgrade,Amélioration
+STAT_AREA,Area,Zone
+WSTAT_FIRE_RATE,Fire rate,Cadence
+WSTAT_BOUNCES,Bounces,Rebonds
+UPGRADE_AMPLITUDE,Amplitude,Amplitude
+WEAPON_PULSE_DESC,Fires energy pulses at the nearest enemy.,Tire des impulsions d'énergie sur l'ennemi le plus proche.
+WEAPON_KATANA,Plasma katana,Katana à plasma
+WEAPON_KATANA_DESC,Wide plasma slash that sets enemies on fire.,Large coup de plasma qui enflamme les ennemis.
+WEAPON_LASER_PISTOL,Laser pistol,Pistolet laser
+WEAPON_LASER_PISTOL_DESC,Instant beam that pierces everything. Can electrocute.,Rayon instantané qui transperce tout. Peut électrocuter.
+WEAPON_SHURIKEN,Shuriken,Shuriken
+WEAPON_SHURIKEN_DESC,Bounces from enemy to enemy.,Ricoche d'ennemi en ennemi.
+WEAPON_SMG,Submachine gun,Mitraillette
+WEAPON_SMG_DESC,Very fast but inaccurate bursts.,Rafales très rapides mais imprécises.
+WEAPON_BAZOOKA,Bazooka,Bazooka
+WEAPON_BAZOOKA_DESC,Slow rocket that explodes and slows enemies.,Roquette lente qui explose et ralentit les ennemis.
+ENEMY_SHOOTER,Gunner,Tireur
+ENEMY_TANK,Juggernaut,Colosse
+WEAPON_STRESS,Stress test gun,Arme de test

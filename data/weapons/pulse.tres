@@ -1,16 +1,36 @@
 [gd_resource type="Resource" script_class="WeaponData" format=3]
 
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="1_weapon"]
-[ext_resource type="Script" path="res://src/weapons/behaviors/projectile_shooter_behavior.gd" id="2_shooter"]
+[ext_resource type="Script" path="res://src/weapons/behaviors/projectile_shooter_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
 
-[sub_resource type="Resource" id="Resource_shooter"]
-script = ExtResource("2_shooter")
+[sub_resource type="Resource" id="Resource_behavior"]
+script = ExtResource("2_behavior")
+
+[sub_resource type="Resource" id="Resource_l2"]
+script = ExtResource("3_level")
+projectile_count = 1
+
+[sub_resource type="Resource" id="Resource_l3"]
+script = ExtResource("3_level")
+damage_percent = 0.25
+
+[sub_resource type="Resource" id="Resource_l4"]
+script = ExtResource("3_level")
+fire_rate_percent = 0.2
+
+[sub_resource type="Resource" id="Resource_l5"]
+script = ExtResource("3_level")
+projectile_count = 1
+pierce = 1
 
 [resource]
 script = ExtResource("1_weapon")
 id = &"pulse"
 name_key = "WEAPON_PULSE"
-behavior = SubResource("Resource_shooter")
+description_key = "WEAPON_PULSE_DESC"
+behavior = SubResource("Resource_behavior")
+levels = Array[ExtResource("3_level")]([SubResource("Resource_l2"), SubResource("Resource_l3"), SubResource("Resource_l4"), SubResource("Resource_l5")])
 base_damage = 6.0
 cooldown = 0.6
 attack_range = 520.0

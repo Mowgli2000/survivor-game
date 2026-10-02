@@ -17,6 +17,7 @@ const PROJECTILE_COUNT := &"projectile_count"  # added to weapon count
 const PIERCE := &"pierce"                # added to weapon pierce
 const KNOCKBACK := &"knockback"          # multiplier
 const RANGE := &"range"                  # multiplier on weapon range
+const AREA := &"area"                    # multiplier on slash, beam and explosion sizes
 const PICKUP_RANGE := &"pickup_range"    # pixels
 
 const DEFAULTS: Dictionary[StringName, float] = {
@@ -33,6 +34,7 @@ const DEFAULTS: Dictionary[StringName, float] = {
 	PIERCE: 0.0,
 	KNOCKBACK: 1.0,
 	RANGE: 1.0,
+	AREA: 1.0,
 	PICKUP_RANGE: 120.0,
 }
 
@@ -53,6 +55,7 @@ const BOUNDS: Dictionary[StringName, Vector2] = {
 	PIERCE: Vector2(0.0, INF),
 	KNOCKBACK: Vector2(0.0, INF),
 	RANGE: Vector2(0.1, INF),
+	AREA: Vector2(0.1, INF),
 	PICKUP_RANGE: Vector2(0.0, INF),
 }
 

@@ -23,6 +23,9 @@ description: Performance du jeu - profiling, object pooling, grandes quantités 
 7. Pas de `get_nodes_in_group`, `find_child`, `get_node` avec chemin dynamique dans une boucle.
 8. Plafonds : nombre max d'ennemis actifs, de projectiles, de sons simultanés par type, de nombres de dégâts.
 9. Ne pas optimiser hors systèmes critiques sans mesure ; garder un code lisible.
+10. **Rendu des entités de masse** : une seule commande de dessin par entité (texture précalculée, cf. `EnemyArt`) ou un MultiMesh pour tout le groupe. Jamais de `draw_*` anticrénelé ou multi-couches par entité (mesuré : 204 → 49 FPS, ADR 0005).
+11. Changer l'apparence d'une entité (flash, statut) = `self_modulate`, pas `queue_redraw()`.
+12. Méthode qui a marché : expériences ciblées (désactiver un système, re-mesurer, restaurer) pour isoler le coût avant de corriger.
 
 ## Connaissances spécifiques
 - Coût d'un node : chaque node actif avec process coûte ; un Sprite2D sans script est bon marché.
