@@ -40,3 +40,4 @@ desktop.ini
 
 # Raw third-party asset packs (only processed files under assets/ are committed)
 assets_src/
+.superpowers/
