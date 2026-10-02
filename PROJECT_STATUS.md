@@ -136,11 +136,14 @@ Dernière mise à jour : 2026-10-03 (session 3)
 
 ## 6. Prochaines étapes
 
-1. **Dev** : télécharger le pack RGS_Dev dans `assets_src/third_party/rgs_characters/`, écouter le son en jeu (sons à changer ?).
-2. **Direction artistique** (D31) : inventaire du pack, art bible néon × Dofus, capture test d'une horde, puis intégration des sprites.
-3. **Dev** : rejouer une run complète (F3) : densité des vagues 10-20, matériaux, panneau de stats (Tab) ; ajuster D30.
-4. **Phase 3 — Objets à effets et synergies** (vendus par la boutique), puis **menus** (principal, pause, paramètres avec volumes).
-5. Phase 6 (vrai boss), puis 6b (vertical slice + page Steam). Roadmap complète : `docs/design/gdd.md`.
+1. **Direction artistique (D31) — en attente de validation du dev** : pack RGS_Dev téléchargé dans `assets_src/third_party/rgs_characters/` (CC0 ; 4 persos, 4 ennemis, 1 512 pièces blanches colorables, 3 sols, 3 rochers ; images 2048×2048, perso ≈ 500 px en bas au centre ; animations idle 6, walk 8, hit 3, death 10, roll, jump ; Enemy 3 = chauve-souris `fly` 6 seulement). Proposition faite au dev, à reprendre :
+   - Outil de conversion : recadrage sur l'union des cadres d'une animation, réduction à ~128 px, planches de sprites dans `assets/sprites/`.
+   - Rendu : un MultiMesh par type d'ennemi avec index d'image par instance (comme ADR 0004), contour néon par shader à la couleur de la menace, sol du pack teinté sombre + grille néon.
+   - Attribution proposée : joueur = Char 1 (cheveux bleus) ; grunt = Enemy 1 (diable violet) ; runner = Enemy 3 (chauve-souris) ; shooter = Enemy 2 (ogre vert) ; tank = Enemy 4 (diable rouge) agrandi ; shogun = Enemy 4 géant teinté magenta.
+   - Étapes : outil → **capture test d'une horde** à valider → spec courte → intégration.
+2. **Dev** : écouter le son en jeu (sons choisis sans écoute, à changer au goût) ; rejouer une run complète (F3) : densité des vagues 10-20, matériaux, panneau de stats (Tab) ; ajuster D30.
+3. **Phase 3 — Objets à effets et synergies** (vendus par la boutique), puis **menus** (principal, pause, paramètres avec volumes).
+4. Phase 6 (vrai boss), puis 6b (vertical slice + page Steam). Roadmap complète : `docs/design/gdd.md`.
 
 ---
 
