@@ -3,7 +3,7 @@
 > Journal de suivi entre les sessions : état actuel, décisions prises, changements, retours de playtest et prochaines étapes.
 > **À lire au début de chaque session, à mettre à jour à la fin.** Les règles de développement sont dans `CLAUDE.md`, le design dans `docs/design/gdd.md`, les décisions techniques détaillées dans `docs/decisions/`.
 
-Dernière mise à jour : 2026-10-02 (session 2)
+Dernière mise à jour : 2026-10-02 (session 3)
 
 ---
 
@@ -14,7 +14,7 @@ Dernière mise à jour : 2026-10-02 (session 2)
 | **Phase actuelle** | Phase 4 (vagues) terminée → playtest du dev, puis Phase 3 (objets) |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 92/92 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 99/99 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~185-190 FPS moyen, min ~130-150 — 500 ennemis, ~1000 projectiles, 6 armes niveau max (ADR 0006) |
 
 **Emplacements**
@@ -48,7 +48,10 @@ Dernière mise à jour : 2026-10-02 (session 2)
 | D18 | 2026-10-02 | **PV remis au max entre les vagues** | Chaque vague est un défi lisible ; réglable (`heal_between_waves`) |
 | D19 | 2026-10-02 | **Élite = ennemi existant renforcé** | PV ×5, XP ×10, taille ×1,6, contour doré ; pas de nouvel art |
 | D20 | 2026-10-02 | **Fin du chrono : ennemis restants disparaissent, gemmes ramassées** | Durée de vague fixe, fin nette ; pas d'XP pour les disparus |
-| D21 | 2026-10-02 | **Victoire après la vague 20** | Le boss la remplacera en Phase 6 |
+| D21 | 2026-10-02 | **Victoire après la vague 20** | Remplacé par D23 (boss provisoire) |
+| D22 | 2026-10-02 | **Suivre au maximum la logique de Brotato** | Demande du dev après playtest. Durées de vague à la Brotato : 20 s +5 s par vague jusqu'à 60 s, vague 20 = 90 s (`duration_step`, `final_wave_duration`) |
+| D23 | 2026-10-02 | **Boss provisoire « Shogun » en vague 20** | Ennemi à part (`boss = true`, octogone magenta, 900 PV de base ×3). Comme Brotato : le tuer gagne la partie tout de suite ; survivre au chrono gagne aussi. Vrai boss en Phase 6 |
+| D24 | 2026-10-02 | **Densité réduite en attendant boutique et objets** | Apparitions 1,5 → 10/s (au lieu de 20), PV ×1 → ×3 (au lieu de ×5). À remonter quand la boutique donnera de la puissance |
 
 ### Décisions volontairement reportées
 | Sujet | Quand | Options / notes |
@@ -90,6 +93,7 @@ Dernière mise à jour : 2026-10-02 (session 2)
 - **Phase 4 — Vagues** (avancée avant la Phase 3, D14) : `StageData` + `WaveEvent`, `WaveDirector`, spawn par vague, élites dorées, nettoyage et collecte en fin de vague, level-up différé, écran inter-vague, victoire, HUD vague + chrono. Spec et plan dans `docs/superpowers/`, ADR 0006
 - Correction : l'écran de level-up réactivait des cartes déjà supprimées quand on enchaînait les choix très vite
 - Outils : installation de Python 3.12, jq et des fichiers manquants de Claude Code Game Studios (hooks, registres, docs moteur)
+- **Après playtest Phase 4** : compteur de vague dans l'overlay F3 (tués / apparus, apparitions/s, PV) + une ligne `[wave N]` par vague dans la console ; durées de vague à la Brotato ; densité réduite (D24) ; boss provisoire Shogun (D23)
 
 ---
 
@@ -99,6 +103,7 @@ Dernière mise à jour : 2026-10-02 (session 2)
 |---|---|---|---|
 | 2026-10-02 | Phase 1 | « Jouabilité correcte, mais difficile à jauger avec une seule arme ; ça devient compliqué avec le temps » | Phase 2 : armes multiples et niveaux d'armes |
 | 2026-10-02 | Phase 2 | « Les chiffres de dégâts sont un peu trop petits et pas assez impactants » ; sinon OK | Chiffres plus grands (30/48), police grasse, effet « pop », critiques jaunes avec secousse (sans « ! », retiré à la demande du dev), taille selon le montant |
+| 2026-10-02 | Phase 4 | « Arrivé à la vague 20, pas de boss. J'ai survécu en fuyant, pas en écrasant les mobs ; à la fin du chrono il en restait beaucoup. » Fuite dès la vague 10 | Boss provisoire (D23), densité réduite (D24), compteur F3 pour mesurer. Le dev accepte que la puissance viendra de la boutique |
 
 ---
 
@@ -108,7 +113,7 @@ Dernière mise à jour : 2026-10-02 (session 2)
 - **Pas de menu de paramètres** : les options « tremblement d'écran » et « chiffres de dégâts » existent dans le code, sans interface.
 - **Pas d'audio** (prévu Phase 2 initialement, reporté avec l'autoload `Audio`).
 - **Équilibrage = premières estimations** (dégâts, courbe d'XP, poids des cartes, apparition des ennemis).
-- Pas encore de boutique ni de boss : la vague 20 se termine directement sur l'écran de victoire.
+- Boss provisoire seulement : pas de barre de vie de boss, pas d'attaque spéciale, même taille qu'un Colosse élite (rayon max de la grille : 48).
 - Valeurs des vagues = premières estimations (durées, densité, PV, vagues spéciales) : à régler après playtest.
 - FPS minimum au stress test ~10 % plus bas qu'avant les vagues (moyenne inchangée) : à surveiller.
 - Détails visuels : le titre « Vague X terminée » se devine derrière les cartes de level-up ; projectiles et chiffres figés restent visibles derrière les écrans de fin.
@@ -119,7 +124,7 @@ Dernière mise à jour : 2026-10-02 (session 2)
 
 ## 6. Prochaines étapes
 
-1. **Dev** : jouer une run complète (20 vagues) et noter ses retours : rythme, difficulté, élites, vagues spéciales (section 4).
+1. **Dev** : rejouer une run complète avec F3 affiché, noter le % tués/apparus aux vagues 5, 10, 15 et le combat contre le Shogun (section 4).
 2. **Prototype 3D / 2.5D** (optionnel, 1-2 jours) : voir « Décisions reportées ».
 3. **Phase 3a — Objets** (D15) : objets passifs dans les cartes de level-up, raretés, tags/synergies, effets déclenchés, `max_stack`. Puis **3b — Menus** : menu principal, pause, paramètres.
 4. Puis Phase 5 (boutique entre les vagues) → Phase 6 (boss). Roadmap complète : `docs/design/gdd.md`.
