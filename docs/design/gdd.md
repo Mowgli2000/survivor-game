@@ -36,7 +36,7 @@ Critère de réussite : 5 minutes jouables sans bug, 60 FPS avec 500 ennemis, te
 | Phase | Contenu | Sortie / critère |
 |---|---|---|
 | **0 Setup** | Dossier, Git, project.godot (InputMap, renderer, locales, stretch), .gitignore/.gitattributes, GUT, CLAUDE.md, 7 skills, scripts tests, GDD squelette, ADRs initiaux, **test d'export Windows** (valider la chaîne de build tôt). | ✅ Terminée. |
-| **1 Prototype** | MVP ci-dessus. | Critères MVP. |
+| **1 Prototype** | MVP ci-dessus. | ✅ Terminée — 220 FPS avec 500 ennemis + 1000 projectiles (ADR 0004). |
 | **2 Core combat** | 4-6 comportements d'armes, critiques, statuts (brûlure, ralenti), ennemis à distance/tanks, juice (shake, hit-stop, nombres), Audio + EventBus. | Combat "satisfaisant" validé en playtest perso. |
 | **3 Progression in-run** | Items passifs, modificateurs, raretés, tags/synergies, hooks d'effets, niveaux d'armes, menu principal minimal, Settings. | 20+ items, builds distincts possibles. |
 | **4 Waves** *(avancée avant la boutique)* | `StageData`, vagues chronométrées, scaling, élites, événements. | La boutique a besoin d'un rythme de vagues pour exister. |
@@ -66,6 +66,13 @@ Recommandation : implémenter 1 comme socle (l'architecture supporte les 4), pui
 Recommandation : 2 ou 1, testées sur une capture d'écran "horde" avant engagement. Seul élément verrouillé maintenant : **2D vue de dessus**.
 
 ---
+
+### Production visuelle — qui fait quoi
+- **Claude peut produire directement** (texte/code) : formes et effets procéduraux (`_draw`, shaders, particules, tweens), **SVG** vectoriels importés par Godot, animations procédurales (squash/stretch, rebond, flash, rotation, dissolve), arènes construites en code ou TileMap à partir de tuiles existantes, UI/thème, feedback/juice, scripts d'import/découpe de sprite sheets, guides de style et prompts pour outils d'image IA.
+- **Claude ne peut pas produire** : images matricielles (PNG pixel art, illustrations), animations image par image, concept art, musique/sons enregistrés.
+- **Sources pour ces assets** : outils IA d'image (PixelLab, Retro Diffusion, Scenario, Midjourney…) + retouche (Aseprite/Krita), Blender pour du pré-rendu 3D, packs d'assets (Kenney CC0, itch.io), ou artiste freelance. Divulgation IA sur Steam si utilisée.
+- **Conséquence stratégique** : une DA géométrique/vectorielle (silhouettes, néon, formes fortes) peut être produite presque entièrement par Claude → coût et risque de cohérence minimaux. Une DA pixel art/illustrée exige un pipeline d'assets externe.
+- **Phase 1 inchangée** : placeholders géométriques générés en code, remplaçables sans toucher à la logique (visuel séparé des données/comportements).
 
 ## Risques principaux
 

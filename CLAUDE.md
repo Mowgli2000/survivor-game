@@ -6,12 +6,12 @@ Moteur : Godot 4.7.2 · GDScript typé · renderer Compatibility · cible 60 FPS
 Le développeur n'est pas senior : expliquer les décisions importantes, signaler les problèmes, préférer la solution simple.
 
 ## État du projet
-Phase 0 (setup) terminée. Prochaine : Phase 1 (MVP). Roadmap et GDD : `docs/design/gdd.md`. Décisions : `docs/decisions/`.
+Phases 0 (setup) et 1 (prototype jouable) terminées. Prochaine : Phase 2 (core combat). Roadmap et GDD : `docs/design/gdd.md`. Décisions : `docs/decisions/`.
 
 ## Architecture (résumé — détails dans les skills)
 - Autoloads minimaux : ContentDB (existe), puis SceneRouter, Settings, SaveService, Audio, EventBus, Platform quand leur phase arrive. Aucune logique de run dans un autoload.
 - `src/run/run.gd` = racine de composition d'une partie : crée et branche les systèmes (EnemyManager, ProjectileManager, PickupManager, SpawnDirector, Progression, Shop…).
-- Ennemis/projectiles/pickups : gérés en lot par leur manager + `SpatialGrid` + `ObjectPool`. Jamais de `_process` par entité, jamais d'Area2D/physique pour les hits de masse. Seul le Player est un CharacterBody2D.
+- Ennemis/projectiles/pickups : gérés en lot par leur manager + `SpatialGrid` + `ObjectPool`. Jamais de `_process` par entité, jamais d'Area2D/physique pour les hits de masse. Seul le Player est un CharacterBody2D. Projectiles = données rendues par un seul MultiMesh (ADR 0004).
 - Code pur testable dans `src/core/` (StatBlock, CombatMath, SpatialGrid, ObjectPool, WeightedPicker).
 - Contenu = Resources `.tres` dans `data/<catégorie>/`, classes de définition dans `src/**/<x>_data.gd`, accès via `ContentDB.get_def(&"weapons", &"id")`. Comportements = Resources strategy dans `behaviors/`.
 - UI : lit l'état, écoute les signaux, appelle l'API publique des systèmes. Ne modifie jamais l'état directement.
@@ -42,10 +42,13 @@ Phase 0 (setup) terminée. Prochaine : Phase 1 (MVP). Roadmap et GDD : `docs/des
 - Compilation de tous les scripts : `powershell -ExecutionPolicy Bypass -File tools/check_scripts.ps1`
 - Lancer le jeu : `& "C:\Program Files\Godot\Godot.exe" --path .`
 - Export Windows : `& "C:\Program Files\Godot\Godot.exe" --headless --path . --export-release "Windows Desktop" builds/windows/survivor-game.exe`
+- Stress test (500 ennemis + 1000 projectiles, imprime FPS/ms) : `& "C:\Program Files\Godot\Godot.exe" --path . res://src/debug/stress_test.tscn -- --duration=20`
+- Capture d'écran automatique (pour vérifier un visuel) : `... res://src/debug/capture.tscn -- --time=20 --out=<chemin.png> [--stress] [--levelup] [--die]`
+- Overlay debug en jeu : F3 (action `debug_toggle`).
 - Chemin Godot surchargeable via la variable d'env `GODOT_BIN`.
 
 ## Performance
-Profiler avant d'optimiser. Pas d'allocation dans les boucles chaudes. Après tout changement touchant ennemis/projectiles/pickups : vérifier la scène de stress test (`src/debug/stress_test.tscn`, Phase 1) et donner les chiffres.
+Profiler avant d'optimiser. Pas d'allocation dans les boucles chaudes. Après tout changement touchant ennemis/projectiles/pickups : vérifier le stress test et comparer aux chiffres de référence de l'ADR 0004 (~220 FPS moyen, physique ~7 ms).
 
 ## Git
 Commits petits et logiques (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`). Branche par fonctionnalité importante. Jamais de secrets, clés Steam, credentials, `.godot/`, builds. Commit/push uniquement sur demande. Les fichiers `.uid` sont commités.

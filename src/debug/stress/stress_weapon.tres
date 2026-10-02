@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3 uid="uid://y3whpv6an2ao"]
+
+[ext_resource type="Script" uid="uid://bixj0qtvg4k5n" path="res://src/weapons/weapon_data.gd" id="1_weapon"]
+[ext_resource type="Script" uid="uid://djkgubbm431pf" path="res://src/weapons/behaviors/projectile_shooter_behavior.gd" id="2_shooter"]
+
+[sub_resource type="Resource" id="Resource_shooter"]
+script = ExtResource("2_shooter")
+
+[resource]
+script = ExtResource("1_weapon")
+id = &"stress_weapon"
+name_key = "WEAPON_PULSE"
+behavior = SubResource("Resource_shooter")
+base_damage = 1.0
+cooldown = 0.016
+attack_range = 1400.0
+crit_chance = 0.1
+knockback = 20.0
+projectile_speed = 900.0
+projectile_count = 17
+spread_deg = 4.0
+pierce = 40
+projectile_radius = 5.0
+color = Color(0.6, 0.9, 1, 1)

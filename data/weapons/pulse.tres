@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="1_weapon"]
+[ext_resource type="Script" path="res://src/weapons/behaviors/projectile_shooter_behavior.gd" id="2_shooter"]
+
+[sub_resource type="Resource" id="Resource_shooter"]
+script = ExtResource("2_shooter")
+
+[resource]
+script = ExtResource("1_weapon")
+id = &"pulse"
+name_key = "WEAPON_PULSE"
+behavior = SubResource("Resource_shooter")
+base_damage = 6.0
+cooldown = 0.6
+attack_range = 520.0
+crit_chance = 0.05
+knockback = 140.0
+projectile_speed = 750.0
+projectile_count = 1
+spread_deg = 10.0
+pierce = 0
+projectile_radius = 6.0
+projectile_lifetime = 1.0
+color = Color(1, 0.92, 0.45, 1)

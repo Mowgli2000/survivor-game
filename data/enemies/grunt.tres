@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://src/enemies/enemy_data.gd" id="1_enemy"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = &"grunt"
+name_key = "ENEMY_GRUNT"
+max_hp = 12.0
+speed = 110.0
+contact_damage = 8.0
+radius = 18.0
+xp_value = 1
+color = Color(0.85, 0.3, 0.35, 1)
+shape_sides = 0

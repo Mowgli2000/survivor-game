@@ -1,0 +1,121 @@
+class_name Player
+extends CharacterBody2D
+## The controlled character: movement, health, invulnerability frames.
+## Weapons live in the WeaponHolder child; stats in `stats`.
+
+signal health_changed(hp: float, max_hp: float)
+signal damaged(amount: float)
+signal died
+
+var stats: StatBlock
+var hp: float = 1.0
+var radius: float = 16.0
+var is_dead: bool = false
+## Debug/tests: ignore all damage.
+var invincible: bool = false
+## Debug/tests: when valid, replaces the player input. Must return a Vector2.
+var bot_input: Callable
+
+var weapons: WeaponHolder
+
+var _data: CharacterData
+var _arena: Rect2
+var _invulnerable: float = 0.0
+var _last_max_hp: float = 0.0
+
+
+func setup(data: CharacterData, arena: Rect2) -> void:
+	_data = data
+	_arena = arena
+	radius = data.radius
+	stats = StatBlock.from_defaults(data.stat_overrides)
+	hp = stats.get_value(StatIds.MAX_HP)
+	_last_max_hp = hp
+	stats.changed.connect(_on_stat_changed)
+
+
+func _ready() -> void:
+	collision_layer = 1
+	collision_mask = 0
+	var shape := CollisionShape2D.new()
+	var circle := CircleShape2D.new()
+	circle.radius = radius
+	shape.shape = circle
+	add_child(shape)
+
+	weapons = WeaponHolder.new()
+	weapons.name = "Weapons"
+	add_child(weapons)
+
+	var camera := Camera2D.new()
+	camera.position_smoothing_enabled = true
+	camera.position_smoothing_speed = 10.0
+	add_child(camera)
+
+
+func _physics_process(delta: float) -> void:
+	if is_dead:
+		return
+	var direction: Vector2
+	if bot_input.is_valid():
+		direction = bot_input.call()
+	else:
+		direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	velocity = direction * stats.get_value(StatIds.MOVE_SPEED)
+	move_and_slide()
+	position = position.clamp(_arena.position, _arena.end)
+
+	var regen := stats.get_value(StatIds.HP_REGEN)
+	if regen > 0.0:
+		heal(regen * delta)
+
+	if _invulnerable > 0.0:
+		_invulnerable -= delta
+		# Blink while invulnerable.
+		modulate.a = 0.4 if fmod(_invulnerable, 0.12) < 0.06 else 1.0
+		if _invulnerable <= 0.0:
+			modulate.a = 1.0
+
+
+func take_damage(amount: float) -> void:
+	if is_dead or invincible or _invulnerable > 0.0:
+		return
+	var damage := CombatMath.apply_armor(amount, stats.get_value(StatIds.ARMOR))
+	hp = maxf(hp - damage, 0.0)
+	_invulnerable = _data.invulnerability_time
+	damaged.emit(damage)
+	health_changed.emit(hp, stats.get_value(StatIds.MAX_HP))
+	if hp <= 0.0:
+		is_dead = true
+		modulate.a = 1.0
+		died.emit()
+
+
+func heal(amount: float) -> void:
+	var max_hp := stats.get_value(StatIds.MAX_HP)
+	if is_dead or hp >= max_hp:
+		return
+	hp = minf(hp + amount, max_hp)
+	health_changed.emit(hp, max_hp)
+
+
+func is_invulnerable() -> bool:
+	return _invulnerable > 0.0
+
+
+func _on_stat_changed(stat: StringName) -> void:
+	if stat != StatIds.MAX_HP:
+		return
+	# Gaining max HP also heals by the same amount; losing it clamps current HP.
+	var max_hp := stats.get_value(StatIds.MAX_HP)
+	var gained := max_hp - _last_max_hp
+	_last_max_hp = max_hp
+	hp = clampf(hp + maxf(gained, 0.0), 0.0, max_hp)
+	health_changed.emit(hp, max_hp)
+
+
+func _draw() -> void:
+	var color := _data.color if _data != null else Color.WHITE
+	draw_circle(Vector2.ZERO, radius, color)
+	draw_arc(Vector2.ZERO, radius, 0.0, TAU, 32, Color(0.05, 0.05, 0.08), 3.0)
+	draw_circle(Vector2(radius * 0.45, 0.0), radius * 0.25, Color(0.05, 0.05, 0.08))
