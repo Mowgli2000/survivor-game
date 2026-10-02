@@ -19,3 +19,4 @@ projectile_radius = 9.0
 xp_value = 2
 color = Color(0.75, 0.35, 1, 1)
 shape_sides = 4
+sprite_id = &"shooter"

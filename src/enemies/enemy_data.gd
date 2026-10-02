@@ -38,9 +38,17 @@ enum Movement {
 @export var color: Color = Color(0.9, 0.3, 0.3)
 ## 0 = circle, otherwise number of polygon sides (3 = triangle...).
 @export var shape_sides: int = 0
+## Sprite sheet id in assets/sprites/ (empty: neon placeholder shape).
+@export var sprite_id: StringName
+## Multiplies the sprite colors (e.g. magenta boss reusing another sheet).
+@export var sprite_tint: Color = Color.WHITE
+## Extra size factor on top of the radius-based sprite size.
+@export var sprite_scale: float = 1.0
 
 var _texture: Texture2D
 var _elite_texture: Texture2D
+var _sheet: SpriteSheet
+var _elite_sheet: SpriteSheet
 
 
 ## Placeholder neon sprite of this enemy type, baked on first use (see EnemyArt).
@@ -55,3 +63,23 @@ func get_elite_texture(scale: float) -> Texture2D:
 	if _elite_texture == null:
 		_elite_texture = EnemyArt.bake(self, EnemyArt.ELITE_OUTLINE, scale)
 	return _elite_texture
+
+
+## Animated sprite of this type (null: placeholder). Elites use "<id>_elite" when it exists.
+func get_sheet(elite: bool) -> SpriteSheet:
+	if sprite_id == &"":
+		return null
+	if _sheet == null:
+		_sheet = _load_sheet(String(sprite_id))
+	if not elite:
+		return _sheet
+	if _elite_sheet == null:
+		_elite_sheet = _load_sheet(String(sprite_id) + "_elite")
+		if _elite_sheet == null:
+			_elite_sheet = _sheet
+	return _elite_sheet
+
+
+static func _load_sheet(id: String) -> SpriteSheet:
+	var path := "res://assets/sprites/%s.tres" % id
+	return load(path) as SpriteSheet if ResourceLoader.exists(path) else null

@@ -2,13 +2,18 @@ class_name Enemy
 extends Node2D
 ## Passive enemy: data, runtime state and placeholder visual. Moved, damaged and
 ## ticked by EnemyManager (no _process here, see ADR 0002).
-## Visual: one baked neon texture per enemy type (EnemyArt). Hit flash and
-## statuses only change `self_modulate` (no redraw).
+## Visual: animated sprite sheet (frame advanced by EnemyManager, redrawn only
+## when the frame or facing changes), or the baked neon placeholder (EnemyArt)
+## when the type has no sprite. Hit flash and statuses only change `self_modulate`.
 
 const FLASH_TIME := 0.08
 const FLASH_TINT := Color(3.0, 3.0, 3.0)
 const BURN_TINT := Color(1.8, 1.0, 0.55)
 const SLOW_TINT := Color(0.55, 0.9, 1.8)
+## Sprite height in px per px of collision radius.
+const SPRITE_HEIGHT_PER_RADIUS := 3.2
+## Feet sit this fraction of the radius below the enemy center.
+const SPRITE_FOOT := 0.8
 
 var data: EnemyData
 var elite: bool = false
@@ -27,6 +32,7 @@ var burn_time: float = 0.0
 var burn_pending: float = 0.0
 var slow_factor: float = 0.0
 var slow_time: float = 0.0
+var animator := SpriteAnimator.new()
 
 
 func reset(p_data: EnemyData, pos: Vector2, hp_multiplier: float, p_elite: bool = false,
@@ -47,6 +53,8 @@ func reset(p_data: EnemyData, pos: Vector2, hp_multiplier: float, p_elite: bool 
 	slow_factor = 0.0
 	slow_time = 0.0
 	visible = true
+	if look_changed:
+		animator.reset(data.get_sheet(elite), 0.0)
 	_refresh_tint()
 	if look_changed:
 		queue_redraw()
@@ -104,6 +112,11 @@ func _refresh_tint() -> void:
 
 func _draw() -> void:
 	if data == null:
+		return
+	var sheet := animator.sheet
+	if sheet != null:
+		sheet.draw(self, animator.frame, radius * SPRITE_HEIGHT_PER_RADIUS * data.sprite_scale,
+			radius * SPRITE_FOOT, animator.facing, data.sprite_tint)
 		return
 	var texture := data.get_elite_texture(radius / data.radius) if elite else data.get_texture()
 	draw_texture(texture, -texture.get_size() * 0.5)

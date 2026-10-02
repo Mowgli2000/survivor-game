@@ -14,3 +14,4 @@ knockback_taken = 1.4
 xp_value = 1
 color = Color(0.95, 0.65, 0.2, 1)
 shape_sides = 3
+sprite_id = &"runner"

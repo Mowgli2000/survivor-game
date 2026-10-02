@@ -72,6 +72,7 @@ func _ready() -> void:
 func spawn(data: EnemyData, pos: Vector2, hp_multiplier: float = 1.0, elite: bool = false) -> Enemy:
 	var enemy: Enemy = _pool.acquire()
 	enemy.reset(data, pos, hp_multiplier, elite, elite_scale if elite else 1.0)
+	enemy.animator.time = _rng.randf() * 2.0  # desync the horde's steps
 	enemy.fire_timer = data.fire_cooldown * _rng.randf_range(0.5, 1.0)
 	enemy.strafe_sign = 1.0 if _rng.randf() < 0.5 else -1.0
 	max_radius = maxf(max_radius, enemy.radius)
@@ -315,7 +316,11 @@ func _physics_process(delta: float) -> void:
 		pos += velocity * delta + push * SEPARATION_STRENGTH + enemy.knockback * delta
 		enemy.knockback = enemy.knockback.move_toward(Vector2.ZERO, KNOCKBACK_DECAY * delta)
 		enemy.position = pos.clamp(_arena.position, _arena.end)
-		if enemy.data.shape_sides >= 3:
+		if enemy.animator.sheet != null:
+			var anim := &"walk" if velocity.length_squared() > 4.0 else &"idle"
+			if enemy.animator.advance(delta, anim, direction.x):
+				enemy.queue_redraw()
+		elif enemy.data.shape_sides >= 3:
 			enemy.rotation = direction.angle()
 
 		if enemy.flash > 0.0:

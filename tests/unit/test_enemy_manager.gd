@@ -251,3 +251,41 @@ func test_range_stat_extends_projectile_flight() -> void:
 	assert_true(data.behavior.fire(WeaponSlot.new(data), ctx))
 	await wait_physics_frames(60)
 	assert_signal_emitted(_enemies, "enemy_damaged", "the rocket reaches the enemy it aimed at")
+
+
+func test_enemy_without_sprite_uses_placeholder() -> void:
+	var enemy := _enemies.spawn(_data, Vector2(300, 0))
+	assert_null(enemy.animator.sheet)
+	await wait_physics_frames(2)
+	assert_true(enemy.is_alive())
+
+
+func test_enemy_sprite_animates_and_faces_player() -> void:
+	var data := _enemy_data(10.0, 50.0)
+	data.sprite_id = &"grunt"
+	var enemy := _enemies.spawn(data, Vector2(300, 0))
+	assert_not_null(enemy.animator.sheet)
+	var start := enemy.animator.time
+	await wait_physics_frames(3)
+	assert_gt(enemy.animator.time, start)
+	assert_eq(enemy.animator.facing, -1.0, "player is on the left")
+
+
+func test_elite_falls_back_to_normal_sheet() -> void:
+	var data := _enemy_data(10.0, 0.0)
+	data.sprite_id = &"player"  # has no _elite sheet
+	assert_not_null(data.get_sheet(false))
+	assert_eq(data.get_sheet(true), data.get_sheet(false))
+
+
+func test_recycled_enemy_switches_sheet() -> void:
+	var a := _enemy_data(1.0, 0.0)
+	a.sprite_id = &"grunt"
+	var b := _enemy_data(1.0, 0.0)
+	b.sprite_id = &"tank"
+	var enemy := _enemies.spawn(a, Vector2(300, 0))
+	_enemies.damage_enemy(_enemies._active.find(enemy), 10.0, false, Vector2.RIGHT, 0.0)
+	await wait_physics_frames(1)
+	var again := _enemies.spawn(b, Vector2(300, 0))
+	assert_eq(again.animator.sheet, b.get_sheet(false))
+	assert_true(again.animator.sheet.animations.has(&"walk"))

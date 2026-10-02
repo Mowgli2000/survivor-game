@@ -37,6 +37,11 @@ func test_enemies() -> void:
 			assert_gt(enemy.preferred_distance, 0.0, "%s: ranged without distance" % enemy.id)
 			assert_gt(enemy.fire_cooldown, 0.0)
 			assert_gt(enemy.projectile_speed, 0.0)
+		if enemy.sprite_id != &"":
+			var sheet := enemy.get_sheet(false)
+			assert_not_null(sheet, "%s: missing sprite sheet %s" % [enemy.id, enemy.sprite_id])
+			if sheet != null:
+				assert_true(sheet.has_animation(&"walk"), "%s: sheet needs walk" % enemy.id)
 
 
 func test_weapons() -> void:
