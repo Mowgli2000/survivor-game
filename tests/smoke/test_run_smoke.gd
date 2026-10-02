@@ -128,7 +128,7 @@ func test_manual_wave_end_shows_screen_then_next_wave() -> void:
 	assert_true(run.level_up_screen.visible, "pending level-ups are offered")
 	while run.level_up_screen.visible:
 		run.level_up_screen.offer_chosen.emit(run.level_up_screen._offers[0])
-		await wait_frames(1)
+		await wait_process_frames(1)
 	run.wave_end_screen.next_wave_requested.emit()
 	await wait_physics_frames(2)
 	assert_false(get_tree().paused)
@@ -139,8 +139,12 @@ func test_manual_wave_end_shows_screen_then_next_wave() -> void:
 func test_last_wave_wins_the_run() -> void:
 	var run := _swap_run(true, true)
 	await wait_physics_frames(2)
-	for i in 3:
+	for i in 2:
 		await _end_wave()
+	assert_false(run.state.is_over, "the last wave is still to be played")
+	assert_eq(run.waves.wave, 3)
+	assert_true(run.waves.in_wave)
+	await _end_wave()
 	assert_true(run.state.is_over)
 	assert_true(get_tree().paused)
 	assert_true(run.game_over_screen.visible)

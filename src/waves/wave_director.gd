@@ -54,6 +54,8 @@ func _physics_process(delta: float) -> void:
 		return
 	time_left = 0.0
 	in_wave = false
-	wave_ended.emit(wave)
-	if is_last_wave():
+	# Keep the ended wave: a listener may already start the next one during the emit.
+	var ended := wave
+	wave_ended.emit(ended)
+	if ended >= _stage.wave_count:
 		run_won.emit()

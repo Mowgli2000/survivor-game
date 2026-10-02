@@ -195,3 +195,19 @@ func test_no_spawn_between_waves() -> void:
 	var enemies: EnemyManager = parts[2]
 	await wait_physics_frames(30)  # no wave started
 	assert_eq(enemies.active_count(), 0)
+
+
+func test_wave_event_ignores_the_enemy_cap() -> void:
+	var stage := _stage(3)
+	stage.spawn_rate_first = 0.0
+	stage.spawn_rate_last = 0.0
+	stage.max_enemies = 2
+	stage.events = [_event(1, 0.0)]
+	var parts := _spawn_setup(stage)
+	var director: WaveDirector = parts[0]
+	var spawner: SpawnDirector = parts[1]
+	var enemies: EnemyManager = parts[2]
+	director.start_wave(1)
+	spawner.begin_wave(1)
+	await wait_physics_frames(3)
+	assert_eq(enemies.active_count(), 3, "scripted events (elites, hordes) are never cut by the cap")
