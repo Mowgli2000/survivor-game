@@ -37,6 +37,8 @@ func _use_short_stage(run: Run) -> void:
 	stage.wave_count = 3
 	stage.duration_first = 2.0
 	stage.duration_last = 2.0
+	stage.duration_step = 0.0
+	stage.final_wave_duration = 0.0
 	stage.events = []
 	config.stage = stage
 	run.config = config
@@ -148,6 +150,25 @@ func test_last_wave_wins_the_run() -> void:
 	assert_true(run.state.is_over)
 	assert_true(get_tree().paused)
 	assert_true(run.game_over_screen.visible)
+	assert_true(run.game_over_screen.is_victory)
+
+
+func test_killing_the_boss_wins_before_the_timer() -> void:
+	var run := _swap_run(true, true)
+	await wait_physics_frames(2)
+	for i in 2:
+		await _end_wave()
+	run.waves.time_left = 1000.0
+	var boss := run.enemies.spawn(ContentDB.get_def(&"enemies", &"shogun"), run.player.position + Vector2(600, 0))
+	await wait_physics_frames(2)
+	assert_false(run.state.is_over, "boss alive: the wave goes on")
+	var index := run.enemies.active_count() - 1
+	for i in run.enemies.active_count():
+		if run.enemies.get_enemy(i) == boss:
+			index = i
+	run.enemies.damage_enemy(index, 1.0e9, false, Vector2.RIGHT, 0.0)
+	await wait_physics_frames(3)
+	assert_true(run.state.is_over)
 	assert_true(run.game_over_screen.is_victory)
 
 

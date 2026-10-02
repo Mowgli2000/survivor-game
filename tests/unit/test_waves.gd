@@ -25,14 +25,25 @@ func _event(wave: int, at_time: float) -> WaveEvent:
 
 func test_curves_interpolate_from_first_to_last_wave() -> void:
 	var stage := _stage(20)
-	assert_almost_eq(stage.duration_at(1), 20.0, 0.001)
-	assert_almost_eq(stage.duration_at(20), 60.0, 0.001)
 	assert_almost_eq(stage.spawn_rate_at(1), 1.5, 0.001)
 	assert_almost_eq(stage.spawn_rate_at(20), 20.0, 0.001)
 	assert_almost_eq(stage.hp_multiplier_at(20), 5.0, 0.001)
-	var mid := stage.duration_at(10)
-	assert_gt(mid, 20.0)
-	assert_lt(mid, 60.0)
+
+
+func test_durations_step_up_to_the_cap() -> void:
+	var stage := _stage(20)
+	assert_almost_eq(stage.duration_at(1), 20.0, 0.001)
+	assert_almost_eq(stage.duration_at(2), 25.0, 0.001)
+	assert_almost_eq(stage.duration_at(8), 55.0, 0.001)
+	assert_almost_eq(stage.duration_at(9), 60.0, 0.001)
+	assert_almost_eq(stage.duration_at(20), 60.0, 0.001, "no final duration set")
+
+
+func test_final_wave_has_its_own_duration() -> void:
+	var stage := _stage(20)
+	stage.final_wave_duration = 90.0
+	assert_almost_eq(stage.duration_at(19), 60.0, 0.001)
+	assert_almost_eq(stage.duration_at(20), 90.0, 0.001)
 
 
 func test_curves_with_a_single_wave_use_first_values() -> void:
@@ -136,9 +147,10 @@ func _spawn_setup(stage: StageData) -> Array:
 	director.setup(stage)
 	add_child_autofree(director)
 	var spawner := SpawnDirector.new()
-	spawner.setup(stage, RunState.new(1), enemies, player, arena, director)
+	var state := RunState.new(1)
+	spawner.setup(stage, state, enemies, player, arena, director)
 	add_child_autofree(spawner)
-	return [director, spawner, enemies]
+	return [director, spawner, enemies, state]
 
 
 func test_wave_event_spawns_once_at_its_time() -> void:
@@ -211,3 +223,43 @@ func test_wave_event_ignores_the_enemy_cap() -> void:
 	spawner.begin_wave(1)
 	await wait_physics_frames(3)
 	assert_eq(enemies.active_count(), 3, "scripted events (elites, hordes) are never cut by the cap")
+
+
+func test_finish_wave_ends_it_on_next_frame() -> void:
+	var director := _director(3)
+	watch_signals(director)
+	director.start_wave(3)
+	director.finish_wave()
+	await wait_physics_frames(2)
+	assert_signal_emitted_with_parameters(director, "wave_ended", [3])
+	assert_signal_emit_count(director, "run_won", 1)
+
+
+func test_spawner_counts_wave_spawns() -> void:
+	var stage := _stage(3)
+	stage.spawn_rate_first = 0.0
+	stage.spawn_rate_last = 0.0
+	stage.events = [_event(1, 0.0)]
+	var parts := _spawn_setup(stage)
+	var director: WaveDirector = parts[0]
+	var spawner: SpawnDirector = parts[1]
+	var state: RunState = parts[3]
+	state.wave_spawned = 99
+	director.start_wave(1)
+	spawner.begin_wave(1)
+	assert_eq(state.wave_spawned, 0, "counters reset at wave start")
+	await wait_physics_frames(3)
+	assert_eq(state.wave_spawned, 3)
+
+
+func test_has_living_boss() -> void:
+	var parts := _spawn_setup(_stage(3))
+	var enemies: EnemyManager = parts[2]
+	var boss_data := EnemyData.new()
+	boss_data.boss = true
+	enemies.spawn(EnemyData.new(), Vector2(500, 0))
+	assert_false(enemies.has_living_boss())
+	var boss := enemies.spawn(boss_data, Vector2(-500, 0))
+	assert_true(enemies.has_living_boss())
+	boss.hp = 0.0
+	assert_false(enemies.has_living_boss(), "a dead boss does not count")
