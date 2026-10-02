@@ -11,6 +11,7 @@ const BURN_TINT := Color(1.8, 1.0, 0.55)
 const SLOW_TINT := Color(0.55, 0.9, 1.8)
 
 var data: EnemyData
+var elite: bool = false
 var hp: float = 0.0
 var max_hp: float = 0.0
 var radius: float = 16.0
@@ -28,13 +29,15 @@ var slow_factor: float = 0.0
 var slow_time: float = 0.0
 
 
-func reset(p_data: EnemyData, pos: Vector2, hp_multiplier: float) -> void:
-	var data_changed := data != p_data
+func reset(p_data: EnemyData, pos: Vector2, hp_multiplier: float, p_elite: bool = false,
+		scale_factor: float = 1.0) -> void:
+	var look_changed := data != p_data or elite != p_elite
 	data = p_data
+	elite = p_elite
 	position = pos
 	max_hp = data.max_hp * hp_multiplier
 	hp = max_hp
-	radius = data.radius
+	radius = data.radius * scale_factor
 	knockback = Vector2.ZERO
 	flash = 0.0
 	rotation = 0.0
@@ -45,7 +48,7 @@ func reset(p_data: EnemyData, pos: Vector2, hp_multiplier: float) -> void:
 	slow_time = 0.0
 	visible = true
 	_refresh_tint()
-	if data_changed:
+	if look_changed:
 		queue_redraw()
 
 
@@ -102,5 +105,5 @@ func _refresh_tint() -> void:
 func _draw() -> void:
 	if data == null:
 		return
-	var texture := data.get_texture()
+	var texture := data.get_elite_texture(radius / data.radius) if elite else data.get_texture()
 	draw_texture(texture, -texture.get_size() * 0.5)

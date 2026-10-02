@@ -36,6 +36,18 @@ func spawn_xp(pos: Vector2, value: int) -> void:
 	_active.append(gem)
 
 
+## Collects every gem at once (end of wave): a single xp_collected with the total.
+func collect_all() -> void:
+	var total := 0
+	for gem in _active:
+		total += gem.value
+		gem.visible = false
+		_pool.release(gem)
+	_active.clear()
+	if total > 0:
+		xp_collected.emit(total)
+
+
 func active_count() -> int:
 	return _active.size()
 

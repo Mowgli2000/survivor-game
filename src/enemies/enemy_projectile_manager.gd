@@ -31,6 +31,14 @@ func spawn(pos: Vector2, velocity: Vector2, damage: float, radius: float) -> voi
 	_active.append(projectile)
 
 
+## Removes every enemy shot (end of wave).
+func clear_all() -> void:
+	for p in _active:
+		_pool.release(p)
+	_active.clear()
+	_renderer.render(_active)
+
+
 func active_count() -> int:
 	return _active.size()
 

@@ -37,10 +37,18 @@ enum Movement {
 @export var shape_sides: int = 0
 
 var _texture: Texture2D
+var _elite_texture: Texture2D
 
 
 ## Placeholder neon sprite of this enemy type, baked on first use (see EnemyArt).
 func get_texture() -> Texture2D:
 	if _texture == null:
-		_texture = EnemyArt.bake(self)
+		_texture = EnemyArt.bake(self, color)
 	return _texture
+
+
+## Elite variant: bigger, gold outline. Baked once (the scale is fixed per run).
+func get_elite_texture(scale: float) -> Texture2D:
+	if _elite_texture == null:
+		_elite_texture = EnemyArt.bake(self, EnemyArt.ELITE_OUTLINE, scale)
+	return _elite_texture

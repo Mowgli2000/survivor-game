@@ -188,3 +188,42 @@ func test_ranged_enemy_keeps_distance_and_shoots() -> void:
 	await wait_physics_frames(60)
 	assert_gt(_enemies.get_enemy(0).position.length(), 200.0, "ranged enemy backed off")
 	assert_lt(_player.hp, 100.0, "its shots hit the player")
+
+
+func test_elite_has_more_radius_and_flag() -> void:
+	_enemies.elite_scale = 1.5
+	var elite := _enemies.spawn(_data, Vector2(300, 0), 5.0, true)
+	assert_true(elite.elite)
+	assert_almost_eq(elite.radius, 24.0, 0.001)
+	assert_almost_eq(elite.max_hp, 50.0, 0.001)
+
+
+func test_elite_kill_reports_elite() -> void:
+	watch_signals(_enemies)
+	_enemies.spawn(_data, Vector2(300, 0), 1.0, true)
+	_enemies.damage_enemy(0, 1000.0, false, Vector2.RIGHT, 0.0)
+	assert_signal_emitted_with_parameters(_enemies, "enemy_killed", [_data, Vector2(300, 0), true])
+
+
+func test_clear_all_removes_enemies_without_kills() -> void:
+	watch_signals(_enemies)
+	for i in 5:
+		_enemies.spawn(_data, Vector2(200 + i * 40, 0))
+	_enemies.clear_all()
+	assert_eq(_enemies.active_count(), 0)
+	assert_signal_not_emitted(_enemies, "enemy_killed")
+
+
+func test_pooled_elite_resets_to_normal() -> void:
+	_enemies.spawn(_data, Vector2(300, 0), 1.0, true)
+	_enemies.clear_all()
+	var normal := _enemies.spawn(_data, Vector2(300, 0))
+	assert_false(normal.elite)
+	assert_almost_eq(normal.radius, _data.radius, 0.001)
+
+
+func test_enemy_projectiles_clear_all() -> void:
+	_enemy_shots.spawn(Vector2(500, 0), Vector2.LEFT * 10.0, 5.0, 8.0)
+	_enemy_shots.spawn(Vector2(-500, 0), Vector2.RIGHT * 10.0, 5.0, 8.0)
+	_enemy_shots.clear_all()
+	assert_eq(_enemy_shots.active_count(), 0)

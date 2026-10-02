@@ -9,7 +9,7 @@ extends Node2D
 ## arc, segment), so hit rules (armor, statuses, feedback) live in one place.
 
 signal enemy_damaged(position: Vector2, amount: float, crit: bool)
-signal enemy_killed(data: EnemyData, position: Vector2)
+signal enemy_killed(data: EnemyData, position: Vector2, elite: bool)
 
 const GRID_CELL_SIZE := 64.0
 ## Upper bound for an enemy radius (grid padding, data validation).
@@ -25,10 +25,14 @@ const RANGED_FIRE_RANGE := 1.6
 ## Burn damage is shown as a number each time this much has accumulated.
 const BURN_NUMBER_STEP := 2.0
 const SHOCK_COLOR := Color(0.75, 0.55, 1.0)
+## At most this many effects when a wave end clears every enemy at once.
+const CLEAR_VFX_MAX := 40
 
 var grid: SpatialGrid
 ## Largest radius among spawned enemies; pads spatial queries.
 var max_radius: float = 0.0
+## Size multiplier of elites (set by Run from StageData.elite_scale).
+var elite_scale: float = 1.6
 
 var _player: Player
 var _arena: Rect2
@@ -62,9 +66,9 @@ func _ready() -> void:
 	process_physics_priority = -10
 
 
-func spawn(data: EnemyData, pos: Vector2, hp_multiplier: float = 1.0) -> Enemy:
+func spawn(data: EnemyData, pos: Vector2, hp_multiplier: float = 1.0, elite: bool = false) -> Enemy:
 	var enemy: Enemy = _pool.acquire()
-	enemy.reset(data, pos, hp_multiplier)
+	enemy.reset(data, pos, hp_multiplier, elite, elite_scale if elite else 1.0)
 	enemy.fire_timer = data.fire_cooldown * _rng.randf_range(0.5, 1.0)
 	enemy.strafe_sign = 1.0 if _rng.randf() < 0.5 else -1.0
 	max_radius = maxf(max_radius, enemy.radius)
@@ -168,6 +172,19 @@ func damage_along_segment(from: Vector2, to: Vector2, half_width: float, amount:
 	return hits
 
 
+## Removes every enemy at once (end of wave): no XP, no enemy_killed.
+## Effects are capped so clearing 400 enemies does not spike the frame.
+func clear_all() -> void:
+	var count := _active.size()
+	var step := maxi(1, ceili(float(count) / CLEAR_VFX_MAX))
+	for i in count:
+		var enemy := _active[i]
+		if _vfx != null and enemy.is_alive() and i % step == 0:
+			_vfx.explosion(enemy.position, enemy.radius * 1.5, enemy.data.color, false)
+		enemy.hp = 0.0
+	_remove_dead()
+
+
 func _lose_hp(enemy: Enemy, amount: float) -> void:
 	enemy.hp -= amount
 	if enemy.is_alive():
@@ -175,7 +192,7 @@ func _lose_hp(enemy: Enemy, amount: float) -> void:
 	enemy.visible = false
 	if _vfx != null:
 		_vfx.explosion(enemy.position, enemy.radius * 1.8, enemy.data.color, false)
-	enemy_killed.emit(enemy.data, enemy.position)
+	enemy_killed.emit(enemy.data, enemy.position, enemy.elite)
 
 
 func _apply_status(index: int, status: StatusData, hit_damage: float) -> void:

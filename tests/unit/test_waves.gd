@@ -101,3 +101,22 @@ func test_wave_elapsed() -> void:
 	director.start_wave(1)
 	director.time_left = 15.0
 	assert_almost_eq(director.wave_elapsed(), 5.0, 0.001)
+
+
+func test_collect_all_returns_total_xp() -> void:
+	var player := Player.new()
+	player.setup(CharacterData.new(), Rect2(-1000, -1000, 2000, 2000))
+	player.invincible = true
+	player.bot_input = func() -> Vector2: return Vector2.ZERO
+	add_child_autofree(player)
+	var pickups := PickupManager.new()
+	pickups.setup(player, 2)  # tiny cap: extra gems get merged
+	add_child_autofree(pickups)
+	watch_signals(pickups)
+	pickups.spawn_xp(Vector2(900, 900), 3)
+	pickups.spawn_xp(Vector2(-900, 900), 4)
+	pickups.spawn_xp(Vector2(900, -900), 5)  # merged into an existing gem
+	pickups.collect_all()
+	assert_eq(pickups.active_count(), 0)
+	assert_signal_emit_count(pickups, "xp_collected", 1)
+	assert_signal_emitted_with_parameters(pickups, "xp_collected", [12])

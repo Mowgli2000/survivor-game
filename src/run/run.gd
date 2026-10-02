@@ -127,7 +127,7 @@ func _physics_process(delta: float) -> void:
 		state.elapsed += delta
 
 
-func _on_enemy_killed(data: EnemyData, pos: Vector2) -> void:
+func _on_enemy_killed(data: EnemyData, pos: Vector2, _elite: bool) -> void:
 	state.kills += 1
 	pickups.spawn_xp(pos, data.xp_value)
 
