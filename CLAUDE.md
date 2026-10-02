@@ -7,7 +7,7 @@ Le développeur n'est pas senior : expliquer les décisions importantes, signale
 
 ## État du projet
 **Lire `PROJECT_STATUS.md` en début de session et le mettre à jour en fin de session** (décisions, changements, retours de playtest, prochaines étapes).
-Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes à niveaux, statuts, 4 ennemis, rendu néon) et 4 (vagues : 20 vagues, élites, level-up différé — avancée avant la 3) terminées. Prochaine : Phase 3 (objets, synergies, menus). Roadmap et GDD : `docs/design/gdd.md`. Décisions : `docs/decisions/`.
+Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes, statuts, 4 ennemis, rendu néon), 4 (vagues : 20 vagues, élites, boss provisoire) et 5 (socle de boutique façon Brotato : matériaux, armes à 4 rangs en double, objets de stats, level-up à rang) terminées. Prochaine : Phase 3 (objets à effets, synergies, menus). Roadmap et GDD : `docs/design/gdd.md`. Décisions : `docs/decisions/`.
 
 ## Architecture (résumé — détails dans les skills)
 - Autoloads minimaux : ContentDB (existe), puis SceneRouter, Settings, SaveService, Audio, EventBus, Platform quand leur phase arrive. Aucune logique de run dans un autoload.
@@ -15,7 +15,8 @@ Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes à niveaux, statuts, 4 enne
 - Ennemis/projectiles/pickups : gérés en lot par leur manager + `SpatialGrid` + `ObjectPool`. Jamais de `_process` par entité, jamais d'Area2D/physique pour les hits de masse. Seul le Player est un CharacterBody2D. Projectiles = données rendues par un seul MultiMesh (ADR 0004). Ennemis = une texture néon précalculée par type (ADR 0005).
 - Code pur testable dans `src/core/` (StatBlock, CombatMath, SpatialGrid, ObjectPool, WeightedPicker).
 - Contenu = Resources `.tres` dans `data/<catégorie>/`, classes de définition dans `src/**/<x>_data.gd`, accès via `ContentDB.get_def(&"weapons", &"id")`. Comportements = Resources strategy dans `behaviors/`.
-- Armes : `WeaponData` (niveau 1 + `levels`) -> `WeaponStats` via `WeaponSlot` ; `WeaponHolder` les déclenche. Ajouter une arme = un `.tres`.
+- Armes : `WeaponData` (rang I + `levels` pour II..IV) -> `WeaponStats` via `WeaponSlot` ; `WeaponHolder` (doublons, fusion) les déclenche. Ajouter une arme = un `.tres`.
+- Boutique (ADR 0007) : `Shop` (logique pure : stock, relance, verrou, achat, vente, fusion) + `ShopScreen` ; réglages `data/shop/` ; monnaie `Wallet` ; objets `ItemData` (`data/items/`) + `Inventory` ; rangs `Tiers`.
 - **Tous les dégâts passent par l'API d'`EnemyManager`** (`damage_enemy`, `damage_in_radius`, `damage_along_segment`) : armure, statuts, recul et feedback au même endroit (ADR 0005).
 - Feedback : `Vfx` (effets additifs, un seul nœud), `DamageNumbers`, `GameCamera.add_trauma()`. Pas de `draw_*` anticrénelé par entité de masse : précalculer en texture.
 - UI : lit l'état, écoute les signaux, appelle l'API publique des systèmes. Ne modifie jamais l'état directement.

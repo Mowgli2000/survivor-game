@@ -11,10 +11,10 @@ Dernière mise à jour : 2026-10-02 (session 3)
 
 | | |
 |---|---|
-| **Phase actuelle** | Phase 4 (vagues) terminée → playtest du dev, puis Phase 3 (objets) |
+| **Phase actuelle** | Phase 5 (boutique façon Brotato) : socle livré → playtest du dev, puis Phase 3 (objets à effets, menus) |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 99/99 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 136/136 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~185-190 FPS moyen, min ~130-150 — 500 ennemis, ~1000 projectiles, 6 armes niveau max (ADR 0006) |
 
 **Emplacements**
@@ -42,7 +42,7 @@ Dernière mise à jour : 2026-10-02 (session 3)
 | D12 | 2026-10-02 | **Filtrage des textures en linéaire** | Adapté au style néon et aux textures qui tournent |
 | D13 | 2026-10-02 | **Git : travail sur `develop`, `main` = versions validées sur demande** | Demande du dev |
 | D14 | 2026-10-02 | **Vagues (Phase 4) avant les objets (Phase 3)** | Les vagues donnent la structure du jeu ; les objets seront équilibrés sur le vrai rythme. Demande du dev après playtest (partie infinie de 15+ min) |
-| D15 | 2026-10-02 | **Objets : le level-up donne des stats, la boutique vend des objets** | En attendant la boutique (Phase 5), les objets apparaissent dans les cartes de level-up. Cumulables par défaut, `max_stack` optionnel par objet |
+| D15 | 2026-10-02 | **Objets : le level-up donne des stats, la boutique vend des objets** | Appliqué tel quel par D25 (la boutique arrive avant les objets riches) |
 | D16 | 2026-10-02 | **Run = 20 vagues, 20 s → 60 s** | Format éprouvé avec boutique ; valeurs dans `data/stages/default.tres` |
 | D17 | 2026-10-02 | **Level-up différé à la fin de la vague** | Vagues fluides ; toutes les décisions de build au même moment (boutique plus tard). ADR 0006 |
 | D18 | 2026-10-02 | **PV remis au max entre les vagues** | Chaque vague est un défi lisible ; réglable (`heal_between_waves`) |
@@ -52,6 +52,10 @@ Dernière mise à jour : 2026-10-02 (session 3)
 | D22 | 2026-10-02 | **Suivre au maximum la logique de Brotato** | Demande du dev après playtest. Durées de vague à la Brotato : 20 s +5 s par vague jusqu'à 60 s, vague 20 = 90 s (`duration_step`, `final_wave_duration`) |
 | D23 | 2026-10-02 | **Boss provisoire « Shogun » en vague 20** | Ennemi à part (`boss = true`, octogone magenta, 900 PV de base ×3). Comme Brotato : le tuer gagne la partie tout de suite ; survivre au chrono gagne aussi. Vrai boss en Phase 6 |
 | D24 | 2026-10-02 | **Densité réduite en attendant boutique et objets** | Apparitions 1,5 → 10/s (au lieu de 20), PV ×1 → ×3 (au lieu de ×5). À remonter quand la boutique donnera de la puissance |
+| D25 | 2026-10-02 | **Boutique (Phase 5) avant les objets riches et les menus** | La puissance vient de la boutique, comme Brotato. Matériaux = XP + monnaie (départ 30). ADR 0007 |
+| D26 | 2026-10-02 | **Armes en double, 4 rangs (I gris, II bleu, III violet, IV rouge), fusion** | 6 emplacements ; 2 armes identiques de même rang → rang supérieur ; achat avec emplacements pleins = fusion directe ; vente à 25 % |
+| D27 | 2026-10-02 | **15 objets de stats simples** (bonus/malus, rang fixe) | Effets spéciaux et synergies plus tard (Phase 3) |
+| D28 | 2026-10-02 | **Level-up = stats seulement, 4 cartes à rang, relance payante** | Bonus ×1 / ×1,6 / ×2,4 / ×3,2 selon le rang ; même coût de relance que la boutique |
 
 ### Décisions volontairement reportées
 | Sujet | Quand | Options / notes |
@@ -94,6 +98,7 @@ Dernière mise à jour : 2026-10-02 (session 3)
 - Correction : l'écran de level-up réactivait des cartes déjà supprimées quand on enchaînait les choix très vite
 - Outils : installation de Python 3.12, jq et des fichiers manquants de Claude Code Game Studios (hooks, registres, docs moteur)
 - **Après playtest Phase 4** : compteur de vague dans l'overlay F3 (tués / apparus, apparitions/s, PV) + une ligne `[wave N]` par vague dans la console ; durées de vague à la Brotato ; densité réduite (D24) ; boss provisoire Shogun (D23)
+- **Phase 5 avancée — Boutique façon Brotato** (spec + plan dans `docs/superpowers/`, ADR 0007) : matériaux, armes à 4 rangs en double avec fusion, 15 objets de stats, boutique entre les vagues (4 emplacements, relance, verrouillage, vente, fusion), level-up à 4 cartes à rang avec relance payante. 136 tests
 
 ---
 
@@ -112,7 +117,9 @@ Dernière mise à jour : 2026-10-02 (session 3)
 - **Pas de menu pause** : Échap ne fait rien pour l'instant (prévu avec les menus, Phase 3).
 - **Pas de menu de paramètres** : les options « tremblement d'écran » et « chiffres de dégâts » existent dans le code, sans interface.
 - **Pas d'audio** (prévu Phase 2 initialement, reporté avec l'autoload `Audio`).
-- **Équilibrage = premières estimations** (dégâts, courbe d'XP, poids des cartes, apparition des ennemis).
+- **Équilibrage = premières estimations** (dégâts, courbe d'XP, poids des cartes, apparition des ennemis, prix, chances de rang, objets).
+- **Boutique, socle seulement** : objets sans effets spéciaux ni synergies, pas de caisses lâchées par les élites, pas de stat « récolte » ni « chance », visuel des matériaux provisoire (gemmes d'XP).
+- **Stress test à re-mesurer sur une machine libre** : pendant la session 3, un jeu tournait en parallèle (29,5 FPS avant la boutique, 40-55 après, à charge égale : pas de régression mesurée).
 - Boss provisoire seulement : pas de barre de vie de boss, pas d'attaque spéciale, même taille qu'un Colosse élite (rayon max de la grille : 48).
 - Valeurs des vagues = premières estimations (durées, densité, PV, vagues spéciales) : à régler après playtest.
 - FPS minimum au stress test ~10 % plus bas qu'avant les vagues (moyenne inchangée) : à surveiller.
@@ -124,10 +131,11 @@ Dernière mise à jour : 2026-10-02 (session 3)
 
 ## 6. Prochaines étapes
 
-1. **Dev** : rejouer une run complète avec F3 affiché, noter le % tués/apparus aux vagues 5, 10, 15 et le combat contre le Shogun (section 4).
-2. **Prototype 3D / 2.5D** (optionnel, 1-2 jours) : voir « Décisions reportées ».
-3. **Phase 3a — Objets** (D15) : objets passifs dans les cartes de level-up, raretés, tags/synergies, effets déclenchés, `max_stack`. Puis **3b — Menus** : menu principal, pause, paramètres.
-4. Puis Phase 5 (boutique entre les vagues) → Phase 6 (boss). Roadmap complète : `docs/design/gdd.md`.
+1. **Dev** : jouer une run complète avec la boutique (F3 affiché) : prix, relance, fusion, puissance ressentie, vagues 10 et 20 (section 4).
+2. **Claude** : re-mesurer le stress test machine libre (référence ~185 FPS).
+3. Équilibrage après ce playtest (remonter la densité D24 si la boutique rend assez fort).
+4. **Phase 3 — Objets à effets et synergies** (vendus par la boutique), puis **menus** (principal, pause, paramètres).
+5. Phase 6 (vrai boss). Roadmap complète : `docs/design/gdd.md`.
 
 ---
 
