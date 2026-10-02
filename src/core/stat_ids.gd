@@ -41,6 +41,9 @@ const DEFAULTS: Dictionary[StringName, float] = {
 ## Stats stored as fractions (0.05) but shown as percentages (+5 %).
 const SHOWN_AS_PERCENT: Array[StringName] = [CRIT_CHANCE]
 
+## Stats used as whole numbers: scaled bonuses are rounded.
+const INTEGER_STATS: Array[StringName] = [PROJECTILE_COUNT, PIERCE]
+
 ## stat -> Vector2(min, max). Stats not listed are unbounded.
 const BOUNDS: Dictionary[StringName, Vector2] = {
 	MAX_HP: Vector2(1.0, INF),

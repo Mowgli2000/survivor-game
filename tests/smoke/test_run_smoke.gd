@@ -153,6 +153,20 @@ func test_auto_mode_buys_in_the_shop() -> void:
 	assert_eq(_run.waves.wave, 2)
 
 
+func test_level_up_reroll_costs_materials() -> void:
+	var run := _swap_run(true, false)
+	await wait_physics_frames(2)
+	run.progression.add_xp(20)
+	await _end_wave()
+	assert_true(run.level_up_screen.visible)
+	assert_eq(run.level_up_screen._offers.size(), run.config.upgrade_choices)
+	var before := run.state.wallet.amount
+	run.level_up_screen.reroll_requested.emit()
+	await wait_process_frames(1)
+	assert_eq(run.state.wallet.amount, before - run.config.shop.reroll_cost(1, 0))
+	assert_true(run.level_up_screen.visible)
+
+
 func test_last_wave_wins_the_run() -> void:
 	var run := _swap_run(true, true)
 	await wait_physics_frames(2)

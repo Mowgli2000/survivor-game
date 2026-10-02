@@ -7,7 +7,7 @@
 script = ExtResource("2_mod")
 stat = &"area"
 flat = 0.0
-percent = 0.15
+percent = 0.06
 
 [resource]
 script = ExtResource("1_upgrade")

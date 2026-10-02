@@ -1,17 +1,20 @@
 class_name LevelUpScreen
 extends CanvasLayer
-## Shown while the game is paused: one neon card per offer (stat upgrade).
+## Shown while the game is paused: one neon card per offer (stat upgrade, tier
+## colored) and a paid reroll button.
 ## Keyboard/gamepad navigable; emits `offer_chosen` and lets run.gd apply it.
 
 signal offer_chosen(offer: UpgradeOffer)
+## Paid reroll of the cards (Run checks and spends the materials).
+signal reroll_requested
 
 ## Short delay before cards accept input, to avoid accidental picks.
 const INPUT_DELAY := 0.35
 const CARD_SIZE := Vector2(360, 340)
-const STAT_ACCENT := Color(0.55, 0.65, 0.9)
 const CARD_BG := Color(0.05, 0.05, 0.1, 0.96)
 
 var _cards: HBoxContainer
+var _reroll: Button
 var _offers: Array[UpgradeOffer] = []
 
 
@@ -51,8 +54,18 @@ func _init() -> void:
 	_cards.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.add_child(_cards)
 
+	_reroll = Button.new()
+	_reroll.add_theme_font_size_override("font_size", 26)
+	_reroll.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_reroll.pressed.connect(func() -> void: reroll_requested.emit())
+	box.add_child(_reroll)
 
-func open(offers: Array[UpgradeOffer]) -> void:
+
+## `reroll_cost` < 0 hides the reroll button.
+func open(offers: Array[UpgradeOffer], reroll_cost: int = -1, can_reroll: bool = false) -> void:
+	_reroll.visible = reroll_cost >= 0
+	_reroll.text = tr("UI_SHOP_REROLL") % maxi(reroll_cost, 0)
+	_reroll.disabled = true
 	_offers = offers
 	for child in _cards.get_children():
 		child.queue_free()
@@ -70,6 +83,7 @@ func open(offers: Array[UpgradeOffer]) -> void:
 		return
 	for button in buttons:
 		button.disabled = false
+	_reroll.disabled = not can_reroll
 	buttons[0].grab_focus()
 
 
@@ -79,8 +93,8 @@ func close() -> void:
 
 ## Card texts: [tag, title, description].
 static func describe_offer(offer: UpgradeOffer) -> PackedStringArray:
-	return PackedStringArray([TranslationServer.translate("UI_STAT_UPGRADE"),
-		TranslationServer.translate(offer.upgrade.name_key), describe(offer.upgrade)])
+	return PackedStringArray(["%s · %s" % [TranslationServer.translate("UI_STAT_UPGRADE"), Tiers.roman(offer.tier)],
+		TranslationServer.translate(offer.upgrade.name_key), describe_modifiers(offer.scaled_modifiers())])
 
 
 static func describe(upgrade: UpgradeData) -> String:
@@ -129,7 +143,7 @@ static func _format_flat(stat: StringName, value: float) -> String:
 
 
 func _make_card(offer: UpgradeOffer) -> Button:
-	var accent := STAT_ACCENT
+	var accent := Tiers.color(offer.tier)
 	var texts := describe_offer(offer)
 
 	var button := Button.new()

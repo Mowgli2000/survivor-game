@@ -14,5 +14,5 @@ stage = ExtResource("3_stage")
 shop = ExtResource("4_shop")
 xp_base = 5.0
 xp_exponent = 1.35
-upgrade_choices = 3
+upgrade_choices = 4
 max_xp_gems = 300

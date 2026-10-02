@@ -43,6 +43,8 @@ var shop_screen: ShopScreen
 var game_over_screen: GameOverScreen
 
 var _upgrade_pool: Array[UpgradeData] = []
+## Level-up rerolls paid during the current wave end (the cost grows each time).
+var _level_up_rerolls: int = 0
 
 
 func _ready() -> void:
@@ -147,6 +149,7 @@ func _ready() -> void:
 	pickups.xp_collected.connect(state.wallet.add)
 	player.died.connect(_on_player_died)
 	level_up_screen.offer_chosen.connect(_apply_offer)
+	level_up_screen.reroll_requested.connect(_on_level_up_reroll)
 	game_over_screen.retry_requested.connect(_on_retry_requested)
 	waves.wave_started.connect(spawner.begin_wave)
 	waves.wave_ended.connect(_on_wave_ended)
@@ -185,6 +188,7 @@ func _on_wave_ended(wave: int) -> void:
 	if not auto_choose_upgrades:
 		get_tree().paused = true
 		wave_end_screen.open(waves.wave)
+	_level_up_rerolls = 0
 	_resolve_level_ups()
 
 
@@ -203,7 +207,8 @@ func _resolve_level_ups() -> void:
 	if progression.pending_level_ups <= 0:
 		_on_level_ups_resolved()
 		return
-	var offers := progression.roll_offers(_upgrade_pool, config.upgrade_choices, state.rng)
+	var offers := progression.roll_offers(_upgrade_pool, config.upgrade_choices, state.rng,
+		config.shop, waves.wave)
 	if offers.is_empty():
 		progression.pending_level_ups = 0
 		_on_level_ups_resolved()
@@ -211,11 +216,24 @@ func _resolve_level_ups() -> void:
 	if auto_choose_upgrades:
 		_apply_offer(offers[0])
 		return
-	level_up_screen.open(offers)
+	var cost := _level_up_reroll_cost()
+	level_up_screen.open(offers, cost, state.wallet.can_afford(cost))
 
 
 func _apply_offer(offer: UpgradeOffer) -> void:
-	progression.apply_upgrade(offer.upgrade, player.stats)
+	progression.apply_offer(offer, player.stats)
+	_resolve_level_ups()
+
+
+func _level_up_reroll_cost() -> int:
+	return config.shop.reroll_cost(waves.wave, _level_up_rerolls)
+
+
+## Paid reroll of the current level-up cards (same cost rule as the shop).
+func _on_level_up_reroll() -> void:
+	if not state.wallet.spend(_level_up_reroll_cost()):
+		return
+	_level_up_rerolls += 1
 	_resolve_level_ups()
 
 

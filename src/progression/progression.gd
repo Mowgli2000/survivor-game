@@ -33,21 +33,23 @@ func add_xp(amount: int) -> void:
 	xp_changed.emit(xp, xp_needed())
 
 
-## Draws `count` distinct stat upgrades (weight = UpgradeData.weight).
-func roll_offers(stat_pool: Array[UpgradeData], count: int,
-		rng: RandomNumberGenerator) -> Array[UpgradeOffer]:
+## Draws `count` distinct stat upgrades (weight = UpgradeData.weight), each with
+## a tier rolled by `shop_config` for `wave` (tier I without config).
+func roll_offers(stat_pool: Array[UpgradeData], count: int, rng: RandomNumberGenerator,
+		shop_config: ShopConfig = null, wave: int = 1) -> Array[UpgradeOffer]:
 	var weights := PackedFloat32Array()
 	for upgrade in stat_pool:
 		weights.append(upgrade.weight)
 	var result: Array[UpgradeOffer] = []
 	for index in WeightedPicker.pick_distinct(weights, count, rng):
-		result.append(UpgradeOffer.for_stat(stat_pool[index]))
+		var tier := shop_config.roll_tier(wave, rng) if shop_config != null else 1
+		result.append(UpgradeOffer.for_stat(stat_pool[index], tier))
 	return result
 
 
-## Applies a stat upgrade and consumes one pending level-up.
-func apply_upgrade(upgrade: UpgradeData, stats: StatBlock) -> void:
-	for mod in upgrade.modifiers:
+## Applies a level-up card (tier-scaled) and consumes one pending level-up.
+func apply_offer(offer: UpgradeOffer, stats: StatBlock) -> void:
+	for mod in offer.scaled_modifiers():
 		stats.add_modifier(mod)
 	consume_level_up()
 
