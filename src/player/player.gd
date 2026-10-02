@@ -7,6 +7,11 @@ signal health_changed(hp: float, max_hp: float)
 signal damaged(amount: float)
 signal died
 
+## Sprite height in px per px of collision radius.
+const SPRITE_HEIGHT_PER_RADIUS := 3.6
+## Feet sit this fraction of the radius below the player center.
+const SPRITE_FOOT := 0.8
+
 var stats: StatBlock
 var hp: float = 1.0
 var radius: float = 16.0
@@ -18,6 +23,7 @@ var bot_input: Callable
 
 var weapons: WeaponHolder
 var camera: GameCamera
+var animator := SpriteAnimator.new()
 
 var _data: CharacterData
 var _arena: Rect2
@@ -29,6 +35,9 @@ func setup(data: CharacterData, arena: Rect2) -> void:
 	_data = data
 	_arena = arena
 	radius = data.radius
+	var path := "res://assets/sprites/%s.tres" % data.sprite_id
+	var has_sprite := data.sprite_id != &"" and ResourceLoader.exists(path)
+	animator.reset(load(path) as SpriteSheet if has_sprite else null, 0.0)
 	stats = StatBlock.from_defaults(data.stat_overrides)
 	hp = stats.get_value(StatIds.MAX_HP)
 	_last_max_hp = hp
@@ -63,6 +72,9 @@ func _physics_process(delta: float) -> void:
 	velocity = direction * stats.get_value(StatIds.MOVE_SPEED)
 	move_and_slide()
 	position = position.clamp(_arena.position, _arena.end)
+	var anim := &"walk" if velocity.length_squared() > 4.0 else &"idle"
+	if animator.advance(delta, anim, velocity.x):
+		queue_redraw()
 
 	var regen := stats.get_value(StatIds.HP_REGEN)
 	if regen > 0.0:
@@ -114,6 +126,10 @@ func _on_stat_changed(stat: StringName) -> void:
 
 
 func _draw() -> void:
+	if animator.sheet != null:
+		animator.sheet.draw(self, animator.frame, radius * SPRITE_HEIGHT_PER_RADIUS, radius * SPRITE_FOOT,
+			animator.facing, Color.WHITE)
+		return
 	var color := _data.color if _data != null else Color.WHITE
 	var neon := Color(0.3, 0.9, 1.0)
 	draw_arc(Vector2.ZERO, radius + 4.0, 0.0, TAU, 32, Color(neon, 0.3), 6.0, true)

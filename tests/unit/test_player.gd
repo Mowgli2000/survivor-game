@@ -50,3 +50,16 @@ func test_heal_is_capped() -> void:
 	_player.take_damage(5.0)
 	_player.heal(100.0)
 	assert_eq(_player.hp, 50.0)
+
+
+func test_player_sprite_faces_movement() -> void:
+	var data := CharacterData.new()
+	data.sprite_id = &"player"
+	var player := Player.new()
+	player.setup(data, Rect2(-500, -500, 1000, 1000))
+	player.bot_input = func() -> Vector2: return Vector2.LEFT
+	add_child_autofree(player)
+	assert_not_null(player.animator.sheet)
+	await wait_physics_frames(3)
+	assert_eq(player.animator.facing, -1.0)
+	assert_eq(player.animator.animation, &"walk")
