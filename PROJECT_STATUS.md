@@ -1,0 +1,114 @@
+# Statut du projet — Survivor Game (titre de travail)
+
+> Journal de suivi entre les sessions : état actuel, décisions prises, changements, retours de playtest et prochaines étapes.
+> **À lire au début de chaque session, à mettre à jour à la fin.** Les règles de développement sont dans `CLAUDE.md`, le design dans `docs/design/gdd.md`, les décisions techniques détaillées dans `docs/decisions/`.
+
+Dernière mise à jour : 2026-10-02
+
+---
+
+## 1. Où en est-on ?
+
+| | |
+|---|---|
+| **Phase actuelle** | Phase 2 terminée → en attente du playtest du dev, puis Phase 3 |
+| **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
+| **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
+| **Tests** | 66/66 (GUT : unitaires, données, partie simulée) |
+| **Performance (stress test)** | ~200 FPS moyen, min ~155 — 500 ennemis, ~1000 projectiles, 6 armes niveau max |
+
+**Emplacements**
+- Projet local : `C:\Users\rapha\Projects\survivor-game` (ouvrir `project.godot` dans Godot)
+- GitHub : https://github.com/Mowgli2000/survivor-game (branches `main` et `develop`)
+- Godot utilisé : `C:\Program Files\Godot\Godot.exe` (4.7.2 stable)
+
+---
+
+## 2. Décisions prises
+
+| # | Date | Décision | Détail / raison |
+|---|---|---|---|
+| D1 | 2026-10-02 | **Godot 4.7.2, GDScript typé, renderer Compatibility** | Simple, itération rapide, compatible avec un maximum de PC et le Steam Deck. ADR 0001 |
+| D2 | 2026-10-02 | **Structure de run : arène bornée + vagues chronométrées + boutique entre les vagues** | Rythme clair, la boutique devient centrale (différenciateur) |
+| D3 | 2026-10-02 | **Visée 100 % automatique** | Le joueur ne gère que le déplacement ; la profondeur vient du build, du positionnement et de l'économie |
+| D4 | 2026-10-02 | **Projet hors OneDrive** (`C:\Users\rapha\Projects\`) | OneDrive casse souvent Git et le cache Godot |
+| D5 | 2026-10-02 | **Ennemis/projectiles gérés en lot + grille spatiale + pooling** | Performance avec des centaines d'entités. ADR 0002 |
+| D6 | 2026-10-02 | **Contenu en Resources `.tres`, sauvegardes en JSON** | Ajouter du contenu sans toucher au code ; saves sûres et versionnées. ADR 0003 |
+| D7 | 2026-10-02 | **Projectiles rendus en un seul appel de dessin (MultiMesh)** | 41 → 220 FPS au stress test. ADR 0004 |
+| D8 | 2026-10-02 | **Production visuelle** : Claude produit formes, SVG, effets et animations procédurales ; les images (pixel art, illustrations, concept art) viennent d'outils externes (IA d'image, Aseprite, Blender, packs, freelance) | Limite de Claude : pas d'images matricielles. Divulgation IA obligatoire sur Steam si utilisée |
+| D9 | 2026-10-02 | **Thème de travail : cyber-samouraï / ninja néon** | Lames futuristes **et** armes high-tech (pistolets laser, mitraillettes, bazookas) **et** armes imaginaires. Une couleur néon forte par arme pour la lisibilité |
+| D10 | 2026-10-02 | **Les armes actuelles sont provisoires** | Priorité au *système* d'armes ; il y aura beaucoup d'armes à la fin |
+| D11 | 2026-10-02 | **Dégâts centralisés dans `EnemyManager`, une seule couche d'effets, sprites ennemis précalculés** | Règles de combat à un seul endroit ; 49 → 204 FPS. ADR 0005 |
+| D12 | 2026-10-02 | **Filtrage des textures en linéaire** | Adapté au style néon et aux textures qui tournent |
+| D13 | 2026-10-02 | **Git : travail sur `develop`, `main` = versions validées sur demande** | Demande du dev |
+| D14 | 2026-10-02 | **Vagues (Phase 4) avant les objets (Phase 3)** | Les vagues donnent la structure du jeu ; les objets seront équilibrés sur le vrai rythme. Demande du dev après playtest (partie infinie de 15+ min) |
+| D15 | 2026-10-02 | **Objets : le level-up donne des stats, la boutique vend des objets** | En attendant la boutique (Phase 5), les objets apparaissent dans les cartes de level-up. Cumulables par défaut, `max_stack` optionnel par objet |
+
+### Décisions volontairement reportées
+| Sujet | Quand | Options / notes |
+|---|---|---|
+| Nom du jeu et univers détaillé | Avant la page Steam | — |
+| Direction artistique définitive | Fin Phase 3 | Piste actuelle : silhouettes sombres + contours néon (produisible en grande partie par Claude) |
+| Design final de la boutique | Phase 5 | 1. Boutique classique entre vagues (socle) · 2. Économie à risque (intérêts sur l'or) · 3. Stock influencé par les ennemis tués · 4. Marchand pendant la vague. Reco : 1 comme base, prototyper 2+3 |
+| Level-up immédiat ou différé jusqu'à la boutique | Phase 5 | Le système de file de level-ups supporte les deux |
+| **Rendu 3D / 2.5D** (le dev trouve la 3D plus immersive) | Après la Phase 4 (vagues) | Logique conservée (plan au sol en `Vector2`), seule la couche de rendu change. Prototype jetable 1-2 jours : 500 ennemis + projectiles en 3D néon avec bloom, stress test + capture, à comparer à la 2D. Assets 3D faciles à trouver (Kenney, Quaternius CC0, Synty). Impacts : ADR 0001 (Compatibility vs Forward+), ~1 phase de travail |
+| Forme de la méta-progression | Phase 7 | Préférer débloquer du contenu plutôt que des bonus de stats permanents |
+
+---
+
+## 3. Historique des changements
+
+### Session 1 — 2026-10-02
+
+**Phase 0 — Setup** (`e4a735e`)
+- Projet Godot, InputMap clavier + manette (touches physiques → ZQSD/WASD automatique), FR/EN, autoload `ContentDB`
+- Tests GUT + outils `tools/run_tests.ps1` et `tools/check_scripts.ps1`, export Windows validé
+- `CLAUDE.md`, 7 skills Claude Code (`.claude/skills/`), GDD, ADR 0001 à 0003
+
+**Phase 1 — Prototype jouable** (`0fe2585`)
+- Déplacement, 1 arme auto (Pulsar), 2 ennemis, dégâts au contact, mort + écran Game Over, gemmes d'XP avec aimant, level-up avec 3 choix, spawn croissant, HUD
+- Outils : stress test (`src/debug/stress_test.tscn`), captures d'écran automatiques (`src/debug/capture.tscn`), overlay debug (F3)
+
+**Phase 2 — Combat** (`00e60be`)
+- 6 armes à 5 niveaux : Pulsar, katana à plasma, pistolet laser, shuriken, mitraillette, bazooka
+- Level-up : mélange nouvelles armes (6 emplacements max) / niveaux d'armes / stats
+- Statuts : brûlure, ralentissement, électrocution en chaîne
+- Ennemis : Tireur (à distance) et Colosse (blindé)
+- Rendu néon, chiffres de dégâts, tremblement d'écran, galerie d'effets (`src/debug/vfx_gallery.tscn`)
+- Création de la branche `develop`
+
+---
+
+## 4. Retours du dev (playtests)
+
+| Date | Version | Retour | Suite donnée |
+|---|---|---|---|
+| 2026-10-02 | Phase 1 | « Jouabilité correcte, mais difficile à jauger avec une seule arme ; ça devient compliqué avec le temps » | Phase 2 : armes multiples et niveaux d'armes |
+| 2026-10-02 | Phase 2 | « Les chiffres de dégâts sont un peu trop petits et pas assez impactants » ; sinon OK | Chiffres plus grands (30/48), police grasse, effet « pop », critiques jaunes avec secousse (sans « ! », retiré à la demande du dev), taille selon le montant |
+
+---
+
+## 5. Limites connues / dette
+
+- **Pas de menu pause** : Échap ne fait rien pour l'instant (prévu avec les menus, Phase 3).
+- **Pas de menu de paramètres** : les options « tremblement d'écran » et « chiffres de dégâts » existent dans le code, sans interface.
+- **Pas d'audio** (prévu Phase 2 initialement, reporté avec l'autoload `Audio`).
+- **Équilibrage = premières estimations** (dégâts, courbe d'XP, poids des cartes, apparition des ennemis).
+- Pas encore de vagues (le spawn augmente simplement avec le temps) ni de boutique.
+- Outils : l'exécutable `Godot_v4.7.2-stable_win64_console.exe` ne fonctionne pas seul (on utilise `Godot.exe`). GUT 9.7.1 est disponible (on est en 9.6.1).
+
+---
+
+## 6. Prochaines étapes
+
+1. **Dev** : jouer quelques parties de la Phase 2 et noter ses retours (section 4).
+2. **Phase 3 — Progression pendant la run** : objets passifs, raretés, synergies entre éléments (brûlure / électricité / ralentissement), menu principal, menu pause, paramètres.
+3. Puis Phase 4 (vagues) → Phase 5 (boutique) → Phase 6 (boss). Roadmap complète : `docs/design/gdd.md`.
+
+---
+
+## 7. Procédure de session (pour Claude)
+
+- **Début** : lire ce fichier et `CLAUDE.md`, vérifier qu'on est sur `develop` (`git branch --show-current`).
+- **Pendant** : toute décision du dev → section 2 ; tout retour de playtest → section 4.
+- **Fin** : mettre à jour les sections 1, 3, 5 et 6 et la date en haut, puis commiter sur `develop` si le dev le demande.

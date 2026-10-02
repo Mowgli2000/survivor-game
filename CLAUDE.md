@@ -6,6 +6,7 @@ Moteur : Godot 4.7.2 · GDScript typé · renderer Compatibility · cible 60 FPS
 Le développeur n'est pas senior : expliquer les décisions importantes, signaler les problèmes, préférer la solution simple.
 
 ## État du projet
+**Lire `PROJECT_STATUS.md` en début de session et le mettre à jour en fin de session** (décisions, changements, retours de playtest, prochaines étapes).
 Phases 0 (setup), 1 (prototype) et 2 (combat : 6 armes à niveaux, statuts, 4 ennemis, rendu néon) terminées. Prochaine : Phase 3 (items, synergies, menus). Roadmap et GDD : `docs/design/gdd.md`. Décisions : `docs/decisions/`.
 
 ## Architecture (résumé — détails dans les skills)
