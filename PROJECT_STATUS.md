@@ -3,7 +3,7 @@
 > Journal de suivi entre les sessions : état actuel, décisions prises, changements, retours de playtest et prochaines étapes.
 > **À lire au début de chaque session, à mettre à jour à la fin.** Les règles de développement sont dans `CLAUDE.md`, le design dans `docs/design/gdd.md`, les décisions techniques détaillées dans `docs/decisions/`.
 
-Dernière mise à jour : 2026-10-03 (session 4)
+Dernière mise à jour : 2026-10-03 (session 5)
 
 ---
 
@@ -11,10 +11,10 @@ Dernière mise à jour : 2026-10-03 (session 4)
 
 | | |
 |---|---|
-| **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. B. objets à effets et familles ✅. Suite : C. menus, D. playtest ; méta-progression en discussion (`docs/design/meta-progression-proposition.md`) |
+| **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. B. objets à effets et familles ✅ · C. menus et paramètres ✅. Suite : D. playtest ; méta-progression en discussion (`docs/design/meta-progression-proposition.md`) |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 234/234 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 257/257 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~100 FPS moyen (pire cas : 650 ennemis, 7 armes rang IV, toutes les familles actives ; ~120 avant les familles). Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS |
 | **Dernier push** | `ca472d9` (session 4) — commits suivants pas encore poussés |
 
@@ -70,6 +70,8 @@ Dernière mise à jour : 2026-10-03 (session 4)
 | D42 | 2026-10-03 | **Objets à effets et familles d'armes (étape B)** : 4 stats (esquive, vol de vie, chance, récolte), 4 familles à paliers 2/4/6 (lames, armes à feu, énergie, explosif), 6 types d'effets, 13 nouveaux objets (28 au total), objets forts uniques | Choix « reco » du dev. ADR 0012 |
 | D41 | 2026-10-03 | **Se sentir submergé (vagues 12-20)** : plafond 500 → 650 ennemis, apparitions fin 32 → 45/s **en paquets** (1 à 12 monstres qui arrivent ensemble d'un côté), hordes en plus vagues 14/16/19, plus de chauves-souris dès la vague 14 ; PV ×8 → ×12 en vague 20 ; **dégâts des ennemis qui montent** (×1,3 vague 10, ×1,8 vague 15, ×2,5 vague 20) ; vitesse inchangée ; build non affaibli | Retour du dev (« je ne bouge plus dès la vague 15-16, je veux être submergé ») et proposition validée. Pas d'optimisation au-delà de 1 000 ennemis (inutile : les monstres meurent avant). Mesure : 650 ennemis ≈ 120 FPS, 800 ≈ 90, 1 200 ≈ 48 |
 | D40 | 2026-10-03 | **Thème d'interface « chibi néon »** : contour noir, fond violet nuit, lueur néon ; polices Fredoka + Nunito ; animations discrètes ; tous les écrans | Choix « reco » du dev. Un seul `Theme` construit par `UiTheme`, animations `UiFx`. ADR 0011 |
+| D43 | 2026-10-03 | **Anti-boule de neige : matériaux découplés du nombre d'ennemis + plus d'apparitions** | Au-delà de 12 apparitions/s, le taux de matériaux baisse (`material_reference_spawn_rate` = 12, `material_decoupling` = 0,6) : les matériaux par seconde restent ~10-12 des vagues 10 à 20 au lieu de suivre les kills ; `material_rate_last` 0,3 → 0,5 pour compenser. Apparitions fin de partie 45 → 60/s. **Plafond gardé à 650** : 800 mesuré à ~77 FPS au stress test (sous le seuil D37) ; le dev peut le monter s'il accepte ce coût. PV et prix inchangés |
+| D44 | 2026-10-03 | **Menus (étape C)** : menu principal animé (Jouer / Paramètres / Quitter), pause complète (Reprendre / Paramètres / Recommencer / Menu principal / Quitter, confirmation avant d'abandonner, stats à côté), paramètres audio + affichage + jeu/accessibilité + langue sauvegardés dans `user://settings.json`, autoloads `Settings` et `SceneRouter` | Choix « reco » du dev. ADR 0013 |
 | D36 | 2026-10-03 | **Armes visibles façon Brotato + icônes** : positions fixes en cercle, armes petites, icônes d'objets dans le même style, cadre de rang en interface + liseré en jeu | Choix « reco » du dev. Les tirs partent du canon ; la cible reste choisie depuis le centre (pas de rééquilibrage). ADR 0010 |
 
 ### Décisions volontairement reportées
@@ -130,6 +132,14 @@ Dernière mise à jour : 2026-10-03 (session 4)
 
 - **Étape B — objets à effets et familles d'armes** (spec + plan dans `docs/superpowers/`, ADR 0012) : esquive, vol de vie, chance, récolte ; `ItemEffects` + 6 types d'effets ; 4 familles d'armes avec bonus 2/4/6 ; 13 nouveaux objets avec icônes ; familles affichées en boutique et dans le panneau de stats. Revue finale : une attaque de zone interrompue quand une élimination déclenchait le Réacteur en chaîne — corrigé (explosions en file d'attente). Proposition de méta-progression rédigée (11 questions). 234 tests
 
+### Session 5 — 2026-10-03
+
+- **Panneau de stats** : sous chaque famille, bonus actif (vert) et palier suivant (« À 4 : +10 % Chance de critique, +20 % Dégâts critiques »), lignes repliées pour ne pas élargir le panneau.
+- **Équilibrage anti-boule de neige** (D43) : matériaux découplés des apparitions, 60 apparitions/s en vague 20. 236 tests.
+- **F5 ne lançait plus le jeu** : un `/` tapé par erreur dans `enemy_manager.gd` (ligne de commentaire) cassait la compilation. Corrigé.
+- **Étape C — menus et paramètres** (spec + plan dans `docs/superpowers/`, ADR 0013) : menu principal (scène de démarrage), menu pause (Échap / P / Start), écran de paramètres partagé, bouton « Menu principal » en fin de partie, captures `--menu`, `--pause`, `--settings`. Les tests n'utilisent jamais les paramètres du joueur (crochet GUT). 256 tests
+- **Manette : la croix / A ne validait rien dans les menus** : dans Godot 4.7, les actions `ui_accept` / `ui_cancel` par défaut n'ont aucun bouton de manette. Ajout de A/Croix et B/Rond dans l'InputMap du projet + test. 257 tests
+
 ---
 
 ## 4. Retours du dev (playtests)
@@ -148,9 +158,8 @@ Dernière mise à jour : 2026-10-03 (session 4)
 
 ## 5. Limites connues / dette
 
-- **Pas de menu pause** : Échap ne fait rien pour l'instant (prévu avec les menus, Phase 3).
-- **Pas de menu de paramètres** : les options « tremblement d'écran » et « chiffres de dégâts » existent dans le code, sans interface.
-- **Audio provisoire** : sons choisis sans écoute (Kenney), à remplacer au goût du dev ; pas encore de réglage de volume (menu paramètres).
+- **Paramètres** : pas de remappage des touches ni de choix de résolution (Phase 9). Le titre du menu est le titre de travail (`GAME_TITLE`).
+- **Audio provisoire** : sons choisis sans écoute (Kenney), à remplacer au goût du dev.
 - **Équilibrage = premières estimations** (dégâts, courbe d'XP, poids des cartes, apparition des ennemis, prix, chances de rang, objets).
 - **Boutique, socle seulement** : objets sans effets spéciaux ni synergies, pas de caisses lâchées par les élites, pas de stat « récolte » ni « chance », visuel des matériaux provisoire (gemmes d'XP).
 - Boss provisoire seulement : pas de barre de vie de boss, pas d'attaque spéciale, même taille qu'un Colosse élite (rayon max de la grille : 48).
@@ -165,15 +174,12 @@ Dernière mise à jour : 2026-10-03 (session 4)
 
 ## 6. Prochaines étapes
 
-0. **À faire en premier (retours du playtest après l'étape B, `notes.md`)** :
-   - **Panneau de stats** : afficher le bonus de chaque famille (palier actif et palier suivant, ex. « Lames 2/4 : +5 % critique → +10 % critique, +20 % dégâts critiques »).
-   - **Équilibrage vagues 12-20** : le problème est l'**effet boule de neige** (plus d'ennemis tués → plus de matériaux → plus d'achats). Pistes à proposer au dev avant de coder : découpler les matériaux du nombre d'ennemis (taux de matériaux qui baisse quand les apparitions montent, ou plafond de matériaux par vague), PV ennemis encore plus hauts en fin de partie, encore plus d'apparitions (le plafond de 650 n'est jamais atteint), inflation des prix un peu plus forte. Le dev **aime les stats « cheatées »** : ne pas brider le build, compenser par les ennemis.
+0. **Dev : rejouer une run complète** (F3 pour le compteur) pour juger D43 : matériaux des vagues 12-20, densité, panneau des familles (Tab). Leviers restants si besoin : PV fin de partie ×12 → ×16, inflation des prix 12 % → 15 %, plafond 650 → 800 (~77 FPS en pire cas).
 1. **Dev : valider le chantier 1 en jeu** (sprites, tailles, sol, Shogun) ; lancer le jeu ou la galerie `vfx_gallery.tscn`. Réglages rapides : `SPRITE_HEIGHT_PER_RADIUS` (`enemy.gd`, `player.gd`), `sprite_scale` / `sprite_tint` dans `data/enemies/`, `FLOOR_TINT` (`arena.gd`), halo dans `tools/sprites/bake_sprites.gd`.
 2. **Dev : valider le chantier 2** (icônes, armes autour du perso, boutique). Question ouverte : **zoom de la caméra** (aujourd'hui 1 : le perso fait ~60 px en 1080p, plus petit que dans Brotato ; zoomer agrandit tout mais montre moins d'arène). Re-mesurer le stress test sur une machine au repos (ADR 0010).
 3. **Dev : répondre aux 11 questions de `docs/design/meta-progression-proposition.md`** (méta-progression, persos, difficultés, ennemis, boss, mode infini, ordre des étapes), puis planifier les étapes 6/7/8.
-4. **C.** menus (principal, pause, paramètres avec volumes et « réduire les animations » → `UiFx.reduce_motion`), **D.** playtest (nouveaux objets, familles, équilibrage D41).
+4. **D.** playtest (nouveaux objets, familles, équilibrage D41/D43) ; **dev : tester les menus** (Échap en partie, paramètres, plein écran, langue, manette).
 4. **Dev** : écouter le son en jeu (sons choisis sans écoute, à changer au goût) ; rejouer une run complète (F3) : densité des vagues 10-20, matériaux, panneau de stats (Tab) ; ajuster D30.
-5. **Phase 3 — Objets à effets et synergies** (vendus par la boutique), puis **menus** (principal, pause, paramètres avec volumes).
 6. Phase 6 (vrai boss), puis 6b (vertical slice + page Steam). Roadmap complète : `docs/design/gdd.md`.
 
 ---

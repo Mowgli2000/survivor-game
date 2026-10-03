@@ -7,10 +7,10 @@ Le développeur n'est pas senior : expliquer les décisions importantes, signale
 
 ## État du projet
 **Lire `PROJECT_STATUS.md` en début de session et le mettre à jour en fin de session** (décisions, changements, retours de playtest, prochaines étapes).
-Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes, statuts, 4 ennemis, rendu néon), 4 (vagues : 20 vagues, élites, boss provisoire) et 5 (socle de boutique façon Brotato : matériaux, armes à 4 rangs en double, objets de stats, level-up à rang) terminées. Prochaine : Phase 3 (objets à effets, synergies, menus). Roadmap et GDD : `docs/design/gdd.md`. Décisions : `docs/decisions/`.
+Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes, statuts, 4 ennemis, rendu néon), 4 (vagues : 20 vagues, élites, boss provisoire) et 5 (socle de boutique façon Brotato : matériaux, armes à 4 rangs en double, objets de stats, level-up à rang) terminées. Objets à effets/familles (étape B) et menus/paramètres (étape C, ADR 0013) faits. Roadmap et GDD : `docs/design/gdd.md`. Décisions : `docs/decisions/`.
 
 ## Architecture (résumé — détails dans les skills)
-- Autoloads minimaux : ContentDB et Audio (ADR 0008 : `Audio.play(stream)`, catalogue `Sounds`, son de tir dans `WeaponData`) existent ; puis SceneRouter, Settings, SaveService, EventBus, Platform quand leur phase arrive. Aucune logique de run dans un autoload.
+- Autoloads minimaux : ContentDB, Audio (ADR 0008 : `Audio.play(stream)`, catalogue `Sounds`, son de tir dans `WeaponData`), Settings et SceneRouter (ADR 0013 : `Settings.data` / `set_value` / signal `changed`, fichier `user://settings.json` ; `SceneRouter.goto_main_menu/goto_run/quit`) existent ; puis SaveService, EventBus, Platform quand leur phase arrive. Aucune logique de run dans un autoload.
 - `src/run/run.gd` = racine de composition d'une partie : crée et branche les systèmes (EnemyManager, ProjectileManager, PickupManager, SpawnDirector, Progression, Shop…).
 - Ennemis/projectiles/pickups : gérés en lot par leur manager + `SpatialGrid` + `ObjectPool`. Jamais de `_process` par entité, jamais d'Area2D/physique pour les hits de masse. Seul le Player est un CharacterBody2D. Projectiles = données rendues par un seul MultiMesh (ADR 0004). Ennemis et joueur = sprites animés dans un atlas commun, image avancée par le manager, redessin seulement au changement d'image (ADR 0009 ; repli néon ADR 0005).
 - Code pur testable dans `src/core/` (StatBlock, CombatMath, SpatialGrid, ObjectPool, WeightedPicker).
@@ -49,7 +49,7 @@ Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes, statuts, 4 ennemis, rendu 
 - Lancer le jeu : `& "C:\Program Files\Godot\Godot.exe" --path .`
 - Export Windows : `& "C:\Program Files\Godot\Godot.exe" --headless --path . --export-release "Windows Desktop" builds/windows/survivor-game.exe`
 - Stress test (650 ennemis = plafond du jeu + 1000 projectiles, imprime FPS/ms/draw calls) : `& "C:\Program Files\Godot\Godot.exe" --path . res://src/debug/stress_test.tscn -- --duration=20`
-- Capture d'écran automatique (pour vérifier un visuel) : `... res://src/debug/capture.tscn -- --time=20 --out=<chemin.png> [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die]`
+- Capture d'écran automatique (pour vérifier un visuel) : `... res://src/debug/capture.tscn -- --time=20 --out=<chemin.png> [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--pause] [--settings] [--menu]`
 - Planche des icônes d'armes et d'objets : `... res://src/debug/icon_sheet.tscn [-- --out=<chemin.png>]` ; icônes régénérées par `python tools/icons/make_icons.py`
 - Overlay debug en jeu : F3 (action `debug_toggle`).
 - Galerie d'effets et d'ennemis (direction artistique) : `... res://src/debug/vfx_gallery.tscn [-- --out=<chemin.png>]`
