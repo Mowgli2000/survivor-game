@@ -15,6 +15,7 @@ amount = 3.0
 script = ExtResource("1_item")
 id = &"med_drone"
 name_key = "ITEM_MED_DRONE"
+locked = true
 tier = 2
 base_price = 40
 max_count = 1

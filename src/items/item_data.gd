@@ -4,6 +4,8 @@ extends Resource
 
 @export var id: StringName
 @export var name_key: String
+## Hidden from the shop, rewards and selection until a challenge unlocks it (ADR 0015).
+@export var locked: bool = false
 ## 1..Tiers.COUNT, fixed for an item.
 @export var tier: int = 1
 ## Price on wave 1 (grows with the waves, see ShopConfig).

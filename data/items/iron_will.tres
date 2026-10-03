@@ -17,6 +17,7 @@ percent_per_step = 0.01
 script = ExtResource("1_item")
 id = &"iron_will"
 name_key = "ITEM_IRON_WILL"
+locked = true
 tier = 3
 base_price = 60
 max_count = 1

@@ -11,10 +11,10 @@ Dernière mise à jour : 2026-10-03 (session 5)
 
 | | |
 |---|---|
-| **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. B. objets à effets et familles ✅ · C. menus et paramètres ✅ · 6. vrais boss ✅ · 5b. nouveaux ennemis ✅. Suite (D46) : 7 méta-progression → 7b modes → 6b vertical slice ; méta-progression en discussion (`docs/design/meta-progression-proposition.md`) |
+| **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. B. objets à effets et familles ✅ · C. menus et paramètres ✅ · 6. vrais boss ✅ · 5b. nouveaux ennemis ✅ · 7. méta-progression ✅. Suite (D46) : 7b modes (infini, difficultés) → 6b vertical slice ; méta-progression en discussion (`docs/design/meta-progression-proposition.md`) |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 275/275 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 288/288 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~100 FPS moyen (pire cas : 650 ennemis, 7 armes rang IV, toutes les familles actives ; ~120 avant les familles). Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS |
 | **Dernier push** | `ca472d9` (session 4) — commits suivants pas encore poussés |
 
@@ -145,6 +145,7 @@ Dernière mise à jour : 2026-10-03 (session 5)
 - **Rééquilibrage D45** (moins de matériaux, relance plus chère, plus d'ennemis plus tôt) et **réponses Q1-Q11 validées** (D46).
 - **Étape 6 — vrais boss** (spec `docs/superpowers/specs/2026-10-03-boss-design.md`, ADR 0014) : phases selon les PV, 4 motifs d'attaque annoncés (cercle, éventail, ruée, invocation), barre de vie, récompense ; Ronin (mini-boss vague 10, remplace les 2 tireurs élites) et Shogun en 3 phases (vague 20). Capture `--boss=shogun|ronin`. 270 tests
 - **Étape 5b — nouveaux ennemis** (spec `docs/superpowers/specs/2026-10-03-nouveaux-ennemis-design.md`) : Chargeur (annonce puis ruée, dès la vague 7), Kamikaze (mèche puis explosion, pas d'XP s'il explose, dès la vague 5), Pondeuse (appelle 3 coureurs toutes les 4 s, dès la vague 9), gérés dans la boucle d'`EnemyManager`. Stress test 108-110 FPS. 275 tests
+- **Étape 7 — méta-progression** (spec `docs/superpowers/specs/2026-10-03-meta-progression-design.md`, ADR 0015) : profil sauvegardé (`SaveService`, `user://profile.json`), 8 défis, 4 personnages (Vagabond dispo ; Rōnin, Flingueur, Marchand à débloquer) avec règle + bonus/malus + arme de départ au choix, 5 objets forts à débloquer, écrans « Choisis ton personnage » et « Progression », déblocages affichés en fin de partie. Captures `--characters`, `--progression`. 288 tests
 
 ---
 

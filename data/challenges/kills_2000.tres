@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ChallengeData" format=3]
+
+[ext_resource type="Script" path="res://src/meta/challenge_data.gd" id="1_challenge"]
+
+[resource]
+script = ExtResource("1_challenge")
+id = &"kills_2000"
+name_key = "CHALLENGE_KILLS_2000"
+description_key = "CHALLENGE_KILLS_2000_DESC"
+kind = 2
+threshold = 2000
+unlock_category = &"characters"
+unlock_id = &"gunslinger"

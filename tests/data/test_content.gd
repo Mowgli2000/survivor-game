@@ -105,6 +105,33 @@ func test_characters() -> void:
 					"%s: player sheet needs idle and walk" % character.id)
 
 
+## Every challenge unlocks existing, locked content; every locked content has a challenge.
+func test_challenges() -> void:
+	var targets := {}
+	for def in ContentDB.get_all(&"challenges"):
+		var challenge := def as ChallengeData
+		assert_not_null(challenge, "data/challenges must contain ChallengeData")
+		_assert_common(challenge, &"challenges")
+		var target := ContentDB.get_def(challenge.unlock_category, challenge.unlock_id)
+		assert_not_null(target, "%s: unknown unlock %s/%s" % [challenge.id, challenge.unlock_category, challenge.unlock_id])
+		if target != null:
+			assert_true(target.get(&"locked"), "%s unlocks %s, which is not locked" % [challenge.id, challenge.unlock_id])
+		if challenge.kind == ChallengeData.Kind.WIN_WITH:
+			assert_true(ContentDB.has_def(&"characters", challenge.character_id), "%s: unknown character" % challenge.id)
+		if challenge.kind == ChallengeData.Kind.KILL_ENEMY:
+			assert_true(ContentDB.has_def(&"enemies", challenge.enemy_id), "%s: unknown enemy" % challenge.id)
+		targets["%s/%s" % [challenge.unlock_category, challenge.unlock_id]] = true
+	for category in [&"characters", &"weapons", &"items"]:
+		for def in ContentDB.get_all(category):
+			if def.get(&"locked"):
+				assert_true(targets.has("%s/%s" % [category, def.get(&"id")]), "%s is locked forever" % def.get(&"id"))
+	var unlocked_characters := 0
+	for def in ContentDB.get_all(&"characters"):
+		if not (def as CharacterData).locked:
+			unlocked_characters += 1
+	assert_gt(unlocked_characters, 0, "at least one playable character from the start")
+
+
 func test_upgrades() -> void:
 	for def in ContentDB.get_all(&"upgrades"):
 		var upgrade := def as UpgradeData

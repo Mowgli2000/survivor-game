@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ChallengeData" format=3]
+
+[ext_resource type="Script" path="res://src/meta/challenge_data.gd" id="1_challenge"]
+
+[resource]
+script = ExtResource("1_challenge")
+id = &"materials_300"
+name_key = "CHALLENGE_MATERIALS_300"
+description_key = "CHALLENGE_MATERIALS_300_DESC"
+kind = 4
+threshold = 300
+unlock_category = &"characters"
+unlock_id = &"merchant"

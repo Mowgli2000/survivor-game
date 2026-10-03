@@ -14,6 +14,7 @@ var is_victory: bool = false
 var _title: Label
 var _dim: ColorRect
 var _summary: Label
+var _unlocks: Label
 var _retry: Button
 var _main_menu: Button
 
@@ -55,6 +56,13 @@ func _init() -> void:
 	_summary.add_theme_font_size_override("font_size", 32)
 	box.add_child(_summary)
 
+	_unlocks = Label.new()
+	_unlocks.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_unlocks.theme_type_variation = &"SubtitleLabel"
+	_unlocks.add_theme_color_override("font_color", UiTheme.GOLD)
+	_unlocks.visible = false
+	box.add_child(_unlocks)
+
 	_retry = Button.new()
 	_retry.text = "UI_RETRY"
 	_retry.custom_minimum_size = Vector2(340, 84)
@@ -82,9 +90,23 @@ func open(time_survived: float, level: int, kills: int, wave: int, victory: bool
 		tr("UI_LEVEL_LABEL"), level,
 		tr("UI_KILLS"), kills,
 	]
+	_unlocks.visible = false
 	visible = true
 	UiFx.pop_in(_title)
 	UiFx.pop_in(_summary, 0.08)
 	UiFx.pop_in(_retry, 0.16)
 	UiFx.pop_in(_main_menu, 0.24)
 	_retry.grab_focus()
+
+
+## New unlocks from this run (challenges completed), one line each.
+func show_unlocks(challenges: Array[ChallengeData]) -> void:
+	var lines: PackedStringArray = []
+	for challenge in challenges:
+		var def := ContentDB.get_def(challenge.unlock_category, challenge.unlock_id)
+		var target: String = tr(def.get(&"name_key")) if def != null else String(challenge.unlock_id)
+		lines.append(tr("UI_UNLOCKED") % target)
+	_unlocks.text = "\n".join(lines)
+	_unlocks.visible = not lines.is_empty()
+	if _unlocks.visible:
+		UiFx.pop_in(_unlocks, 0.3)

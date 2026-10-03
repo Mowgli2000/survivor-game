@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ChallengeData" format=3]
+
+[ext_resource type="Script" path="res://src/meta/challenge_data.gd" id="1_challenge"]
+
+[resource]
+script = ExtResource("1_challenge")
+id = &"kill_ronin"
+name_key = "CHALLENGE_KILL_RONIN"
+description_key = "CHALLENGE_KILL_RONIN_DESC"
+kind = 5
+enemy_id = &"ronin"
+unlock_category = &"items"
+unlock_id = &"soul_harvester"

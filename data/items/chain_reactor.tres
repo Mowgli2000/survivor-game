@@ -16,6 +16,7 @@ damage = 12.0
 script = ExtResource("1_item")
 id = &"chain_reactor"
 name_key = "ITEM_CHAIN_REACTOR"
+locked = true
 tier = 3
 base_price = 60
 max_count = 1

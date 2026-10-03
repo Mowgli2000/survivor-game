@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="CharacterData" format=3]
+
+[ext_resource type="Script" path="res://src/player/character_data.gd" id="1_char"]
+[ext_resource type="Script" path="res://src/core/stat_modifier.gd" id="2_mod"]
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_weapon_script"]
+[ext_resource type="Script" path="res://src/items/effects/interest_effect.gd" id="4_interest"]
+[ext_resource type="Script" path="res://src/items/effects/item_effect.gd" id="5_effect"]
+[ext_resource type="Resource" path="res://data/weapons/pulse.tres" id="w0"]
+[ext_resource type="Resource" path="res://data/weapons/bazooka.tres" id="w1"]
+
+[sub_resource type="Resource" id="Mod_1"]
+script = ExtResource("2_mod")
+stat = &"harvest"
+flat = 3.0
+
+[sub_resource type="Resource" id="Mod_2"]
+script = ExtResource("2_mod")
+stat = &"damage"
+percent = -0.1
+
+[sub_resource type="Resource" id="Interest"]
+script = ExtResource("4_interest")
+percent = 0.1
+cap = 25
+
+[resource]
+script = ExtResource("1_char")
+id = &"merchant"
+name_key = "CHARACTER_MERCHANT"
+locked = true
+description_key = "CHARACTER_MERCHANT_RULE"
+starting_weapon = ExtResource("w0")
+starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1")])
+modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2")])
+effects = Array[ExtResource("5_effect")]([SubResource("Interest")])
+stat_overrides = {
+"max_hp": 100.0,
+"move_speed": 300.0
+}
+invulnerability_time = 0.5
+radius = 16.0
+color = Color(1, 0.85, 0.3, 1)
+sprite_id = &"player"

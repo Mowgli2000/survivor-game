@@ -6,12 +6,17 @@ extends Node
 const MAIN_MENU := "res://src/ui/main_menu/main_menu.tscn"
 const RUN := "res://src/run/run.tscn"
 
+## Choices for the next run (character, weapon); kept for "Restart".
+var next_run: RunSetup
+
 
 func goto_main_menu() -> void:
 	_change(MAIN_MENU)
 
 
-func goto_run() -> void:
+func goto_run(setup: RunSetup = null) -> void:
+	if setup != null:
+		next_run = setup
 	_change(RUN)
 
 

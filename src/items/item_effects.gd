@@ -54,7 +54,12 @@ func roll(chance: float) -> bool:
 
 ## One more copy of `item` owned: its effects start working.
 func add_item(item: ItemData) -> void:
-	for effect in item.effects:
+	add_effects(item.effects)
+
+
+## Copies and starts `effects` (items, character rules).
+func add_effects(effects: Array[ItemEffect]) -> void:
+	for effect in effects:
 		if effect == null:
 			continue
 		var instance := effect.duplicate(true) as ItemEffect

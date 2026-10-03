@@ -21,6 +21,10 @@ const PLAYER_HIT_SHAKE := 0.35
 @export var auto_choose_upgrades: bool = false
 ## When valid, drives the player instead of the input (bots, tests, stress test).
 var bot_input: Callable
+## Character and weapon chosen in the menu (SceneRouter.next_run when null).
+## Only runs with a setup are recorded in the profile: tests and debug
+## tools instantiate run.tscn without one.
+var setup: RunSetup
 
 var state: RunState
 var stage: StageData
@@ -47,6 +51,9 @@ var game_over_screen: GameOverScreen
 var pause_menu: PauseMenu
 
 var _upgrade_pool: Array[UpgradeData] = []
+var _character: CharacterData
+var _max_materials: int = 0
+var _killed_special: Array[StringName] = []
 ## Level-up rerolls paid during the current wave end (the cost grows each time).
 var _level_up_rerolls: int = 0
 
@@ -61,6 +68,11 @@ func _ready() -> void:
 		config.shop = ContentDB.get_def(&"shop", &"default")
 	var arena_rect := Rect2(-config.arena_size * 0.5, config.arena_size)
 
+	# Launched as a scene (menu, Restart): directly under the root. Tests and
+	# debug tools add run.tscn under their own node and pass their own setup.
+	if setup == null and get_parent() == get_tree().root:
+		setup = SceneRouter.next_run
+	_character = setup.character if setup != null and setup.character != null else config.character
 	state = RunState.new(seed_override if seed_override >= 0 else randi())
 	progression = Progression.new(config.xp_base, config.xp_exponent)
 	_upgrade_pool.assign(ContentDB.get_all(&"upgrades"))
@@ -76,7 +88,7 @@ func _ready() -> void:
 
 	player = Player.new()
 	player.name = "Player"
-	player.setup(config.character, arena_rect)
+	player.setup(_character, arena_rect)
 	inventory = Inventory.new(player.stats)
 	player.invincible = player_invincible
 	player.bot_input = bot_input
@@ -117,9 +129,9 @@ func _ready() -> void:
 	player.weapons.setup(WeaponContext.new(player, player.stats, enemies, projectiles, state.rng, vfx),
 		config.max_weapon_slots)
 	var weapon_pool: Array[WeaponData] = []
-	weapon_pool.assign(ContentDB.get_all(&"weapons"))
+	weapon_pool.assign(_unlocked(&"weapons"))
 	var item_pool: Array[ItemData] = []
-	item_pool.assign(ContentDB.get_all(&"items"))
+	item_pool.assign(_unlocked(&"items"))
 	shop = Shop.new(config.shop, state.wallet, inventory, player.weapons, weapon_pool, item_pool, state.rng)
 	shop.luck_stats = player.stats
 	var families: Array[FamilyData] = []
@@ -132,9 +144,14 @@ func _ready() -> void:
 	item_effects.setup(player, enemies, state.wallet, state.rng, vfx)
 	add_child(item_effects)
 	inventory.item_added.connect(item_effects.add_item)
+	for mod in _character.modifiers:
+		player.stats.add_modifier(mod)
+	item_effects.add_effects(_character.effects)
+	state.wallet.changed.connect(func(amount: int) -> void: _max_materials = maxi(_max_materials, amount))
 	state.wallet.add(config.shop.starting_materials)
-	if config.character.starting_weapon != null:
-		player.weapons.add_weapon(config.character.starting_weapon)
+	var first_weapon := setup.weapon if setup != null and setup.weapon != null else _character.starting_weapon
+	if first_weapon != null:
+		player.weapons.add_weapon(first_weapon)
 
 	waves = WaveDirector.new()
 	waves.name = "WaveDirector"
@@ -248,16 +265,41 @@ func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
 	if elite:
 		xp = roundi(xp * stage.elite_xp_multiplier)
 	pickups.spawn_xp(pos, xp)
+	if data.boss or not data.phases.is_empty():
+		_killed_special.append(data.id)
 	if data.reward_item_tier > 0:
 		_grant_reward(data.reward_item_tier)
 	if data.boss and not enemies.has_living_boss():
 		waves.finish_wave()
 
 
+## Content of `category` the profile allows (locked content stays out).
+func _unlocked(category: StringName) -> Array[Resource]:
+	var list: Array[Resource] = []
+	for def in ContentDB.get_all(category):
+		if SaveService.is_unlocked(category, def):
+			list.append(def)
+	return list
+
+
+## Menu runs only: profile statistics, challenges, unlocks shown on the end screen.
+func _record_run(won: bool) -> void:
+	if setup == null:
+		return
+	var result := RunResult.new()
+	result.character_id = _character.id
+	result.won = won
+	result.wave = waves.wave
+	result.kills = state.kills
+	result.max_materials = maxi(_max_materials, state.wallet.amount)
+	result.killed_special = _killed_special
+	game_over_screen.show_unlocks(SaveService.record_run(result))
+
+
 ## Boss reward: a random item of `min_tier` or higher that can still be owned.
 func _grant_reward(min_tier: int) -> void:
 	var pool: Array[ItemData] = []
-	pool.assign(ContentDB.get_all(&"items"))
+	pool.assign(_unlocked(&"items"))
 	var item := pick_reward(pool, inventory, min_tier, state.rng)
 	if item == null:
 		return
@@ -383,6 +425,7 @@ func _on_run_won() -> void:
 	Audio.play(Sounds.VICTORY)
 	get_tree().paused = true
 	game_over_screen.open(state.elapsed, progression.level, state.kills, waves.wave, true)
+	_record_run(true)
 
 
 func _on_player_died() -> void:
@@ -391,6 +434,7 @@ func _on_player_died() -> void:
 	Audio.play(Sounds.DEFEAT)
 	get_tree().paused = true
 	game_over_screen.open(state.elapsed, progression.level, state.kills, waves.wave)
+	_record_run(false)
 
 
 func _on_retry_requested() -> void:

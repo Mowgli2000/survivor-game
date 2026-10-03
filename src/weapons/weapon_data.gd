@@ -6,6 +6,8 @@ extends Resource
 
 @export var id: StringName
 @export var name_key: String
+## Hidden from the shop, rewards and selection until a challenge unlocks it (ADR 0015).
+@export var locked: bool = false
 @export var description_key: String
 @export var behavior: WeaponBehavior
 ## Weapon families (ids in data/families/) for set bonuses.

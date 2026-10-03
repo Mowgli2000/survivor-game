@@ -1,7 +1,7 @@
 extends Node
 ## Plays a run with a bot and saves a screenshot, so visuals can be checked
 ## without a human at the keyboard (used by Claude Code).
-## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--pause] [--settings] [--menu] [--boss=shogun|ronin]
+## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--pause] [--settings] [--menu] [--characters] [--progression] [--boss=shogun|ronin]
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
 const MENU_SCENE := preload("res://src/ui/main_menu/main_menu.tscn")
@@ -27,14 +27,19 @@ func _ready() -> void:
 			_out = arg.trim_prefix("--out=")
 		elif arg == "--stress":
 			stress = true
-		elif arg in ["--levelup", "--die", "--waveend", "--shop", "--pause", "--settings", "--menu"]:
+		elif arg in ["--levelup", "--die", "--waveend", "--shop", "--pause", "--settings", "--menu", "--characters", "--progression"]:
 			_mode = arg
 		elif arg.begins_with("--boss="):
 			_boss_id = StringName(arg.trim_prefix("--boss="))
 		elif arg == "--allweapons":
 			all_weapons = true
-	if _mode == "--menu":
-		add_child(MENU_SCENE.instantiate())
+	if _mode in ["--menu", "--characters", "--progression"]:
+		var menu: MainMenu = MENU_SCENE.instantiate()
+		add_child(menu)
+		if _mode == "--characters":
+			menu._open_character_select()
+		elif _mode == "--progression":
+			menu._open_progression()
 		return
 	_run = RUN_SCENE.instantiate()
 	if stress:

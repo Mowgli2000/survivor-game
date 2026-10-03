@@ -22,6 +22,7 @@ ContentDB="*res://src/autoload/content_db.gd"
 Audio="*res://src/audio/audio.gd"
 Settings="*res://src/autoload/settings.gd"
 SceneRouter="*res://src/autoload/scene_router.gd"
+SaveService="*res://src/autoload/save_service.gd"
 
 [display]
 

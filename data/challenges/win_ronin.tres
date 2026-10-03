@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ChallengeData" format=3]
+
+[ext_resource type="Script" path="res://src/meta/challenge_data.gd" id="1_challenge"]
+
+[resource]
+script = ExtResource("1_challenge")
+id = &"win_ronin"
+name_key = "CHALLENGE_WIN_RONIN"
+description_key = "CHALLENGE_WIN_RONIN_DESC"
+kind = 0
+character_id = &"ronin"
+unlock_category = &"items"
+unlock_id = &"iron_will"
