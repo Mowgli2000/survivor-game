@@ -1,8 +1,9 @@
 class_name GameOverScreen
 extends CanvasLayer
-## Shown when the run ends (death or victory): run summary + retry button.
+## Shown when the run ends (death or victory): run summary, retry and main menu buttons.
 
 signal retry_requested
+signal main_menu_requested
 
 ## Defeat veil: the night violet of the UI, pushed toward red.
 const DEFEAT_DIM := Color(0.16, 0.03, 0.08, 0.8)
@@ -14,6 +15,7 @@ var _title: Label
 var _dim: ColorRect
 var _summary: Label
 var _retry: Button
+var _main_menu: Button
 
 
 func _init() -> void:
@@ -61,6 +63,13 @@ func _init() -> void:
 	_retry.pressed.connect(func() -> void: retry_requested.emit())
 	box.add_child(_retry)
 
+	_main_menu = Button.new()
+	_main_menu.text = "UI_MAIN_MENU"
+	_main_menu.custom_minimum_size = Vector2(340, 64)
+	_main_menu.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_main_menu.pressed.connect(func() -> void: main_menu_requested.emit())
+	box.add_child(_main_menu)
+
 
 func open(time_survived: float, level: int, kills: int, wave: int, victory: bool = false) -> void:
 	is_victory = victory
@@ -77,4 +86,5 @@ func open(time_survived: float, level: int, kills: int, wave: int, victory: bool
 	UiFx.pop_in(_title)
 	UiFx.pop_in(_summary, 0.08)
 	UiFx.pop_in(_retry, 0.16)
+	UiFx.pop_in(_main_menu, 0.24)
 	_retry.grab_focus()

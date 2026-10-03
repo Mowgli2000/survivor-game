@@ -1,9 +1,10 @@
 extends Node
 ## Plays a run with a bot and saves a screenshot, so visuals can be checked
 ## without a human at the keyboard (used by Claude Code).
-## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die]
+## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--pause] [--settings] [--menu]
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
+const MENU_SCENE := preload("res://src/ui/main_menu/main_menu.tscn")
 const STRESS_CONFIG := preload("res://src/debug/stress/stress_run.tres")
 
 var _run: Run
@@ -25,16 +26,19 @@ func _ready() -> void:
 			_out = arg.trim_prefix("--out=")
 		elif arg == "--stress":
 			stress = true
-		elif arg in ["--levelup", "--die", "--waveend", "--shop"]:
+		elif arg in ["--levelup", "--die", "--waveend", "--shop", "--pause", "--settings", "--menu"]:
 			_mode = arg
 		elif arg == "--allweapons":
 			all_weapons = true
+	if _mode == "--menu":
+		add_child(MENU_SCENE.instantiate())
+		return
 	_run = RUN_SCENE.instantiate()
 	if stress:
 		_run.config = STRESS_CONFIG
 	_run.seed_override = 7
 	_run.player_invincible = true
-	_run.auto_choose_upgrades = _mode not in ["--levelup", "--waveend", "--shop"]
+	_run.auto_choose_upgrades = _mode not in ["--levelup", "--waveend", "--shop", "--pause", "--settings"]
 	_run.bot_input = func() -> Vector2: return Vector2.from_angle(_time * 0.5)
 	add_child(_run)
 	if all_weapons:
@@ -63,6 +67,12 @@ func _process(delta: float) -> void:
 		# Skip the level-up cards: straight to the shop.
 		_run.progression.pending_level_ups = 0
 		_run._resolve_level_ups()
+		_capture_at = _time + 0.5
+		return
+	if _mode in ["--pause", "--settings"] and not get_tree().paused:
+		_run.open_pause()
+		if _mode == "--settings":
+			_run.pause_menu._open_settings()
 		_capture_at = _time + 0.5
 		return
 	if _mode == "--waveend" and not get_tree().paused:

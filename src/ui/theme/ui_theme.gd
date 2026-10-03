@@ -152,6 +152,19 @@ static func _build() -> Theme:
 	theme.set_stylebox("panel", "TooltipPanel", tooltip)
 	theme.set_color("font_color", "TooltipLabel", TEXT)
 	theme.set_font("font", "TooltipLabel", font(700))
+	# Settings controls (ADR 0013): sliders reuse the bar styles, toggles and
+	# option buttons inherit the Button look; the popup list gets a panel.
+	theme.set_stylebox("slider", "HSlider", bars[0])
+	theme.set_stylebox("grabber_area", "HSlider", bars[1])
+	theme.set_stylebox("grabber_area_highlight", "HSlider", bars[1])
+	theme.set_stylebox("focus", "HSlider", focus_style(ACCENT, 10))
+	theme.set_stylebox("panel", "PopupMenu", panel_style(ACCENT, 0.6, 10))
+	theme.set_font("font", "PopupMenu", font(700))
+	theme.set_font_size("font_size", "PopupMenu", 22)
+	# Toggles: only the switch icon, no button frame (the frame read as a big empty button).
+	for state in ["normal", "hover", "pressed", "hover_pressed", "disabled"]:
+		theme.set_stylebox(state, "CheckButton", StyleBoxEmpty.new())
+	theme.set_stylebox("focus", "CheckButton", focus_style(ACCENT, 10))
 	return theme
 
 

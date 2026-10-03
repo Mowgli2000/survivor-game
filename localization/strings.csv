@@ -127,3 +127,25 @@ ITEM_SOUL_HARVESTER_EFFECT,+1 Max HP every 20 kills (max +60),+1 PV max tous les
 ITEM_SOUL_HARVESTER,Soul harvester,Moissonneur d'âmes
 ITEM_MED_DRONE_EFFECT,Heals 3 HP every 5 s,Soigne 3 PV toutes les 5 s
 ITEM_MED_DRONE,Med drone,Drone médical
+UI_SETTINGS,Settings,Paramètres
+UI_BACK,Back,Retour
+UI_MAIN_MENU,Main menu,Menu principal
+UI_RESTART,Restart,Recommencer
+UI_CONFIRM_ABANDON,Abandon the run?,Abandonner la partie ?
+UI_YES,Yes,Oui
+UI_NO,No,Non
+SET_SECTION_AUDIO,AUDIO,AUDIO
+SET_SECTION_DISPLAY,DISPLAY,AFFICHAGE
+SET_SECTION_GAME,GAME,JEU
+SET_MASTER_VOLUME,Master volume,Volume général
+SET_MUSIC_VOLUME,Music,Musique
+SET_SFX_VOLUME,Sound effects,Effets sonores
+SET_FULLSCREEN,Fullscreen,Plein écran
+SET_VSYNC,VSync,Synchronisation verticale
+SET_SCREEN_SHAKE,Screen shake,Tremblement de l'écran
+SET_DAMAGE_NUMBERS,Damage numbers,Chiffres de dégâts
+SET_REDUCE_MOTION,Reduce animations,Réduire les animations
+SET_LANGUAGE,Language,Langue
+LANG_SYSTEM,System,Système
+LANG_EN,English,English
+LANG_FR,Français,Français

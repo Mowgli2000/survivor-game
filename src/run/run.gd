@@ -43,6 +43,7 @@ var wave_end_screen: WaveEndScreen
 var shop: Shop
 var shop_screen: ShopScreen
 var game_over_screen: GameOverScreen
+var pause_menu: PauseMenu
 
 var _upgrade_pool: Array[UpgradeData] = []
 ## Level-up rerolls paid during the current wave end (the cost grows each time).
@@ -158,6 +159,10 @@ func _ready() -> void:
 	shop_screen.stats_panel.setup_families(weapon_families)
 	game_over_screen = GameOverScreen.new()
 	add_child(game_over_screen)
+	pause_menu = PauseMenu.new()
+	add_child(pause_menu)
+	pause_menu.stats_panel.setup(player.stats)
+	pause_menu.stats_panel.setup_families(weapon_families)
 
 	var overlay := DebugOverlay.new()
 	overlay.setup(enemies, projectiles, pickups, enemy_projectiles, vfx)
@@ -175,6 +180,13 @@ func _ready() -> void:
 	level_up_screen.offer_chosen.connect(_apply_offer)
 	level_up_screen.reroll_requested.connect(_on_level_up_reroll)
 	game_over_screen.retry_requested.connect(_on_retry_requested)
+	game_over_screen.main_menu_requested.connect(SceneRouter.goto_main_menu)
+	pause_menu.resume_requested.connect(_resume_from_pause)
+	pause_menu.restart_requested.connect(_on_retry_requested)
+	pause_menu.main_menu_requested.connect(SceneRouter.goto_main_menu)
+	pause_menu.quit_requested.connect(SceneRouter.quit)
+	Settings.changed.connect(_apply_settings)
+	_apply_settings()
 	waves.wave_started.connect(spawner.begin_wave)
 	waves.wave_ended.connect(_on_wave_ended)
 	waves.run_won.connect(_on_run_won)
@@ -187,6 +199,33 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if not state.is_over and waves.in_wave:
 		state.elapsed += delta
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("pause") and can_pause():
+		get_viewport().set_input_as_handled()
+		open_pause()
+
+
+## Only during a wave, with no other screen (level-up, shop, game over) open.
+func can_pause() -> bool:
+	return waves.in_wave and not state.is_over and not get_tree().paused and not auto_choose_upgrades
+
+
+func open_pause() -> void:
+	get_tree().paused = true
+	pause_menu.open()
+
+
+func _resume_from_pause() -> void:
+	pause_menu.close()
+	get_tree().paused = false
+
+
+## Player settings that affect the run's feedback (damage numbers, screen shake).
+func _apply_settings() -> void:
+	damage_numbers.enabled = Settings.data.damage_numbers
+	player.camera.shake_enabled = Settings.data.screen_shake
 
 
 func _on_player_damaged(_amount: float) -> void:
