@@ -14,7 +14,7 @@ Dernière mise à jour : 2026-10-03 (session 5, suite)
 | **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. B. objets à effets et familles ✅ · C. menus et paramètres ✅ · 6. vrais boss ✅ · 5b. nouveaux ennemis ✅ · 7. méta-progression ✅ · 7b. difficultés + mode infini ✅. Suite (D46) : 6b vertical slice (3 persos de plus, ~10 armes, ~30 objets, direction artistique) + page Steam ; méta-progression en discussion (`docs/design/meta-progression-proposition.md`) |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 308/308 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 312/312 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~100 FPS moyen (pire cas : 650 ennemis, 7 armes rang IV, toutes les familles actives ; ~120 avant les familles). Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS |
 | **Dernier push** | `ca472d9` (session 4) — commits suivants pas encore poussés |
 
@@ -151,6 +151,7 @@ Dernière mise à jour : 2026-10-03 (session 5, suite)
 - **Passe artistique « cartoon lisse »** (spec `docs/superpowers/specs/2026-10-03-passe-artistique-cartoon-design.md`, demande : persos façon Dofus, carte, projectiles par arme, puis playtest du dev). **A. Sprites ✅** : 13 sprites vectoriels dessinés par code (`tools/art/make_sprites.py` → `assets_src/drawn/` → `tools/bake_sprites.ps1`, aperçu `tools/art/preview_sheet.gd`) : 4 persos jouables avec leur propre sprite, 7 ennemis, 2 boss ; joueur un peu plus grand. **B. Carte ✅** : sol en dalles de toit néon (`tools/art/make_map.py`, `tools/art/bake_map.gd`, `DecorAtlas`), décalques au sol, mur néon, décor hors arène (lanternes, cerisiers, enseignes, distributeurs, caisses), un seul atlas. **C. Projectiles ✅** : style par arme (orbe Pulsar, balles mitraillette, missile bazooka, shuriken qui tourne, orbes roses ennemies), 2 appels de dessin, stress test ~102 FPS (ancien ~106 en alternance). **D. Docs ✅** (ADR 0016). **Passe terminée : au dev de faire le playtest.**
 - **Après playtest (D47)** : vagues 13-20 un peu plus dures (PV ×14 en vague 20, courbe 1,8, Shogun 1 200 PV, prix +13 %/vague) ; **mode infini dur** (PV +25 %/vague, dégâts +12 %/vague, +2 % d'élites/vague jusqu'à 40 %, matériaux −8 %/vague) ; **missiles du bazooka à tête chercheuse** (`WeaponData.homing`) et plus petits ; cercle des armes élargi (50 → 72 px) ; **sélection du perso en cartes** avec le personnage animé (`SpritePreview`) et ses bonus/malus ; **déblocages de fin de partie en cartes** ; capture `--unlocks`. 307 tests
 - **Noms d'armes et d'objets en couleur de rareté** partout (boutique, rang d'armes, HUD, armes de départ, cartes de déblocage) au lieu de la couleur néon de l'arme : une seule signification par couleur (`ShopScreen.name_color`). 308 tests
+- **Bug corrigé : Danger d'un autre personnage** : en cliquant directement une autre carte pendant l'étape Danger, la rangée Danger (et l'arme) du personnage précédent restait affichée, d'où des niveaux qui semblaient débloqués pour tous. Le choix d'un personnage réinitialise maintenant arme et Danger ; tests de non-régression. 312 tests
 
 ---
 

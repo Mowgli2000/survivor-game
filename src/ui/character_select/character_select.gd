@@ -178,6 +178,13 @@ func _unlock_hint(character: CharacterData) -> String:
 
 func _choose_character(character: CharacterData) -> void:
 	_chosen = character
+	# Another card may be picked while the previous character's weapon and
+	# Danger rows are still shown: forget them (they belong to that character).
+	_weapon = null
+	for child in _dangers.get_children():
+		_dangers.remove_child(child)
+		child.queue_free()
+	_show_dangers(false)
 	for child in _weapons.get_children():
 		_weapons.remove_child(child)
 		child.queue_free()
