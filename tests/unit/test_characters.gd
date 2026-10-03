@@ -54,7 +54,7 @@ func test_a_menu_run_is_recorded_when_it_ends() -> void:
 	run.player.take_damage(1e9)
 	assert_eq(SaveService.profile.runs_played, 1)
 	assert_true(SaveService.profile.is_unlocked(&"characters", &"gunslinger"), "2 000 kills challenge")
-	assert_string_contains(run.game_over_screen._unlocks.text, tr("CHARACTER_GUNSLINGER"))
+	assert_true(run.game_over_screen.unlock_names().has("CHARACTER_GUNSLINGER"), "unlock shown as a card")
 
 
 func test_runs_without_setup_are_not_recorded() -> void:
@@ -87,3 +87,23 @@ func test_progression_screen_lists_every_challenge() -> void:
 	add_child_autofree(screen)
 	screen.open()
 	assert_eq(screen._rows.get_child_count(), SaveService.all_challenges().size())
+
+
+func test_character_cards_show_the_animated_character() -> void:
+	var screen := CharacterSelect.new()
+	add_child_autofree(screen)
+	screen.open()
+	var previews := _find_previews(screen._character_buttons[&"drifter"])
+	assert_eq(previews.size(), 1)
+	assert_true(previews[0].has_sheet(), "drifter sprite loaded")
+	assert_false(previews[0].silhouette)
+	assert_true(_find_previews(screen._character_buttons[&"ronin"])[0].silhouette, "locked = silhouette")
+
+
+func _find_previews(node: Node) -> Array[SpritePreview]:
+	var found: Array[SpritePreview] = []
+	for child in node.get_children():
+		if child is SpritePreview:
+			found.append(child)
+		found.append_array(_find_previews(child))
+	return found

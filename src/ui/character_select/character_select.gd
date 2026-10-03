@@ -7,7 +7,8 @@ extends Control
 signal started(setup: RunSetup)
 signal closed
 
-const CARD_SIZE := Vector2(300, 250)
+const CARD_SIZE := Vector2(300, 430)
+const PREVIEW_HEIGHT := 170.0
 
 var _character_buttons: Dictionary[StringName, Button] = {}
 var _cards: HBoxContainer
@@ -110,8 +111,12 @@ func _build_cards() -> void:
 		_cards.remove_child(child)
 		child.queue_free()
 	_character_buttons.clear()
-	for def in ContentDB.get_all(&"characters"):
-		var character := def as CharacterData
+	var characters: Array[CharacterData] = []
+	characters.assign(ContentDB.get_all(&"characters"))
+	# Starting characters first, then the ones to unlock (stable by id).
+	characters.sort_custom(func(a: CharacterData, b: CharacterData) -> bool:
+		return a.locked != b.locked and not a.locked or a.locked == b.locked and String(a.id) < String(b.id))
+	for character in characters:
 		var unlocked := SaveService.is_unlocked(&"characters", character)
 		var button := Button.new()
 		button.custom_minimum_size = CARD_SIZE
@@ -127,6 +132,9 @@ func _build_cards() -> void:
 		text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		text.add_theme_constant_override("separation", 10)
 		button.add_child(text)
+		var preview := SpritePreview.create(character_sheet(character), PREVIEW_HEIGHT, not unlocked)
+		preview.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		text.add_child(preview)
 		var name_label := Label.new()
 		name_label.text = character.name_key
 		name_label.theme_type_variation = &"SubtitleLabel"
@@ -141,10 +149,23 @@ func _build_cards() -> void:
 		if not unlocked:
 			rule.add_theme_color_override("font_color", UiTheme.MUTED)
 		text.add_child(rule)
+		if unlocked and not character.modifiers.is_empty():
+			var mods := Label.new()
+			mods.text = LevelUpScreen.describe_modifiers(character.modifiers)
+			mods.theme_type_variation = &"SmallLabel"
+			mods.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			mods.add_theme_color_override("font_color", character.color)
+			text.add_child(mods)
 		button.pressed.connect(_choose_character.bind(character))
 		UiFx.hover_lift(button)
 		_cards.add_child(button)
 		_character_buttons[character.id] = button
+
+
+## Sprite sheet of a character (same path rule as Player), or null.
+static func character_sheet(character: CharacterData) -> SpriteSheet:
+	var path := "res://assets/sprites/%s.tres" % character.sprite_id
+	return load(path) as SpriteSheet if character.sprite_id != &"" and ResourceLoader.exists(path) else null
 
 
 ## "Locked: <challenge description>" for the challenge that unlocks `character`.

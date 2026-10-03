@@ -1,7 +1,7 @@
 extends Node
 ## Plays a run with a bot and saves a screenshot, so visuals can be checked
 ## without a human at the keyboard (used by Claude Code).
-## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--pause] [--settings] [--menu] [--characters] [--progression] [--boss=shogun|ronin]
+## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--progression] [--boss=shogun|ronin]
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
 const MENU_SCENE := preload("res://src/ui/main_menu/main_menu.tscn")
@@ -27,7 +27,7 @@ func _ready() -> void:
 			_out = arg.trim_prefix("--out=")
 		elif arg == "--stress":
 			stress = true
-		elif arg in ["--levelup", "--die", "--waveend", "--shop", "--pause", "--settings", "--menu", "--characters", "--progression"]:
+		elif arg in ["--levelup", "--die", "--unlocks", "--waveend", "--shop", "--pause", "--settings", "--menu", "--characters", "--progression"]:
 			_mode = arg
 		elif arg.begins_with("--boss="):
 			_boss_id = StringName(arg.trim_prefix("--boss="))
@@ -90,10 +90,16 @@ func _process(delta: float) -> void:
 		_run.waves.time_left = 0.05
 		_capture_at = _time + 0.8
 		return
-	if _mode == "--die" and not _run.state.is_over:
+	if _mode in ["--die", "--unlocks"] and not _run.state.is_over:
 		_run.player.invincible = false
 		_run.player.take_damage(1e9)
-		_capture_at = _time + 0.3
+		if _mode == "--unlocks":
+			# Sample unlock cards: a character and two items.
+			var samples: Array[ChallengeData] = []
+			for id in [&"win_drifter", &"win_any", &"kill_ronin"]:
+				samples.append(ContentDB.get_def(&"challenges", id))
+			_run.game_over_screen.show_unlocks(samples)
+		_capture_at = _time + 0.8
 		return
 	_done = true
 	await RenderingServer.frame_post_draw

@@ -162,11 +162,11 @@ UI_UNLOCKED,Unlocked: %s,Débloqué : %s
 UI_PROFILE_STATS,Runs %d · Wins %d · Best wave %d · Enemies killed %d,Parties %d · Victoires %d · Meilleure vague %d · Ennemis tués %d
 CHARACTER_DRIFTER_RULE,Balanced. No weakness.,Équilibré. Aucun point faible.
 CHARACTER_RONIN,Rōnin,Rōnin
-CHARACTER_RONIN_RULE,"+15% Crit chance, +20% Attack speed, -25% Range. Starts with a blade.","+15 % Chance de critique, +20 % Vitesse d'attaque, -25 % Portée. Commence avec une lame."
+CHARACTER_RONIN_RULE,Starts with a blade.,Commence avec une lame.
 CHARACTER_GUNSLINGER,Gunslinger,Flingueur
-CHARACTER_GUNSLINGER_RULE,"+25% Range, +10% Attack speed, -3 Armor. Starts with a gun.","+25 % Portée, +10 % Vitesse d'attaque, -3 Armure. Commence avec une arme à feu."
+CHARACTER_GUNSLINGER_RULE,Starts with a gun.,Commence avec une arme à feu.
 CHARACTER_MERCHANT,Merchant,Marchand
-CHARACTER_MERCHANT_RULE,"+3 Harvest, end of wave: +10% of your materials (max 25), -10% Damage.","+3 Récolte, fin de vague : +10 % de tes matériaux (max 25), -10 % Dégâts."
+CHARACTER_MERCHANT_RULE,End of wave: +10% of your materials (max 25).,Fin de vague : +10 % de tes matériaux (max 25).
 CHALLENGE_WIN_DRIFTER,Drifter's road,La route du Vagabond
 CHALLENGE_WIN_DRIFTER_DESC,Win a run with the Drifter,Gagner une partie avec le Vagabond
 CHALLENGE_KILLS_2000,Trigger happy,Gâchette facile
@@ -198,3 +198,4 @@ DANGER_2_DESC,Enemies: +15% HP and damage.,Ennemis : +15 % de PV et de dégâts.
 DANGER_3_DESC,"More enemies, bigger groups.","Plus d'ennemis, groupes plus grands."
 DANGER_4_DESC,"Enemies: +30% HP and damage, more elites.","Ennemis : +30 % de PV et de dégâts, plus d'élites."
 DANGER_5_DESC,Two bosses on the final wave.,Deux boss à la dernière vague.
+UI_UNLOCKED_TAG,Unlocked!,Débloqué !
