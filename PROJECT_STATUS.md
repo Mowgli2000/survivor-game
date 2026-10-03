@@ -11,10 +11,10 @@ Dernière mise à jour : 2026-10-03 (session 4)
 
 | | |
 |---|---|
-| **Phase actuelle** | Passe visuelle (3 chantiers) : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles autour du joueur · 3. thème des interfaces. Ensuite Phase 3 (objets à effets), menus, playtest |
+| **Phase actuelle** | Passe visuelle (3 chantiers) : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles autour du joueur ✅ · 3. thème des interfaces. Ensuite Phase 3 (objets à effets), menus, playtest |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 168/168 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 181/181 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~163 FPS moyen (formes néon : ~176, mesuré en alterné) — 500 ennemis, ~1000 projectiles, 6 armes rang IV. Mesures isolées : ±15 FPS (ADR 0009) |
 
 **Emplacements**
@@ -63,6 +63,7 @@ Dernière mise à jour : 2026-10-03 (session 4)
 | D33 | 2026-10-03 | **Passe visuelle en 3 chantiers, avant B/C/D** : 1. sprites animés, 2. icônes armes/objets + armes visibles autour du perso (façon Brotato), 3. thème de toutes les interfaces | Demande du dev : « un beau visuel de toutes les interfaces ». Icônes = SVG faits par Claude dans le style du pack (remplaçables plus tard) |
 | D34 | 2026-10-03 | **Rendu coloré, pas sombre** : chibi en couleur + halo néon, sol bleu-violet moyen | Choix du dev (option A) : « je ne veux pas un jeu trop sombre ». Attribution et design des sprites provisoires |
 | D35 | 2026-10-03 | **Sprites animés : atlas précalculé, animation pilotée par les managers** | Outil `tools/bake_sprites.ps1`, `SpriteSheet` `.tres`, redessin au changement d'image, y-sort. Coût ~7 % de FPS. ADR 0009 |
+| D36 | 2026-10-03 | **Armes visibles façon Brotato + icônes** : positions fixes en cercle, armes petites, icônes d'objets dans le même style, cadre de rang en interface + liseré en jeu | Choix « reco » du dev. Les tirs partent du canon ; la cible reste choisie depuis le centre (pas de rééquilibrage). ADR 0010 |
 
 ### Décisions volontairement reportées
 | Sujet | Quand | Options / notes |
@@ -114,6 +115,8 @@ Dernière mise à jour : 2026-10-03 (session 4)
 
 - **Passe visuelle, chantier 1 — sprites animés** (spec + plan dans `docs/superpowers/`, ADR 0009) : outil de conversion du pack RGS_Dev (recadrage, réduction, halo néon, variantes élite dorées, atlas unique), `SpriteSheet` / `SpriteAnimator`, ennemis et joueur animés (idle/marche, orientés vers le joueur / selon le déplacement), Shogun = diable violet géant teinté magenta, tri en profondeur (y-sort), sol texturé bleu-violet. Galerie mise à jour (ennemis animés, brûlés, élites). Stress test : nouvelle ligne « draw calls ». Revue finale : correction du retournement vers la gauche (sprite décalé de sa zone de collision), outil de conversion qui échoue proprement. 168 tests
 
+- **Passe visuelle, chantier 2 — armes et objets** (spec + plan dans `docs/superpowers/`, ADR 0010) : 21 icônes SVG (6 armes, 15 objets) générées par `tools/icons/make_icons.py`, armes dessinées autour du perso (visée, recul, éclair de bouche, coup de katana, liseré de rang par shader), tirs depuis le canon, icônes en boutique (cartes, armes, objets avec quantité) et dans le HUD. Outils : planche `icon_sheet.tscn`, capture `--shop`. 181 tests
+
 ---
 
 ## 4. Retours du dev (playtests)
@@ -147,7 +150,7 @@ Dernière mise à jour : 2026-10-03 (session 4)
 ## 6. Prochaines étapes
 
 1. **Dev : valider le chantier 1 en jeu** (sprites, tailles, sol, Shogun) ; lancer le jeu ou la galerie `vfx_gallery.tscn`. Réglages rapides : `SPRITE_HEIGHT_PER_RADIUS` (`enemy.gd`, `player.gd`), `sprite_scale` / `sprite_tint` dans `data/enemies/`, `FLOOR_TINT` (`arena.gd`), halo dans `tools/sprites/bake_sprites.gd`.
-2. **Chantier 2 — armes et objets** : icônes SVG (style du pack : gros contour noir, aplats, accent néon de l'arme) pour les 6 armes et les 15 objets, affichées en boutique / level-up / stats ; armes équipées visibles autour du personnage (une position par emplacement, orientées vers la cible, estoc/recul/éclair de tir), liseré de couleur de rang. Brainstorm → spec → plan.
+2. **Dev : valider le chantier 2** (icônes, armes autour du perso, boutique). Question ouverte : **zoom de la caméra** (aujourd'hui 1 : le perso fait ~60 px en 1080p, plus petit que dans Brotato ; zoomer agrandit tout mais montre moins d'arène). Re-mesurer le stress test sur une machine au repos (ADR 0010).
 3. **Chantier 3 — thème des interfaces** (`/art-bible` puis un `Theme` Godot commun : police, panneaux, boutons, cadres de rang, focus manette) appliqué à tous les écrans.
 4. **Dev** : écouter le son en jeu (sons choisis sans écoute, à changer au goût) ; rejouer une run complète (F3) : densité des vagues 10-20, matériaux, panneau de stats (Tab) ; ajuster D30.
 5. **Phase 3 — Objets à effets et synergies** (vendus par la boutique), puis **menus** (principal, pause, paramètres avec volumes).

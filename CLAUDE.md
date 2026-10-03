@@ -15,7 +15,7 @@ Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes, statuts, 4 ennemis, rendu 
 - Ennemis/projectiles/pickups : gérés en lot par leur manager + `SpatialGrid` + `ObjectPool`. Jamais de `_process` par entité, jamais d'Area2D/physique pour les hits de masse. Seul le Player est un CharacterBody2D. Projectiles = données rendues par un seul MultiMesh (ADR 0004). Ennemis et joueur = sprites animés dans un atlas commun, image avancée par le manager, redessin seulement au changement d'image (ADR 0009 ; repli néon ADR 0005).
 - Code pur testable dans `src/core/` (StatBlock, CombatMath, SpatialGrid, ObjectPool, WeightedPicker).
 - Contenu = Resources `.tres` dans `data/<catégorie>/`, classes de définition dans `src/**/<x>_data.gd`, accès via `ContentDB.get_def(&"weapons", &"id")`. Comportements = Resources strategy dans `behaviors/`.
-- Armes : `WeaponData` (rang I + `levels` pour II..IV) -> `WeaponStats` via `WeaponSlot` ; `WeaponHolder` (doublons, fusion) les déclenche. Ajouter une arme = un `.tres`.
+- Armes : `WeaponData` (rang I + `levels` pour II..IV) -> `WeaponStats` via `WeaponSlot` ; `WeaponHolder` (doublons, fusion, points de montage `WeaponLayout`) les déclenche ; `WeaponVisuals` les dessine autour du perso (ADR 0010). Ajouter une arme = un `.tres` + une icône (`tools/icons/make_icons.py` ou SVG/PNG externe).
 - Boutique (ADR 0007) : `Shop` (logique pure : stock, relance, verrou, achat, vente, fusion) + `ShopScreen` ; réglages `data/shop/` ; monnaie `Wallet` ; objets `ItemData` (`data/items/`) + `Inventory` ; rangs `Tiers`.
 - **Tous les dégâts passent par l'API d'`EnemyManager`** (`damage_enemy`, `damage_in_radius`, `damage_along_segment`) : armure, statuts, recul et feedback au même endroit (ADR 0005).
 - Feedback : `Vfx` (effets additifs, un seul nœud), `DamageNumbers`, `GameCamera.add_trauma()`. Pas de `draw_*` anticrénelé par entité de masse : précalculer en texture.
@@ -48,7 +48,8 @@ Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes, statuts, 4 ennemis, rendu 
 - Lancer le jeu : `& "C:\Program Files\Godot\Godot.exe" --path .`
 - Export Windows : `& "C:\Program Files\Godot\Godot.exe" --headless --path . --export-release "Windows Desktop" builds/windows/survivor-game.exe`
 - Stress test (500 ennemis + 1000 projectiles, imprime FPS/ms) : `& "C:\Program Files\Godot\Godot.exe" --path . res://src/debug/stress_test.tscn -- --duration=20`
-- Capture d'écran automatique (pour vérifier un visuel) : `... res://src/debug/capture.tscn -- --time=20 --out=<chemin.png> [--stress] [--levelup] [--die]`
+- Capture d'écran automatique (pour vérifier un visuel) : `... res://src/debug/capture.tscn -- --time=20 --out=<chemin.png> [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die]`
+- Planche des icônes d'armes et d'objets : `... res://src/debug/icon_sheet.tscn [-- --out=<chemin.png>]` ; icônes régénérées par `python tools/icons/make_icons.py`
 - Overlay debug en jeu : F3 (action `debug_toggle`).
 - Galerie d'effets et d'ennemis (direction artistique) : `... res://src/debug/vfx_gallery.tscn [-- --out=<chemin.png>]`
 - Sprites (pack brut `assets_src/` → atlas `assets/sprites/` + `SpriteSheet` `.tres`, recette `tools/sprites/sprites.json`, ADR 0009) : `powershell -ExecutionPolicy Bypass -File tools/bake_sprites.ps1`
