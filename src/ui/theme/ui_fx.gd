@@ -25,7 +25,10 @@ static func pop_in(control: Control, delay: float = 0.0) -> void:
 	var tween := control.create_tween().set_parallel()
 	tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tween.tween_property(control, "modulate:a", 1.0, APPEAR_TIME).set_delay(delay)
-	tween.tween_property(control, "scale", Vector2.ONE, APPEAR_TIME + 0.04).set_delay(delay)
+	# from(): the start value is applied when the tweener starts, after the parent
+	# container's layout pass (which resets children's scale to 1).
+	tween.tween_property(control, "scale", Vector2.ONE, APPEAR_TIME + 0.04).from(
+		Vector2.ONE * APPEAR_SCALE).set_delay(delay)
 	control.set_meta(&"_ui_fx_appear", tween)
 
 
@@ -51,9 +54,8 @@ static func bounce(control: Control) -> void:
 	if reduce_motion:
 		return
 	_kill(control, &"_ui_fx_lift")
-	control.scale = Vector2.ONE * 1.1
 	var tween := control.create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.tween_property(control, "scale", Vector2.ONE, 0.25)
+	tween.tween_property(control, "scale", Vector2.ONE, 0.25).from(Vector2.ONE * 1.1)
 	control.set_meta(&"_ui_fx_lift", tween)
 
 

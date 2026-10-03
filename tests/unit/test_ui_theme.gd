@@ -83,3 +83,35 @@ func test_count_to_ends_on_the_last_value() -> void:
 	UiFx.count_to(label, 50, 80, "M %d")
 	await wait_seconds(0.6)
 	assert_eq(label.text, "M 80")
+
+
+func _card_in_container() -> Control:
+	var row := HBoxContainer.new()
+	add_child_autofree(row)
+	var card := Control.new()
+	card.custom_minimum_size = Vector2(100, 100)
+	row.add_child(card)
+	return card
+
+
+func test_pop_in_scales_up_inside_a_container() -> void:
+	var card := _card_in_container()
+	UiFx.pop_in(card)  # same frame as add_child: the container lays out afterwards
+	await wait_seconds(0.05)
+	assert_lt(card.scale.x, 0.999, "the appear scale survives the container layout")
+
+
+func test_bounce_is_visible_inside_a_container() -> void:
+	var card := _card_in_container()
+	UiFx.bounce(card)
+	await wait_seconds(0.05)
+	assert_gt(card.scale.x, 1.001, "the bounce survives the container layout")
+
+
+func test_project_default_font_is_readable_bold() -> void:
+	# The raw variable font file defaults to its thinnest instance (ExtraLight).
+	var font := load(ProjectSettings.get_setting("gui/theme/custom_font")) as FontVariation
+	assert_not_null(font, "default font is a FontVariation with a set weight")
+	if font != null:
+		var wght := TextServerManager.get_primary_interface().name_to_tag("wght")
+		assert_eq(int(font.variation_opentype.get(wght, 0)), 700)

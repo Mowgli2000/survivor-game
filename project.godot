@@ -37,7 +37,7 @@ enabled=PackedStringArray("res://addons/gut/plugin.cfg")
 [gui]
 
 theme/default_font_size=24
-theme/custom_font="res://assets/fonts/Nunito.ttf"
+theme/custom_font="res://assets/fonts/nunito_bold.tres"
 
 [input]
 
