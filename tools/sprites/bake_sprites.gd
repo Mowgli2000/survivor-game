@@ -76,6 +76,9 @@ func _load_frames(dir: String, anims: Dictionary) -> Array[Image]:
 				_fail("missing frame " + path)
 				return []
 			var image := Image.load_from_file(path)
+			if image == null:
+				_fail("cannot read frame " + path)
+				return []
 			image.convert(Image.FORMAT_RGBA8)
 			frames.append(image)
 	return frames
@@ -156,6 +159,8 @@ func _write_resources(recipe: Dictionary) -> bool:
 		if def.get("elite", false):
 			ids.append(id + "_elite")
 		for out_id in ids:
+			if not layout.has(out_id):
+				return _fail("%s not in the atlas layout: run the whole bake_sprites.ps1" % out_id)
 			var rect: Array = layout[out_id]
 			var sheet := SpriteSheet.new()
 			sheet.texture = texture

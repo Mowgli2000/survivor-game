@@ -75,6 +75,12 @@ func test_characters() -> void:
 		assert_not_null(character.starting_weapon, "%s has no starting weapon" % character.id)
 		for stat in character.stat_overrides:
 			assert_true(StatIds.is_valid(StringName(stat)), "%s: unknown stat '%s'" % [character.id, stat])
+		if character.sprite_id != &"":
+			var sheet := load("res://assets/sprites/%s.tres" % character.sprite_id) as SpriteSheet
+			assert_not_null(sheet, "%s: missing sprite sheet %s" % [character.id, character.sprite_id])
+			if sheet != null:
+				assert_true(sheet.has_animation(&"idle") and sheet.has_animation(&"walk"),
+					"%s: player sheet needs idle and walk" % character.id)
 
 
 func test_upgrades() -> void:

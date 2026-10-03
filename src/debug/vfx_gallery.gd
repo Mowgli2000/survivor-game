@@ -48,8 +48,10 @@ func _add_enemy(data: EnemyData, pos: Vector2, elite: bool) -> Enemy:
 
 func _process(delta: float) -> void:
 	_time += delta
+	# Burning copies face left: checks mirroring stays centered on the enemy.
 	for enemy in _gallery_enemies:
-		if enemy.animator.advance(delta, &"walk", 1.0):
+		var facing := -1.0 if enemy.burn_time > 0.0 else 1.0
+		if enemy.animator.advance(delta, &"walk", facing):
 			enemy.queue_redraw()
 	_timer -= delta
 	if _timer <= 0.0:

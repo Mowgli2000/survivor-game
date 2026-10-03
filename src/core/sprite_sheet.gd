@@ -32,9 +32,13 @@ func region(frame: int) -> Rect2:
 
 
 ## Draws `frame` scaled to `height` px, feet at `foot_y`, mirrored when facing < 0.
-## Mirroring uses a negative rect width (no draw_set_transform: extra transform
-## commands per enemy break the renderer's batching).
 func draw(canvas: CanvasItem, frame: int, height: float, foot_y: float, facing: float, tint: Color) -> void:
+	canvas.draw_texture_rect_region(texture, draw_rect(height, foot_y, facing), region(frame), tint)
+
+
+## Local rect of a frame, centered on x. Mirroring uses a negative width (Godot
+## flips the texture but keeps position.x), not draw_set_transform: extra
+## transform commands per enemy would cost more.
+func draw_rect(height: float, foot_y: float, facing: float) -> Rect2:
 	var width := height * cell_size.x / float(cell_size.y)
-	var rect := Rect2(-width * 0.5 * facing, foot_y - height, width * facing, height)
-	canvas.draw_texture_rect_region(texture, rect, region(frame), tint)
+	return Rect2(-width * 0.5, foot_y - height, width * signf(facing), height)

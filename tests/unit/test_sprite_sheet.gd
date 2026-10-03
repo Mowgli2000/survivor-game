@@ -59,3 +59,12 @@ func test_animator_without_sheet_does_nothing() -> void:
 	var animator := SpriteAnimator.new()
 	animator.reset(null, 0.0)
 	assert_false(animator.advance(1.0, &"walk", 3.0))
+
+
+func test_draw_rect_stays_centered_when_mirrored() -> void:
+	var sheet := _sheet()  # cells 10 x 20
+	var right := sheet.draw_rect(40.0, 5.0, 1.0)
+	var left := sheet.draw_rect(40.0, 5.0, -1.0)
+	assert_eq(right, Rect2(-10, -35, 20, 40))
+	# Negative width = mirrored; Godot keeps position.x, so x must stay -10.
+	assert_eq(left, Rect2(-10, -35, -20, 40))
