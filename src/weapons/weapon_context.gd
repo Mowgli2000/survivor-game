@@ -32,5 +32,8 @@ func hit_damage(weapon: WeaponStats, crit: bool) -> float:
 
 
 ## Where a shot of `slot` aimed along `direction` starts: the weapon's muzzle.
-func muzzle(slot: WeaponSlot, direction: Vector2) -> Vector2:
-	return owner.global_position + slot.mount_offset + direction * WeaponLayout.BARREL
+## `target_distance` (from the mount) shortens the barrel at point blank, so the
+## shot never starts past its target.
+func muzzle(slot: WeaponSlot, direction: Vector2, target_distance: float = INF) -> Vector2:
+	var barrel := minf(WeaponLayout.BARREL, target_distance * 0.5)
+	return owner.global_position + slot.mount_offset + direction * barrel

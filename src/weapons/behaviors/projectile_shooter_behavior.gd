@@ -14,9 +14,9 @@ func fire(slot: WeaponSlot, ctx: WeaponContext) -> bool:
 	if target < 0:
 		return false
 
-	var target_pos := ctx.enemies.get_enemy(target).position
-	var base_angle := (target_pos - (origin + slot.mount_offset)).angle()
-	origin = ctx.muzzle(slot, Vector2.from_angle(base_angle))
+	var to_target := ctx.enemies.get_enemy(target).position - (origin + slot.mount_offset)
+	var base_angle := to_target.angle()
+	origin = ctx.muzzle(slot, Vector2.from_angle(base_angle), to_target.length())
 	var count := s.projectile_count + int(stats.get_value(StatIds.PROJECTILE_COUNT))
 	var spread := deg_to_rad(s.spread_deg)
 	var inaccuracy := deg_to_rad(s.inaccuracy_deg)

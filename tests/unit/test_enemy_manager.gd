@@ -316,3 +316,33 @@ func test_holder_emits_weapon_fired() -> void:
 	watch_signals(holder)
 	await wait_physics_frames(2)
 	assert_signal_emitted_with_parameters(holder, "weapon_fired", [0])
+
+
+func test_beam_from_far_mount_still_reaches_a_target_at_max_range() -> void:
+	var laser: WeaponData = ContentDB.get_def(&"weapons", &"laser_pistol")
+	var target := Vector2(laser.attack_range - 1.0, 0)
+	var small := _enemy_data(1000.0, 0.0)
+	small.radius = 3.0
+	_enemies.spawn(small, target)
+	await wait_physics_frames(1)
+	var slot := WeaponSlot.new(laser)
+	slot.mount_offset = Vector2(-50, 0)  # mount on the far side
+	var ctx := WeaponContext.new(_player, StatBlock.from_defaults({}), _enemies, _projectiles,
+		RandomNumberGenerator.new())
+	watch_signals(_enemies)
+	assert_true(laser.behavior.fire(slot, ctx))
+	assert_signal_emitted(_enemies, "enemy_damaged", "the beam reaches its target")
+
+
+func test_point_blank_projectile_hits_the_target() -> void:
+	var pulse: WeaponData = ContentDB.get_def(&"weapons", &"pulse")
+	var slot := WeaponSlot.new(pulse)
+	slot.mount_offset = Vector2(50, -24)
+	_enemies.spawn(_enemy_data(1000.0, 0.0), Vector2(58, -24))  # right on the mount
+	await wait_physics_frames(1)
+	var ctx := WeaponContext.new(_player, StatBlock.from_defaults({}), _enemies, _projectiles,
+		RandomNumberGenerator.new())
+	watch_signals(_enemies)
+	assert_true(pulse.behavior.fire(slot, ctx))
+	await wait_physics_frames(3)
+	assert_signal_emitted(_enemies, "enemy_damaged", "a shot at point blank is not spawned past its target")
