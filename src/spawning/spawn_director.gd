@@ -70,7 +70,8 @@ func _physics_process(delta: float) -> void:
 			if index < 0:
 				return
 			var jitter := Vector2.from_angle(_state.rng.randf() * TAU) * _state.rng.randf() * GROUP_SPREAD
-			var elite := _stage.steady_elite_chance > 0.0 and _state.rng.randf() < _stage.steady_elite_chance
+			var elite_chance := _stage.steady_elite_chance_at(_wave)
+			var elite := elite_chance > 0.0 and _state.rng.randf() < elite_chance
 			_enemies.spawn(_eligible[index], (center + jitter).clamp(_arena.position, _arena.end),
 				hp_multiplier * (_stage.elite_hp_multiplier if elite else 1.0), elite, damage_multiplier)
 			_state.wave_spawned += 1

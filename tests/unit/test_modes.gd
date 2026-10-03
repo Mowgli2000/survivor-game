@@ -135,3 +135,15 @@ func test_character_select_offers_unlocked_dangers_only() -> void:
 	(screen._dangers.get_child(0) as Button).pressed.emit()
 	var setup: RunSetup = get_signal_parameters(screen, "started")[0]
 	assert_eq(setup.difficulty.level, 0)
+
+
+func test_endless_adds_elites_and_cuts_materials() -> void:
+	var stage := _stage().copy()
+	var last := stage.wave_count
+	stage.endless = true
+	assert_almost_eq(stage.steady_elite_chance_at(last), stage.steady_elite_chance, 0.0001)
+	assert_almost_eq(stage.steady_elite_chance_at(last + 5), stage.steady_elite_chance + 5 * stage.endless_elite_growth, 0.0001)
+	assert_almost_eq(stage.steady_elite_chance_at(last + 200), stage.endless_elite_max, 0.0001, "capped")
+	stage.endless_spawn_growth = 0.0  # isolate the decay from the spawn-rate dilution
+	assert_almost_eq(stage.material_rate_at(last + 1),
+		stage.material_rate_at(last) * (1.0 - stage.endless_material_decay), 0.0001)

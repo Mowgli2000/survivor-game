@@ -71,6 +71,11 @@ extends Resource
 @export var endless_hp_growth: float = 0.12
 @export var endless_damage_growth: float = 0.06
 @export var endless_spawn_growth: float = 0.04
+## Elite chance added per endless wave (steady spawns), up to endless_elite_max.
+@export var endless_elite_growth: float = 0.02
+@export_range(0.0, 1.0) var endless_elite_max: float = 0.4
+## Materials per XP lose this fraction per endless wave (compound).
+@export_range(0.0, 1.0) var endless_material_decay: float = 0.08
 ## The last wave's events (final boss) come back every this many endless waves.
 @export var endless_boss_every: int = 10
 
@@ -126,7 +131,7 @@ func material_rate_at(wave: int) -> float:
 	var spawn_rate := spawn_rate_at(wave)
 	if material_reference_spawn_rate > 0.0 and spawn_rate > material_reference_spawn_rate:
 		rate *= pow(material_reference_spawn_rate / spawn_rate, material_decoupling)
-	return rate
+	return rate * _endless_factor(wave, -endless_material_decay)
 
 
 ## Copy for one run: events are copied (difficulty may change them), enemy
@@ -166,3 +171,10 @@ func _endless_factor(wave: int, growth: float) -> float:
 	if not endless or wave <= wave_count:
 		return 1.0
 	return pow(1.0 + growth, wave - wave_count)
+
+
+## Chance that a steady spawn is an elite: difficulty base, growing in endless mode.
+func steady_elite_chance_at(wave: int) -> float:
+	if not endless or wave <= wave_count:
+		return steady_elite_chance
+	return minf(steady_elite_chance + endless_elite_growth * (wave - wave_count), endless_elite_max)
