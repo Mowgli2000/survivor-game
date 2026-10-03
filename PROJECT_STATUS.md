@@ -14,7 +14,7 @@ Dernière mise à jour : 2026-10-03 (session 4)
 | **Phase actuelle** | Passe visuelle (3 chantiers) : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles autour du joueur ✅ · 3. thème des interfaces. Ensuite Phase 3 (objets à effets), menus, playtest |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 183/183 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 185/185 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~163 FPS moyen (formes néon : ~176, mesuré en alterné) — 500 ennemis, ~1000 projectiles, 6 armes rang IV. Mesures isolées : ±15 FPS (ADR 0009) |
 
 **Emplacements**
@@ -63,6 +63,9 @@ Dernière mise à jour : 2026-10-03 (session 4)
 | D33 | 2026-10-03 | **Passe visuelle en 3 chantiers, avant B/C/D** : 1. sprites animés, 2. icônes armes/objets + armes visibles autour du perso (façon Brotato), 3. thème de toutes les interfaces | Demande du dev : « un beau visuel de toutes les interfaces ». Icônes = SVG faits par Claude dans le style du pack (remplaçables plus tard) |
 | D34 | 2026-10-03 | **Rendu coloré, pas sombre** : chibi en couleur + halo néon, sol bleu-violet moyen | Choix du dev (option A) : « je ne veux pas un jeu trop sombre ». Attribution et design des sprites provisoires |
 | D35 | 2026-10-03 | **Sprites animés : atlas précalculé, animation pilotée par les managers** | Outil `tools/bake_sprites.ps1`, `SpriteSheet` `.tres`, redessin au changement d'image, y-sort. Coût ~7 % de FPS. ADR 0009 |
+| D37 | 2026-10-03 | **Performance : 100 FPS suffisent** | Dev : « même s'il tourne à 100 FPS, ce n'est pas un jeu compétitif ». Seuil du stress test : ≥ 100 FPS moyen (au lieu de 150) |
+| D38 | 2026-10-03 | **Rééquilibrage vagues 12-20 : plus de monstres, plus de PV, moins de pouvoir d'achat** | Apparitions fin de partie 24 → 32/s ; PV ×3 → ×8 en vague 20 avec une courbe tardive (×3,4 vague 12, ×5,4 vague 16) — remontée prévue par D24 ; matériaux par XP 60 % → 30 % en vague 20 ; inflation des prix 10 % → 12 % par vague |
+| D39 | 2026-10-03 | **Caméra plus proche, arène plus petite (façon Brotato)** | Zoom 1,3 ; arène 3200 → 2400 ; apparition à 950 px (au lieu de 1150, toujours hors écran). Plus de pression, personnages plus lisibles. Réglable dans `data/runs/default.tres` |
 | D36 | 2026-10-03 | **Armes visibles façon Brotato + icônes** : positions fixes en cercle, armes petites, icônes d'objets dans le même style, cadre de rang en interface + liseré en jeu | Choix « reco » du dev. Les tirs partent du canon ; la cible reste choisie depuis le centre (pas de rééquilibrage). ADR 0010 |
 
 ### Décisions volontairement reportées
@@ -126,6 +129,7 @@ Dernière mise à jour : 2026-10-03 (session 4)
 | 2026-10-02 | Phase 1 | « Jouabilité correcte, mais difficile à jauger avec une seule arme ; ça devient compliqué avec le temps » | Phase 2 : armes multiples et niveaux d'armes |
 | 2026-10-02 | Phase 2 | « Les chiffres de dégâts sont un peu trop petits et pas assez impactants » ; sinon OK | Chiffres plus grands (30/48), police grasse, effet « pop », critiques jaunes avec secousse (sans « ! », retiré à la demande du dev), taille selon le montant |
 | 2026-10-02 | Phase 4 | « Arrivé à la vague 20, pas de boss. J'ai survécu en fuyant, pas en écrasant les mobs ; à la fin du chrono il en restait beaucoup. » Fuite dès la vague 10 | Boss provisoire (D23), densité réduite (D24), compteur F3 pour mesurer. Le dev accepte que la puissance viendra de la boutique |
+| 2026-10-03 | Chantiers visuels 1-2 | « Dès la manche 12-14 on est trop puissant ; à partir de la vague 15-16 je n'ai plus besoin de bouger. Plus de mobs, moins de pouvoir d'achat. » « 100 FPS, ce n'est pas un jeu compétitif. » Caméra : un peu plus zoomée, arène plus petite (comme Brotato) | D37, D38, D39 |
 | 2026-10-03 | Phase 5 | « Le bazooka avec plus de portée explose après une certaine distance, pas au contact. » « Voir mes stats (dégâts, vitesse, projectiles). » « Dès la vague 10 le build est trop fort : plus d'ennemis, pas moins de puissance ; trop de matériaux en vagues 15-20. » « Laisse tomber la 3D. » | Bug de portée corrigé ; panneau de stats ; D30 ; D29 |
 
 ---

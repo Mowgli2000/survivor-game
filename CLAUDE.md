@@ -56,7 +56,7 @@ Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes, statuts, 4 ennemis, rendu 
 - Chemin Godot surchargeable via la variable d'env `GODOT_BIN`.
 
 ## Performance
-Profiler avant d'optimiser. Pas d'allocation dans les boucles chaudes. Après tout changement touchant ennemis/projectiles/pickups : vérifier le stress test et comparer aux chiffres de référence de l'ADR 0009 (~163 FPS moyen avec les 6 armes rang IV ; les mesures varient de ±15 FPS : comparer en alterné avec la version précédente).
+Profiler avant d'optimiser. Pas d'allocation dans les boucles chaudes. Après tout changement touchant ennemis/projectiles/pickups : vérifier le stress test (seuil : ≥ 100 FPS moyen, décision du dev D37 ; référence ~145-165 FPS, ADR 0009/0010 ; les mesures varient de ±15 FPS : comparer en alterné avec la version précédente).
 
 ## Git
 - **On travaille sur la branche `develop`** (remote `origin` = github.com/Mowgli2000/survivor-game). `main` ne reçoit que des versions validées, sur demande explicite du dev. Ne jamais commiter directement sur `main`.

@@ -9,7 +9,8 @@
 script = ExtResource("1_config")
 id = &"default"
 character = ExtResource("2_drifter")
-arena_size = Vector2(3200, 3200)
+arena_size = Vector2(2400, 2400)
+camera_zoom = 1.3
 stage = ExtResource("3_stage")
 shop = ExtResource("4_shop")
 xp_base = 5.0

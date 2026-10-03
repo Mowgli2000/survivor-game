@@ -5,3 +5,4 @@
 [resource]
 script = ExtResource("1_shop")
 id = &"default"
+price_growth_per_wave = 0.12
