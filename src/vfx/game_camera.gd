@@ -16,6 +16,9 @@ var _rng := RandomNumberGenerator.new()
 func _init() -> void:
 	position_smoothing_enabled = true
 	position_smoothing_speed = 10.0
+	# Same rate as the player's movement (physics ticks): updated every rendered
+	# frame, the camera made the player stutter against it, seen as motion blur.
+	process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS
 
 
 func add_trauma(amount: float) -> void:

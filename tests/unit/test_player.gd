@@ -63,3 +63,12 @@ func test_player_sprite_faces_movement() -> void:
 	await wait_physics_frames(3)
 	assert_eq(player.animator.facing, -1.0)
 	assert_eq(player.animator.animation, &"walk")
+
+
+func test_camera_follows_at_the_physics_rate() -> void:
+	# The player moves in physics ticks; a camera updated every rendered frame
+	# makes it stutter against the world on high refresh rate screens (seen as blur).
+	var player := Player.new()
+	player.setup(CharacterData.new(), Rect2(-500, -500, 1000, 1000))
+	add_child_autofree(player)
+	assert_eq(player.camera.process_callback, Camera2D.CAMERA2D_PROCESS_PHYSICS)

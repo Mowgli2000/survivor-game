@@ -195,6 +195,10 @@ func clear_all() -> void:
 			_vfx.explosion(enemy.position, enemy.radius * 1.5, enemy.data.color, false)
 		enemy.hp = 0.0
 	_remove_dead()
+	# The grid still holds the removed enemies' indices until the next physics
+	# step; queries made before it (weapon visuals on the first frame after the
+	# shop) would return out-of-range indices.
+	grid.rebuild(_positions, 0)
 
 
 func _lose_hp(enemy: Enemy, amount: float) -> void:

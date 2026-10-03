@@ -346,3 +346,12 @@ func test_point_blank_projectile_hits_the_target() -> void:
 	assert_true(pulse.behavior.fire(slot, ctx))
 	await wait_physics_frames(3)
 	assert_signal_emitted(_enemies, "enemy_damaged", "a shot at point blank is not spawned past its target")
+
+
+func test_no_stale_target_after_clear_all() -> void:
+	for i in 5:
+		_enemies.spawn(_data, Vector2(100 + i * 40, 0))
+	await wait_physics_frames(1)
+	_enemies.clear_all()
+	# Queried before the next physics step (e.g. the first frame after the shop).
+	assert_eq(_enemies.find_nearest(Vector2.ZERO, 1000.0), -1, "cleared enemies are not targets")
