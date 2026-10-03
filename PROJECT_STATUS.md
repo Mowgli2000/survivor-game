@@ -11,11 +11,12 @@ Dernière mise à jour : 2026-10-03 (session 4)
 
 | | |
 |---|---|
-| **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. Suite : Phase 3 (objets à effets), menus, playtest Ensuite Phase 3 (objets à effets), menus, playtest |
+| **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. Suite : B. objets à effets et synergies (Phase 3), C. menus, D. playtest |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
 | **Tests** | 205/205 (GUT : unitaires, données, parties simulées) |
-| **Performance (stress test)** | ~163 FPS moyen (formes néon : ~176, mesuré en alterné) — 500 ennemis, ~1000 projectiles, 6 armes rang IV. Mesures isolées : ±15 FPS (ADR 0009) |
+| **Performance (stress test)** | ~145-165 FPS moyen (sprites + armes visibles, ADR 0009/0010) — 500 ennemis, ~1000 projectiles, 7 armes. Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS |
+| **Dernier push** | `develop` à jour sur GitHub (fin de session 4) |
 
 **Emplacements**
 - Projet local : `C:\Users\rapha\Projects\survivor-game` (ouvrir `project.godot` dans Godot)
