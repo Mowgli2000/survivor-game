@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="DecorAtlas" format=3]
+
+[ext_resource type="Script" path="res://src/run/decor_atlas.gd" id="1_fio14"]
+[ext_resource type="Texture2D" path="res://assets/map/decor_atlas.png" id="2_heq2g"]
+
+[resource]
+script = ExtResource("1_fio14")
+texture = ExtResource("2_heq2g")
+regions = Dictionary[StringName, Rect2]({
+&"decal_cable": Rect2(0, 0, 256, 64),
+&"decal_grate": Rect2(260, 0, 128, 88),
+&"decal_manhole": Rect2(392, 0, 128, 128),
+&"decal_puddle": Rect2(524, 0, 160, 96),
+&"decal_seal_cyan": Rect2(688, 0, 160, 160),
+&"decal_seal_pink": Rect2(852, 0, 160, 160),
+&"prop_crates": Rect2(0, 164, 160, 196),
+&"prop_lantern": Rect2(164, 164, 128, 248),
+&"prop_sign_cyan": Rect2(296, 164, 128, 248),
+&"prop_sign_pink": Rect2(428, 164, 128, 248),
+&"prop_tree": Rect2(560, 164, 192, 256),
+&"prop_vending": Rect2(756, 164, 144, 256)
+})
