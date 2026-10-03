@@ -240,6 +240,23 @@ func _rebuild_cards() -> void:
 			UiFx.bounce(card)
 	_animate_cards = false
 	_bought_index = -1
+	_link_card_rows()
+
+
+## Links the buy and lock buttons left/right across the cards still for sale:
+## sold cards have no button, and Godot's automatic search does not jump the gap.
+func _link_card_rows() -> void:
+	for prefix in ["buy:", "lock:"]:
+		var row: Array[Control] = []
+		for i in _shop.offers.size():
+			var control: Control = _controls.get("%s%d" % [prefix, i])
+			if control != null:
+				row.append(control)
+		for i in row.size():
+			if i > 0:
+				row[i].focus_neighbor_left = row[i].get_path_to(row[i - 1])
+			if i < row.size() - 1:
+				row[i].focus_neighbor_right = row[i].get_path_to(row[i + 1])
 
 
 func _make_card(index: int, offer: ShopOffer) -> Control:

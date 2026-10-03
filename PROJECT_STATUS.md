@@ -14,7 +14,7 @@ Dernière mise à jour : 2026-10-03 (session 5)
 | **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. B. objets à effets et familles ✅ · C. menus et paramètres ✅. Suite : D. playtest ; méta-progression en discussion (`docs/design/meta-progression-proposition.md`) |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 257/257 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 258/258 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~100 FPS moyen (pire cas : 650 ennemis, 7 armes rang IV, toutes les familles actives ; ~120 avant les familles). Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS |
 | **Dernier push** | `ca472d9` (session 4) — commits suivants pas encore poussés |
 
@@ -139,6 +139,7 @@ Dernière mise à jour : 2026-10-03 (session 5)
 - **F5 ne lançait plus le jeu** : un `/` tapé par erreur dans `enemy_manager.gd` (ligne de commentaire) cassait la compilation. Corrigé.
 - **Étape C — menus et paramètres** (spec + plan dans `docs/superpowers/`, ADR 0013) : menu principal (scène de démarrage), menu pause (Échap / P / Start), écran de paramètres partagé, bouton « Menu principal » en fin de partie, captures `--menu`, `--pause`, `--settings`. Les tests n'utilisent jamais les paramètres du joueur (crochet GUT). 256 tests
 - **Manette : la croix / A ne validait rien dans les menus** : dans Godot 4.7, les actions `ui_accept` / `ui_cancel` par défaut n'ont aucun bouton de manette. Ajout de A/Croix et B/Rond dans l'InputMap du projet + test. 257 tests
+- **Manette en boutique : bloqué sur une carte quand les cartes voisines sont vendues** (la recherche automatique de Godot ne saute pas le trou). Boutons Acheter/Verrouiller reliés explicitement d'une carte en vente à la suivante. Manette vue en double (DS4Windows sans HidHide) : réglage côté PC, protection en jeu prévue avec `Platform` (Phase 10). 258 tests
 
 ---
 

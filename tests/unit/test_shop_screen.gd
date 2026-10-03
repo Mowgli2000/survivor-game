@@ -90,6 +90,20 @@ func test_focus_stays_on_weapons_after_selling() -> void:
 	assert_eq(_focused(), _screen._controls.get("weapon:0"))
 
 
+## Sold cards have no buttons: left/right must jump over them (gamepad bug:
+## stuck on the first card when the two middle ones were sold).
+func test_left_right_skip_sold_cards() -> void:
+	_open_screen(100)
+	_screen._controls["buy:1"].pressed.emit()
+	_screen._controls["buy:2"].pressed.emit()
+	var first: Button = _screen._controls["buy:0"]
+	var last: Button = _screen._controls["buy:3"]
+	assert_eq(first.get_node_or_null(first.focus_neighbor_right), last)
+	assert_eq(last.get_node_or_null(last.focus_neighbor_left), first)
+	var lock_first: Button = _screen._controls["lock:0"]
+	assert_eq(lock_first.get_node_or_null(lock_first.focus_neighbor_right), _screen._controls["lock:3"])
+
+
 func _icon_tiles(node: Node) -> Array[IconTile]:
 	var found: Array[IconTile] = []
 	for child in node.get_children():
