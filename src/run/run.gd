@@ -151,7 +151,8 @@ func _ready() -> void:
 
 	enemies.enemy_killed.connect(_on_enemy_killed)
 	enemies.enemy_damaged.connect(damage_numbers.spawn)
-	vfx.shake_requested.connect(player.camera.add_trauma)
+	vfx.shake_requested.connect(func(amount: float) -> void:
+		player.camera.add_trauma(amount, GameCamera.EXPLOSION_CAP))
 	player.damaged.connect(_on_player_damaged)
 	pickups.xp_collected.connect(progression.add_xp)
 	pickups.xp_collected.connect(_on_materials_collected)
