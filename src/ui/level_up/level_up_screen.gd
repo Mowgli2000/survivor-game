@@ -11,11 +11,13 @@ signal reroll_requested
 ## Short delay before cards accept input, to avoid accidental picks.
 const INPUT_DELAY := 0.35
 const CARD_SIZE := Vector2(360, 340)
-const CARD_BG := Color(0.05, 0.05, 0.1, 0.96)
+## Delay between two cards appearing.
+const CARD_STAGGER := 0.04
 
 var _cards: HBoxContainer
 var _reroll: Button
 var _offers: Array[UpgradeOffer] = []
+var _title: Label
 
 
 func _init() -> void:
@@ -30,7 +32,7 @@ func _init() -> void:
 	add_child(root)
 
 	var dim := ColorRect.new()
-	dim.color = Color(0, 0, 0, 0.65)
+	dim.color = UiTheme.DIM
 	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.add_child(dim)
 
@@ -45,14 +47,14 @@ func _init() -> void:
 	var title := Label.new()
 	title.text = "UI_LEVEL_UP"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 64)
-	title.add_theme_color_override("font_color", Color(0.4, 0.95, 1.0))
+	title.theme_type_variation = &"TitleLabel"
 	box.add_child(title)
+	_title = title
 
 	var subtitle := Label.new()
 	subtitle.text = "UI_CHOOSE_UPGRADE"
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	subtitle.add_theme_font_size_override("font_size", 28)
+	subtitle.theme_type_variation = &"SubtitleLabel"
 	box.add_child(subtitle)
 
 	_cards = HBoxContainer.new()
@@ -61,7 +63,6 @@ func _init() -> void:
 	box.add_child(_cards)
 
 	_reroll = Button.new()
-	_reroll.add_theme_font_size_override("font_size", 26)
 	_reroll.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_reroll.pressed.connect(func() -> void: reroll_requested.emit())
 	box.add_child(_reroll)
@@ -81,7 +82,10 @@ func open(offers: Array[UpgradeOffer], reroll_cost: int = -1, can_reroll: bool =
 		button.disabled = true
 		button.pressed.connect(_on_card_pressed.bind(i))
 		_cards.add_child(button)
+		UiFx.pop_in(button, CARD_STAGGER * i)
 		buttons.append(button)
+	if not visible:
+		UiFx.pop_in(_title)
 	visible = true
 	await get_tree().create_timer(INPUT_DELAY, true).timeout
 	# A newer open() may have replaced these cards during the delay.
@@ -154,13 +158,12 @@ func _make_card(offer: UpgradeOffer) -> Button:
 
 	var button := Button.new()
 	button.custom_minimum_size = CARD_SIZE
-	button.add_theme_stylebox_override("normal", _card_style(accent, 0.6, 3))
-	button.add_theme_stylebox_override("hover", _card_style(accent, 1.0, 4))
-	button.add_theme_stylebox_override("pressed", _card_style(accent, 1.0, 4))
-	button.add_theme_stylebox_override("disabled", _card_style(accent, 0.35, 3))
-	var focus := _card_style(Color.WHITE, 1.0, 5)
-	focus.draw_center = false
-	button.add_theme_stylebox_override("focus", focus)
+	button.add_theme_stylebox_override("normal", UiTheme.card_style(accent, 0.6))
+	button.add_theme_stylebox_override("hover", UiTheme.card_style(accent, 1.0))
+	button.add_theme_stylebox_override("pressed", UiTheme.card_style(accent, 1.0))
+	button.add_theme_stylebox_override("disabled", UiTheme.card_style(accent, 0.6))
+	button.add_theme_stylebox_override("focus", UiTheme.focus_style(Color.WHITE))
+	UiFx.hover_lift(button)
 
 	var margin := MarginContainer.new()
 	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -175,15 +178,16 @@ func _make_card(offer: UpgradeOffer) -> Button:
 	box.alignment = BoxContainer.ALIGNMENT_CENTER
 	margin.add_child(box)
 
-	box.add_child(_card_label(texts[0].to_upper(), 20, Color(accent, 0.85)))
-	box.add_child(_card_label(texts[1], 34, accent))
-	box.add_child(_card_label(texts[2], 24, Color(0.92, 0.94, 1.0)))
+	box.add_child(_card_label(texts[0].to_upper(), &"SmallLabel", 18, accent))
+	box.add_child(_card_label(texts[1], &"SubtitleLabel", 36, UiTheme.TEXT))
+	box.add_child(_card_label(texts[2], &"", 24, UiTheme.TEXT))
 	return button
 
 
-func _card_label(text: String, size: int, color: Color) -> Label:
+func _card_label(text: String, variation: StringName, size: int, color: Color) -> Label:
 	var label := Label.new()
 	label.text = text
+	label.theme_type_variation = variation
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -191,17 +195,6 @@ func _card_label(text: String, size: int, color: Color) -> Label:
 	label.add_theme_font_size_override("font_size", size)
 	label.add_theme_color_override("font_color", color)
 	return label
-
-
-func _card_style(accent: Color, strength: float, border: int) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = CARD_BG.lerp(Color(accent, 1.0), 0.08 * strength)
-	style.border_color = Color(accent, strength)
-	style.set_border_width_all(border)
-	style.set_corner_radius_all(10)
-	style.shadow_color = Color(accent, 0.25 * strength)
-	style.shadow_size = 12
-	return style
 
 
 func _on_card_pressed(index: int) -> void:

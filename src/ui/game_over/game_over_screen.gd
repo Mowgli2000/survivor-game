@@ -4,6 +4,9 @@ extends CanvasLayer
 
 signal retry_requested
 
+## Defeat veil: the night violet of the UI, pushed toward red.
+const DEFEAT_DIM := Color(0.16, 0.03, 0.08, 0.8)
+
 ## True when the last open() was a victory.
 var is_victory: bool = false
 
@@ -25,7 +28,7 @@ func _init() -> void:
 	add_child(root)
 
 	_dim = ColorRect.new()
-	_dim.color = Color(0.1, 0, 0, 0.75)
+	_dim.color = DEFEAT_DIM
 	_dim.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.add_child(_dim)
 
@@ -40,18 +43,20 @@ func _init() -> void:
 	_title = Label.new()
 	_title.text = "UI_GAME_OVER"
 	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_title.add_theme_font_size_override("font_size", 80)
+	_title.theme_type_variation = &"TitleLabel"
+	_title.add_theme_font_size_override("font_size", 88)
 	box.add_child(_title)
 
 	_summary = Label.new()
 	_summary.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_summary.theme_type_variation = &"ValueLabel"
 	_summary.add_theme_font_size_override("font_size", 32)
 	box.add_child(_summary)
 
 	_retry = Button.new()
 	_retry.text = "UI_RETRY"
-	_retry.custom_minimum_size = Vector2(320, 80)
-	_retry.add_theme_font_size_override("font_size", 36)
+	_retry.custom_minimum_size = Vector2(340, 84)
+	_retry.theme_type_variation = &"BigButton"
 	_retry.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_retry.pressed.connect(func() -> void: retry_requested.emit())
 	box.add_child(_retry)
@@ -60,8 +65,8 @@ func _init() -> void:
 func open(time_survived: float, level: int, kills: int, wave: int, victory: bool = false) -> void:
 	is_victory = victory
 	_title.text = "UI_VICTORY" if victory else "UI_GAME_OVER"
-	_title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3) if victory else Color.WHITE)
-	_dim.color = Color(0.0, 0.06, 0.08, 0.8) if victory else Color(0.1, 0, 0, 0.75)
+	_title.add_theme_color_override("font_color", UiTheme.GOLD if victory else UiTheme.BAD)
+	_dim.color = UiTheme.DIM if victory else DEFEAT_DIM
 	_summary.text = "%s %d\n%s %s\n%s %d\n%s %d" % [
 		tr("UI_WAVE_REACHED"), wave,
 		tr("UI_TIME_SURVIVED"), Hud.format_time(time_survived),
@@ -69,4 +74,7 @@ func open(time_survived: float, level: int, kills: int, wave: int, victory: bool
 		tr("UI_KILLS"), kills,
 	]
 	visible = true
+	UiFx.pop_in(_title)
+	UiFx.pop_in(_summary, 0.08)
+	UiFx.pop_in(_retry, 0.16)
 	_retry.grab_focus()
