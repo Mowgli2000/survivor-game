@@ -1,5 +1,7 @@
 # Méta-progression, ennemis, boss, modes — proposition à trancher
 
+> **Décision 2026-10-03 (D46) : toutes les recommandations (colonne « Ma reco ») sont validées par le dev.**
+
 **Date :** 2026-10-03 · **Statut :** proposition, à discuter avec le dev
 **But :** décider ensemble ce qui se débloque, comment, avec quels ennemis, boss et modes, puis planifier les étapes 6 (boss), 7 (méta-progression) et 8 (contenu).
 

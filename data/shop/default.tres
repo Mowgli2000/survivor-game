@@ -6,3 +6,5 @@
 script = ExtResource("1_shop")
 id = &"default"
 price_growth_per_wave = 0.12
+reroll_wave_factor = 0.75
+reroll_step_factor = 0.6

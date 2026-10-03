@@ -91,6 +91,16 @@ func test_prices_and_reroll_cost() -> void:
 	assert_eq(_config.reroll_cost(10, 1), 11)
 
 
+
+func test_reroll_cost_factors_are_tunable() -> void:
+	var config := ShopConfig.new()
+	config.reroll_wave_factor = 0.75
+	config.reroll_step_factor = 0.6
+	assert_eq(config.reroll_cost(10, 0), 8, "1 + floor(10 x 0.75)")
+	assert_eq(config.reroll_cost(10, 2), 20, "+ floor(10 x 0.6) per reroll")
+	assert_eq(config.reroll_cost(1, 1), 2, "step never below 1")
+
+
 # --- Shop -------------------------------------------------------------------
 
 func test_open_fills_every_slot() -> void:

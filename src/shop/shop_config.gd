@@ -11,6 +11,10 @@ extends Resource
 ## price = base * (1 + growth * (wave - 1))
 @export var price_growth_per_wave: float = 0.10
 @export var weapon_tier_price: Array[float] = [1.0, 1.9, 3.4, 6.0]
+## Reroll cost = 1 + floor(wave x reroll_wave_factor)
+## + max(1, floor(wave x reroll_step_factor)) x rerolls already done in this shop.
+@export var reroll_wave_factor: float = 0.5
+@export var reroll_step_factor: float = 0.5
 ## Selling a weapon gives back this fraction of its current price.
 @export var sell_ratio: float = 0.25
 
@@ -59,5 +63,5 @@ func sell_price(weapon: WeaponData, tier: int, wave: int) -> int:
 
 ## Cost of the next reroll after `rerolls_done` rerolls in the same shop.
 func reroll_cost(wave: int, rerolls_done: int) -> int:
-	var half := floori(wave / 2.0)
-	return 1 + half + maxi(1, half) * rerolls_done
+	var step := maxi(1, floori(wave * reroll_step_factor))
+	return 1 + floori(wave * reroll_wave_factor) + step * rerolls_done
