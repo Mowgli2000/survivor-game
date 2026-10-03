@@ -14,7 +14,7 @@ Dernière mise à jour : 2026-10-03 (session 4)
 | **Phase actuelle** | Passe visuelle (3 chantiers) : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles autour du joueur ✅ · 3. thème des interfaces. Ensuite Phase 3 (objets à effets), menus, playtest |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 181/181 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 183/183 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~163 FPS moyen (formes néon : ~176, mesuré en alterné) — 500 ennemis, ~1000 projectiles, 6 armes rang IV. Mesures isolées : ±15 FPS (ADR 0009) |
 
 **Emplacements**
@@ -115,7 +115,7 @@ Dernière mise à jour : 2026-10-03 (session 4)
 
 - **Passe visuelle, chantier 1 — sprites animés** (spec + plan dans `docs/superpowers/`, ADR 0009) : outil de conversion du pack RGS_Dev (recadrage, réduction, halo néon, variantes élite dorées, atlas unique), `SpriteSheet` / `SpriteAnimator`, ennemis et joueur animés (idle/marche, orientés vers le joueur / selon le déplacement), Shogun = diable violet géant teinté magenta, tri en profondeur (y-sort), sol texturé bleu-violet. Galerie mise à jour (ennemis animés, brûlés, élites). Stress test : nouvelle ligne « draw calls ». Revue finale : correction du retournement vers la gauche (sprite décalé de sa zone de collision), outil de conversion qui échoue proprement. 168 tests
 
-- **Passe visuelle, chantier 2 — armes et objets** (spec + plan dans `docs/superpowers/`, ADR 0010) : 21 icônes SVG (6 armes, 15 objets) générées par `tools/icons/make_icons.py`, armes dessinées autour du perso (visée, recul, éclair de bouche, coup de katana, liseré de rang par shader), tirs depuis le canon, icônes en boutique (cartes, armes, objets avec quantité) et dans le HUD. Outils : planche `icon_sheet.tscn`, capture `--shop`. 181 tests
+- **Passe visuelle, chantier 2 — armes et objets** (spec + plan dans `docs/superpowers/`, ADR 0010) : 21 icônes SVG (6 armes, 15 objets) générées par `tools/icons/make_icons.py`, armes dessinées autour du perso (visée, recul, éclair de bouche, coup de katana, liseré de rang par shader), tirs depuis le canon, icônes en boutique (cartes, armes, objets avec quantité) et dans le HUD. Outils : planche `icon_sheet.tscn`, capture `--shop`. Revue finale : rayon laser qui ratait en bord de portée, tirs à bout portant qui partaient derrière la cible, armes qui ne clignotaient pas avec le joueur — corrigés. 183 tests
 
 ---
 
