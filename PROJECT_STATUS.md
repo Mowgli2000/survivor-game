@@ -11,10 +11,10 @@ Dernière mise à jour : 2026-10-03 (session 4)
 
 | | |
 |---|---|
-| **Phase actuelle** | Passe visuelle (3 chantiers) : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles autour du joueur ✅ · 3. thème des interfaces. Ensuite Phase 3 (objets à effets), menus, playtest |
+| **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. Suite : Phase 3 (objets à effets), menus, playtest Ensuite Phase 3 (objets à effets), menus, playtest |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 185/185 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 202/202 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~163 FPS moyen (formes néon : ~176, mesuré en alterné) — 500 ennemis, ~1000 projectiles, 6 armes rang IV. Mesures isolées : ±15 FPS (ADR 0009) |
 
 **Emplacements**
@@ -66,6 +66,7 @@ Dernière mise à jour : 2026-10-03 (session 4)
 | D37 | 2026-10-03 | **Performance : 100 FPS suffisent** | Dev : « même s'il tourne à 100 FPS, ce n'est pas un jeu compétitif ». Seuil du stress test : ≥ 100 FPS moyen (au lieu de 150) |
 | D38 | 2026-10-03 | **Rééquilibrage vagues 12-20 : plus de monstres, plus de PV, moins de pouvoir d'achat** | Apparitions fin de partie 24 → 32/s ; PV ×3 → ×8 en vague 20 avec une courbe tardive (×3,4 vague 12, ×5,4 vague 16) — remontée prévue par D24 ; matériaux par XP 60 % → 30 % en vague 20 ; inflation des prix 10 % → 12 % par vague |
 | D39 | 2026-10-03 | **Caméra plus proche, arène plus petite (façon Brotato)** | Zoom 1,3 ; arène 3200 → 2400 ; apparition à 950 px (au lieu de 1150, toujours hors écran). Plus de pression, personnages plus lisibles. Réglable dans `data/runs/default.tres` |
+| D40 | 2026-10-03 | **Thème d'interface « chibi néon »** : contour noir, fond violet nuit, lueur néon ; polices Fredoka + Nunito ; animations discrètes ; tous les écrans | Choix « reco » du dev. Un seul `Theme` construit par `UiTheme`, animations `UiFx`. ADR 0011 |
 | D36 | 2026-10-03 | **Armes visibles façon Brotato + icônes** : positions fixes en cercle, armes petites, icônes d'objets dans le même style, cadre de rang en interface + liseré en jeu | Choix « reco » du dev. Les tirs partent du canon ; la cible reste choisie depuis le centre (pas de rééquilibrage). ADR 0010 |
 
 ### Décisions volontairement reportées
@@ -120,6 +121,10 @@ Dernière mise à jour : 2026-10-03 (session 4)
 
 - **Passe visuelle, chantier 2 — armes et objets** (spec + plan dans `docs/superpowers/`, ADR 0010) : 21 icônes SVG (6 armes, 15 objets) générées par `tools/icons/make_icons.py`, armes dessinées autour du perso (visée, recul, éclair de bouche, coup de katana, liseré de rang par shader), tirs depuis le canon, icônes en boutique (cartes, armes, objets avec quantité) et dans le HUD. Outils : planche `icon_sheet.tscn`, capture `--shop`. Revue finale : rayon laser qui ratait en bord de portée, tirs à bout portant qui partaient derrière la cible, armes qui ne clignotaient pas avec le joueur — corrigés. 183 tests
 
+- **Gel au passage à la vague suivante corrigé** (grille des ennemis périmée après le nettoyage de fin de vague, interrogée par la visée des armes) ; **flou de mouvement** : la caméra suit au rythme de la physique.
+- **Rééquilibrage** (D38) et **caméra/arène** (D39) après le retour du dev.
+- **Passe visuelle, chantier 3 — thème des interfaces** (spec + plan dans `docs/superpowers/`, ADR 0011) : `UiTheme` (thème unique, polices Fredoka/Nunito, styles et variations), `UiFx` (apparition, soulèvement, rebond, compteurs), appliqués au HUD, level-up, boutique, fin de vague, game over/victoire, panneau de stats, chiffres de dégâts. 202 tests
+
 ---
 
 ## 4. Retours du dev (playtests)
@@ -155,7 +160,7 @@ Dernière mise à jour : 2026-10-03 (session 4)
 
 1. **Dev : valider le chantier 1 en jeu** (sprites, tailles, sol, Shogun) ; lancer le jeu ou la galerie `vfx_gallery.tscn`. Réglages rapides : `SPRITE_HEIGHT_PER_RADIUS` (`enemy.gd`, `player.gd`), `sprite_scale` / `sprite_tint` dans `data/enemies/`, `FLOOR_TINT` (`arena.gd`), halo dans `tools/sprites/bake_sprites.gd`.
 2. **Dev : valider le chantier 2** (icônes, armes autour du perso, boutique). Question ouverte : **zoom de la caméra** (aujourd'hui 1 : le perso fait ~60 px en 1080p, plus petit que dans Brotato ; zoomer agrandit tout mais montre moins d'arène). Re-mesurer le stress test sur une machine au repos (ADR 0010).
-3. **Chantier 3 — thème des interfaces** (`/art-bible` puis un `Theme` Godot commun : police, panneaux, boutons, cadres de rang, focus manette) appliqué à tous les écrans.
+3. **Dev : valider le thème des interfaces** (captures ou en jeu). Puis, dans l'ordre demandé : **B.** objets à effets et synergies (Phase 3), **C.** menus (principal, pause, paramètres avec volumes et « réduire les animations » → `UiFx.reduce_motion`), **D.** playtest et ajustements.
 4. **Dev** : écouter le son en jeu (sons choisis sans écoute, à changer au goût) ; rejouer une run complète (F3) : densité des vagues 10-20, matériaux, panneau de stats (Tab) ; ajuster D30.
 5. **Phase 3 — Objets à effets et synergies** (vendus par la boutique), puis **menus** (principal, pause, paramètres avec volumes).
 6. Phase 6 (vrai boss), puis 6b (vertical slice + page Steam). Roadmap complète : `docs/design/gdd.md`.

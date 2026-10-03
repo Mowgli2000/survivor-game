@@ -19,7 +19,7 @@ Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes, statuts, 4 ennemis, rendu 
 - Boutique (ADR 0007) : `Shop` (logique pure : stock, relance, verrou, achat, vente, fusion) + `ShopScreen` ; réglages `data/shop/` ; monnaie `Wallet` ; objets `ItemData` (`data/items/`) + `Inventory` ; rangs `Tiers`.
 - **Tous les dégâts passent par l'API d'`EnemyManager`** (`damage_enemy`, `damage_in_radius`, `damage_along_segment`) : armure, statuts, recul et feedback au même endroit (ADR 0005).
 - Feedback : `Vfx` (effets additifs, un seul nœud), `DamageNumbers`, `GameCamera.add_trauma()`. Pas de `draw_*` anticrénelé par entité de masse : précalculer en texture.
-- UI : lit l'état, écoute les signaux, appelle l'API publique des systèmes. Ne modifie jamais l'état directement.
+- UI : lit l'état, écoute les signaux, appelle l'API publique des systèmes. Ne modifie jamais l'état directement. Apparence : `theme = UiTheme.get_theme()` sur la racine de chaque écran + variations de type (`TitleLabel`, `SubtitleLabel`, `ValueLabel`, `SmallLabel`, `BigButton`) ; styles colorés via `UiTheme.card_style/panel_style` ; animations via `UiFx` (ADR 0011). Pas de `StyleBoxFlat` construit à la main dans un écran.
 - Sauvegarde : JSON versionné dans `user://`. **Ne jamais charger de `.tres`/`.res` depuis `user://`** (exécution de code possible).
 - Steam : uniquement derrière l'autoload `Platform` (Phase 10). Le jeu doit tourner sans Steam.
 
