@@ -37,4 +37,4 @@ stat_overrides = {
 invulnerability_time = 0.5
 radius = 16.0
 color = Color(0.45, 1, 0.45, 1)
-sprite_id = &"player"
+sprite_id = &"gunslinger"

@@ -54,7 +54,7 @@ func test_heal_is_capped() -> void:
 
 func test_player_sprite_faces_movement() -> void:
 	var data := CharacterData.new()
-	data.sprite_id = &"player"
+	data.sprite_id = &"drifter"
 	var player := Player.new()
 	player.setup(data, Rect2(-500, -500, 1000, 1000))
 	player.bot_input = func() -> Vector2: return Vector2.LEFT

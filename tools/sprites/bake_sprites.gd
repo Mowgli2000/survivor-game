@@ -1,5 +1,6 @@
 extends SceneTree
-## Converts the raw RGS_Dev pack into game sprite sheets. Run via tools/bake_sprites.ps1:
+## Converts the drawn SVG frames (tools/art/make_sprites.py, entries with "svg")
+## or a raw PNG pack (entries with "src") into game sprite sheets. Run via tools/bake_sprites.ps1:
 ##   phase "images": crop (union of frames), downscale, add a neon glow, stack every
 ##     strip into one atlas (atlas.png) and record the layout;
 ##   phase "resources": after import, write one SpriteSheet .tres per strip.
@@ -16,6 +17,8 @@ const GLOW_SHRINK := 6
 const GLOW_GAIN := 3.5
 const ELITE_GLOW := Color(1.0, 0.8, 0.2)
 const GROUND_SIZE := 512
+## SVG frames are rasterized at this scale before cropping and downscaling.
+const SVG_SCALE := 1.0
 
 
 func _initialize() -> void:
@@ -33,13 +36,13 @@ func _initialize() -> void:
 
 
 func _bake_images(recipe: Dictionary) -> bool:
-	var pack := ProjectSettings.globalize_path("res://" + String(recipe.pack))
+	var pack := ProjectSettings.globalize_path("res://" + String(recipe.get("pack", "")))
 	var sprites: Dictionary = recipe.sprites
 	var strips: Dictionary = {}  # id -> Image
 	var cell_widths: Dictionary = {}  # id -> int
 	for id: String in sprites:
 		var def: Dictionary = sprites[id]
-		var frames := _load_frames(pack.path_join(def.src), def.anims)
+		var frames := _load_svg_frames(ProjectSettings.globalize_path("res://" + String(def.svg)), def.anims) 			if def.has("svg") else _load_frames(pack.path_join(def.src), def.anims)
 		if frames.is_empty():
 			return false
 		var cells := _crop_and_scale(frames, int(recipe.height))
@@ -50,11 +53,12 @@ func _bake_images(recipe: Dictionary) -> bool:
 			cell_widths[id + "_elite"] = cell_widths[id]
 		print("  baked " + id)
 	_save_atlas(strips, cell_widths)
-	var ground := Image.load_from_file(pack.path_join(recipe.ground))
-	if ground == null:
-		return _fail("missing ground " + String(recipe.ground))
-	ground.resize(GROUND_SIZE, GROUND_SIZE, Image.INTERPOLATE_LANCZOS)
-	ground.save_png(OUT_DIR + "ground.png")
+	if recipe.has("ground"):
+		var ground := Image.load_from_file(pack.path_join(recipe.ground))
+		if ground == null:
+			return _fail("missing ground " + String(recipe.ground))
+		ground.resize(GROUND_SIZE, GROUND_SIZE, Image.INTERPOLATE_LANCZOS)
+		ground.save_png(OUT_DIR + "ground.png")
 	print("Images baked.")
 	return true
 
@@ -78,6 +82,31 @@ func _load_frames(dir: String, anims: Dictionary) -> Array[Image]:
 			var image := Image.load_from_file(path)
 			if image == null:
 				_fail("cannot read frame " + path)
+				return []
+			image.convert(Image.FORMAT_RGBA8)
+			frames.append(image)
+	return frames
+
+
+## SVG frames "<anim>_<i>.svg" (animation spec "source:frames:fps", source = anim name).
+func _load_svg_frames(dir: String, anims: Dictionary) -> Array[Image]:
+	var frames: Array[Image] = []
+	if not DirAccess.dir_exists_absolute(dir):
+		_fail("missing folder %s (run python tools/art/make_sprites.py)" % dir)
+		return frames
+	for anim: String in anims:
+		var parts := String(anims[anim]).split(":")
+		if parts.size() != 3:
+			_fail("bad animation spec '%s' (expected source:frames:fps)" % anims[anim])
+			return []
+		for i in int(parts[1]):
+			var path := dir.path_join("%s_%d.svg" % [parts[0], i])
+			if not FileAccess.file_exists(path):
+				_fail("missing frame " + path)
+				return []
+			var image := Image.new()
+			if image.load_svg_from_string(FileAccess.get_file_as_string(path), SVG_SCALE) != OK:
+				_fail("cannot rasterize " + path)
 				return []
 			image.convert(Image.FORMAT_RGBA8)
 			frames.append(image)

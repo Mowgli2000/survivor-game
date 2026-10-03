@@ -37,4 +37,4 @@ stat_overrides = {
 invulnerability_time = 0.5
 radius = 16.0
 color = Color(1, 0.3, 0.8, 1)
-sprite_id = &"player"
+sprite_id = &"ronin_pc"

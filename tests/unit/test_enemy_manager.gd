@@ -273,7 +273,7 @@ func test_enemy_sprite_animates_and_faces_player() -> void:
 
 func test_elite_falls_back_to_normal_sheet() -> void:
 	var data := _enemy_data(10.0, 0.0)
-	data.sprite_id = &"player"  # has no _elite sheet
+	data.sprite_id = &"drifter"  # has no _elite sheet
 	assert_not_null(data.get_sheet(false))
 	assert_eq(data.get_sheet(true), data.get_sheet(false))
 

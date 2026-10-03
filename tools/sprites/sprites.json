@@ -1,12 +1,18 @@
 {
-  "pack": "assets_src/third_party/rgs_characters/Free 2D Animated Vector Game Character Sprites",
   "height": 128,
-  "ground": "Environment/ground_white.png",
   "sprites": {
-    "player":  { "src": "Full body animated characters/Char 1/no hands", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#4de6ff" },
-    "grunt":   { "src": "Full body animated characters/Enemies/Enemy 1", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#d94d59", "elite": true },
-    "runner":  { "src": "Full body animated characters/Enemies/Enemy 3", "anims": { "walk": "fly:6:14" }, "glow": "#f2a633", "elite": true },
-    "shooter": { "src": "Full body animated characters/Enemies/Enemy 2", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#bf59ff", "elite": true },
-    "tank":    { "src": "Full body animated characters/Enemies/Enemy 4", "anims": { "idle": "idle:6:6", "walk": "walk:8:9" }, "glow": "#ff5933", "elite": true }
+    "drifter":    { "svg": "assets_src/drawn/drifter",    "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#4de6ff" },
+    "ronin_pc":   { "svg": "assets_src/drawn/ronin_pc",   "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#ff40c8" },
+    "gunslinger": { "svg": "assets_src/drawn/gunslinger", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#4dff73" },
+    "merchant":   { "svg": "assets_src/drawn/merchant",   "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#ffd24d" },
+    "grunt":      { "svg": "assets_src/drawn/grunt",      "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#d94d59", "elite": true },
+    "runner":     { "svg": "assets_src/drawn/runner",     "anims": { "walk": "walk:6:14" }, "glow": "#f2a633", "elite": true },
+    "shooter":    { "svg": "assets_src/drawn/shooter",    "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#bf59ff", "elite": true },
+    "tank":       { "svg": "assets_src/drawn/tank",       "anims": { "idle": "idle:6:6", "walk": "walk:8:9" }, "glow": "#ff5933", "elite": true },
+    "kamikaze":   { "svg": "assets_src/drawn/kamikaze",   "anims": { "idle": "idle:6:10", "walk": "walk:8:14" }, "glow": "#ff8c1a", "elite": true },
+    "charger":    { "svg": "assets_src/drawn/charger",    "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#ff3c3c", "elite": true },
+    "spawner":    { "svg": "assets_src/drawn/spawner",    "anims": { "idle": "idle:6:6", "walk": "walk:8:8" }, "glow": "#4dff73", "elite": true },
+    "ronin_boss": { "svg": "assets_src/drawn/ronin_boss", "anims": { "idle": "idle:6:8", "walk": "walk:8:10" }, "glow": "#4df2ff" },
+    "shogun":     { "svg": "assets_src/drawn/shogun",     "anims": { "idle": "idle:6:6", "walk": "walk:8:9" }, "glow": "#ff33b8" }
   }
 }
