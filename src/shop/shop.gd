@@ -6,6 +6,8 @@ extends RefCounted
 
 signal changed
 
+## Player stats read for the luck stat (null: no luck). Set by Run.
+var luck_stats: StatBlock
 var offers: Array[ShopOffer] = []
 var wave: int = 1
 ## Rerolls done in the current shop (the cost grows with each one).
@@ -143,7 +145,7 @@ func _fill() -> void:
 
 func _roll(taken: Array[Resource]) -> ShopOffer:
 	var offer := ShopOffer.new()
-	offer.tier = _config.roll_tier(wave, _rng)
+	offer.tier = _config.roll_tier(wave, _rng, luck_stats.get_value(StatIds.LUCK) if luck_stats != null else 0.0)
 	if _weapon_pool.is_empty() or _rng.randf() >= _config.weapon_chance:
 		offer.item = _pick_item(offer.tier, taken)
 	if offer.item != null:

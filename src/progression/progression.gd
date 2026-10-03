@@ -36,13 +36,13 @@ func add_xp(amount: int) -> void:
 ## Draws `count` distinct stat upgrades (weight = UpgradeData.weight), each with
 ## a tier rolled by `shop_config` for `wave` (tier I without config).
 func roll_offers(stat_pool: Array[UpgradeData], count: int, rng: RandomNumberGenerator,
-		shop_config: ShopConfig = null, wave: int = 1) -> Array[UpgradeOffer]:
+		shop_config: ShopConfig = null, wave: int = 1, luck: float = 0.0) -> Array[UpgradeOffer]:
 	var weights := PackedFloat32Array()
 	for upgrade in stat_pool:
 		weights.append(upgrade.weight)
 	var result: Array[UpgradeOffer] = []
 	for index in WeightedPicker.pick_distinct(weights, count, rng):
-		var tier := shop_config.roll_tier(wave, rng) if shop_config != null else 1
+		var tier := shop_config.roll_tier(wave, rng, luck) if shop_config != null else 1
 		result.append(UpgradeOffer.for_stat(stat_pool[index], tier))
 	return result
 

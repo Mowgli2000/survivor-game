@@ -13,3 +13,7 @@ extends Resource
 @export var max_count: int = 0
 ## Shop icon (null: text only).
 @export var icon: Texture2D
+## What the item does beyond its modifiers (one instance per owned copy).
+@export var effects: Array[ItemEffect] = []
+## Effect text shown on the card, below the modifiers (localization key, optional).
+@export var effect_key: String = ""

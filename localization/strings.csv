@@ -25,6 +25,10 @@ STAT_PIERCE,Pierce,Perforation
 STAT_KNOCKBACK,Knockback,Recul
 STAT_RANGE,Range,Portée
 STAT_PICKUP_RANGE,Pickup range,Portée de ramassage
+STAT_DODGE,Dodge,Esquive
+STAT_LIFESTEAL,Life steal,Vol de vie
+STAT_LUCK,Luck,Chance
+STAT_HARVEST,Harvesting,Récolte
 UPGRADE_POWER,Power,Puissance
 UPGRADE_HASTE,Haste,Frénésie
 UPGRADE_VITALITY,Vitality,Vitalité

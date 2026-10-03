@@ -35,6 +35,7 @@ var waves: WaveDirector
 var vfx: Vfx
 var damage_numbers: DamageNumbers
 var inventory: Inventory
+var item_effects: ItemEffects
 var hud: Hud
 var level_up_screen: LevelUpScreen
 var wave_end_screen: WaveEndScreen
@@ -116,6 +117,13 @@ func _ready() -> void:
 	var item_pool: Array[ItemData] = []
 	item_pool.assign(ContentDB.get_all(&"items"))
 	shop = Shop.new(config.shop, state.wallet, inventory, player.weapons, weapon_pool, item_pool, state.rng)
+	shop.luck_stats = player.stats
+	player.rng = state.rng
+	item_effects = ItemEffects.new()
+	item_effects.name = "ItemEffects"
+	item_effects.setup(player, enemies, state.wallet, state.rng, vfx)
+	add_child(item_effects)
+	inventory.item_added.connect(item_effects.add_item)
 	state.wallet.add(config.shop.starting_materials)
 	if config.character.starting_weapon != null:
 		player.weapons.add_weapon(config.character.starting_weapon)
@@ -198,6 +206,7 @@ func _on_wave_ended(wave: int) -> void:
 	enemies.clear_all()
 	enemy_projectiles.clear_all()
 	pickups.collect_all()
+	item_effects.on_wave_ended(wave)
 	player.heal(player.stats.get_value(StatIds.MAX_HP) * stage.heal_between_waves)
 	if waves.is_last_wave():
 		return  # _on_run_won follows
@@ -230,7 +239,7 @@ func _resolve_level_ups() -> void:
 		_on_level_ups_resolved()
 		return
 	var offers := progression.roll_offers(_upgrade_pool, config.upgrade_choices, state.rng,
-		config.shop, waves.wave)
+		config.shop, waves.wave, player.stats.get_value(StatIds.LUCK))
 	if offers.is_empty():
 		progression.pending_level_ups = 0
 		_on_level_ups_resolved()

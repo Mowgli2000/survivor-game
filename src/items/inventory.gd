@@ -3,6 +3,8 @@ extends RefCounted
 ## Items owned during a run. Adding an item applies its stat modifiers for good.
 
 signal changed
+## One more copy of `item` (ItemEffects starts its effects).
+signal item_added(item: ItemData)
 
 var _stats: StatBlock
 var _counts: Dictionary[ItemData, int] = {}
@@ -30,6 +32,7 @@ func add(item: ItemData) -> bool:
 	if not _counts.has(item):
 		_order.append(item)
 	_counts[item] = count(item) + 1
+	item_added.emit(item)
 	changed.emit()
 	return true
 

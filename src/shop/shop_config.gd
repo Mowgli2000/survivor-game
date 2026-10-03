@@ -32,9 +32,11 @@ func tier_chance(tier: int, wave: int) -> float:
 
 
 ## Highest tier first; tier I when every roll fails.
-func roll_tier(wave: int, rng: RandomNumberGenerator) -> int:
+## `luck` adds +1 % per point to each tier's chance (Brotato).
+func roll_tier(wave: int, rng: RandomNumberGenerator, luck: float = 0.0) -> int:
+	var luck_factor := maxf(1.0 + luck / 100.0, 0.0)
 	for tier in range(Tiers.COUNT, 1, -1):
-		if rng.randf() < tier_chance(tier, wave):
+		if rng.randf() < tier_chance(tier, wave) * luck_factor:
 			return tier
 	return 1
 

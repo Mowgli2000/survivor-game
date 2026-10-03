@@ -19,6 +19,10 @@ const KNOCKBACK := &"knockback"          # multiplier
 const RANGE := &"range"                  # multiplier on weapon range
 const AREA := &"area"                    # multiplier on slash, beam and explosion sizes
 const PICKUP_RANGE := &"pickup_range"    # pixels
+const DODGE := &"dodge"                  # chance to ignore a hit (0..0.6)
+const LIFESTEAL := &"lifesteal"          # chance per damage dealt to heal 1 HP (capped per second)
+const LUCK := &"luck"                    # +1 % per point to tier odds and item effect chances
+const HARVEST := &"harvest"              # materials gained at the end of each wave
 
 const DEFAULTS: Dictionary[StringName, float] = {
 	MAX_HP: 100.0,
@@ -36,13 +40,17 @@ const DEFAULTS: Dictionary[StringName, float] = {
 	RANGE: 1.0,
 	AREA: 1.0,
 	PICKUP_RANGE: 120.0,
+	DODGE: 0.0,
+	LIFESTEAL: 0.0,
+	LUCK: 0.0,
+	HARVEST: 0.0,
 }
 
 ## Stats stored as fractions (0.05) but shown as percentages (+5 %).
-const SHOWN_AS_PERCENT: Array[StringName] = [CRIT_CHANCE]
+const SHOWN_AS_PERCENT: Array[StringName] = [CRIT_CHANCE, DODGE, LIFESTEAL]
 
 ## Stats used as whole numbers: scaled bonuses are rounded.
-const INTEGER_STATS: Array[StringName] = [PROJECTILE_COUNT, PIERCE]
+const INTEGER_STATS: Array[StringName] = [PROJECTILE_COUNT, PIERCE, LUCK, HARVEST]
 
 ## stat -> Vector2(min, max). Stats not listed are unbounded.
 const BOUNDS: Dictionary[StringName, Vector2] = {
@@ -60,6 +68,9 @@ const BOUNDS: Dictionary[StringName, Vector2] = {
 	RANGE: Vector2(0.1, INF),
 	AREA: Vector2(0.1, INF),
 	PICKUP_RANGE: Vector2(0.0, INF),
+	DODGE: Vector2(0.0, 0.6),
+	LIFESTEAL: Vector2(0.0, 1.0),
+	HARVEST: Vector2(0.0, INF),
 }
 
 

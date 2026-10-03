@@ -6,6 +6,8 @@ extends CharacterBody2D
 signal health_changed(hp: float, max_hp: float)
 signal damaged(amount: float)
 signal died
+## A hit was avoided (dodge stat).
+signal dodged
 
 ## Sprite height in px per px of collision radius.
 const SPRITE_HEIGHT_PER_RADIUS := 5.4
@@ -25,6 +27,8 @@ var weapons: WeaponHolder
 var camera: GameCamera
 ## Weapons drawn around the player (set up by Run once the enemies exist).
 var weapon_visuals: WeaponVisuals
+## Gameplay rolls (dodge). Run replaces it with the run RNG (replays).
+var rng := RandomNumberGenerator.new()
 var animator := SpriteAnimator.new()
 
 var _data: CharacterData
@@ -96,6 +100,9 @@ func _physics_process(delta: float) -> void:
 
 func take_damage(amount: float) -> void:
 	if is_dead or invincible or _invulnerable > 0.0:
+		return
+	if rng.randf() < stats.get_value(StatIds.DODGE):
+		dodged.emit()
 		return
 	var damage := CombatMath.apply_armor(amount, stats.get_value(StatIds.ARMOR))
 	hp = maxf(hp - damage, 0.0)
