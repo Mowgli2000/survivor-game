@@ -1,12 +1,14 @@
 class_name Hud
 extends CanvasLayer
 ## In-run HUD: XP bar (top), HP bar + level, pending level-ups and materials (top left),
-## wave and wave countdown (top center), owned weapons with their tier (bottom left).
+## wave and wave countdown (top center), owned weapon icons framed by tier (bottom left).
 ## Holding `show_stats` (Tab / gamepad Select) shows the stats panel.
 ## Read-only: listens to signals and reads state, never changes it.
 
+const WEAPON_ICON := 56.0
+
 var _weapons: WeaponHolder
-var _weapons_box: VBoxContainer
+var _weapons_box: HBoxContainer
 var _hp_bar: ProgressBar
 var _hp_label: Label
 var _xp_bar: ProgressBar
@@ -45,12 +47,18 @@ func setup(player: Player, progression: Progression, waves: WaveDirector, wallet
 
 func _refresh_weapons() -> void:
 	for child in _weapons_box.get_children():
+		_weapons_box.remove_child(child)
 		child.queue_free()
 	for slot in _weapons.get_slots():
-		var label := _make_label(24)
-		label.text = "%s  %s" % [tr(slot.data.name_key), Tiers.roman(slot.level)]
-		label.add_theme_color_override("font_color", slot.data.color)
-		_weapons_box.add_child(label)
+		if slot.data.icon == null:
+			var label := _make_label(24)
+			label.text = "%s  %s" % [tr(slot.data.name_key), Tiers.roman(slot.level)]
+			label.add_theme_color_override("font_color", slot.data.color)
+			_weapons_box.add_child(label)
+			continue
+		var tile := IconTile.create(slot.data.icon, slot.level, WEAPON_ICON)
+		tile.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_weapons_box.add_child(tile)
 
 
 func _init() -> void:
@@ -100,12 +108,12 @@ func _init() -> void:
 	_timer_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	root.add_child(_timer_label)
 
-	_weapons_box = VBoxContainer.new()
+	_weapons_box = HBoxContainer.new()
 	_weapons_box.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
 	_weapons_box.grow_vertical = Control.GROW_DIRECTION_BEGIN
 	_weapons_box.offset_left = 32
 	_weapons_box.offset_bottom = -32
-	_weapons_box.add_theme_constant_override("separation", 2)
+	_weapons_box.add_theme_constant_override("separation", 8)
 	root.add_child(_weapons_box)
 
 	_stats_panel = StatsPanel.new()

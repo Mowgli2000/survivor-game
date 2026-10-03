@@ -9,7 +9,10 @@ signal next_wave_requested
 
 ## Ignores presses right after opening (a held confirm key must not buy).
 const INPUT_DELAY_MS := 350
-const CARD_SIZE := Vector2(300, 300)
+const CARD_SIZE := Vector2(300, 400)
+const CARD_ICON := 96.0
+const ITEM_ICON := 60.0
+const WEAPON_ICON := 40
 const CARD_BG := Color(0.05, 0.05, 0.1, 0.96)
 const TEXT_COLOR := Color(0.92, 0.94, 1.0)
 const TOO_EXPENSIVE := Color(1.0, 0.35, 0.35)
@@ -26,6 +29,7 @@ var _reroll: Button
 var _weapon_row: HBoxContainer
 var _weapon_actions: HBoxContainer
 var _items_label: Label
+var _items_row: HFlowContainer
 var _next: Button
 var _selected_weapon: int = -1
 ## Identifies the focused control across rebuilds ("buy:2", "weapon:1", "next"...).
@@ -102,10 +106,18 @@ func _init() -> void:
 	_weapon_actions.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.add_child(_weapon_actions)
 
+	var items_box := HBoxContainer.new()
+	items_box.add_theme_constant_override("separation", 16)
+	items_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_child(items_box)
 	_items_label = _label(22, TEXT_COLOR)
-	_items_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_items_label.custom_minimum_size.x = 1300
-	box.add_child(_items_label)
+	_items_label.text = "UI_SHOP_ITEMS"
+	items_box.add_child(_items_label)
+	_items_row = HFlowContainer.new()
+	_items_row.custom_minimum_size.x = 1100
+	_items_row.add_theme_constant_override("h_separation", 8)
+	_items_row.add_theme_constant_override("v_separation", 8)
+	items_box.add_child(_items_row)
 
 	_next = _button("UI_NEXT_WAVE", 36)
 	_next.custom_minimum_size = Vector2(380, 80)
@@ -205,6 +217,10 @@ func _make_card(index: int, offer: ShopOffer) -> Control:
 		box.add_child(sold)
 		return panel
 	var texts := describe(offer)
+	var icon := IconTile.create(offer.weapon.icon if offer.is_weapon() else offer.item.icon,
+		offer.tier, CARD_ICON)
+	icon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	box.add_child(icon)
 	var tag := _label(18, Color(accent, 0.9))
 	tag.text = texts[0].to_upper()
 	box.add_child(tag)
@@ -244,6 +260,8 @@ func _rebuild_weapons() -> void:
 		var button := _button("%s %s" % [tr(slot.data.name_key), Tiers.roman(slot.level)], 22)
 		button.add_theme_stylebox_override("normal", _style(Tiers.color(slot.level), 1.0 if i == _selected_weapon else 0.5, 2))
 		button.add_theme_color_override("font_color", slot.data.color)
+		button.icon = slot.data.icon
+		button.add_theme_constant_override("icon_max_width", WEAPON_ICON)
 		button.pressed.connect(_on_weapon_selected.bind(i))
 		_weapon_row.add_child(button)
 		_controls["weapon:%d" % i] = button
@@ -265,10 +283,18 @@ func _rebuild_weapons() -> void:
 
 
 func _rebuild_items() -> void:
-	var parts: PackedStringArray = []
+	for child in _items_row.get_children():
+		_items_row.remove_child(child)
+		child.queue_free()
 	for item in _inventory.get_items():
-		parts.append("%s ×%d" % [tr(item.name_key), _inventory.count(item)])
-	_items_label.text = "%s %s" % [tr("UI_SHOP_ITEMS"), ", ".join(parts) if not parts.is_empty() else "—"]
+		var count := _inventory.count(item)
+		var tile := IconTile.create(item.icon, item.tier, ITEM_ICON, "×%d" % count if count > 1 else "")
+		tile.tooltip_text = tr(item.name_key)
+		_items_row.add_child(tile)
+	if _inventory.get_items().is_empty():
+		var none := _label(22, Color(TEXT_COLOR, 0.5))
+		none.text = "—"
+		_items_row.add_child(none)
 
 
 func _accepting() -> bool:

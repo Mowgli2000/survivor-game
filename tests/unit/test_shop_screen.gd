@@ -88,3 +88,27 @@ func test_focus_stays_on_weapons_after_selling() -> void:
 	assert_eq(_weapons.slot_count(), 1)
 	assert_ne(_focused(), _screen._next)
 	assert_eq(_focused(), _screen._controls.get("weapon:0"))
+
+
+func _icon_tiles(node: Node) -> Array[IconTile]:
+	var found: Array[IconTile] = []
+	for child in node.get_children():
+		if child is IconTile:
+			found.append(child)
+		found.append_array(_icon_tiles(child))
+	return found
+
+
+func test_every_offer_card_shows_its_icon() -> void:
+	_open_screen(100)
+	for card in _screen._cards.get_children():
+		assert_eq(_icon_tiles(card).size(), 1, "one icon per card")
+
+
+func test_owned_items_are_shown_as_icons_with_counts() -> void:
+	_open_screen(100)
+	_screen._controls["buy:0"].pressed.emit()
+	_screen._controls["buy:1"].pressed.emit()
+	var tiles := _icon_tiles(_screen._items_row)
+	assert_eq(tiles.size(), 1, "two magnet gloves = one tile")
+	assert_eq(tiles[0].badge.text, "×2")

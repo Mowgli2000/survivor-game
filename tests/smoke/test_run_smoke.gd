@@ -236,3 +236,10 @@ func test_player_and_enemies_are_depth_sorted_together() -> void:
 	assert_true(actors.y_sort_enabled, "actors container sorts by y")
 	assert_eq(_run.enemies.get_parent(), actors)
 	assert_true(_run.enemies.y_sort_enabled, "enemies join the parent's y-sort")
+
+
+func test_hud_shows_one_icon_per_weapon() -> void:
+	await wait_frames(2)
+	var tiles := _run.hud._weapons_box.get_children().filter(func(c: Node) -> bool: return c is IconTile)
+	assert_eq(tiles.size(), _run.player.weapons.slot_count())
+	assert_gt(tiles.size(), 0)

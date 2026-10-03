@@ -1,7 +1,7 @@
 extends Node
 ## Plays a run with a bot and saves a screenshot, so visuals can be checked
 ## without a human at the keyboard (used by Claude Code).
-## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--die]
+## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die]
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
 const STRESS_CONFIG := preload("res://src/debug/stress/stress_run.tres")
@@ -25,7 +25,7 @@ func _ready() -> void:
 			_out = arg.trim_prefix("--out=")
 		elif arg == "--stress":
 			stress = true
-		elif arg in ["--levelup", "--die", "--waveend"]:
+		elif arg in ["--levelup", "--die", "--waveend", "--shop"]:
 			_mode = arg
 		elif arg == "--allweapons":
 			all_weapons = true
@@ -34,7 +34,7 @@ func _ready() -> void:
 		_run.config = STRESS_CONFIG
 	_run.seed_override = 7
 	_run.player_invincible = true
-	_run.auto_choose_upgrades = _mode not in ["--levelup", "--waveend"]
+	_run.auto_choose_upgrades = _mode not in ["--levelup", "--waveend", "--shop"]
 	_run.bot_input = func() -> Vector2: return Vector2.from_angle(_time * 0.5)
 	add_child(_run)
 	if all_weapons:
@@ -51,6 +51,19 @@ func _process(delta: float) -> void:
 		_run.progression.add_xp(_run.progression.xp_needed())
 		_run.waves.time_left = 0.05  # level-ups are shown at the end of the wave
 		_capture_at = _time + 0.8
+		return
+	if _mode == "--shop" and not get_tree().paused:
+		# Own a few items so the inventory row shows, then end the wave.
+		for id in [&"oni_mask", &"magnet_glove", &"magnet_glove", &"plasma_ring"]:
+			_run.inventory.add(ContentDB.get_def(&"items", id))
+		_run.waves.time_left = 0.05
+		_capture_at = _time + 0.8
+		return
+	if _mode == "--shop" and not _run.shop_screen.visible:
+		# Skip the level-up cards: straight to the shop.
+		_run.progression.pending_level_ups = 0
+		_run._resolve_level_ups()
+		_capture_at = _time + 0.5
 		return
 	if _mode == "--waveend" and not get_tree().paused:
 		_run.waves.time_left = 0.05
