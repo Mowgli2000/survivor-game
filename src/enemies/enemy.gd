@@ -11,7 +11,7 @@ const FLASH_TINT := Color(3.0, 3.0, 3.0)
 const BURN_TINT := Color(1.8, 1.0, 0.55)
 const SLOW_TINT := Color(0.55, 0.9, 1.8)
 ## Sprite height in px per px of collision radius.
-const SPRITE_HEIGHT_PER_RADIUS := 3.2
+const SPRITE_HEIGHT_PER_RADIUS := 5.0
 ## Feet sit this fraction of the radius below the enemy center.
 const SPRITE_FOOT := 0.8
 

@@ -10,6 +10,7 @@ var _vfx: Vfx
 var _timer: float = 0.0
 var _time: float = 0.0
 var _out: String = ""
+var _gallery_enemies: Array[Enemy] = []
 
 
 func _ready() -> void:
@@ -25,13 +26,11 @@ func _ready() -> void:
 	var x := -450.0
 	for id in ENEMY_IDS:
 		var data: EnemyData = ContentDB.get_def(&"enemies", id)
-		var enemy := Enemy.new()
-		add_child(enemy)
-		enemy.reset(data, Vector2(x, 330), 1.0)
-		var burning := Enemy.new()
-		add_child(burning)
-		burning.reset(data, Vector2(x + 70, 330), 1.0)
+		_add_enemy(data, Vector2(x, 330), false)
+		var burning := _add_enemy(data, Vector2(x + 70, 330), false)
 		burning.apply_burn(1.0, 1e9)
+		if not data.boss:
+			_add_enemy(data, Vector2(x + 35, 180), true)
 		x += 250.0
 
 	_vfx = Vfx.new()
@@ -39,8 +38,19 @@ func _ready() -> void:
 	_trigger()
 
 
+func _add_enemy(data: EnemyData, pos: Vector2, elite: bool) -> Enemy:
+	var enemy := Enemy.new()
+	add_child(enemy)
+	enemy.reset(data, pos, 1.0, elite, 1.6 if elite else 1.0)
+	_gallery_enemies.append(enemy)
+	return enemy
+
+
 func _process(delta: float) -> void:
 	_time += delta
+	for enemy in _gallery_enemies:
+		if enemy.animator.advance(delta, &"walk", 1.0):
+			enemy.queue_redraw()
 	_timer -= delta
 	if _timer <= 0.0:
 		_trigger()

@@ -8,7 +8,7 @@ signal damaged(amount: float)
 signal died
 
 ## Sprite height in px per px of collision radius.
-const SPRITE_HEIGHT_PER_RADIUS := 3.6
+const SPRITE_HEIGHT_PER_RADIUS := 5.4
 ## Feet sit this fraction of the radius below the player center.
 const SPRITE_FOOT := 0.8
 
