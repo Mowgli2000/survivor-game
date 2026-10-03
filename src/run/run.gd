@@ -36,6 +36,7 @@ var vfx: Vfx
 var damage_numbers: DamageNumbers
 var inventory: Inventory
 var item_effects: ItemEffects
+var weapon_families: WeaponFamilies
 var hud: Hud
 var level_up_screen: LevelUpScreen
 var wave_end_screen: WaveEndScreen
@@ -118,6 +119,10 @@ func _ready() -> void:
 	item_pool.assign(ContentDB.get_all(&"items"))
 	shop = Shop.new(config.shop, state.wallet, inventory, player.weapons, weapon_pool, item_pool, state.rng)
 	shop.luck_stats = player.stats
+	var families: Array[FamilyData] = []
+	families.assign(ContentDB.get_all(&"families"))
+	weapon_families = WeaponFamilies.new()
+	weapon_families.setup(player.weapons, player.stats, families)
 	player.rng = state.rng
 	item_effects = ItemEffects.new()
 	item_effects.name = "ItemEffects"

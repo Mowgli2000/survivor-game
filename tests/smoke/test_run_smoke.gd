@@ -264,3 +264,8 @@ func _ui_root(screen: CanvasLayer) -> Control:
 		if child is Control and (child as Control).theme != null:
 			return child
 	return screen.get_child(0) as Control
+
+
+func test_starting_weapon_counts_for_its_family() -> void:
+	var weapon := _run.config.character.starting_weapon
+	assert_eq(_run.weapon_families.count(weapon.families[0]), 1)

@@ -8,6 +8,8 @@ extends Resource
 @export var name_key: String
 @export var description_key: String
 @export var behavior: WeaponBehavior
+## Weapon families (ids in data/families/) for set bonuses.
+@export var families: Array[StringName] = []
 ## Tiers II..IV: levels[0] = what tier II adds, levels[1] = tier III, levels[2] = tier IV.
 @export var levels: Array[WeaponLevel] = []
 ## Shop price of the tier I weapon (higher tiers: ShopConfig.weapon_tier_price).

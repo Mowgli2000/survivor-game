@@ -99,3 +99,7 @@ UI_SHOP_MERGE,Merge,Fusionner
 UI_SHOP_ITEMS,Items:,Objets :
 UI_STATS,Stats,Statistiques
 UI_STATS_HINT,[Tab] Stats,[Tab] Statistiques
+FAMILY_BLADE,Blades,Lames
+FAMILY_GUN,Guns,Armes à feu
+FAMILY_ENERGY,Energy,Énergie
+FAMILY_EXPLOSIVE,Explosive,Explosif
