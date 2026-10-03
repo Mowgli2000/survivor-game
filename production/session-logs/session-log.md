@@ -1170,3 +1170,192 @@ production/session-logs/.session-end.hash
 production/session-logs/session-log.md
 ---
 
+## Session End: 20261003_230047
+### Commits
+c4b0ef9 docs: end of session 5 status and handoff; session logs
+48db24c fix: picking another character resets its weapon and Danger rows
+01c891b ui: weapon and item names in their rarity color everywhere
+d616e83 feat: character select and unlocks shown as cards with the character
+7cce359 feat: homing bazooka missiles, smaller missiles, wider weapon ring
+680013f balance: tougher waves 13-20 and a much harder endless mode
+fe0f5cb art: per-weapon projectile bodies (orb, bullet, missile, shuriken) (ADR 0016)
+8026392 art: neon dojo rooftop arena with floor decals and outside props
+4043417 art: smooth cartoon sprites drawn as SVG for every character and enemy
+1e5249e feat: Danger 0-5 per character and endless mode after victory (step 7b)
+fadb161 feat: meta progression with profile, challenges and characters (ADR 0015)
+ba102e1 feat: charger, kamikaze and brood mother enemies (step 5b)
+247b34a feat: real bosses with HP phases and telegraphed patterns (ADR 0014)
+38637e1 balance: less purchasing power from wave 1, more enemies earlier (D45)
+a2aa207 fix: shop gamepad navigation jumps over sold cards
+ca7b9e2 docs: status, CLAUDE.md autoloads, session logs (session 5)
+242a845 feat: main menu, pause menu and persisted settings (ADR 0013)
+70d56cd feat: family bonuses in stats panel; anti-snowball materials, more late spawns
+516135f docs: playtest feedback after step B (families panel, snowball economy); notes and session logs
+4879a02 fix: kill explosions queued (nested area damage cut weapon hits short)
+92bc313 perf: lifesteal hook only while active; docs: ADR 0012, status
+640d89d feat: weapon families shown on weapon cards and in the stats panel
+f32e568 feat: 13 new items with effects (unique strong items, effect text on cards)
+f92a4b0 feat: item effects (explode/materials on kill, interest, conditional stat, kill stacks, periodic heal)
+f20e6cc feat: weapon families with set bonuses
+fa28013 feat: dodge, lifesteal, luck and harvest stats; ItemEffects run system
+7f38167 docs: item effects and weapon families spec and plan
+5f9d00c docs: meta-progression, enemies, bosses and modes proposal
+201423c balance: overwhelm late waves (650 cap, group spawns, more hordes and runners, HP x12, scaling enemy damage)
+ae7805b fix: smooth noise screen shake, explosions capped (blur with many explosions)
+ca472d9 docs: project status end of session 4
+cc8499b docs: status after chantier 3 review; add missing .uid files
+a89fcfc fix: appear/bounce scale survives container layout; bold project default font
+f695a36 docs: ADR 0011 UI theme, status
+e98ac3d feat: themed shop (tier cards, staggered appear, buy bounce, rolling materials)
+---
+
+## Session End: 20261003_230246
+### Commits
+c4b0ef9 docs: end of session 5 status and handoff; session logs
+48db24c fix: picking another character resets its weapon and Danger rows
+01c891b ui: weapon and item names in their rarity color everywhere
+d616e83 feat: character select and unlocks shown as cards with the character
+7cce359 feat: homing bazooka missiles, smaller missiles, wider weapon ring
+680013f balance: tougher waves 13-20 and a much harder endless mode
+fe0f5cb art: per-weapon projectile bodies (orb, bullet, missile, shuriken) (ADR 0016)
+8026392 art: neon dojo rooftop arena with floor decals and outside props
+4043417 art: smooth cartoon sprites drawn as SVG for every character and enemy
+1e5249e feat: Danger 0-5 per character and endless mode after victory (step 7b)
+fadb161 feat: meta progression with profile, challenges and characters (ADR 0015)
+ba102e1 feat: charger, kamikaze and brood mother enemies (step 5b)
+247b34a feat: real bosses with HP phases and telegraphed patterns (ADR 0014)
+38637e1 balance: less purchasing power from wave 1, more enemies earlier (D45)
+a2aa207 fix: shop gamepad navigation jumps over sold cards
+ca7b9e2 docs: status, CLAUDE.md autoloads, session logs (session 5)
+242a845 feat: main menu, pause menu and persisted settings (ADR 0013)
+70d56cd feat: family bonuses in stats panel; anti-snowball materials, more late spawns
+516135f docs: playtest feedback after step B (families panel, snowball economy); notes and session logs
+4879a02 fix: kill explosions queued (nested area damage cut weapon hits short)
+92bc313 perf: lifesteal hook only while active; docs: ADR 0012, status
+640d89d feat: weapon families shown on weapon cards and in the stats panel
+f32e568 feat: 13 new items with effects (unique strong items, effect text on cards)
+f92a4b0 feat: item effects (explode/materials on kill, interest, conditional stat, kill stacks, periodic heal)
+f20e6cc feat: weapon families with set bonuses
+fa28013 feat: dodge, lifesteal, luck and harvest stats; ItemEffects run system
+7f38167 docs: item effects and weapon families spec and plan
+5f9d00c docs: meta-progression, enemies, bosses and modes proposal
+201423c balance: overwhelm late waves (650 cap, group spawns, more hordes and runners, HP x12, scaling enemy damage)
+ae7805b fix: smooth noise screen shake, explosions capped (blur with many explosions)
+ca472d9 docs: project status end of session 4
+cc8499b docs: status after chantier 3 review; add missing .uid files
+a89fcfc fix: appear/bounce scale survives container layout; bold project default font
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261004_000801
+### Commits
+c4b0ef9 docs: end of session 5 status and handoff; session logs
+48db24c fix: picking another character resets its weapon and Danger rows
+01c891b ui: weapon and item names in their rarity color everywhere
+d616e83 feat: character select and unlocks shown as cards with the character
+7cce359 feat: homing bazooka missiles, smaller missiles, wider weapon ring
+680013f balance: tougher waves 13-20 and a much harder endless mode
+fe0f5cb art: per-weapon projectile bodies (orb, bullet, missile, shuriken) (ADR 0016)
+8026392 art: neon dojo rooftop arena with floor decals and outside props
+4043417 art: smooth cartoon sprites drawn as SVG for every character and enemy
+1e5249e feat: Danger 0-5 per character and endless mode after victory (step 7b)
+fadb161 feat: meta progression with profile, challenges and characters (ADR 0015)
+ba102e1 feat: charger, kamikaze and brood mother enemies (step 5b)
+247b34a feat: real bosses with HP phases and telegraphed patterns (ADR 0014)
+38637e1 balance: less purchasing power from wave 1, more enemies earlier (D45)
+a2aa207 fix: shop gamepad navigation jumps over sold cards
+ca7b9e2 docs: status, CLAUDE.md autoloads, session logs (session 5)
+242a845 feat: main menu, pause menu and persisted settings (ADR 0013)
+70d56cd feat: family bonuses in stats panel; anti-snowball materials, more late spawns
+516135f docs: playtest feedback after step B (families panel, snowball economy); notes and session logs
+4879a02 fix: kill explosions queued (nested area damage cut weapon hits short)
+92bc313 perf: lifesteal hook only while active; docs: ADR 0012, status
+640d89d feat: weapon families shown on weapon cards and in the stats panel
+f32e568 feat: 13 new items with effects (unique strong items, effect text on cards)
+f92a4b0 feat: item effects (explode/materials on kill, interest, conditional stat, kill stacks, periodic heal)
+f20e6cc feat: weapon families with set bonuses
+fa28013 feat: dodge, lifesteal, luck and harvest stats; ItemEffects run system
+7f38167 docs: item effects and weapon families spec and plan
+5f9d00c docs: meta-progression, enemies, bosses and modes proposal
+201423c balance: overwhelm late waves (650 cap, group spawns, more hordes and runners, HP x12, scaling enemy damage)
+### Uncommitted Changes
+PROJECT_STATUS.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/debug/stress_test.gd
+src/enemies/enemy.gd
+src/enemies/enemy_manager.gd
+---
+
+## Session End: 20261004_004248
+### Commits
+c4b0ef9 docs: end of session 5 status and handoff; session logs
+48db24c fix: picking another character resets its weapon and Danger rows
+01c891b ui: weapon and item names in their rarity color everywhere
+d616e83 feat: character select and unlocks shown as cards with the character
+7cce359 feat: homing bazooka missiles, smaller missiles, wider weapon ring
+680013f balance: tougher waves 13-20 and a much harder endless mode
+fe0f5cb art: per-weapon projectile bodies (orb, bullet, missile, shuriken) (ADR 0016)
+8026392 art: neon dojo rooftop arena with floor decals and outside props
+4043417 art: smooth cartoon sprites drawn as SVG for every character and enemy
+1e5249e feat: Danger 0-5 per character and endless mode after victory (step 7b)
+fadb161 feat: meta progression with profile, challenges and characters (ADR 0015)
+ba102e1 feat: charger, kamikaze and brood mother enemies (step 5b)
+247b34a feat: real bosses with HP phases and telegraphed patterns (ADR 0014)
+38637e1 balance: less purchasing power from wave 1, more enemies earlier (D45)
+a2aa207 fix: shop gamepad navigation jumps over sold cards
+ca7b9e2 docs: status, CLAUDE.md autoloads, session logs (session 5)
+242a845 feat: main menu, pause menu and persisted settings (ADR 0013)
+70d56cd feat: family bonuses in stats panel; anti-snowball materials, more late spawns
+516135f docs: playtest feedback after step B (families panel, snowball economy); notes and session logs
+4879a02 fix: kill explosions queued (nested area damage cut weapon hits short)
+92bc313 perf: lifesteal hook only while active; docs: ADR 0012, status
+640d89d feat: weapon families shown on weapon cards and in the stats panel
+f32e568 feat: 13 new items with effects (unique strong items, effect text on cards)
+### Uncommitted Changes
+PROJECT_STATUS.md
+localization/strings.csv
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/debug/capture.gd
+src/debug/debug_overlay.gd
+src/debug/stress_test.gd
+src/enemies/boss/aimed_fan_pattern.gd
+src/enemies/boss/boss_context.gd
+src/enemies/boss/boss_director.gd
+src/enemies/enemy.gd
+src/enemies/enemy_manager.gd
+src/enemies/enemy_projectile_manager.gd
+src/items/item_effects.gd
+src/meta/run_setup.gd
+src/pickups/pickup_manager.gd
+src/pickups/xp_gem.gd
+src/player/player.gd
+src/run/run.gd
+src/run/run_config.gd
+src/spawning/spawn_director.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/level_up/level_up_screen.gd
+src/ui/main_menu/main_menu.gd
+src/ui/shop/shop_screen.gd
+src/vfx/game_camera.gd
+src/waves/stage_data.gd
+src/weapons/projectiles/projectile.gd
+src/weapons/projectiles/projectile_manager.gd
+src/weapons/weapon_context.gd
+src/weapons/weapon_holder.gd
+tests/smoke/test_run_smoke.gd
+tests/unit/test_boss.gd
+tests/unit/test_enemy_manager.gd
+tests/unit/test_game_camera.gd
+tests/unit/test_item_effects.gd
+tests/unit/test_pause_menu.gd
+tests/unit/test_player.gd
+tests/unit/test_special_enemies.gd
+tests/unit/test_waves.gd
+tests/unit/test_weapon_visuals.gd
+---
+

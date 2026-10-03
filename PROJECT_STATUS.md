@@ -3,7 +3,7 @@
 > Journal de suivi entre les sessions : état actuel, décisions prises, changements, retours de playtest et prochaines étapes.
 > **À lire au début de chaque session, à mettre à jour à la fin.** Les règles de développement sont dans `CLAUDE.md`, le design dans `docs/design/gdd.md`, les décisions techniques détaillées dans `docs/decisions/`.
 
-Dernière mise à jour : 2026-10-03 (fin de session 5)
+Dernière mise à jour : 2026-10-04 (session 6 : perf fin de partie + coop locale)
 
 ---
 
@@ -11,12 +11,12 @@ Dernière mise à jour : 2026-10-03 (fin de session 5)
 
 | | |
 |---|---|
-| **Phase actuelle** | Faits : passe visuelle, B. objets à effets/familles, C. menus/paramètres, 6. vrais boss, 5b. nouveaux ennemis, 7. méta-progression, 7b. difficultés + mode infini, passe artistique « cartoon lisse » (ADR 0016), retours de playtest D47 (équilibrage, infini dur, bazooka à tête chercheuse, cartes de sélection et de déblocage, noms en couleur de rareté, bug du Danger par perso). **En attente : playtest du dev.** Ensuite (D46) : 6b vertical slice + page Steam |
+| **Phase actuelle** | Faits : passe visuelle, B. objets à effets/familles, C. menus/paramètres, 6. vrais boss, 5b. nouveaux ennemis, 7. méta-progression, 7b. difficultés + mode infini, passe artistique « cartoon lisse » (ADR 0016), retours de playtest D47 (équilibrage, infini dur, bazooka à tête chercheuse, cartes de sélection et de déblocage, noms en couleur de rareté, bug du Danger par perso), **perf en fin de partie**, **coop locale à 2 joueurs (D48, ADR 0017)**. **En attente : playtest du dev (coop + FPS en infini).** Ensuite (D46) : 6b vertical slice + page Steam |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 312/312 (GUT : unitaires, données, parties simulées) |
-| **Performance (stress test)** | ~100 FPS moyen (pire cas : 650 ennemis, 7 armes rang IV, toutes les familles actives ; ~120 avant les familles). Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS |
-| **Dernier push** | `develop` à jour sur GitHub (fin de session 5, tout poussé) |
+| **Tests** | 333/333 (GUT : unitaires, données, parties simulées) |
+| **Performance (stress test)** | Solo ~100-125 FPS (pire cas : 650 ennemis, 7 armes rang IV ; séparation des ennemis allégée en session 6). Coop (`--coop`, 2 × 7 armes rang IV, 2 200 projectiles) : 20-28 FPS, pire cas artificiel ; à vérifier en vraie partie. Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS (machine bruyante en session 6) |
+| **Dernier push** | Fin de session 5. Session 6 non commitée (attente de la demande du dev) |
 
 **Emplacements**
 - Projet local : `C:\Users\rapha\Projects\survivor-game` (ouvrir `project.godot` dans Godot)
@@ -75,6 +75,7 @@ Dernière mise à jour : 2026-10-03 (fin de session 5)
 | D45 | 2026-10-03 | **Rééquilibrage global : moins de pouvoir d'achat dès le début, plus d'ennemis plus tôt** | Playtest : « trop facile du début à la fin, je relance et j'achète beaucoup, trop fort dès la vague 10 ». Matériaux par XP 1,0 → 0,5 (début) et 0,5 → 0,35 (fin), découplage dès 8 apparitions/s (exposant 0,7) : ≈ -30 % de matériaux en vague 6, ≈ -55 % dès la vague 10 (estimation). Relance : `1 + floor(vague × 0,75) + max(1, floor(vague × 0,6))` par relance (vague 10 : 8 puis +6, avant 6 puis +5). Niveaux un peu plus lents (exposant XP 1,35 → 1,42). Apparitions 1,5 → 2,5/s au départ, courbe 1,8 → 1,4 (vague 6 : 6,8 → 11,4/s ; vague 10 : 16,7 → 22,7/s). PV plus tôt (courbe 2,0 → 1,6 : ×4,3 en vague 10 au lieu de ×3,5) ; ×12 en vague 20 inchangé. Plafond 650 inchangé |
 | D46 | 2026-10-03 | **Méta-progression : recommandations Q1-Q11 validées** | Méta horizontale (déblocages de contenu, pas de bonus de stats permanents) par défis ; persos à règle unique + bonus/malus, arme de départ au choix, difficulté par perso ; ennemis chargeur, kamikaze, pondeur ; 650 max ; mini-boss vague 10 + boss final aléatoire (Shogun d'abord) ; mode infini après victoire. Ordre : 6 → 5b → 7 → 7b → 6b. `docs/design/meta-progression-proposition.md` |
 | D47 | 2026-10-03 | **Équilibrage après playtest + mode infini dur** | « Vagues 1-12 correctes, ensuite un peu trop fort ; boss 20 facile ; l'infini doit rendre 40-60 vraiment compliqué. » Choix validés : PV ×14 en vague 20 (courbe 1,8), Shogun 1 200 PV, prix +13 %/vague ; infini « Dur » : PV +25 %/vague, dégâts +12 %/vague, élites +2 %/vague (max 40 %), matériaux −8 %/vague. Bazooka : tête chercheuse |
+| D48 | 2026-10-04 | **Coop locale à 2 joueurs** (2 manettes, même écran) | Pas de coop en ligne pour l'instant. Joueur mort : attend la vague suivante. Boutique, matériaux et level-up séparés par joueur (Brotato). Une seule caméra partagée qui suit le groupe. Coop faite avant 6b (« lance la coop »). ADR 0017 ; entre les vagues **à tour de rôle** en v1 |
 | D36 | 2026-10-03 | **Armes visibles façon Brotato + icônes** : positions fixes en cercle, armes petites, icônes d'objets dans le même style, cadre de rang en interface + liseré en jeu | Choix « reco » du dev. Les tirs partent du canon ; la cible reste choisie depuis le centre (pas de rééquilibrage). ADR 0010 |
 
 ### Décisions volontairement reportées
@@ -152,6 +153,8 @@ Dernière mise à jour : 2026-10-03 (fin de session 5)
 - **Après playtest (D47)** : vagues 13-20 un peu plus dures (PV ×14 en vague 20, courbe 1,8, Shogun 1 200 PV, prix +13 %/vague) ; **mode infini dur** (PV +25 %/vague, dégâts +12 %/vague, +2 % d'élites/vague jusqu'à 40 %, matériaux −8 %/vague) ; **missiles du bazooka à tête chercheuse** (`WeaponData.homing`) et plus petits ; cercle des armes élargi (50 → 72 px) ; **sélection du perso en cartes** avec le personnage animé (`SpritePreview`) et ses bonus/malus ; **déblocages de fin de partie en cartes** ; capture `--unlocks`. 307 tests
 - **Noms d'armes et d'objets en couleur de rareté** partout (boutique, rang d'armes, HUD, armes de départ, cartes de déblocage) au lieu de la couleur néon de l'arme : une seule signification par couleur (`ShopScreen.name_color`). 308 tests
 - **Bug corrigé : Danger d'un autre personnage** : en cliquant directement une autre carte pendant l'étape Danger, la rangée Danger (et l'arme) du personnage précédent restait affichée, d'où des niveaux qui semblaient débloqués pour tous. Le choix d'un personnage réinitialise maintenant arme et Danger ; tests de non-régression. 312 tests
+- **Perf en fin de partie (playtest : 10-20 FPS en infini vague 23-24)** : pas de fuite (nœuds stables sur 27 vagues simulées). Cause : la mise à jour des ennemis coûte ~7,6 ms par tick de physique à ~600 ennemis serrés (moitié = séparation) ; au-delà de ~15 ms de physique par tick, Godot rattrape plusieurs ticks par image et les FPS s'effondrent. Correction : séparation lue dans des tableaux compacts et recalculée un tick sur deux par ennemi (`Enemy.separation`). Ennemis 7,6 → 5,5 ms/tick ; stress test ~101 → ~128 FPS (alterné). Stress test : options `--endless=N` (vraie partie Danger 1, infini dès la vague N ; N = 1 = partie complète) et `--speed=X`. 312 tests
+- **Coop locale à 2 joueurs (D48, ADR 0017)** : `RunPlayer` (tout ce qu'un joueur possède : perso, entrées, progression, portefeuille, inventaire, boutique, effets d'objets, familles), `Party` (joueur vivant le plus proche, centre du groupe, écart max 900 px), `PlayerInput` (actions `move_*_pN` par manette ; 2 manettes : J1 = clavier + manette 1, J2 = manette 2 ; 1 manette : J1 = clavier, J2 = manette). Ennemis, tirs ennemis, kamikazes, ramassage (gemme au joueur le plus proche, créditée à celui qui la touche), apparitions et boss passent par la `Party`. Attribution des dégâts (`EnemyManager.damage_source`, mémorisée par projectile et brûlure) : effets « à l'élimination » et vol de vie par joueur. Caméra de groupe (dézoom jusqu'à ×0,8). Joueur mort = fantôme jusqu'à la vague suivante ; défaite quand les deux sont morts. Entre les vagues : level-ups puis boutique de J1, puis de J2 (seule la manette du joueur concerné agit : `CoopInputGate`). HUD : bloc J2 en haut à droite ; anneau de couleur sous chaque joueur. Difficulté à deux : apparitions ×1,5, PV ×1,2 (`RunConfig`). Menu : bouton « Coop locale » → choix perso + arme de J1 puis J2, Danger = le plus bas débloqué des deux persos. Défis et records enregistrés pour les deux persos. Outils : `capture --coop`, `--coopselect`, `stress_test --coop`. 333 tests
 
 ---
 
@@ -191,12 +194,14 @@ Dernière mise à jour : 2026-10-03 (fin de session 5)
 
 > **Reprise de session (après `/clear`)** : lire ce fichier et `CLAUDE.md`, puis attendre les retours de playtest du dev. Le dev préfère : enchaîner sans demander à chaque étape, regrouper les questions, suivre la logique de Brotato, mais **demander confirmation avant d'appliquer une liste de changements qu'il vient de donner** (dernière consigne en date). Pour l'art, il fournira des images de référence s'il veut refaire persos/monstres (`tools/art/make_sprites.py`).
 
-0. **Dev : playtest complet** (beaucoup de nouveautés d'un coup), y compris la **nouvelle direction artistique** (persos, ennemis, boss, carte, projectiles : retours bienvenus avec des images de référence) :
+0. **Dev : tester la coop locale** (2 manettes ; avec DS4Windows, activer HidHide sinon une manette compte pour deux) et **revérifier les FPS en infini vagues 23-25** (depuis l'éditeur ou l'exe exporté ?). Points à juger : difficulté à deux (×1,5 apparitions, ×1,2 PV), boutique à tour de rôle (assez bien ou côte à côte nécessaire ?), caméra, lisibilité des deux persos.
+0b. **Dev : playtest complet** (beaucoup de nouveautés d'un coup), y compris la **nouvelle direction artistique** (persos, ennemis, boss, carte, projectiles : retours bienvenus avec des images de référence) :
    - équilibrage D45 (matériaux, relance, apparitions) : encore trop facile ou trop dur ?
    - boss : Ronin en vague 10 (récompense), Shogun en 3 phases en vague 20 ; lisibilité des annonces ;
    - nouveaux ennemis : kamikaze (vague 5+), chargeur (7+), pondeuse (9+) ;
    - méta : écran de choix du perso, défis (écran Progression), déblocages en fin de partie, Danger 1+ après une victoire, « Continuer en infini ».
    Réglages rapides : `data/stages/default.tres`, `data/enemies/*.tres` (phases des boss), `data/difficulties/`, `data/challenges/`, `data/characters/`.
+0c. **Coop, suites possibles** : boutique/level-up côte à côte (un SubViewport par joueur), armes de J2 visibles dans le HUD, perf des projectiles en coop si la vraie partie rame (stress coop 20-28 FPS au pire cas).
 1. **6b — Vertical slice** : 2 persos de plus (Technomancien, Berserker, idées de la proposition), ~4 armes de plus (≈ 10), ~10 objets de plus (≈ 30), un 2e boss final pour le tirage aléatoire, direction artistique appliquée (vrais sprites par perso/boss), écran Progression avec records ; puis page Steam « Coming Soon » (dev).
 2. **Dev** : écouter le son en jeu (si toujours muet : sortie audio Windows, manette PS4 en USB).
 3. Phases 8 à 12 : contenu, finitions (remappage, accessibilité), Steam (`Platform`, succès = défis, protection manette en double), démo, sortie. Roadmap : `docs/design/gdd.md`.
