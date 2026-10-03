@@ -12,7 +12,7 @@ Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes, statuts, 4 ennemis, rendu 
 ## Architecture (résumé — détails dans les skills)
 - Autoloads minimaux : ContentDB et Audio (ADR 0008 : `Audio.play(stream)`, catalogue `Sounds`, son de tir dans `WeaponData`) existent ; puis SceneRouter, Settings, SaveService, EventBus, Platform quand leur phase arrive. Aucune logique de run dans un autoload.
 - `src/run/run.gd` = racine de composition d'une partie : crée et branche les systèmes (EnemyManager, ProjectileManager, PickupManager, SpawnDirector, Progression, Shop…).
-- Ennemis/projectiles/pickups : gérés en lot par leur manager + `SpatialGrid` + `ObjectPool`. Jamais de `_process` par entité, jamais d'Area2D/physique pour les hits de masse. Seul le Player est un CharacterBody2D. Projectiles = données rendues par un seul MultiMesh (ADR 0004). Ennemis = une texture néon précalculée par type (ADR 0005).
+- Ennemis/projectiles/pickups : gérés en lot par leur manager + `SpatialGrid` + `ObjectPool`. Jamais de `_process` par entité, jamais d'Area2D/physique pour les hits de masse. Seul le Player est un CharacterBody2D. Projectiles = données rendues par un seul MultiMesh (ADR 0004). Ennemis et joueur = sprites animés dans un atlas commun, image avancée par le manager, redessin seulement au changement d'image (ADR 0009 ; repli néon ADR 0005).
 - Code pur testable dans `src/core/` (StatBlock, CombatMath, SpatialGrid, ObjectPool, WeightedPicker).
 - Contenu = Resources `.tres` dans `data/<catégorie>/`, classes de définition dans `src/**/<x>_data.gd`, accès via `ContentDB.get_def(&"weapons", &"id")`. Comportements = Resources strategy dans `behaviors/`.
 - Armes : `WeaponData` (rang I + `levels` pour II..IV) -> `WeaponStats` via `WeaponSlot` ; `WeaponHolder` (doublons, fusion) les déclenche. Ajouter une arme = un `.tres`.
@@ -51,10 +51,11 @@ Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes, statuts, 4 ennemis, rendu 
 - Capture d'écran automatique (pour vérifier un visuel) : `... res://src/debug/capture.tscn -- --time=20 --out=<chemin.png> [--stress] [--levelup] [--die]`
 - Overlay debug en jeu : F3 (action `debug_toggle`).
 - Galerie d'effets et d'ennemis (direction artistique) : `... res://src/debug/vfx_gallery.tscn [-- --out=<chemin.png>]`
+- Sprites (pack brut `assets_src/` → atlas `assets/sprites/` + `SpriteSheet` `.tres`, recette `tools/sprites/sprites.json`, ADR 0009) : `powershell -ExecutionPolicy Bypass -File tools/bake_sprites.ps1`
 - Chemin Godot surchargeable via la variable d'env `GODOT_BIN`.
 
 ## Performance
-Profiler avant d'optimiser. Pas d'allocation dans les boucles chaudes. Après tout changement touchant ennemis/projectiles/pickups : vérifier le stress test et comparer aux chiffres de référence de l'ADR 0005 (~200 FPS moyen avec les 6 armes niveau max, physique ~8 ms).
+Profiler avant d'optimiser. Pas d'allocation dans les boucles chaudes. Après tout changement touchant ennemis/projectiles/pickups : vérifier le stress test et comparer aux chiffres de référence de l'ADR 0009 (~163 FPS moyen avec les 6 armes rang IV ; les mesures varient de ±15 FPS : comparer en alterné avec la version précédente).
 
 ## Git
 - **On travaille sur la branche `develop`** (remote `origin` = github.com/Mowgli2000/survivor-game). `main` ne reçoit que des versions validées, sur demande explicite du dev. Ne jamais commiter directement sur `main`.

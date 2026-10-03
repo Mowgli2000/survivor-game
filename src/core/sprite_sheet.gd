@@ -2,8 +2,8 @@ class_name SpriteSheet
 extends Resource
 ## Horizontal strip of animation frames inside the shared sprite atlas, generated
 ## by tools/sprites/bake_sprites.gd. Each animation is a run of consecutive cells.
-## Pure data + one draw helper. One atlas for every sheet lets the renderer batch
-## all enemies together (alternating textures cost ~15 % FPS in the stress test).
+## Pure data + one draw helper. Every sheet shares one atlas texture, so enemies
+## of different types never switch textures while rendering.
 
 ## Used when an animation is missing (every sheet has at least "walk").
 const FALLBACK := &"walk"

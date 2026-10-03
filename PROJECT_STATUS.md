@@ -3,7 +3,7 @@
 > Journal de suivi entre les sessions : état actuel, décisions prises, changements, retours de playtest et prochaines étapes.
 > **À lire au début de chaque session, à mettre à jour à la fin.** Les règles de développement sont dans `CLAUDE.md`, le design dans `docs/design/gdd.md`, les décisions techniques détaillées dans `docs/decisions/`.
 
-Dernière mise à jour : 2026-10-03 (session 3)
+Dernière mise à jour : 2026-10-03 (session 4)
 
 ---
 
@@ -11,11 +11,11 @@ Dernière mise à jour : 2026-10-03 (session 3)
 
 | | |
 |---|---|
-| **Phase actuelle** | Phase 5 (boutique façon Brotato) : socle livré → playtest du dev, puis Phase 3 (objets à effets, menus) |
+| **Phase actuelle** | Passe visuelle (3 chantiers) : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles autour du joueur · 3. thème des interfaces. Ensuite Phase 3 (objets à effets), menus, playtest |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 153/153 (GUT : unitaires, données, parties simulées) |
-| **Performance (stress test)** | ~175-184 FPS moyen, min ~130-140 — 500 ennemis, ~1000 projectiles, 6 armes rang IV (mesure 2026-10-03, machine libre ; avant la boutique : ~180 FPS) |
+| **Tests** | 167/167 (GUT : unitaires, données, parties simulées) |
+| **Performance (stress test)** | ~163 FPS moyen (formes néon : ~176, mesuré en alterné) — 500 ennemis, ~1000 projectiles, 6 armes rang IV. Mesures isolées : ±15 FPS (ADR 0009) |
 
 **Emplacements**
 - Projet local : `C:\Users\rapha\Projects\survivor-game` (ouvrir `project.godot` dans Godot)
@@ -60,6 +60,9 @@ Dernière mise à jour : 2026-10-03 (session 3)
 | D30 | 2026-10-03 | **Plus d'ennemis en fin de partie, moins de matériaux, builds intacts** | Apparitions en courbe (≈3/s vague 5, 7/s vague 10, 15/s vague 15, 24/s vague 20), plafond 500 ; matériaux par XP 100 % → 60 % ; PV des ennemis inchangés. Objectif : beaucoup de monstres, beaucoup de chiffres |
 | D31 | 2026-10-03 | **Direction artistique : chibi façon Dofus × néon, assets gratuits, vue de dessus** | Personnages vectoriels chibi (pack CC0 RGS_Dev en premier test), néon ajouté par le jeu (contour lumineux, une couleur par menace). Packs bruts dans `assets_src/` (ignoré par git) |
 | D32 | 2026-10-03 | **Audio : autoload `Audio`, sons Kenney CC0, musique synthwave CC0** | Sons de tir par arme, impacts, morts, explosions, UI, jingles. Anti-saturation. ADR 0008 |
+| D33 | 2026-10-03 | **Passe visuelle en 3 chantiers, avant B/C/D** : 1. sprites animés, 2. icônes armes/objets + armes visibles autour du perso (façon Brotato), 3. thème de toutes les interfaces | Demande du dev : « un beau visuel de toutes les interfaces ». Icônes = SVG faits par Claude dans le style du pack (remplaçables plus tard) |
+| D34 | 2026-10-03 | **Rendu coloré, pas sombre** : chibi en couleur + halo néon, sol bleu-violet moyen | Choix du dev (option A) : « je ne veux pas un jeu trop sombre ». Attribution et design des sprites provisoires |
+| D35 | 2026-10-03 | **Sprites animés : atlas précalculé, animation pilotée par les managers** | Outil `tools/bake_sprites.ps1`, `SpriteSheet` `.tres`, redessin au changement d'image, y-sort. Coût ~7 % de FPS. ADR 0009 |
 
 ### Décisions volontairement reportées
 | Sujet | Quand | Options / notes |
@@ -107,6 +110,12 @@ Dernière mise à jour : 2026-10-03 (session 3)
 
 ---
 
+### Session 4 — 2026-10-03
+
+- **Passe visuelle, chantier 1 — sprites animés** (spec + plan dans `docs/superpowers/`, ADR 0009) : outil de conversion du pack RGS_Dev (recadrage, réduction, halo néon, variantes élite dorées, atlas unique), `SpriteSheet` / `SpriteAnimator`, ennemis et joueur animés (idle/marche, orientés vers le joueur / selon le déplacement), Shogun = diable violet géant teinté magenta, tri en profondeur (y-sort), sol texturé bleu-violet. Galerie mise à jour (ennemis animés, brûlés, élites). Stress test : nouvelle ligne « draw calls ». 167 tests
+
+---
+
 ## 4. Retours du dev (playtests)
 
 | Date | Version | Retour | Suite donnée |
@@ -128,6 +137,7 @@ Dernière mise à jour : 2026-10-03 (session 3)
 - Boss provisoire seulement : pas de barre de vie de boss, pas d'attaque spéciale, même taille qu'un Colosse élite (rayon max de la grille : 48).
 - Valeurs des vagues = premières estimations (durées, densité, PV, vagues spéciales) : à régler après playtest.
 - FPS minimum au stress test ~10 % plus bas qu'avant les vagues (moyenne inchangée) : à surveiller.
+- Sprites provisoires : pas d'animation de coup reçu ni de mort (flash blanc + effet existant) ; le Shogun réutilise le diable violet ; tailles réglées à l'œil sur captures.
 - Détails visuels : le titre « Vague X terminée » se devine derrière les cartes de level-up ; projectiles et chiffres figés restent visibles derrière les écrans de fin.
 - Outils : l'installation Claude Code Game Studios demande un redémarrage de Claude Code (Python/jq dans le PATH) et les hooks doivent être branchés dans `.claude/settings.json` par le dev.
 - Outils : l'exécutable `Godot_v4.7.2-stable_win64_console.exe` ne fonctionne pas seul (on utilise `Godot.exe`). GUT 9.7.1 est disponible (on est en 9.6.1).
@@ -136,14 +146,12 @@ Dernière mise à jour : 2026-10-03 (session 3)
 
 ## 6. Prochaines étapes
 
-1. **Direction artistique (D31) — en attente de validation du dev** : pack RGS_Dev téléchargé dans `assets_src/third_party/rgs_characters/` (CC0 ; 4 persos, 4 ennemis, 1 512 pièces blanches colorables, 3 sols, 3 rochers ; images 2048×2048, perso ≈ 500 px en bas au centre ; animations idle 6, walk 8, hit 3, death 10, roll, jump ; Enemy 3 = chauve-souris `fly` 6 seulement). Proposition faite au dev, à reprendre :
-   - Outil de conversion : recadrage sur l'union des cadres d'une animation, réduction à ~128 px, planches de sprites dans `assets/sprites/`.
-   - Rendu : un MultiMesh par type d'ennemi avec index d'image par instance (comme ADR 0004), contour néon par shader à la couleur de la menace, sol du pack teinté sombre + grille néon.
-   - Attribution proposée : joueur = Char 1 (cheveux bleus) ; grunt = Enemy 1 (diable violet) ; runner = Enemy 3 (chauve-souris) ; shooter = Enemy 2 (ogre vert) ; tank = Enemy 4 (diable rouge) agrandi ; shogun = Enemy 4 géant teinté magenta.
-   - Étapes : outil → **capture test d'une horde** à valider → spec courte → intégration.
-2. **Dev** : écouter le son en jeu (sons choisis sans écoute, à changer au goût) ; rejouer une run complète (F3) : densité des vagues 10-20, matériaux, panneau de stats (Tab) ; ajuster D30.
-3. **Phase 3 — Objets à effets et synergies** (vendus par la boutique), puis **menus** (principal, pause, paramètres avec volumes).
-4. Phase 6 (vrai boss), puis 6b (vertical slice + page Steam). Roadmap complète : `docs/design/gdd.md`.
+1. **Dev : valider le chantier 1 en jeu** (sprites, tailles, sol, Shogun) ; lancer le jeu ou la galerie `vfx_gallery.tscn`. Réglages rapides : `SPRITE_HEIGHT_PER_RADIUS` (`enemy.gd`, `player.gd`), `sprite_scale` / `sprite_tint` dans `data/enemies/`, `FLOOR_TINT` (`arena.gd`), halo dans `tools/sprites/bake_sprites.gd`.
+2. **Chantier 2 — armes et objets** : icônes SVG (style du pack : gros contour noir, aplats, accent néon de l'arme) pour les 6 armes et les 15 objets, affichées en boutique / level-up / stats ; armes équipées visibles autour du personnage (une position par emplacement, orientées vers la cible, estoc/recul/éclair de tir), liseré de couleur de rang. Brainstorm → spec → plan.
+3. **Chantier 3 — thème des interfaces** (`/art-bible` puis un `Theme` Godot commun : police, panneaux, boutons, cadres de rang, focus manette) appliqué à tous les écrans.
+4. **Dev** : écouter le son en jeu (sons choisis sans écoute, à changer au goût) ; rejouer une run complète (F3) : densité des vagues 10-20, matériaux, panneau de stats (Tab) ; ajuster D30.
+5. **Phase 3 — Objets à effets et synergies** (vendus par la boutique), puis **menus** (principal, pause, paramètres avec volumes).
+6. Phase 6 (vrai boss), puis 6b (vertical slice + page Steam). Roadmap complète : `docs/design/gdd.md`.
 
 ---
 
