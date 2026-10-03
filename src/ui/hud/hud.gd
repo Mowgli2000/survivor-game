@@ -45,6 +45,11 @@ func setup(player: Player, progression: Progression, waves: WaveDirector, wallet
 	_refresh_weapons()
 
 
+## Weapon family lines in the Tab stats panel.
+func setup_families(families: WeaponFamilies) -> void:
+	_stats_panel.setup_families(families)
+
+
 func _refresh_weapons() -> void:
 	for child in _weapons_box.get_children():
 		_weapons_box.remove_child(child)

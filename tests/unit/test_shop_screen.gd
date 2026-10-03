@@ -21,7 +21,7 @@ func test_weapon_card_text() -> void:
 	offer.weapon = ContentDB.get_def(&"weapons", &"katana")
 	offer.tier = 3
 	var texts := ShopScreen.describe(offer)
-	assert_eq(texts[0], "Weapon · III")
+	assert_eq(texts[0], "Weapon · III · Blades")
 	assert_eq(texts[1], "Plasma katana")
 
 

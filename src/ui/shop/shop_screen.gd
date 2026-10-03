@@ -160,6 +160,10 @@ static func describe(offer: ShopOffer) -> PackedStringArray:
 	var kind := "UI_SHOP_WEAPON" if offer.is_weapon() else "UI_SHOP_ITEM"
 	var tag := "%s · %s" % [TranslationServer.translate(kind), Tiers.roman(offer.tier)]
 	if offer.is_weapon():
+		for family_id in offer.weapon.families:
+			var family := ContentDB.get_def(&"families", family_id) as FamilyData
+			if family != null:
+				tag += " · " + TranslationServer.translate(family.name_key)
 		return PackedStringArray([tag, TranslationServer.translate(offer.weapon.name_key),
 			TranslationServer.translate(offer.weapon.description_key)])
 	var effects := LevelUpScreen.describe_modifiers(offer.item.modifiers)

@@ -14,6 +14,9 @@ const NEUTRAL := UiTheme.TEXT
 var _stats: StatBlock
 var _grid: GridContainer
 var _values: Dictionary[StringName, Label] = {}
+var _families: WeaponFamilies
+var _family_grid: GridContainer
+var _family_values: Dictionary[StringName, Label] = {}
 
 
 func _init() -> void:
@@ -35,6 +38,11 @@ func _init() -> void:
 	_grid.add_theme_constant_override("h_separation", 24)
 	_grid.add_theme_constant_override("v_separation", 4)
 	box.add_child(_grid)
+	_family_grid = GridContainer.new()
+	_family_grid.columns = 2
+	_family_grid.add_theme_constant_override("h_separation", 24)
+	_family_grid.add_theme_constant_override("v_separation", 4)
+	box.add_child(_family_grid)
 
 
 func setup(stats: StatBlock) -> void:
@@ -49,6 +57,43 @@ func setup(stats: StatBlock) -> void:
 		_values[stat] = value_label
 		_refresh(stat)
 	stats.changed.connect(_refresh)
+
+
+## Adds one line per weapon family: owned count / next tier (green when a bonus is active).
+func setup_families(families: WeaponFamilies) -> void:
+	_families = families
+	var title := Label.new()
+	title.text = "UI_FAMILIES"
+	title.theme_type_variation = &"SmallLabel"
+	_family_grid.add_child(title)
+	_family_grid.add_child(Control.new())
+	for family in families.get_families():
+		var name_label := _label(family.color)
+		name_label.text = family.name_key
+		_family_grid.add_child(name_label)
+		var value_label := _label(NEUTRAL)
+		value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		_family_grid.add_child(value_label)
+		_family_values[family.id] = value_label
+	families.changed.connect(_refresh_families)
+	_refresh_families()
+
+
+func family_text(family_id: StringName) -> String:
+	return _family_values[family_id].text
+
+
+func _refresh_families() -> void:
+	for family in _families.get_families():
+		var owned := _families.count(family.id)
+		var next := 0
+		for bonus in family.bonuses:
+			if bonus.count > owned:
+				next = bonus.count
+				break
+		var label := _family_values[family.id]
+		label.text = "%d/%d" % [owned, next] if next > 0 else "%d MAX" % owned
+		label.add_theme_color_override("font_color", BETTER if _families.active_bonus(family) != null else NEUTRAL)
 
 
 func line_count() -> int:

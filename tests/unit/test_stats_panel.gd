@@ -35,3 +35,25 @@ func test_panel_lists_every_stat_and_follows_changes() -> void:
 
 func test_stats_action_exists() -> void:
 	assert_true(InputMap.has_action("show_stats"))
+
+
+func test_family_lines_show_progress_to_the_next_tier() -> void:
+	var holder := WeaponHolder.new()
+	autofree(holder)
+	var stats := StatBlock.from_defaults()
+	var all: Array[FamilyData] = []
+	all.assign(ContentDB.get_all(&"families"))
+	var families := WeaponFamilies.new()
+	families.setup(holder, stats, all)
+	var panel := StatsPanel.new()
+	add_child_autofree(panel)
+	panel.setup(stats)
+	panel.setup_families(families)
+	var katana: WeaponData = ContentDB.get_def(&"weapons", &"katana")
+	holder.add_weapon(katana)
+	assert_eq(panel.family_text(&"blade"), "1/2")
+	holder.add_weapon(katana)
+	assert_eq(panel.family_text(&"blade"), "2/4")
+	for i in 4:
+		holder.add_weapon(katana)
+	assert_eq(panel.family_text(&"blade"), "6 MAX")

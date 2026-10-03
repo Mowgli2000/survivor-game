@@ -146,6 +146,7 @@ func _ready() -> void:
 	hud = Hud.new()
 	add_child(hud)
 	hud.setup(player, progression, waves, state.wallet)
+	hud.setup_families(weapon_families)
 
 	level_up_screen = LevelUpScreen.new()
 	add_child(level_up_screen)
@@ -154,6 +155,7 @@ func _ready() -> void:
 	shop_screen = ShopScreen.new()
 	add_child(shop_screen)
 	shop_screen.setup(shop, state.wallet, inventory, player.weapons, player.stats)
+	shop_screen.stats_panel.setup_families(weapon_families)
 	game_over_screen = GameOverScreen.new()
 	add_child(game_over_screen)
 
