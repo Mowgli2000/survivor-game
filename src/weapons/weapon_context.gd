@@ -29,3 +29,8 @@ func roll_crit(weapon: WeaponStats) -> bool:
 func hit_damage(weapon: WeaponStats, crit: bool) -> float:
 	return CombatMath.outgoing_damage(weapon.damage, stats.get_value(StatIds.DAMAGE),
 		crit, stats.get_value(StatIds.CRIT_DAMAGE))
+
+
+## Where a shot of `slot` aimed along `direction` starts: the weapon's muzzle.
+func muzzle(slot: WeaponSlot, direction: Vector2) -> Vector2:
+	return owner.global_position + slot.mount_offset + direction * WeaponLayout.BARREL

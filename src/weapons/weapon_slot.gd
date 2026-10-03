@@ -8,6 +8,8 @@ var stats: WeaponStats
 var cooldown: float = 0.0
 ## Number of attacks made, for behaviors that alternate (e.g. "every 3rd hit").
 var attacks: int = 0
+## Position of the weapon around its owner, set by WeaponHolder (WeaponLayout).
+var mount_offset := Vector2.ZERO
 
 
 func _init(p_data: WeaponData, p_level: int = 1) -> void:

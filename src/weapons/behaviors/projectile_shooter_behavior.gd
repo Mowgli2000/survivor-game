@@ -1,6 +1,7 @@
 class_name ProjectileShooterBehavior
 extends WeaponBehavior
-## Shoots a fan of projectiles at the nearest enemy in range.
+## Shoots a fan of projectiles at the nearest enemy in range (target picked from
+## the owner's center, shots leave from the weapon's muzzle).
 ## Projectile features (pierce, bounces, explosion, status) come from the weapon stats.
 
 
@@ -13,7 +14,9 @@ func fire(slot: WeaponSlot, ctx: WeaponContext) -> bool:
 	if target < 0:
 		return false
 
-	var base_angle := (ctx.enemies.get_enemy(target).position - origin).angle()
+	var target_pos := ctx.enemies.get_enemy(target).position
+	var base_angle := (target_pos - (origin + slot.mount_offset)).angle()
+	origin = ctx.muzzle(slot, Vector2.from_angle(base_angle))
 	var count := s.projectile_count + int(stats.get_value(StatIds.PROJECTILE_COUNT))
 	var spread := deg_to_rad(s.spread_deg)
 	var inaccuracy := deg_to_rad(s.inaccuracy_deg)

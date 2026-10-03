@@ -5,6 +5,8 @@ extends Node
 ## level (tier) merge into one of the next level, Brotato-style.
 
 signal weapons_changed
+## A weapon attacked (index in get_slots()). Used by WeaponVisuals for recoil / swing.
+signal weapon_fired(index: int)
 
 ## Slot limit read by is_full(); the shop enforces it, debug tools may go above.
 var max_slots: int = 6
@@ -22,6 +24,7 @@ func setup(ctx: WeaponContext, p_max_slots: int = 6) -> void:
 func add_weapon(data: WeaponData, level: int = 1) -> WeaponSlot:
 	var slot := WeaponSlot.new(data, level)
 	_slots.append(slot)
+	_refresh_mounts()
 	weapons_changed.emit()
 	return slot
 
@@ -30,6 +33,7 @@ func remove_weapon(index: int) -> void:
 	if index < 0 or index >= _slots.size():
 		return
 	_slots.remove_at(index)
+	_refresh_mounts()
 	weapons_changed.emit()
 
 
@@ -67,6 +71,7 @@ func merge(index: int) -> bool:
 	var slot := _slots[index]
 	slot.set_level(slot.level + 1)
 	_slots.remove_at(partner)
+	_refresh_mounts()
 	weapons_changed.emit()
 	return true
 
@@ -93,14 +98,21 @@ func _physics_process(delta: float) -> void:
 	if _ctx == null:
 		return
 	var attack_speed := _ctx.stats.get_value(StatIds.ATTACK_SPEED)
-	for slot in _slots:
+	for i in _slots.size():
+		var slot := _slots[i]
 		slot.cooldown -= delta * attack_speed
 		if slot.cooldown > 0.0:
 			continue
 		if slot.data.behavior.fire(slot, _ctx):
 			slot.attacks += 1
+			weapon_fired.emit(i)
 			Audio.play(slot.data.fire_sound, slot.data.fire_volume_db)
 			# Keep the remainder so the fire rate does not depend on the frame rate.
 			slot.cooldown = maxf(slot.cooldown + slot.stats.cooldown, 0.0)
 		else:
 			slot.cooldown = 0.0
+
+
+func _refresh_mounts() -> void:
+	for i in _slots.size():
+		_slots[i].mount_offset = WeaponLayout.mount_offset(i, _slots.size())

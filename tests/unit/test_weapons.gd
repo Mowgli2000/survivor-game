@@ -123,3 +123,25 @@ func test_weapon_level_card_text() -> void:
 	bonus.damage_percent = 0.25
 	bonus.projectile_count = 1
 	assert_eq(LevelUpScreen.describe_weapon_level(bonus), "+25% Damage\n+1 Projectiles")
+
+
+func test_layout_spreads_mounts_on_a_circle() -> void:
+	assert_almost_eq(WeaponLayout.mount_offset(0, 1), Vector2(WeaponLayout.MOUNT_RADIUS, 0), Vector2.ONE * 0.01)
+	var seen: Array[Vector2] = []
+	for i in 6:
+		var p := WeaponLayout.mount_offset(i, 6)
+		assert_almost_eq(p.length(), WeaponLayout.MOUNT_RADIUS, 0.01)
+		for q in seen:
+			assert_gt(p.distance_to(q), 1.0)
+		seen.append(p)
+
+
+func test_holder_updates_mounts_when_weapons_change() -> void:
+	var holder := _holder()
+	var a := holder.add_weapon(_weapon())
+	assert_eq(a.mount_offset, WeaponLayout.mount_offset(0, 1))
+	var b := holder.add_weapon(_weapon())
+	assert_eq(a.mount_offset, WeaponLayout.mount_offset(0, 2))
+	assert_eq(b.mount_offset, WeaponLayout.mount_offset(1, 2))
+	holder.remove_weapon(0)
+	assert_eq(b.mount_offset, WeaponLayout.mount_offset(0, 1))

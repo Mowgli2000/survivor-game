@@ -289,3 +289,30 @@ func test_recycled_enemy_switches_sheet() -> void:
 	var again := _enemies.spawn(b, Vector2(300, 0))
 	assert_eq(again.animator.sheet, b.get_sheet(false))
 	assert_true(again.animator.sheet.animations.has(&"walk"))
+
+
+func test_projectiles_start_at_the_weapon_muzzle() -> void:
+	_enemies.spawn(_data, Vector2(300, 0))
+	await wait_physics_frames(1)
+	var data: WeaponData = ContentDB.get_def(&"weapons", &"pulse")
+	var slot := WeaponSlot.new(data)
+	slot.mount_offset = Vector2(0, -30)
+	var ctx := WeaponContext.new(_player, StatBlock.from_defaults({}), _enemies, _projectiles,
+		RandomNumberGenerator.new())
+	assert_true(data.behavior.fire(slot, ctx))
+	var expected := ctx.muzzle(slot, (Vector2(300, 0) - Vector2(0, -30)).normalized())
+	assert_almost_eq(_projectiles.projectile_position(0), expected, Vector2.ONE * 0.5)
+	assert_ne(expected, _player.global_position)
+
+
+func test_holder_emits_weapon_fired() -> void:
+	_enemies.spawn(_data, Vector2(100, 0))
+	await wait_physics_frames(1)
+	var holder := WeaponHolder.new()
+	add_child_autofree(holder)
+	holder.setup(WeaponContext.new(_player, StatBlock.from_defaults({}), _enemies, _projectiles,
+		RandomNumberGenerator.new()))
+	holder.add_weapon(ContentDB.get_def(&"weapons", &"pulse"))
+	watch_signals(holder)
+	await wait_physics_frames(2)
+	assert_signal_emitted_with_parameters(holder, "weapon_fired", [0])

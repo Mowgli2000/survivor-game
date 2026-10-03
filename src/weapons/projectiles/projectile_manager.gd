@@ -39,6 +39,11 @@ func active_count() -> int:
 	return _active.size()
 
 
+## Read-only: position of the active projectile `index` (debug, tests).
+func projectile_position(index: int) -> Vector2:
+	return _active[index].position
+
+
 func _physics_process(delta: float) -> void:
 	if _enemies == null:
 		return
