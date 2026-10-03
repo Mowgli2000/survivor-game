@@ -126,11 +126,13 @@ func test_weapon_level_card_text() -> void:
 
 
 func test_layout_spreads_mounts_on_a_circle() -> void:
-	assert_almost_eq(WeaponLayout.mount_offset(0, 1), Vector2(WeaponLayout.MOUNT_RADIUS, 0), Vector2.ONE * 0.01)
+	var center := WeaponLayout.BODY_CENTER
+	assert_almost_eq(WeaponLayout.mount_offset(0, 1), center + Vector2(WeaponLayout.MOUNT_RADIUS, 0),
+		Vector2.ONE * 0.01)
 	var seen: Array[Vector2] = []
 	for i in 6:
 		var p := WeaponLayout.mount_offset(i, 6)
-		assert_almost_eq(p.length(), WeaponLayout.MOUNT_RADIUS, 0.01)
+		assert_almost_eq((p - center).length(), WeaponLayout.MOUNT_RADIUS, 0.01)
 		for q in seen:
 			assert_gt(p.distance_to(q), 1.0)
 		seen.append(p)

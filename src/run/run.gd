@@ -104,6 +104,7 @@ func _ready() -> void:
 	add_child(projectiles)
 
 	actors.add_child(player)
+	player.weapon_visuals.setup(player.weapons, enemies, player)
 	add_child(enemy_projectiles)
 	add_child(vfx)
 	add_child(damage_numbers)

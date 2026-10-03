@@ -23,6 +23,8 @@ var bot_input: Callable
 
 var weapons: WeaponHolder
 var camera: GameCamera
+## Weapons drawn around the player (set up by Run once the enemies exist).
+var weapon_visuals: WeaponVisuals
 var animator := SpriteAnimator.new()
 
 var _data: CharacterData
@@ -56,6 +58,10 @@ func _ready() -> void:
 	weapons = WeaponHolder.new()
 	weapons.name = "Weapons"
 	add_child(weapons)
+
+	weapon_visuals = WeaponVisuals.new()
+	weapon_visuals.name = "WeaponVisuals"
+	add_child(weapon_visuals)
 
 	camera = GameCamera.new()
 	add_child(camera)
