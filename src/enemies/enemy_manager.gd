@@ -45,6 +45,8 @@ var _vfx: Vfx
 var _enemy_projectiles: EnemyProjectileManager
 var _active: Array[Enemy] = []
 var _positions := PackedVector2Array()
+## Radii matching _positions: separation reads packed arrays, not Enemy nodes.
+var _radii := PackedFloat32Array()
 var _pool: ObjectPool
 # Separate scratch buffers: area hits can trigger chain lightning while iterating.
 var _neighbors: Array[int] = []
@@ -280,12 +282,16 @@ func _physics_process(delta: float) -> void:
 	var count := _active.size()
 	if _positions.size() < count:
 		_positions.resize(count)
+		_radii.resize(count)
 	for i in count:
-		_positions[i] = _active[i].position
+		var other := _active[i]
+		_positions[i] = other.position
+		_radii[i] = other.radius
 	grid.rebuild(_positions, count)
 
 	var player_pos := _player.global_position
 	var player_radius := _player.radius
+	var tick_parity := Engine.get_physics_frames() & 1
 	for i in count:
 		var enemy := _active[i]
 		if not enemy.is_alive():
@@ -322,21 +328,25 @@ func _physics_process(delta: float) -> void:
 		else:
 			velocity = direction * speed
 
-		# Separation: push away from overlapping neighbours.
-		var push := Vector2.ZERO
-		var found := grid.query_radius(pos, enemy.radius + max_radius, _neighbors)
-		for k in found:
-			var j := _neighbors[k]
-			if j == i:
-				continue
-			var other := _active[j]
-			var offset := pos - other.position
-			var min_dist := enemy.radius + other.radius
-			var d2 := offset.length_squared()
-			if d2 < min_dist * min_dist and d2 > 0.0001:
-				var d := sqrt(d2)
-				push += offset / d * (min_dist - d)
-		pos += velocity * delta + push * SEPARATION_STRENGTH + enemy.knockback * delta
+		# Separation: push away from overlapping neighbours. Half of the enemies
+		# recompute it each tick (alternating), the others reuse their last push:
+		# the most expensive part of the loop with 600+ packed enemies.
+		if (i + tick_parity) & 1 == 0:
+			var push := Vector2.ZERO
+			var radius := enemy.radius
+			var found := grid.query_radius(pos, radius + max_radius, _neighbors)
+			for k in found:
+				var j := _neighbors[k]
+				if j == i:
+					continue
+				var offset := pos - _positions[j]
+				var min_dist := radius + _radii[j]
+				var d2 := offset.length_squared()
+				if d2 < min_dist * min_dist and d2 > 0.0001:
+					var d := sqrt(d2)
+					push += offset / d * (min_dist - d)
+			enemy.separation = push
+		pos += velocity * delta + enemy.separation * SEPARATION_STRENGTH + enemy.knockback * delta
 		enemy.knockback = enemy.knockback.move_toward(Vector2.ZERO, KNOCKBACK_DECAY * delta)
 		enemy.position = pos.clamp(_arena.position, _arena.end)
 		if enemy.animator.sheet != null:

@@ -21,6 +21,8 @@ var hp: float = 0.0
 var max_hp: float = 0.0
 var radius: float = 16.0
 var knockback := Vector2.ZERO
+## Last separation push, reused on the ticks where it is not recomputed.
+var separation := Vector2.ZERO
 var flash: float = 0.0
 var fire_timer: float = 0.0
 ## +1 or -1: direction in which a ranged enemy circles the player.
@@ -57,6 +59,7 @@ func reset(p_data: EnemyData, pos: Vector2, hp_multiplier: float, p_elite: bool 
 	hp = max_hp
 	radius = data.radius * scale_factor
 	knockback = Vector2.ZERO
+	separation = Vector2.ZERO
 	flash = 0.0
 	rotation = 0.0
 	burn_dps = 0.0
