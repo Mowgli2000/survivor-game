@@ -112,3 +112,13 @@ func test_owned_items_are_shown_as_icons_with_counts() -> void:
 	var tiles := _icon_tiles(_screen._items_row)
 	assert_eq(tiles.size(), 1, "two magnet gloves = one tile")
 	assert_eq(tiles[0].badge.text, "×2")
+
+
+func test_cards_and_buttons_use_the_theme() -> void:
+	_open_screen(100)
+	var card := _screen._cards.get_child(0) as PanelContainer
+	var style := card.get_theme_stylebox("panel") as StyleBoxFlat
+	assert_eq(style.border_color, UiTheme.OUTLINE, "black outline")
+	assert_eq(Color(style.shadow_color, 1.0), Tiers.color(1), "tier glow")
+	assert_eq(_screen._next.theme_type_variation, &"BigButton")
+	assert_eq(_screen._title.theme_type_variation, &"TitleLabel")

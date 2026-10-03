@@ -13,9 +13,10 @@ const CARD_SIZE := Vector2(300, 400)
 const CARD_ICON := 96.0
 const ITEM_ICON := 60.0
 const WEAPON_ICON := 40
-const CARD_BG := Color(0.05, 0.05, 0.1, 0.96)
-const TEXT_COLOR := Color(0.92, 0.94, 1.0)
-const TOO_EXPENSIVE := Color(1.0, 0.35, 0.35)
+const TEXT_COLOR := UiTheme.TEXT
+const TOO_EXPENSIVE := UiTheme.BAD
+## Delay between two cards appearing when the shop opens.
+const CARD_STAGGER := 0.04
 
 var _shop: Shop
 var _wallet: Wallet
@@ -39,6 +40,11 @@ var _focus_key: String = ""
 var _focus_forced: bool = false
 var _accept_after: int = 0
 var _controls: Dictionary[String, Control] = {}
+## Cards appear one after the other only when the shop opens, not on every rebuild.
+var _animate_cards: bool = false
+## Card bought just now (bounces once rebuilt), -1 if none.
+var _bought_index: int = -1
+var _shown_materials: int = -1
 
 
 func setup(shop: Shop, wallet: Wallet, inventory: Inventory, weapons: WeaponHolder,
@@ -63,7 +69,7 @@ func _init() -> void:
 	add_child(root)
 
 	var dim := ColorRect.new()
-	dim.color = Color(0, 0.02, 0.06, 0.85)
+	dim.color = UiTheme.DIM
 	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.add_child(dim)
 
@@ -85,9 +91,9 @@ func _init() -> void:
 	header.add_theme_constant_override("separation", 48)
 	header.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.add_child(header)
-	_title = _label(56, Color(0.4, 0.95, 1.0))
+	_title = _label(64, UiTheme.ACCENT, &"TitleLabel")
 	header.add_child(_title)
-	_materials = _label(40, Color(0.45, 1.0, 0.55))
+	_materials = _label(40, UiTheme.GOOD, &"ValueLabel")
 	header.add_child(_materials)
 
 	_cards = HBoxContainer.new()
@@ -100,7 +106,7 @@ func _init() -> void:
 	_reroll.pressed.connect(_on_reroll)
 	box.add_child(_reroll)
 
-	var weapons_title := _label(26, TEXT_COLOR)
+	var weapons_title := _label(28, TEXT_COLOR, &"SubtitleLabel")
 	weapons_title.text = "UI_SHOP_WEAPONS"
 	box.add_child(weapons_title)
 	_weapon_row = HBoxContainer.new()
@@ -116,7 +122,7 @@ func _init() -> void:
 	items_box.add_theme_constant_override("separation", 16)
 	items_box.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.add_child(items_box)
-	_items_label = _label(22, TEXT_COLOR)
+	_items_label = _label(28, TEXT_COLOR, &"SubtitleLabel")
 	_items_label.text = "UI_SHOP_ITEMS"
 	items_box.add_child(_items_label)
 	_items_row = HFlowContainer.new()
@@ -125,8 +131,9 @@ func _init() -> void:
 	_items_row.add_theme_constant_override("v_separation", 8)
 	items_box.add_child(_items_row)
 
-	_next = _button("UI_NEXT_WAVE", 36)
-	_next.custom_minimum_size = Vector2(380, 80)
+	_next = _button("UI_NEXT_WAVE", 0)
+	_next.theme_type_variation = &"BigButton"
+	_next.custom_minimum_size = Vector2(380, 84)
 	_next.size_flags_horizontal = Control.SIZE_SHRINK_END
 	_next.pressed.connect(_on_next)
 	box.add_child(_next)
@@ -137,8 +144,11 @@ func open() -> void:
 	_focus_key = "buy:0"
 	_focus_forced = true
 	_accept_after = Time.get_ticks_msec() + INPUT_DELAY_MS
+	_animate_cards = true
+	_shown_materials = -1
 	visible = true
 	_rebuild()
+	UiFx.pop_in(_title)
 
 
 func close() -> void:
@@ -167,7 +177,12 @@ func _rebuild() -> void:
 	_focus_forced = false
 	_controls.clear()
 	_title.text = tr("UI_SHOP_TITLE") % _shop.wave
-	_materials.text = "%s %d" % [tr("UI_MATERIALS"), _wallet.amount]
+	var materials_format := tr("UI_MATERIALS") + " %d"
+	if _shown_materials < 0:
+		_materials.text = materials_format % _wallet.amount
+	elif _shown_materials != _wallet.amount:
+		UiFx.count_to(_materials, _shown_materials, _wallet.amount, materials_format)
+	_shown_materials = _wallet.amount
 	_reroll.text = tr("UI_SHOP_REROLL") % _shop.reroll_cost()
 	_reroll.disabled = not _wallet.can_afford(_shop.reroll_cost())
 	_controls["reroll"] = _reroll
@@ -204,21 +219,29 @@ func _is_focusable(control: Control) -> bool:
 
 func _rebuild_cards() -> void:
 	for child in _cards.get_children():
+		_cards.remove_child(child)
 		child.queue_free()
 	for i in _shop.offers.size():
-		_cards.add_child(_make_card(i, _shop.offers[i]))
+		var card := _make_card(i, _shop.offers[i])
+		_cards.add_child(card)
+		if _animate_cards:
+			UiFx.pop_in(card, CARD_STAGGER * i)
+		elif i == _bought_index:
+			UiFx.bounce(card)
+	_animate_cards = false
+	_bought_index = -1
 
 
 func _make_card(index: int, offer: ShopOffer) -> Control:
 	var accent := Tiers.color(offer.tier)
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size = CARD_SIZE
-	panel.add_theme_stylebox_override("panel", _style(accent, 0.25 if offer.sold else 0.8, 3))
+	panel.add_theme_stylebox_override("panel", UiTheme.card_style(accent, 0.25 if offer.sold else 0.8))
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 10)
 	panel.add_child(box)
 	if offer.sold:
-		var sold := _label(28, Color(accent, 0.6))
+		var sold := _label(30, Color(accent, 0.6), &"SubtitleLabel")
 		sold.text = "UI_SHOP_SOLD"
 		box.add_child(sold)
 		return panel
@@ -227,19 +250,20 @@ func _make_card(index: int, offer: ShopOffer) -> Control:
 		offer.tier, CARD_ICON)
 	icon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	box.add_child(icon)
-	var tag := _label(18, Color(accent, 0.9))
+	var tag := _label(17, accent, &"SmallLabel")
 	tag.text = texts[0].to_upper()
 	box.add_child(tag)
-	var name_label := _label(28, offer.weapon.color if offer.is_weapon() else accent)
+	var name_label := _label(30, offer.weapon.color if offer.is_weapon() else UiTheme.TEXT, &"SubtitleLabel")
 	name_label.text = texts[1]
 	box.add_child(name_label)
-	var effects := _label(20, TEXT_COLOR)
+	var effects := _label(19, TEXT_COLOR)
 	effects.text = texts[2]
 	effects.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	effects.custom_minimum_size.x = CARD_SIZE.x - 24.0
 	effects.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	box.add_child(effects)
 	var buy := _button(tr("UI_SHOP_BUY") % offer.price, 24)
+	UiFx.hover_lift(buy)
 	buy.disabled = not _shop.can_buy(index)
 	if not _wallet.can_afford(offer.price):
 		buy.add_theme_color_override("font_disabled_color", TOO_EXPENSIVE)
@@ -264,14 +288,17 @@ func _rebuild_weapons() -> void:
 	for i in slots.size():
 		var slot := slots[i]
 		var button := _button("%s %s" % [tr(slot.data.name_key), Tiers.roman(slot.level)], 22)
-		button.add_theme_stylebox_override("normal", _style(Tiers.color(slot.level), 1.0 if i == _selected_weapon else 0.5, 2))
+		var tier_color := Tiers.color(slot.level)
+		var normal := UiTheme.card_style(tier_color, 1.0 if i == _selected_weapon else 0.45)
+		normal.set_content_margin_all(10)
+		button.add_theme_stylebox_override("normal", normal)
 		button.add_theme_color_override("font_color", slot.data.color)
 		button.icon = slot.data.icon
 		button.add_theme_constant_override("icon_max_width", WEAPON_ICON)
 		button.pressed.connect(_on_weapon_selected.bind(i))
 		_weapon_row.add_child(button)
 		_controls["weapon:%d" % i] = button
-	var free := _label(22, Color(TEXT_COLOR, 0.5))
+	var free := _label(22, UiTheme.MUTED, &"ValueLabel")
 	free.text = "%d / %d" % [slots.size(), _weapons.max_slots]
 	_weapon_row.add_child(free)
 	if _selected_weapon < 0:
@@ -298,7 +325,7 @@ func _rebuild_items() -> void:
 		tile.tooltip_text = tr(item.name_key)
 		_items_row.add_child(tile)
 	if _inventory.get_items().is_empty():
-		var none := _label(22, Color(TEXT_COLOR, 0.5))
+		var none := _label(22, UiTheme.MUTED)
 		none.text = "—"
 		_items_row.add_child(none)
 
@@ -309,7 +336,9 @@ func _accepting() -> bool:
 
 func _on_buy(index: int) -> void:
 	if _accepting():
+		_bought_index = index
 		_play(Sounds.UI_BUY if _shop.buy(index) else Sounds.UI_ERROR)
+		_bought_index = -1
 
 
 func _on_lock(index: int) -> void:
@@ -373,29 +402,19 @@ func _play(stream: AudioStream) -> void:
 	Audio.play(stream, -6.0, 0.0)
 
 
-func _label(size: int, color: Color) -> Label:
+func _label(size: int, color: Color, variation: StringName = &"") -> Label:
 	var label := Label.new()
+	label.theme_type_variation = variation
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.add_theme_font_size_override("font_size", size)
 	label.add_theme_color_override("font_color", color)
 	return label
 
 
+## `size` 0 keeps the theme's font size.
 func _button(text: String, size: int) -> Button:
 	var button := Button.new()
 	button.text = text
-	button.add_theme_font_size_override("font_size", size)
+	if size > 0:
+		button.add_theme_font_size_override("font_size", size)
 	return button
-
-
-func _style(accent: Color, strength: float, border: int) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = CARD_BG.lerp(Color(accent, 1.0), 0.08 * strength)
-	style.border_color = Color(accent, strength)
-	style.set_border_width_all(border)
-	style.set_corner_radius_all(10)
-	style.content_margin_left = 12
-	style.content_margin_right = 12
-	style.content_margin_top = 12
-	style.content_margin_bottom = 12
-	return style
