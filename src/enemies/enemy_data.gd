@@ -5,6 +5,9 @@ extends Resource
 enum Movement {
 	CHASE,   ## Runs straight at the player.
 	RANGED,  ## Keeps its distance, strafes and shoots.
+	CHARGER,  ## Chases; in range, stops to telegraph, then rushes in a straight line.
+	KAMIKAZE,  ## Chases; close to the player, burns a fuse then explodes (no XP).
+	SPAWNER,  ## Chases slowly and calls minions every few seconds.
 }
 
 @export var id: StringName
@@ -29,6 +32,21 @@ enum Movement {
 @export var projectile_damage: float = 8.0
 @export var projectile_speed: float = 300.0
 @export var projectile_radius: float = 9.0
+
+@export_group("Special (charger / kamikaze / spawner)")
+@export var charge_range: float = 380.0
+@export var charge_windup: float = 0.6
+@export var charge_speed: float = 700.0
+@export var charge_duration: float = 0.45
+@export var charge_cooldown: float = 2.5
+@export var fuse_range: float = 70.0
+@export var fuse_time: float = 0.55
+@export var blast_radius: float = 110.0
+## Multiplied by the wave damage multiplier.
+@export var blast_damage: float = 18.0
+@export var spawn_enemy: EnemyData
+@export var spawn_count: int = 3
+@export var spawn_cooldown: float = 4.0
 
 @export_group("Rewards")
 @export var xp_value: int = 1

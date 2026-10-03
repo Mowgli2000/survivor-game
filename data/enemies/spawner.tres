@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://src/enemies/enemy_data.gd" id="1_enemy"]
+[ext_resource type="Resource" path="res://data/enemies/runner.tres" id="2_runner"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = &"spawner"
+name_key = "ENEMY_SPAWNER"
+movement = 4
+max_hp = 45.0
+speed = 55.0
+contact_damage = 6.0
+armor = 2.0
+radius = 26.0
+knockback_taken = 0.4
+spawn_enemy = ExtResource("2_runner")
+spawn_count = 3
+spawn_cooldown = 4.0
+xp_value = 4
+color = Color(0.45, 1, 0.45, 1)
+shape_sides = 6
+sprite_id = &"grunt"
+sprite_scale = 1.1
+sprite_tint = Color(0.65, 1, 0.65, 1)

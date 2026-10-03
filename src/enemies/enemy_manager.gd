@@ -35,6 +35,8 @@ var grid: SpatialGrid
 var max_radius: float = 0.0
 ## Size multiplier of elites (set by Run from StageData.elite_scale).
 var elite_scale: float = 1.6
+## Spawner enemies never push the count above this (Run sets StageData.max_enemies).
+var spawn_cap: int = 100000
 
 var _player: Player
 var _arena: Rect2
@@ -303,6 +305,14 @@ func _physics_process(delta: float) -> void:
 		var to_player := player_pos - pos
 		var distance := to_player.length()
 		var direction := to_player / distance if distance > 0.001 else Vector2.RIGHT
+		match enemy.data.movement:
+			EnemyData.Movement.CHARGER:
+				_update_charger(enemy, direction, distance, delta)
+			EnemyData.Movement.KAMIKAZE:
+				if _update_kamikaze(enemy, player_pos, distance, delta):
+					continue
+			EnemyData.Movement.SPAWNER:
+				_update_spawner(enemy, delta)
 		var velocity: Vector2
 		if enemy.forced_time > 0.0:
 			enemy.forced_time -= delta
@@ -361,6 +371,70 @@ func _ranged_velocity(enemy: Enemy, direction: Vector2, distance: float, speed: 
 			_enemy_projectiles.spawn(enemy.position, direction * data.projectile_speed,
 				data.projectile_damage * enemy.damage_multiplier, data.projectile_radius)
 	return velocity
+
+
+## Telegraph (stand still, warning line) once in range, then a straight rush.
+func _update_charger(enemy: Enemy, direction: Vector2, distance: float, delta: float) -> void:
+	var data := enemy.data
+	enemy.special_timer -= delta
+	if enemy.special_state == 1:
+		if enemy.special_timer <= 0.0:
+			enemy.special_state = 0
+			enemy.forced_velocity = enemy.special_dir * data.charge_speed
+			enemy.forced_time = data.charge_duration
+			enemy.special_timer = data.charge_duration + data.charge_cooldown
+	elif enemy.special_timer <= 0.0 and distance <= data.charge_range:
+		enemy.special_state = 1
+		enemy.special_dir = direction
+		enemy.special_timer = data.charge_windup
+		enemy.forced_velocity = Vector2.ZERO
+		enemy.forced_time = data.charge_windup
+		if _vfx != null:
+			var end := enemy.position + direction * data.charge_speed * data.charge_duration
+			_vfx.warning_line(enemy.position, end, enemy.radius * 1.6, data.color, data.charge_windup)
+
+
+## Fuse once close, then explode. Returns true when it blew up (self-destruct:
+## removed without enemy_killed, so no XP; killing it first is the reward).
+func _update_kamikaze(enemy: Enemy, player_pos: Vector2, distance: float, delta: float) -> bool:
+	var data := enemy.data
+	if enemy.special_state == 0:
+		if distance <= data.fuse_range:
+			enemy.special_state = 1
+			enemy.special_timer = data.fuse_time
+			enemy.forced_velocity = Vector2.ZERO
+			enemy.forced_time = data.fuse_time + 1.0
+			if _vfx != null:
+				_vfx.warning_circle(enemy.position, data.blast_radius, data.color, data.fuse_time)
+		return false
+	enemy.special_timer -= delta
+	if enemy.special_timer > 0.0:
+		return false
+	if _vfx != null:
+		_vfx.explosion(enemy.position, data.blast_radius, data.color, true)
+	Audio.play(Sounds.EXPLOSION, -6.0)
+	var reach := data.blast_radius + _player.radius
+	if enemy.position.distance_squared_to(player_pos) <= reach * reach:
+		_player.take_damage(data.blast_damage * enemy.damage_multiplier)
+	enemy.hp = 0.0
+	enemy.visible = false
+	return true
+
+
+## Every spawn_cooldown seconds, minions in a ring with the spawner's own HP
+## and damage scaling, if the whole group fits under spawn_cap.
+func _update_spawner(enemy: Enemy, delta: float) -> void:
+	var data := enemy.data
+	enemy.special_timer -= delta
+	if enemy.special_timer > 0.0 or data.spawn_enemy == null:
+		return
+	enemy.special_timer = data.spawn_cooldown
+	if _active.size() + data.spawn_count > spawn_cap:
+		return
+	var hp_multiplier := enemy.max_hp / data.max_hp
+	for k in data.spawn_count:
+		var pos := enemy.position + Vector2.from_angle(TAU * k / data.spawn_count) * (enemy.radius + 30.0)
+		spawn(data.spawn_enemy, pos, hp_multiplier, false, enemy.damage_multiplier)
 
 
 func _tick_burn(enemy: Enemy, delta: float) -> void:

@@ -40,6 +40,10 @@ var speed_multiplier: float = 1.0
 ## own movement (boss dash, standing still while telegraphing).
 var forced_velocity := Vector2.ZERO
 var forced_time: float = 0.0
+## Charger / kamikaze / spawner state (EnemyManager): countdown, step, aim.
+var special_timer: float = 0.0
+var special_state: int = 0
+var special_dir := Vector2.ZERO
 var animator := SpriteAnimator.new()
 
 
@@ -63,6 +67,9 @@ func reset(p_data: EnemyData, pos: Vector2, hp_multiplier: float, p_elite: bool 
 	speed_multiplier = 1.0
 	forced_velocity = Vector2.ZERO
 	forced_time = 0.0
+	special_timer = data.spawn_cooldown if data.movement == EnemyData.Movement.SPAWNER else 0.0
+	special_state = 0
+	special_dir = Vector2.ZERO
 	visible = true
 	if look_changed:
 		animator.reset(data.get_sheet(elite), 0.0)

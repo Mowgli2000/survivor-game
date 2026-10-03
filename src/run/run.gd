@@ -94,6 +94,7 @@ func _ready() -> void:
 	enemies.name = "Enemies"
 	enemies.setup(player, arena_rect, mini(stage.max_enemies, 200), state.rng, vfx, enemy_projectiles)
 	enemies.elite_scale = stage.elite_scale
+	enemies.spawn_cap = stage.max_enemies
 	enemies.y_sort_enabled = true
 	# Player and enemies share one y-sorted container: lower on screen = in front.
 	var actors := Node2D.new()

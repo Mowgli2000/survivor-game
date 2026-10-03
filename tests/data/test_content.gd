@@ -37,6 +37,18 @@ func test_enemies() -> void:
 			assert_gt(enemy.preferred_distance, 0.0, "%s: ranged without distance" % enemy.id)
 			assert_gt(enemy.fire_cooldown, 0.0)
 			assert_gt(enemy.projectile_speed, 0.0)
+		match enemy.movement:
+			EnemyData.Movement.CHARGER:
+				assert_gt(enemy.charge_range, 0.0, "%s: charge range" % enemy.id)
+				assert_gt(enemy.charge_speed, 0.0)
+				assert_gt(enemy.charge_duration, 0.0)
+			EnemyData.Movement.KAMIKAZE:
+				assert_gt(enemy.fuse_range, 0.0, "%s: fuse range" % enemy.id)
+				assert_gt(enemy.blast_radius, 0.0)
+			EnemyData.Movement.SPAWNER:
+				assert_not_null(enemy.spawn_enemy, "%s: spawner without minion" % enemy.id)
+				assert_gt(enemy.spawn_cooldown, 0.0)
+				assert_gt(enemy.spawn_count, 0)
 		if not enemy.phases.is_empty():
 			assert_eq(enemy.phases[0].hp_ratio, 1.0, "%s: first phase must start at full HP" % enemy.id)
 			for i in enemy.phases.size():

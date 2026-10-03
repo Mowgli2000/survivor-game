@@ -10,6 +10,9 @@
 [ext_resource type="Resource" path="res://data/enemies/shogun.tres" id="8_shogun"]
 [ext_resource type="Resource" path="res://data/enemies/ronin.tres" id="9_ronin"]
 [ext_resource type="Script" path="res://src/enemies/enemy_data.gd" id="10_enemy_script"]
+[ext_resource type="Resource" path="res://data/enemies/charger.tres" id="11_charger"]
+[ext_resource type="Resource" path="res://data/enemies/kamikaze.tres" id="12_kamikaze"]
+[ext_resource type="Resource" path="res://data/enemies/spawner.tres" id="13_spawner"]
 
 [sub_resource type="Resource" id="Entry_grunt"]
 script = ExtResource("2_entry")
@@ -95,6 +98,24 @@ enemy = ExtResource("8_shogun")
 enemy_choices = Array[ExtResource("10_enemy_script")]([ExtResource("8_shogun")])
 count = 1
 
+[sub_resource type="Resource" id="Entry_kamikaze"]
+script = ExtResource("2_entry")
+enemy = ExtResource("12_kamikaze")
+weight = 0.8
+min_wave = 5
+
+[sub_resource type="Resource" id="Entry_charger"]
+script = ExtResource("2_entry")
+enemy = ExtResource("11_charger")
+weight = 0.6
+min_wave = 7
+
+[sub_resource type="Resource" id="Entry_spawner"]
+script = ExtResource("2_entry")
+enemy = ExtResource("13_spawner")
+weight = 0.3
+min_wave = 9
+
 [sub_resource type="Resource" id="Entry_runner_late"]
 script = ExtResource("2_entry")
 enemy = ExtResource("5_runner")
@@ -143,7 +164,7 @@ material_rate_first = 0.5
 material_rate_last = 0.35
 material_reference_spawn_rate = 8.0
 material_decoupling = 0.7
-spawn_pool = Array[ExtResource("2_entry")]([SubResource("Entry_grunt"), SubResource("Entry_runner"), SubResource("Entry_shooter"), SubResource("Entry_tank"), SubResource("Entry_runner_late")])
+spawn_pool = Array[ExtResource("2_entry")]([SubResource("Entry_grunt"), SubResource("Entry_runner"), SubResource("Entry_shooter"), SubResource("Entry_tank"), SubResource("Entry_runner_late"), SubResource("Entry_kamikaze"), SubResource("Entry_charger"), SubResource("Entry_spawner")])
 max_enemies = 650
 spawn_distance = 950.0
 heal_between_waves = 1.0

@@ -64,6 +64,9 @@ ENEMY_SHOOTER,Gunner,Tireur
 ENEMY_TANK,Juggernaut,Colosse
 ENEMY_SHOGUN,Shogun,Shogun
 ENEMY_RONIN,Ronin,Rōnin
+ENEMY_CHARGER,Charger,Chargeur
+ENEMY_KAMIKAZE,Kamikaze,Kamikaze
+ENEMY_SPAWNER,Brood mother,Pondeuse
 UI_BOSS_REWARD,Reward: %s,Récompense : %s
 WEAPON_STRESS,Stress test gun,Arme de test
 UI_WAVE,Wave,Vague
