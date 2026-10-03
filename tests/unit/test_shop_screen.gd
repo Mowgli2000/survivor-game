@@ -122,3 +122,11 @@ func test_cards_and_buttons_use_the_theme() -> void:
 	assert_eq(Color(style.shadow_color, 1.0), Tiers.color(1), "tier glow")
 	assert_eq(_screen._next.theme_type_variation, &"BigButton")
 	assert_eq(_screen._title.theme_type_variation, &"TitleLabel")
+
+
+func test_effect_item_card_shows_its_effect_and_uniqueness() -> void:
+	var offer := ShopOffer.new()
+	offer.item = ContentDB.get_def(&"items", &"chain_reactor")
+	offer.tier = 3
+	var texts := ShopScreen.describe(offer)
+	assert_eq(texts[2], "20% chance: killed enemies explode\n(Unique)")

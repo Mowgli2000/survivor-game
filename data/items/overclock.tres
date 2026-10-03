@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="1_item"]
+[ext_resource type="Script" path="res://src/core/stat_modifier.gd" id="2_mod"]
+[ext_resource type="Texture2D" path="res://assets/icons/items/overclock.svg" id="icon_tex"]
+
+[sub_resource type="Resource" id="Mod_1"]
+script = ExtResource("2_mod")
+stat = &"attack_speed"
+percent = 0.12
+
+[sub_resource type="Resource" id="Mod_2"]
+script = ExtResource("2_mod")
+stat = &"damage"
+percent = -0.05
+
+[resource]
+script = ExtResource("1_item")
+id = &"overclock"
+name_key = "ITEM_OVERCLOCK"
+tier = 2
+base_price = 30
+modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2")])
+icon = ExtResource("icon_tex")

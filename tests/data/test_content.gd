@@ -140,7 +140,7 @@ func test_every_stat_has_a_localized_name() -> void:
 
 func test_items() -> void:
 	var items := ContentDB.get_all(&"items")
-	assert_gte(items.size(), 15)
+	assert_gte(items.size(), 28)
 	for def in items:
 		var item := def as ItemData
 		assert_not_null(item, "data/items must contain ItemData")
@@ -149,7 +149,13 @@ func test_items() -> void:
 		assert_gt(item.base_price, 0, "%s has no price" % item.id)
 		assert_not_null(item.icon, "%s has no icon" % item.id)
 		assert_gte(item.max_count, 0)
-		assert_gt(item.modifiers.size(), 0, "%s has no modifier" % item.id)
+		assert_true(item.modifiers.size() > 0 or item.effects.size() > 0, "%s does nothing" % item.id)
+		for effect in item.effects:
+			assert_not_null(effect, "%s: empty effect" % item.id)
+			if effect != null:
+				assert_eq(effect.validate(), PackedStringArray(), "%s effect" % item.id)
+		if not item.effects.is_empty():
+			assert_true(_keys.has(item.effect_key), "%s: effect text key" % item.id)
 		for mod in item.modifiers:
 			assert_true(StatIds.is_valid(mod.stat), "%s: unknown stat '%s'" % [item.id, mod.stat])
 

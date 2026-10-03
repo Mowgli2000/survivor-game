@@ -97,9 +97,30 @@ UI_SHOP_WEAPONS,Weapons,Armes
 UI_SHOP_SELL,Sell (+%d),Vendre (+%d)
 UI_SHOP_MERGE,Merge,Fusionner
 UI_SHOP_ITEMS,Items:,Objets :
+UI_SHOP_UNIQUE,(Unique),(Unique)
 UI_STATS,Stats,Statistiques
 UI_STATS_HINT,[Tab] Stats,[Tab] Statistiques
 FAMILY_BLADE,Blades,Lames
 FAMILY_GUN,Guns,Armes à feu
 FAMILY_ENERGY,Energy,Énergie
 FAMILY_EXPLOSIVE,Explosive,Explosif
+ITEM_CHAIN_REACTOR_EFFECT,20% chance: killed enemies explode,20 % de chance : les ennemis tués explosent
+ITEM_CHAIN_REACTOR,Chain reactor,Réacteur en chaîne
+ITEM_SCRAP_MAGNET_EFFECT,8% chance: killed enemies give 1 material,8 % de chance : les ennemis tués donnent 1 matériau
+ITEM_SCRAP_MAGNET,Scrap magnet,Aimant à ferraille
+ITEM_NANO_LEECH,Nano leech,Sangsue nano
+ITEM_GHOST_CLOAK,Ghost cloak,Cape fantôme
+ITEM_MANEKI_NEON,Maneki-neon,Maneki-néon
+ITEM_HYDROPONIC_FARM,Hydroponic farm,Ferme hydroponique
+ITEM_CREDIT_CHIP_EFFECT,End of wave: +10% of your materials (max 25),Fin de vague : +10 % de vos matériaux (max 25)
+ITEM_CREDIT_CHIP,Credit chip,Puce de crédit
+ITEM_IRON_WILL_EFFECT,+1% Damage per bonus armor point,+1 % de dégâts par point d'armure bonus
+ITEM_IRON_WILL,Iron will,Volonté de fer
+ITEM_SWIFT_BLADE_EFFECT,+1% Attack speed per 10 bonus move speed,+1 % de vitesse d'attaque par 10 de vitesse de déplacement bonus
+ITEM_SWIFT_BLADE,Swift blade,Lame véloce
+ITEM_GLASS_CANNON,Glass cannon,Canon de verre
+ITEM_OVERCLOCK,Overclock,Overclock
+ITEM_SOUL_HARVESTER_EFFECT,+1 Max HP every 20 kills (max +60),+1 PV max tous les 20 ennemis tués (max +60)
+ITEM_SOUL_HARVESTER,Soul harvester,Moissonneur d'âmes
+ITEM_MED_DRONE_EFFECT,Heals 3 HP every 5 s,Soigne 3 PV toutes les 5 s
+ITEM_MED_DRONE,Med drone,Drone médical

@@ -183,6 +183,86 @@ ICONS["items/phantom_drive"] = item("#ffd23f", f'''
 <circle cx="64" cy="64" r="6" fill="{L}" stroke="#000" stroke-width="3"/>
 ''')
 
+ICONS["items/chain_reactor"] = item("#ff8c1a", f"""
+<circle cx="64" cy="64" r="34" fill="{D}" {K}/>
+<circle cx="64" cy="64" r="16" fill="#ff8c1a" {K}/>
+<path d="M64 14 v14 M64 100 v14 M14 64 h14 M100 64 h14 M29 29 l10 10 M89 89 l10 10 M99 29 l-10 10 M39 89 l-10 10" stroke="#ff8c1a" stroke-width="7" stroke-linecap="round"/>
+""")
+ICONS["items/scrap_magnet"] = item("#3dffc5", f"""
+<path d="M24 40 v28 a30 30 0 0 0 60 0 v-28 h-18 v28 a12 12 0 0 1 -24 0 v-28z" fill="{L}" {K}/>
+<rect x="24" y="30" width="18" height="14" fill="#3dffc5" {K}/>
+<rect x="66" y="30" width="18" height="14" fill="#3dffc5" {K}/>
+<path d="M92 72 l14 -6 l6 12 l-14 6z M98 96 l12 0 l0 12 l-12 0z" fill="{D}" {K}/>
+""")
+ICONS["items/nano_leech"] = item("#ff4d5e", f"""
+<path d="M64 18 q30 34 30 58 a30 30 0 0 1 -60 0 q0 -24 30 -58z" fill="#ff4d5e" {K}/>
+<path d="M50 74 q4 14 18 16" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+<circle cx="64" cy="70" r="8" fill="{DK}" stroke="#000" stroke-width="4"/>
+""")
+ICONS["items/ghost_cloak"] = item("#b366ff", f"""
+<path d="M30 110 v-54 a34 34 0 0 1 68 0 v54 l-11 -10 l-11 10 l-12 -10 l-12 10 l-11 -10z" fill="{L}" {K}/>
+<circle cx="52" cy="58" r="6" fill="#b366ff" stroke="#000" stroke-width="4"/>
+<circle cx="76" cy="58" r="6" fill="#b366ff" stroke="#000" stroke-width="4"/>
+<path d="M14 40 h12 M10 60 h14 M14 80 h12" stroke="#b366ff" stroke-width="5" stroke-linecap="round"/>
+""")
+ICONS["items/maneki_neon"] = item("#ffd23f", f"""
+<path d="M36 50 L32 22 L52 38z M92 50 L96 22 L76 38z" fill="{L}" {K}/>
+<circle cx="64" cy="62" r="30" fill="{L}" {K}/>
+<path d="M50 60 q4 -4 8 0 M70 60 q4 -4 8 0" fill="none" stroke="#000" stroke-width="4" stroke-linecap="round"/>
+<path d="M58 72 q6 5 12 0" fill="none" stroke="#000" stroke-width="4" stroke-linecap="round"/>
+<circle cx="64" cy="102" r="12" fill="#ffd23f" {K}/>
+""")
+ICONS["items/hydroponic_farm"] = item("#a6ff4d", f"""
+<rect x="26" y="74" width="76" height="34" rx="6" fill="{D}" {K}/>
+<path d="M44 74 q-4 -26 -18 -34 q20 0 24 20 M64 74 v-44 M64 46 q14 -16 28 -14 q-6 18 -28 26 M84 74 q4 -18 16 -22" fill="none" stroke="#000" stroke-width="12" stroke-linecap="round"/>
+<path d="M44 74 q-4 -26 -18 -34 q20 0 24 20 M64 74 v-44 M64 46 q14 -16 28 -14 q-6 18 -28 26 M84 74 q4 -18 16 -22" fill="none" stroke="#a6ff4d" stroke-width="5" stroke-linecap="round"/>
+<path d="M30 90 h68" stroke="#4de6ff" stroke-width="5" stroke-linecap="round"/>
+""")
+ICONS["items/credit_chip"] = item("#73ff8c", f"""
+<rect x="18" y="34" width="92" height="60" rx="10" fill="{L}" {K}/>
+<rect x="30" y="50" width="22" height="18" rx="3" fill="#ffd23f" stroke="#000" stroke-width="4"/>
+<path d="M30 80 h40 M78 80 h18" stroke="{D}" stroke-width="6" stroke-linecap="round"/>
+<path d="M84 46 v18 M78 52 h12" stroke="#73ff8c" stroke-width="6" stroke-linecap="round"/>
+""")
+ICONS["items/iron_will"] = item("#4da6ff", f"""
+<path d="M64 12 L104 26 V60 Q104 96 64 116 Q24 96 24 60 V26z" fill="{D}" {K}/>
+<path d="M50 78 L64 40 L78 78 M54 66 h20" fill="none" stroke="#ff4d5e" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M36 34 L64 24 L92 34" fill="none" stroke="#4da6ff" stroke-width="5" stroke-linecap="round"/>
+""")
+ICONS["items/swift_blade"] = item("#4de6ff", f"""
+<path d="M30 98 L92 24 Q104 18 102 32 L46 104z" fill="{L}" {K}/>
+<path d="M22 92 l20 18" stroke="#000" stroke-width="16" stroke-linecap="round"/>
+<path d="M22 92 l20 18" stroke="{DK}" stroke-width="6" stroke-linecap="round"/>
+<path d="M12 40 h22 M8 56 h22 M12 72 h16" stroke="#4de6ff" stroke-width="6" stroke-linecap="round"/>
+""")
+ICONS["items/glass_cannon"] = item("#ff4d5e", f"""
+<rect x="20" y="50" width="70" height="30" rx="8" fill="#cfe8ff" fill-opacity="0.85" {K}/>
+<rect x="88" y="44" width="20" height="42" rx="4" fill="{D}" {K}/>
+<path d="M36 52 l10 12 l-6 14 M60 52 l-8 10 l10 18" fill="none" stroke="#000" stroke-width="3"/>
+<circle cx="36" cy="92" r="12" fill="{DK}" {K}/>
+<path d="M112 58 h10 M112 72 h10" stroke="#ff4d5e" stroke-width="5" stroke-linecap="round"/>
+""")
+ICONS["items/overclock"] = item("#ffd23f", f"""
+<circle cx="64" cy="64" r="40" fill="{L}" {K}/>
+<path d="M64 64 L64 34 M64 64 L86 76" stroke="#000" stroke-width="7" stroke-linecap="round"/>
+<path d="M30 64 a34 34 0 0 1 10 -24" fill="none" stroke="#ff4d5e" stroke-width="6" stroke-linecap="round"/>
+<path d="M94 46 l10 -10 M100 64 h12" stroke="#ffd23f" stroke-width="6" stroke-linecap="round"/>
+<circle cx="64" cy="64" r="6" fill="#ffd23f" stroke="#000" stroke-width="3"/>
+""")
+ICONS["items/soul_harvester"] = item("#5cff8a", f"""
+<path d="M40 112 L76 30" stroke="#000" stroke-width="14" stroke-linecap="round"/>
+<path d="M40 112 L76 30" stroke="{DK}" stroke-width="6" stroke-linecap="round"/>
+<path d="M76 30 Q100 22 112 44 Q96 38 84 46z" fill="{L}" {K}/>
+<path d="M28 44 q-8 -14 4 -24 q-2 12 8 16 q4 -10 14 -10 q-6 10 -2 20" fill="#5cff8a" stroke="#000" stroke-width="4" stroke-linejoin="round"/>
+""")
+ICONS["items/med_drone"] = item("#5cff8a", f"""
+<path d="M20 40 h28 M80 40 h28" stroke="#000" stroke-width="8" stroke-linecap="round"/>
+<path d="M34 40 v12 M94 40 v12" stroke="#000" stroke-width="6"/>
+<rect x="30" y="50" width="68" height="40" rx="14" fill="{L}" {K}/>
+<path d="M64 58 v24 M52 70 h24" stroke="#5cff8a" stroke-width="8" stroke-linecap="round"/>
+<path d="M50 96 l-6 14 M78 96 l6 14" stroke="#5cff8a" stroke-width="5" stroke-linecap="round"/>
+""")
+
 if __name__ == "__main__":
     for key, body in ICONS.items():
         path = os.path.join(ROOT, key + ".svg")

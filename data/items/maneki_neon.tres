@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="1_item"]
+[ext_resource type="Script" path="res://src/core/stat_modifier.gd" id="2_mod"]
+[ext_resource type="Texture2D" path="res://assets/icons/items/maneki_neon.svg" id="icon_tex"]
+
+[sub_resource type="Resource" id="Mod_1"]
+script = ExtResource("2_mod")
+stat = &"luck"
+flat = 15.0
+
+[resource]
+script = ExtResource("1_item")
+id = &"maneki_neon"
+name_key = "ITEM_MANEKI_NEON"
+tier = 1
+base_price = 18
+modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1")])
+icon = ExtResource("icon_tex")

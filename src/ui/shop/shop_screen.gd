@@ -162,8 +162,14 @@ static func describe(offer: ShopOffer) -> PackedStringArray:
 	if offer.is_weapon():
 		return PackedStringArray([tag, TranslationServer.translate(offer.weapon.name_key),
 			TranslationServer.translate(offer.weapon.description_key)])
-	return PackedStringArray([tag, TranslationServer.translate(offer.item.name_key),
-		LevelUpScreen.describe_modifiers(offer.item.modifiers)])
+	var effects := LevelUpScreen.describe_modifiers(offer.item.modifiers)
+	if offer.item.effect_key != "":
+		effects = "
+".join(PackedStringArray([effects, TranslationServer.translate(offer.item.effect_key)])).strip_edges()
+	if offer.item.max_count == 1:
+		effects += "
+" + TranslationServer.translate("UI_SHOP_UNIQUE")
+	return PackedStringArray([tag, TranslationServer.translate(offer.item.name_key), effects])
 
 
 func _rebuild() -> void:

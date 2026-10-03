@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="1_item"]
+[ext_resource type="Script" path="res://src/core/stat_modifier.gd" id="2_mod"]
+[ext_resource type="Texture2D" path="res://assets/icons/items/credit_chip.svg" id="icon_tex"]
+[ext_resource type="Script" path="res://src/items/effects/interest_effect.gd" id="3_effect"]
+[ext_resource type="Script" path="res://src/items/effects/item_effect.gd" id="4_base"]
+
+[sub_resource type="Resource" id="Effect_1"]
+script = ExtResource("3_effect")
+percent = 0.1
+cap = 25
+
+[resource]
+script = ExtResource("1_item")
+id = &"credit_chip"
+name_key = "ITEM_CREDIT_CHIP"
+tier = 2
+base_price = 40
+max_count = 1
+modifiers = Array[ExtResource("2_mod")]([])
+icon = ExtResource("icon_tex")
+effects = Array[ExtResource("4_base")]([SubResource("Effect_1")])
+effect_key = "ITEM_CREDIT_CHIP_EFFECT"

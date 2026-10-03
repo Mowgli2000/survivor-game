@@ -185,3 +185,18 @@ func test_periodic_heal() -> void:
 	for i in 25:
 		_effects._physics_process(0.1)
 	assert_eq(_player.hp, 56.0, "2 heals in 2.5 s")
+
+
+func test_owned_unique_item_is_never_offered_again() -> void:
+	var unique: ItemData = ContentDB.get_def(&"items", &"chain_reactor")
+	assert_eq(unique.max_count, 1)
+	var inventory := Inventory.new(_player.stats)
+	inventory.add(unique)
+	var holder := WeaponHolder.new()
+	autofree(holder)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 2
+	var shop := Shop.new(ShopConfig.new(), Wallet.new(), inventory, holder, [], [unique], rng)
+	shop.open(10)
+	for offer in shop.offers:
+		assert_ne(offer.item, unique)
