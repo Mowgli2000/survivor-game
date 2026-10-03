@@ -144,3 +144,14 @@ func test_effect_item_card_shows_its_effect_and_uniqueness() -> void:
 	offer.tier = 3
 	var texts := ShopScreen.describe(offer)
 	assert_eq(texts[2], "20% chance: killed enemies explode\n(Unique)")
+
+
+func test_names_use_the_rarity_color() -> void:
+	var offer := ShopOffer.new()
+	offer.weapon = ContentDB.get_def(&"weapons", &"katana")
+	offer.tier = 3
+	assert_eq(ShopScreen.name_color(offer), Tiers.color(3), "not the katana's neon pink")
+	var item := ShopOffer.new()
+	item.item = ContentDB.get_def(&"items", &"sharpened_edge")
+	item.tier = 2
+	assert_eq(ShopScreen.name_color(item), Tiers.color(2))

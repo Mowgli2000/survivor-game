@@ -155,6 +155,8 @@ func _unlock_card(def: Resource) -> Control:
 	name_label.theme_type_variation = &"SubtitleLabel"
 	name_label.add_theme_font_size_override("font_size", 24)
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	if not def is CharacterData:
+		name_label.add_theme_color_override("font_color", Tiers.color(int(def.get(&"tier")) if def is ItemData else 1))
 	box.add_child(name_label)
 	var tag := Label.new()
 	tag.text = "UI_UNLOCKED_TAG"

@@ -155,6 +155,12 @@ func close() -> void:
 	visible = false
 
 
+## Weapon and item names use their rarity color (one color code: the tier),
+## not the weapon's neon color.
+static func name_color(offer: ShopOffer) -> Color:
+	return Tiers.color(offer.tier)
+
+
 ## Card texts: [type · tier, name, effects].
 static func describe(offer: ShopOffer) -> PackedStringArray:
 	var kind := "UI_SHOP_WEAPON" if offer.is_weapon() else "UI_SHOP_ITEM"
@@ -280,7 +286,7 @@ func _make_card(index: int, offer: ShopOffer) -> Control:
 	var tag := _label(17, accent, &"SmallLabel")
 	tag.text = texts[0].to_upper()
 	box.add_child(tag)
-	var name_label := _label(30, offer.weapon.color if offer.is_weapon() else UiTheme.TEXT, &"SubtitleLabel")
+	var name_label := _label(30, name_color(offer), &"SubtitleLabel")
 	name_label.text = texts[1]
 	box.add_child(name_label)
 	var effects := _label(19, TEXT_COLOR)
@@ -319,7 +325,7 @@ func _rebuild_weapons() -> void:
 		var normal := UiTheme.card_style(tier_color, 1.0 if i == _selected_weapon else 0.45)
 		normal.set_content_margin_all(10)
 		button.add_theme_stylebox_override("normal", normal)
-		button.add_theme_color_override("font_color", slot.data.color)
+		button.add_theme_color_override("font_color", tier_color)
 		button.icon = slot.data.icon
 		button.add_theme_constant_override("icon_max_width", WEAPON_ICON)
 		button.pressed.connect(_on_weapon_selected.bind(i))

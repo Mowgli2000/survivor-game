@@ -83,7 +83,7 @@ func _refresh_weapons() -> void:
 		if slot.data.icon == null:
 			var label := _make_label(&"ValueLabel", 24)
 			label.text = "%s  %s" % [tr(slot.data.name_key), Tiers.roman(slot.level)]
-			label.add_theme_color_override("font_color", slot.data.color)
+			label.add_theme_color_override("font_color", Tiers.color(slot.level))
 			_weapons_box.add_child(label)
 			continue
 		var tile := IconTile.create(slot.data.icon, slot.level, WEAPON_ICON)

@@ -193,7 +193,7 @@ func _choose_character(character: CharacterData) -> void:
 		button.icon = weapon.icon
 		button.expand_icon = true
 		button.custom_minimum_size = Vector2(280, 72)
-		button.add_theme_color_override("font_color", weapon.color)
+		button.add_theme_color_override("font_color", Tiers.color(1))
 		button.pressed.connect(_choose_weapon.bind(weapon))
 		_weapons.add_child(button)
 	_show_weapons(true)
