@@ -97,6 +97,11 @@ func slot_count() -> int:
 func _physics_process(delta: float) -> void:
 	if _ctx == null:
 		return
+	var player := _ctx.owner as Player
+	if player != null and player.is_dead:
+		return
+	if _ctx.enemies != null:
+		_ctx.enemies.damage_source = _ctx.source
 	var attack_speed := _ctx.stats.get_value(StatIds.ATTACK_SPEED)
 	for i in _slots.size():
 		var slot := _slots[i]

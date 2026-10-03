@@ -16,7 +16,7 @@ func before_each() -> void:
 	_player.bot_input = func() -> Vector2: return Vector2.LEFT if _left else Vector2.ZERO
 	add_child_autofree(_player)
 	_enemies = EnemyManager.new()
-	_enemies.setup(_player, arena, 4)
+	_enemies.setup(Party.solo(_player), arena, 4)
 	add_child_autofree(_enemies)
 	_visuals = _player.weapon_visuals
 	_visuals.setup(_player.weapons, _enemies, _player)

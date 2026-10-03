@@ -18,6 +18,8 @@ var _cards: HBoxContainer
 var _reroll: Button
 var _offers: Array[UpgradeOffer] = []
 var _title: Label
+## Coop: whose level-up it is ("Player 2"), hidden in solo.
+var _player_tag: Label
 
 
 func _init() -> void:
@@ -44,6 +46,12 @@ func _init() -> void:
 	box.add_theme_constant_override("separation", 40)
 	center.add_child(box)
 
+	_player_tag = Label.new()
+	_player_tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_player_tag.theme_type_variation = &"SubtitleLabel"
+	_player_tag.visible = false
+	box.add_child(_player_tag)
+
 	var title := Label.new()
 	title.text = "UI_LEVEL_UP"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -66,6 +74,13 @@ func _init() -> void:
 	_reroll.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_reroll.pressed.connect(func() -> void: reroll_requested.emit())
 	box.add_child(_reroll)
+
+
+## Coop: shows whose turn it is; an empty text hides the tag (solo).
+func set_player_tag(text: String, color: Color) -> void:
+	_player_tag.text = text
+	_player_tag.visible = text != ""
+	_player_tag.add_theme_color_override("font_color", color)
 
 
 ## `reroll_cost` < 0 hides the reroll button.

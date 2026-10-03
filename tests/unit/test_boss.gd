@@ -16,15 +16,15 @@ func before_each() -> void:
 	_player.bot_input = func() -> Vector2: return Vector2.ZERO
 	add_child_autofree(_player)
 	_shots = EnemyProjectileManager.new()
-	_shots.setup(_player, arena)
+	_shots.setup(Party.solo(_player), arena)
 	add_child_autofree(_shots)
 	_rng = RandomNumberGenerator.new()
 	_rng.seed = 3
 	_enemies = EnemyManager.new()
-	_enemies.setup(_player, arena, 4, _rng, null, _shots)
+	_enemies.setup(Party.solo(_player), arena, 4, _rng, null, _shots)
 	add_child_autofree(_enemies)
 	_director = BossDirector.new()
-	_director.setup(_enemies, _shots, _player, null, _rng)
+	_director.setup(_enemies, _shots, Party.solo(_player), null, _rng)
 	add_child_autofree(_director)
 
 

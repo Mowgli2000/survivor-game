@@ -17,12 +17,12 @@ func before_each() -> void:
 	_player.bot_input = func() -> Vector2: return Vector2.ZERO
 	add_child_autofree(_player)
 	_enemy_shots = EnemyProjectileManager.new()
-	_enemy_shots.setup(_player, arena)
+	_enemy_shots.setup(Party.solo(_player), arena)
 	add_child_autofree(_enemy_shots)
 	_enemies = EnemyManager.new()
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 1
-	_enemies.setup(_player, arena, 4, rng, null, _enemy_shots)
+	_enemies.setup(Party.solo(_player), arena, 4, rng, null, _enemy_shots)
 	add_child_autofree(_enemies)
 	_projectiles = ProjectileManager.new()
 	_projectiles.setup(_enemies, arena, 4)

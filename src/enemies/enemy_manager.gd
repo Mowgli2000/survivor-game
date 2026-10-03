@@ -37,8 +37,11 @@ var max_radius: float = 0.0
 var elite_scale: float = 1.6
 ## Spawner enemies never push the count above this (Run sets StageData.max_enemies).
 var spawn_cap: int = 100000
+## Player number of whoever deals the current damage (ADR 0017): set by the
+## attacker before calling the damage API, read by kill / hit listeners.
+var damage_source: int = 0
 
-var _player: Player
+var _party: Party
 var _arena: Rect2
 var _rng: RandomNumberGenerator
 var _vfx: Vfx
@@ -59,9 +62,9 @@ var _hit_sound_frame: int = -1
 var _death_sound_frame: int = -1
 
 
-func setup(player: Player, arena: Rect2, prewarm: int, rng: RandomNumberGenerator = null,
+func setup(party: Party, arena: Rect2, prewarm: int, rng: RandomNumberGenerator = null,
 		vfx: Vfx = null, enemy_projectiles: EnemyProjectileManager = null) -> void:
-	_player = player
+	_party = party
 	_arena = arena
 	_rng = rng if rng != null else RandomNumberGenerator.new()
 	_vfx = vfx
@@ -238,6 +241,7 @@ func _apply_status(index: int, status: StatusData, hit_damage: float) -> void:
 		StatusData.Type.BURN:
 			if enemy.is_alive():
 				enemy.apply_burn(hit_damage * status.power, status.duration)
+				enemy.burn_source = damage_source
 		StatusData.Type.SLOW:
 			if enemy.is_alive():
 				enemy.apply_slow(status.power, status.duration)
@@ -276,7 +280,7 @@ func _chain_lightning(start: int, damage: float, count: int, chain_range: float)
 # --- Update loop ------------------------------------------------------------
 
 func _physics_process(delta: float) -> void:
-	if _player == null:
+	if _party == null:
 		return
 	_remove_dead()
 	var count := _active.size()
@@ -289,8 +293,18 @@ func _physics_process(delta: float) -> void:
 		_radii[i] = other.radius
 	grid.rebuild(_positions, count)
 
-	var player_pos := _player.global_position
-	var player_radius := _player.radius
+	# Solo: one target for everyone. Coop: each enemy chases the nearest living
+	# player (two players compared inline: no call per enemy).
+	var solo_target: Player = _party.members[0] if _party.size() == 1 else null
+	var first: Player = _party.members[0]
+	var second: Player = _party.members[1] if _party.size() > 1 else null
+	if second != null and (first.is_dead or second.is_dead):
+		solo_target = second if first.is_dead else first
+		if first.is_dead and second.is_dead:
+			solo_target = null
+	var first_pos := first.global_position
+	var second_pos := second.global_position if second != null else first_pos
+	var fallback_pos := _party.center()
 	var tick_parity := Engine.get_physics_frames() & 1
 	for i in count:
 		var enemy := _active[i]
@@ -308,6 +322,10 @@ func _physics_process(delta: float) -> void:
 				enemy.end_slow()
 
 		var pos := enemy.position
+		var target := solo_target
+		if target == null and second != null and not first.is_dead:
+			target = first if pos.distance_squared_to(first_pos) <= pos.distance_squared_to(second_pos) else second
+		var player_pos := target.global_position if target != null else fallback_pos
 		var to_player := player_pos - pos
 		var distance := to_player.length()
 		var direction := to_player / distance if distance > 0.001 else Vector2.RIGHT
@@ -315,7 +333,7 @@ func _physics_process(delta: float) -> void:
 			EnemyData.Movement.CHARGER:
 				_update_charger(enemy, direction, distance, delta)
 			EnemyData.Movement.KAMIKAZE:
-				if _update_kamikaze(enemy, player_pos, distance, delta):
+				if _update_kamikaze(enemy, distance, delta):
 					continue
 			EnemyData.Movement.SPAWNER:
 				_update_spawner(enemy, delta)
@@ -359,9 +377,8 @@ func _physics_process(delta: float) -> void:
 		if enemy.flash > 0.0:
 			enemy.set_flash(maxf(enemy.flash - delta, 0.0))
 
-		var touch := enemy.radius + player_radius
-		if distance <= touch:
-			_player.take_damage(enemy.data.contact_damage * enemy.damage_multiplier)
+		if target != null and distance <= enemy.radius + target.radius:
+			target.take_damage(enemy.data.contact_damage * enemy.damage_multiplier)
 
 
 ## Approach until preferred_distance, back off when too close, strafe in between; shoot.
@@ -406,7 +423,7 @@ func _update_charger(enemy: Enemy, direction: Vector2, distance: float, delta: f
 
 ## Fuse once close, then explode. Returns true when it blew up (self-destruct:
 ## removed without enemy_killed, so no XP; killing it first is the reward).
-func _update_kamikaze(enemy: Enemy, player_pos: Vector2, distance: float, delta: float) -> bool:
+func _update_kamikaze(enemy: Enemy, distance: float, delta: float) -> bool:
 	var data := enemy.data
 	if enemy.special_state == 0:
 		if distance <= data.fuse_range:
@@ -423,9 +440,10 @@ func _update_kamikaze(enemy: Enemy, player_pos: Vector2, distance: float, delta:
 	if _vfx != null:
 		_vfx.explosion(enemy.position, data.blast_radius, data.color, true)
 	Audio.play(Sounds.EXPLOSION, -6.0)
-	var reach := data.blast_radius + _player.radius
-	if enemy.position.distance_squared_to(player_pos) <= reach * reach:
-		_player.take_damage(data.blast_damage * enemy.damage_multiplier)
+	for player in _party.members:
+		var reach := data.blast_radius + player.radius
+		if enemy.position.distance_squared_to(player.global_position) <= reach * reach:
+			player.take_damage(data.blast_damage * enemy.damage_multiplier)
 	enemy.hp = 0.0
 	enemy.visible = false
 	return true
@@ -448,6 +466,7 @@ func _update_spawner(enemy: Enemy, delta: float) -> void:
 
 
 func _tick_burn(enemy: Enemy, delta: float) -> void:
+	damage_source = enemy.burn_source
 	var step := minf(delta, enemy.burn_time)
 	var damage := enemy.burn_dps * step
 	enemy.burn_time -= delta

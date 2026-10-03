@@ -33,6 +33,11 @@ func setup_waves(state: RunState, stage: StageData, waves: WaveDirector) -> void
 	_waves = waves
 
 
+## Coop: below player 2's HUD block (top right).
+func move_below_hud(offset_top: float) -> void:
+	_label.offset_top = offset_top
+
+
 func _init() -> void:
 	layer = 100
 	process_mode = Node.PROCESS_MODE_ALWAYS

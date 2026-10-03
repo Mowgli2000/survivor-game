@@ -7,12 +7,15 @@ const SIZE := 7.0
 var value: int = 1
 var attracted: bool = false
 var speed: float = 0.0
+## Player number the gem flies to once attracted.
+var target: int = 0
 
 
 func reset(pos: Vector2, p_value: int) -> void:
 	position = pos
 	value = p_value
 	attracted = false
+	target = 0
 	speed = 0.0
 	visible = true
 	queue_redraw()

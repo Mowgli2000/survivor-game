@@ -31,11 +31,11 @@ var _waves: WaveDirector
 var _bosses: Array[BossState] = []
 
 
-func setup(enemies: EnemyManager, enemy_projectiles: EnemyProjectileManager, player: Player,
+func setup(enemies: EnemyManager, enemy_projectiles: EnemyProjectileManager, party: Party,
 		vfx: Vfx, rng: RandomNumberGenerator, stage: StageData = null, waves: WaveDirector = null) -> void:
 	_ctx.enemies = enemies
 	_ctx.enemy_projectiles = enemy_projectiles
-	_ctx.player = player
+	_ctx.party = party
 	_ctx.vfx = vfx
 	_ctx.rng = rng
 	_stage = stage
@@ -110,7 +110,7 @@ func _start_pattern(state: BossState) -> void:
 		state.timer = 1.0
 		return
 	state.timer = pattern.windup
-	state.aim = _ctx.player.global_position
+	state.aim = _ctx.target_position(state.enemy.position)
 	if pattern.windup > 0.0:
 		state.enemy.forced_velocity = Vector2.ZERO
 		state.enemy.forced_time = pattern.windup

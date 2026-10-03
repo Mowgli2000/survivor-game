@@ -28,6 +28,9 @@ var hit_ids: Array[int] = []
 
 
 ## Player projectile fired by a weapon. `area_multiplier` scales explosions.
+## Player who fired it: EnemyManager.damage_source of its hits (ADR 0017).
+var source: int = 0
+
 func reset(pos: Vector2, p_velocity: Vector2, p_damage: float, p_crit: bool, pierce: int,
 		p_knockback: float, area_multiplier: float, weapon: WeaponStats,
 		range_multiplier: float = 1.0) -> void:

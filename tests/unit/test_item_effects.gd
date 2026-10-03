@@ -16,7 +16,7 @@ func before_each() -> void:
 	_player.bot_input = func() -> Vector2: return Vector2.ZERO
 	add_child_autofree(_player)
 	_enemies = EnemyManager.new()
-	_enemies.setup(_player, arena, 8)
+	_enemies.setup(Party.solo(_player), arena, 8)
 	add_child_autofree(_enemies)
 	_wallet = Wallet.new()
 	var rng := RandomNumberGenerator.new()

@@ -12,7 +12,7 @@ func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
 
 
 func fire(ctx: BossContext, boss: Enemy, _aim: Vector2, _repeat: int) -> void:
-	var base := (ctx.player.global_position - boss.position).angle()
+	var base := (ctx.target_position(boss.position) - boss.position).angle()
 	if count == 1:
 		_shoot(ctx, boss, Vector2.from_angle(base))
 		return

@@ -1,7 +1,7 @@
 extends Node
 ## Plays a run with a bot and saves a screenshot, so visuals can be checked
 ## without a human at the keyboard (used by Claude Code).
-## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--progression] [--boss=shogun|ronin]
+## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--boss=shogun|ronin] [--coop]
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
 const MENU_SCENE := preload("res://src/ui/main_menu/main_menu.tscn")
@@ -20,6 +20,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	var stress := false
 	var all_weapons := false
+	var coop := false
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--time="):
 			_capture_at = arg.trim_prefix("--time=").to_float()
@@ -27,17 +28,19 @@ func _ready() -> void:
 			_out = arg.trim_prefix("--out=")
 		elif arg == "--stress":
 			stress = true
-		elif arg in ["--levelup", "--die", "--unlocks", "--waveend", "--shop", "--pause", "--settings", "--menu", "--characters", "--progression"]:
+		elif arg in ["--levelup", "--die", "--unlocks", "--waveend", "--shop", "--pause", "--settings", "--menu", "--characters", "--coopselect", "--progression"]:
 			_mode = arg
+		elif arg == "--coop":
+			coop = true
 		elif arg.begins_with("--boss="):
 			_boss_id = StringName(arg.trim_prefix("--boss="))
 		elif arg == "--allweapons":
 			all_weapons = true
-	if _mode in ["--menu", "--characters", "--progression"]:
+	if _mode in ["--menu", "--characters", "--coopselect", "--progression"]:
 		var menu: MainMenu = MENU_SCENE.instantiate()
 		add_child(menu)
-		if _mode == "--characters":
-			menu._open_character_select()
+		if _mode in ["--characters", "--coopselect"]:
+			menu._open_character_select(_mode == "--coopselect")
 		elif _mode == "--progression":
 			menu._open_progression()
 		return
@@ -48,7 +51,12 @@ func _ready() -> void:
 	_run.player_invincible = true
 	_run.auto_choose_upgrades = _mode not in ["--levelup", "--waveend", "--shop", "--pause", "--settings"]
 	_run.bot_input = func() -> Vector2: return Vector2.from_angle(_time * 0.5)
+	if coop:
+		_run.player_count = 2
 	add_child(_run)
+	if coop:
+		# Player 2 walks the other way: the camera zooms out as they spread.
+		_run.players[1].player.bot_input = func() -> Vector2: return -Vector2.from_angle(_time * 0.5)
 	if all_weapons:
 		for def in ContentDB.get_all(&"weapons"):
 			var weapon := def as WeaponData

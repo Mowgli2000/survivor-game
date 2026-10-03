@@ -1,7 +1,7 @@
 class_name MainMenu
 extends Node2D
 ## Main menu (ADR 0013, 0015): animated arena backdrop, neon title,
-## Play (character select) / Progression / Settings / Quit.
+## Play (character select) / Local co-op / Progression / Settings / Quit.
 ## Buttons only ask SceneRouter to act.
 
 const ARENA_RECT := Rect2(-1200, -700, 2400, 1400)
@@ -11,6 +11,7 @@ const MUSIC_DB := -8.0
 var _crowd: MenuCrowd
 var _buttons: VBoxContainer
 var _play: Button
+var _coop: Button
 var _settings_button: Button
 var _quit: Button
 var _settings: SettingsScreen
@@ -56,7 +57,8 @@ func _ready() -> void:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_buttons.add_child(title)
 	_buttons.add_child(Control.new())
-	_play = _button("UI_PLAY", _open_character_select)
+	_play = _button("UI_PLAY", _open_character_select.bind(false))
+	_coop = _button("UI_COOP", _open_character_select.bind(true))
 	_progression_button = _button("UI_PROGRESSION", _open_progression)
 	_settings_button = _button("UI_SETTINGS", _open_settings)
 	_quit = _button("UI_QUIT", SceneRouter.quit)
@@ -66,7 +68,8 @@ func _ready() -> void:
 	root.add_child(_settings)
 	_character_select = CharacterSelect.new()
 	_character_select.started.connect(SceneRouter.goto_run)
-	_character_select.closed.connect(_on_overlay_closed.bind(_play))
+	_character_select.closed.connect(func() -> void:
+		_on_overlay_closed(_coop if _character_select.coop else _play))
 	root.add_child(_character_select)
 	_progression = ProgressionScreen.new()
 	_progression.closed.connect(_on_overlay_closed.bind(_progression_button))
@@ -98,9 +101,9 @@ func _on_settings_closed() -> void:
 	_on_overlay_closed(_settings_button)
 
 
-func _open_character_select() -> void:
+func _open_character_select(coop: bool) -> void:
 	_buttons.visible = false
-	_character_select.open()
+	_character_select.open(coop)
 
 
 func _open_progression() -> void:

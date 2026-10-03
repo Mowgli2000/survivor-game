@@ -199,3 +199,10 @@ DANGER_3_DESC,"More enemies, bigger groups.","Plus d'ennemis, groupes plus grand
 DANGER_4_DESC,"Enemies: +30% HP and damage, more elites.","Ennemis : +30 % de PV et de dégâts, plus d'élites."
 DANGER_5_DESC,Two bosses on the final wave.,Deux boss à la dernière vague.
 UI_UNLOCKED_TAG,Unlocked!,Débloqué !
+UI_PLAYER_N,Player %d,Joueur %d
+UI_PLAYER_DOWN,Down: back next wave,À terre : retour à la vague suivante
+UI_COOP,Local co-op,Coop locale
+UI_COOP_PICK,Player %d: choose your character,Joueur %d : choisis ton personnage
+UI_COOP_PADS,"Player 1: keyboard + gamepad 1, Player 2: gamepad 2","Joueur 1 : clavier + manette 1, Joueur 2 : manette 2"
+UI_COOP_ONE_PAD,"Player 1: keyboard, Player 2: gamepad","Joueur 1 : clavier, Joueur 2 : manette"
+UI_COOP_NO_PAD,Connect a gamepad for player 2.,Branche une manette pour le joueur 2.

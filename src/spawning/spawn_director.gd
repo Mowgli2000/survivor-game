@@ -12,7 +12,7 @@ const GROUP_SPREAD := 90.0
 var _stage: StageData
 var _state: RunState
 var _enemies: EnemyManager
-var _player: Player
+var _party: Party
 var _arena: Rect2
 var _waves: WaveDirector
 var _wave: int = 0
@@ -22,12 +22,12 @@ var _eligible: Array[EnemyData] = []
 var _pending_events: Array[WaveEvent] = []
 
 
-func setup(stage: StageData, state: RunState, enemies: EnemyManager, player: Player, arena: Rect2,
+func setup(stage: StageData, state: RunState, enemies: EnemyManager, party: Party, arena: Rect2,
 		waves: WaveDirector) -> void:
 	_stage = stage
 	_state = state
 	_enemies = enemies
-	_player = player
+	_party = party
 	_arena = arena
 	_waves = waves
 
@@ -89,15 +89,15 @@ func _fire_events(elapsed: float, hp_multiplier: float, damage_multiplier: float
 		# Scripted events ignore max_enemies: elites and hordes must always appear.
 		for k in event.count:
 			var angle := offset + TAU * k / event.count
-			var pos := _player.global_position + Vector2.from_angle(angle) * _stage.spawn_distance
+			var pos := _party.center() + Vector2.from_angle(angle) * _stage.spawn_distance
 			_enemies.spawn(enemy, pos.clamp(_arena.position, _arena.end), hp, event.elite,
 				damage_multiplier)
 		_state.wave_spawned += event.count
 
 
-## A point at `spawn_distance` from the player, inside the arena when possible.
+## A point at `spawn_distance` from the players' center, inside the arena when possible.
 func _pick_position() -> Vector2:
-	var center := _player.global_position
+	var center := _party.center()
 	var fallback := center
 	for attempt in POSITION_ATTEMPTS:
 		var pos := center + Vector2.from_angle(_state.rng.randf() * TAU) * _stage.spawn_distance

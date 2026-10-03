@@ -248,7 +248,7 @@ func test_hud_shows_one_icon_per_weapon() -> void:
 func test_camera_uses_the_configured_zoom() -> void:
 	var zoom := _run.config.camera_zoom
 	assert_gt(zoom, 0.0)
-	assert_eq(_run.player.camera.zoom, Vector2(zoom, zoom))
+	assert_eq(_run.camera.zoom, Vector2(zoom, zoom))
 
 
 func test_screens_use_the_shared_theme() -> void:

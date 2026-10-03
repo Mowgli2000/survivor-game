@@ -129,7 +129,7 @@ func test_collect_all_returns_total_xp() -> void:
 	player.bot_input = func() -> Vector2: return Vector2.ZERO
 	add_child_autofree(player)
 	var pickups := PickupManager.new()
-	pickups.setup(player, 2)  # tiny cap: extra gems get merged
+	pickups.setup(Party.solo(player), 2)  # tiny cap: extra gems get merged
 	add_child_autofree(pickups)
 	watch_signals(pickups)
 	pickups.spawn_xp(Vector2(900, 900), 3)
@@ -138,7 +138,7 @@ func test_collect_all_returns_total_xp() -> void:
 	pickups.collect_all()
 	assert_eq(pickups.active_count(), 0)
 	assert_signal_emit_count(pickups, "xp_collected", 1)
-	assert_signal_emitted_with_parameters(pickups, "xp_collected", [12])
+	assert_signal_emitted_with_parameters(pickups, "xp_collected", [12, PickupManager.SHARED])
 
 
 func _spawn_setup(stage: StageData) -> Array:
@@ -149,14 +149,14 @@ func _spawn_setup(stage: StageData) -> Array:
 	player.bot_input = func() -> Vector2: return Vector2.ZERO
 	add_child_autofree(player)
 	var enemies := EnemyManager.new()
-	enemies.setup(player, arena, 8)
+	enemies.setup(Party.solo(player), arena, 8)
 	add_child_autofree(enemies)
 	var director := WaveDirector.new()
 	director.setup(stage)
 	add_child_autofree(director)
 	var spawner := SpawnDirector.new()
 	var state := RunState.new(1)
-	spawner.setup(stage, state, enemies, player, arena, director)
+	spawner.setup(stage, state, enemies, Party.solo(player), arena, director)
 	add_child_autofree(spawner)
 	return [director, spawner, enemies, state]
 

@@ -2,6 +2,10 @@ extends Node
 ## Stress test: a real run with 500 enemies and ~1000 projectiles.
 ## Run in the editor (F6) or: Godot.exe --path . res://src/debug/stress_test.tscn -- --duration=30
 ## Prints FPS and frame-time statistics, then quits when a duration is given.
+## --endless=N: the real stage at Danger 1 instead, starting directly at endless wave N
+## (N = 1: a whole run that goes on into endless mode; object counts logged per wave).
+## --coop: two players, every weapon at max level for both (worst case of local coop).
+## --speed=X: Engine.time_scale, to reach late waves faster (--duration is in game seconds).
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
 const STRESS_CONFIG := preload("res://src/debug/stress/stress_run.tres")
@@ -17,23 +21,44 @@ var _samples_draw_calls: PackedFloat32Array = []
 var _max_enemies: int = 0
 var _max_projectiles: int = 0
 var _sample_timer: float = 0.0
+var _endless_wave: int = 0
+var _coop: bool = false
+var _max_enemy_shots: int = 0
+var _max_vfx: int = 0
 
 
 func _ready() -> void:
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--duration="):
 			_duration = arg.trim_prefix("--duration=").to_float()
+		elif arg == "--coop":
+			_coop = true
+		elif arg.begins_with("--speed="):
+			Engine.time_scale = arg.trim_prefix("--speed=").to_float()
+		elif arg.begins_with("--endless="):
+			_endless_wave = arg.trim_prefix("--endless=").to_int()
 	_run = RUN_SCENE.instantiate()
-	_run.config = STRESS_CONFIG
+	if _endless_wave > 0:
+		_run.setup = RunSetup.new()
+		_run.setup.difficulty = ContentDB.get_def(&"difficulties", &"danger_1")
+	else:
+		_run.config = STRESS_CONFIG
 	_run.seed_override = 1
 	_run.player_invincible = true
 	_run.auto_choose_upgrades = true
+	if _coop:
+		_run.player_count = 2
 	_run.bot_input = func() -> Vector2: return Vector2.from_angle(_time * 0.5)
 	add_child(_run)
 	# Every real weapon at max level on top of the stress weapon: worst case for effects.
-	for def in ContentDB.get_all(&"weapons"):
-		var weapon := def as WeaponData
-		_run.player.weapons.add_weapon(weapon, weapon.max_level())
+	for rp in _run.players:
+		for def in ContentDB.get_all(&"weapons"):
+			var weapon := def as WeaponData
+			rp.player.weapons.add_weapon(weapon, weapon.max_level())
+	if _endless_wave > 0:
+		_run.stage.endless = true
+		_run.waves.start_wave(_endless_wave)
+		_run.waves.wave_ended.connect(_log_objects)
 
 
 func _process(delta: float) -> void:
@@ -49,15 +74,28 @@ func _process(delta: float) -> void:
 		_samples_draw_calls.append(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
 		_max_enemies = maxi(_max_enemies, _run.enemies.active_count())
 		_max_projectiles = maxi(_max_projectiles, _run.projectiles.active_count())
+		_max_enemy_shots = maxi(_max_enemy_shots, _run.enemy_projectiles.active_count())
+		_max_vfx = maxi(_max_vfx, _run.vfx.active_count())
 	if _duration > 0.0 and _time >= WARMUP + _duration:
 		_report()
 		get_tree().quit()
 
 
+## Leak hunt: object and node counts after each wave (between-wave cleanup done).
+func _log_objects(wave: int) -> void:
+	print("[objects] wave %d | objects %d | nodes %d | orphans %d | resources %d | fps %d" % [
+		wave, Performance.get_monitor(Performance.OBJECT_COUNT),
+		Performance.get_monitor(Performance.OBJECT_NODE_COUNT),
+		Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT),
+		Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT), Engine.get_frames_per_second()])
+
+
 func _report() -> void:
 	print("=== STRESS TEST (%.0f s) ===" % _duration)
-	print("enemies max %d | projectiles max %d | gems %d | vfx %d" % [
-		_max_enemies, _max_projectiles, _run.pickups.active_count(), _run.vfx.active_count()])
+	print("enemies max %d | projectiles max %d | enemy shots max %d | gems %d | vfx max %d" % [
+		_max_enemies, _max_projectiles, _max_enemy_shots, _run.pickups.active_count(), _max_vfx])
+	if _endless_wave > 0:
+		print("endless: started at wave %d, now wave %d" % [_endless_wave, _run.waves.wave])
 	print("FPS        avg %.1f | min %.1f" % [_avg(_samples_fps), _min(_samples_fps)])
 	print("physics ms avg %.2f | max %.2f" % [_avg(_samples_physics), _max(_samples_physics)])
 	print("process ms avg %.2f | max %.2f" % [_avg(_samples_process), _max(_samples_process)])

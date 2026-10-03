@@ -47,6 +47,9 @@ var _bought_index: int = -1
 var _shown_materials: int = -1
 
 
+## Coop: whose shop it is ("Player 2"), hidden in solo.
+var _player_tag: Label
+
 func setup(shop: Shop, wallet: Wallet, inventory: Inventory, weapons: WeaponHolder,
 		stats: StatBlock) -> void:
 	stats_panel.setup(stats)
@@ -91,6 +94,9 @@ func _init() -> void:
 	header.add_theme_constant_override("separation", 48)
 	header.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.add_child(header)
+	_player_tag = _label(40, UiTheme.ACCENT, &"SubtitleLabel")
+	_player_tag.visible = false
+	header.add_child(_player_tag)
 	_title = _label(64, UiTheme.ACCENT, &"TitleLabel")
 	header.add_child(_title)
 	_materials = _label(40, UiTheme.GOOD, &"ValueLabel")
@@ -153,6 +159,13 @@ func open() -> void:
 
 func close() -> void:
 	visible = false
+
+
+## Coop: shows whose turn it is; an empty text hides the tag (solo).
+func set_player_tag(text: String, color: Color) -> void:
+	_player_tag.text = text
+	_player_tag.visible = text != ""
+	_player_tag.add_theme_color_override("font_color", color)
 
 
 ## Weapon and item names use their rarity color (one color code: the tier),

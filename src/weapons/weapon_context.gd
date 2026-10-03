@@ -9,6 +9,8 @@ var projectiles: ProjectileManager
 var rng: RandomNumberGenerator
 ## May be null (tests).
 var vfx: Vfx
+## Player number of the owner: EnemyManager.damage_source while it attacks (ADR 0017).
+var source: int = 0
 
 
 func _init(p_owner: Node2D, p_stats: StatBlock, p_enemies: EnemyManager,

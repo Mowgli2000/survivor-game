@@ -16,7 +16,7 @@ func before_each() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 5
 	_enemies = EnemyManager.new()
-	_enemies.setup(_player, arena, 4, rng)
+	_enemies.setup(Party.solo(_player), arena, 4, rng)
 	add_child_autofree(_enemies)
 
 

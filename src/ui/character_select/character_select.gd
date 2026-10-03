@@ -2,6 +2,8 @@ class_name CharacterSelect
 extends Control
 ## Character and starting weapon choice before a run (ADR 0015). Locked
 ## characters are shown greyed out with the challenge that unlocks them.
+## Local coop (ADR 0017): player 1 then player 2 pick a character and a weapon,
+## then the Danger (the lower one both characters have unlocked).
 ## Emits `started(setup)`; the main menu asks SceneRouter to start the run.
 
 signal started(setup: RunSetup)
@@ -19,6 +21,16 @@ var _danger_title: Label
 var _weapon: WeaponData
 var _back: Button
 var _chosen: CharacterData
+var _title: Label
+## Which gamepad drives which player (coop only).
+var _devices: Label
+## True for a local coop pick (two players).
+var coop: bool = false
+## Coop: 0 while player 1 picks, 1 for player 2.
+var _picking: int = 0
+## Coop: player 1's choice, kept while player 2 picks.
+var _first_character: CharacterData
+var _first_weapon: WeaponData
 
 
 func _init() -> void:
@@ -40,6 +52,11 @@ func _init() -> void:
 	title.theme_type_variation = &"TitleLabel"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
+	_title = title
+	_devices = Label.new()
+	_devices.theme_type_variation = &"SmallLabel"
+	_devices.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(_devices)
 	_cards = HBoxContainer.new()
 	_cards.alignment = BoxContainer.ALIGNMENT_CENTER
 	_cards.add_theme_constant_override("separation", 20)
@@ -70,11 +87,31 @@ func _init() -> void:
 	box.add_child(_back)
 
 
-func open() -> void:
+func open(p_coop: bool = false) -> void:
+	coop = p_coop
+	_picking = 0
+	_first_character = null
+	_first_weapon = null
+	_devices.visible = coop
+	_devices.text = _devices_hint()
+	_begin_pick()
+
+
+## Shows the cards for the player who picks now.
+func _begin_pick() -> void:
+	_title.text = tr("UI_COOP_PICK") % (_picking + 1) if coop else tr("UI_CHOOSE_CHARACTER")
+	if coop:
+		_title.add_theme_color_override("font_color", RunPlayer.COLORS[_picking])
+	else:
+		_title.remove_theme_color_override("font_color")
 	_build_cards()
 	_show_weapons(false)
 	_show_dangers(false)
 	visible = true
+	_focus_first_card()
+
+
+func _focus_first_card() -> void:
 	for button: Button in _character_buttons.values():
 		if not button.disabled:
 			button.grab_focus()
@@ -102,8 +139,20 @@ func _go_back() -> void:
 	elif _weapons.visible:
 		_show_weapons(false)
 		_character_buttons[_chosen.id].grab_focus()
+	elif coop and _picking == 1:
+		# Back to player 1's weapon choice.
+		_picking = 0
+		_begin_pick()
+		_choose_character(_first_character)
 	else:
 		close()
+
+
+func _devices_hint() -> String:
+	var pads := Input.get_connected_joypads().size()
+	if pads >= 2:
+		return tr("UI_COOP_PADS")
+	return tr("UI_COOP_ONE_PAD") if pads == 1 else tr("UI_COOP_NO_PAD")
 
 
 func _build_cards() -> void:
@@ -215,10 +264,21 @@ func _show_weapons(on: bool) -> void:
 
 func _choose_weapon(weapon: WeaponData) -> void:
 	_weapon = weapon
+	if coop and _picking == 0:
+		# Player 1 is done: player 2's turn.
+		_first_character = _chosen
+		_first_weapon = weapon
+		_picking = 1
+		_show_weapons(false)
+		_begin_pick()
+		_focus_first_card()
+		return
 	for child in _dangers.get_children():
 		_dangers.remove_child(child)
 		child.queue_free()
 	var allowed := SaveService.profile.max_difficulty(_chosen.id)
+	if coop:
+		allowed = mini(allowed, SaveService.profile.max_difficulty(_first_character.id))
 	var levels: Array[DifficultyData] = []
 	levels.assign(ContentDB.get_all(&"difficulties"))
 	levels.sort_custom(func(a: DifficultyData, b: DifficultyData) -> bool: return a.level < b.level)
@@ -243,7 +303,13 @@ func _show_dangers(on: bool) -> void:
 
 func _start(difficulty: DifficultyData) -> void:
 	var setup := RunSetup.new()
-	setup.character = _chosen
-	setup.weapon = _weapon
 	setup.difficulty = difficulty
+	if coop:
+		setup.character = _first_character
+		setup.weapon = _first_weapon
+		setup.character_2 = _chosen
+		setup.weapon_2 = _weapon
+	else:
+		setup.character = _chosen
+		setup.weapon = _weapon
 	started.emit(setup)

@@ -67,7 +67,7 @@ func test_settings_reach_damage_numbers_and_camera() -> void:
 	Settings.set_value(&"damage_numbers", false)
 	Settings.set_value(&"screen_shake", false)
 	assert_false(_run.damage_numbers.enabled)
-	assert_false(_run.player.camera.shake_enabled)
+	assert_false(_run.camera.shake_enabled)
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.TEST_PATH))
 	Settings.load_settings()
 	assert_true(_run.damage_numbers.enabled)

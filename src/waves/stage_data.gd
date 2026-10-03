@@ -166,6 +166,14 @@ func with_difficulty(difficulty: DifficultyData) -> StageData:
 	return dup
 
 
+## Two players (ADR 0017): more and tougher enemies. Call on a copy only.
+func apply_coop(spawn_multiplier: float, hp_multiplier: float) -> void:
+	spawn_rate_first *= spawn_multiplier
+	spawn_rate_last *= spawn_multiplier
+	hp_multiplier_first *= hp_multiplier
+	hp_multiplier_last *= hp_multiplier
+
+
 ## 1.0 up to the last wave; compound growth per wave beyond it in endless mode.
 func _endless_factor(wave: int, growth: float) -> float:
 	if not endless or wave <= wave_count:

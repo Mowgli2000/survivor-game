@@ -31,6 +31,9 @@ var _last_pending: int = -1
 var _level: int = 1
 var _boss_bar: BossBar
 var _toast: Label
+var _root: Control
+## Player 1's block (top left): gets a "P1" tag in coop.
+var _p1_box: VBoxContainer
 
 
 func setup(player: Player, progression: Progression, waves: WaveDirector, wallet: Wallet) -> void:
@@ -48,6 +51,60 @@ func setup(player: Player, progression: Progression, waves: WaveDirector, wallet
 	_weapons = player.weapons
 	_weapons.weapons_changed.connect(_refresh_weapons)
 	_refresh_weapons()
+
+
+## Coop (ADR 0017): compact block for player 2 (top right) and a tag on player 1's.
+func setup_second_player(player: Player, progression: Progression, wallet: Wallet, color: Color) -> void:
+	var tag_1 := _make_label(&"SubtitleLabel", 24)
+	tag_1.text = tr("UI_PLAYER_N") % 1
+	tag_1.add_theme_color_override("font_color", RunPlayer.COLORS[0])
+	_p1_box.add_child(tag_1)
+	_p1_box.move_child(tag_1, 0)
+
+	var box := VBoxContainer.new()
+	box.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	box.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	box.offset_right = -32
+	box.offset_top = 40
+	box.add_theme_constant_override("separation", 6)
+	_root.add_child(box)
+	var tag := _make_label(&"SubtitleLabel", 24)
+	tag.text = tr("UI_PLAYER_N") % 2
+	tag.add_theme_color_override("font_color", color)
+	tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	box.add_child(tag)
+	var hp_bar := _make_bar(UiTheme.BAD)
+	hp_bar.custom_minimum_size = Vector2(320, 32)
+	box.add_child(hp_bar)
+	var hp_label := _make_label(&"ValueLabel", 20)
+	hp_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	hp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hp_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	hp_bar.add_child(hp_label)
+	var xp_bar := _make_bar(UiTheme.XP)
+	xp_bar.custom_minimum_size = Vector2(320, 10)
+	box.add_child(xp_bar)
+	var info := _make_label(&"ValueLabel", 24)
+	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	box.add_child(info)
+
+	var refresh_hp := func(hp: float, max_hp: float) -> void:
+		hp_bar.max_value = max_hp
+		hp_bar.value = hp
+		hp_label.text = "%d / %d" % [ceili(hp), roundi(max_hp)] if not player.is_dead else tr("UI_PLAYER_DOWN")
+	var refresh_xp := func(xp: int, needed: int) -> void:
+		xp_bar.max_value = needed
+		xp_bar.value = xp
+	var refresh_info := func(_value: int = 0) -> void:
+		info.text = "%s %d   %s %d" % [tr("UI_LEVEL"), progression.level, tr("UI_MATERIALS"), wallet.amount]
+	player.health_changed.connect(refresh_hp)
+	player.died.connect(func() -> void: refresh_hp.call(0.0, player.stats.get_value(StatIds.MAX_HP)))
+	progression.xp_changed.connect(refresh_xp)
+	progression.leveled_up.connect(refresh_info)
+	wallet.changed.connect(refresh_info)
+	refresh_hp.call(player.hp, player.stats.get_value(StatIds.MAX_HP))
+	refresh_xp.call(progression.xp, progression.xp_needed())
+	refresh_info.call()
 
 
 func setup_boss(director: BossDirector) -> void:
@@ -98,6 +155,7 @@ func _init() -> void:
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.theme = UiTheme.get_theme()
 	add_child(root)
+	_root = root
 
 	_xp_bar = _make_bar(UiTheme.XP)
 	_xp_bar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
@@ -111,6 +169,7 @@ func _init() -> void:
 	box.position = Vector2(32, 40)
 	box.add_theme_constant_override("separation", 8)
 	root.add_child(box)
+	_p1_box = box
 
 	_hp_bar = _make_bar(UiTheme.BAD)
 	_hp_bar.custom_minimum_size = Vector2(380, 38)

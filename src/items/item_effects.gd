@@ -20,6 +20,8 @@ var wallet: Wallet
 var rng: RandomNumberGenerator
 ## May be null (tests).
 var vfx: Vfx
+## Player number (ADR 0017): only this player's hits and kills trigger the effects.
+var source: int = 0
 ## True while an effect deals damage: kills it causes do not trigger more effect damage.
 var effect_damage_running: bool = false
 
@@ -35,6 +37,7 @@ func setup(p_player: Player, p_enemies: EnemyManager, p_wallet: Wallet, p_rng: R
 		p_vfx: Vfx = null) -> void:
 	player = p_player
 	stats = p_player.stats
+	source = p_player.index
 	enemies = p_enemies
 	wallet = p_wallet
 	rng = p_rng
@@ -103,6 +106,7 @@ func _resolve_explosions() -> void:
 	if count == 0:
 		return
 	effect_damage_running = true
+	enemies.damage_source = source
 	for i in count:
 		var pos := Vector2(_explosions[i * 4], _explosions[i * 4 + 1])
 		var radius := _explosions[i * 4 + 2]
@@ -123,7 +127,7 @@ func _update_lifesteal_hook() -> void:
 
 
 func _on_enemy_damaged(_pos: Vector2, _amount: float, _crit: bool) -> void:
-	if _heal_budget < 1.0:
+	if _heal_budget < 1.0 or enemies.damage_source != source:
 		return
 	var lifesteal := stats.get_value(StatIds.LIFESTEAL)
 	if lifesteal > 0.0 and rng.randf() < lifesteal:
@@ -132,5 +136,7 @@ func _on_enemy_damaged(_pos: Vector2, _amount: float, _crit: bool) -> void:
 
 
 func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
+	if enemies.damage_source != source:
+		return
 	for effect in _effects:
 		effect.on_enemy_killed(self, data, pos, elite)

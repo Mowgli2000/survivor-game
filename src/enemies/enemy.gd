@@ -32,6 +32,8 @@ var burn_dps: float = 0.0
 var burn_time: float = 0.0
 ## Burn damage not yet shown as a damage number.
 var burn_pending: float = 0.0
+## Player whose hit set the burn (EnemyManager.damage_source of the ticks).
+var burn_source: int = 0
 var slow_factor: float = 0.0
 var slow_time: float = 0.0
 ## Wave scaling of contact and projectile damage (StageData.damage_multiplier_at).

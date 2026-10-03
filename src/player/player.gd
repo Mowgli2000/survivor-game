@@ -13,6 +13,8 @@ signal dodged
 const SPRITE_HEIGHT_PER_RADIUS := 6.4
 ## Feet sit this fraction of the radius below the player center.
 const SPRITE_FOOT := 0.8
+## Opacity of a dead player waiting for the next wave (coop).
+const GHOST_ALPHA := 0.3
 
 var stats: StatBlock
 var hp: float = 1.0
@@ -22,9 +24,16 @@ var is_dead: bool = false
 var invincible: bool = false
 ## Debug/tests: when valid, replaces the player input. Must return a Vector2.
 var bot_input: Callable
+## Movement devices (ADR 0017). Null = the plain move_* actions.
+var input: PlayerInput
+## 0-based player number (coop); also the EnemyManager.damage_source of its weapons.
+var index: int = 0
+## Set by Run: keeps the players close together (coop).
+var party: Party
+## Coop: ring of the player's color at its feet (transparent = none).
+var tag_color := Color(0, 0, 0, 0)
 
 var weapons: WeaponHolder
-var camera: GameCamera
 ## Weapons drawn around the player (set up by Run once the enemies exist).
 var weapon_visuals: WeaponVisuals
 ## Gameplay rolls (dodge). Run replaces it with the run RNG (replays).
@@ -67,9 +76,6 @@ func _ready() -> void:
 	weapon_visuals.name = "WeaponVisuals"
 	add_child(weapon_visuals)
 
-	camera = GameCamera.new()
-	add_child(camera)
-
 
 func _physics_process(delta: float) -> void:
 	if is_dead:
@@ -77,11 +83,15 @@ func _physics_process(delta: float) -> void:
 	var direction: Vector2
 	if bot_input.is_valid():
 		direction = bot_input.call()
+	elif input != null:
+		direction = input.move_vector()
 	else:
 		direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	velocity = direction * stats.get_value(StatIds.MOVE_SPEED)
 	move_and_slide()
 	position = position.clamp(_arena.position, _arena.end)
+	if party != null and party.size() > 1:
+		position = party.clamp_spread(self, position)
 	var anim := &"walk" if velocity.length_squared() > 4.0 else &"idle"
 	if animator.advance(delta, anim, velocity.x):
 		queue_redraw()
@@ -111,8 +121,20 @@ func take_damage(amount: float) -> void:
 	health_changed.emit(hp, stats.get_value(StatIds.MAX_HP))
 	if hp <= 0.0:
 		is_dead = true
-		modulate.a = 1.0
+		# Coop: a dead player stays as a ghost until the next wave (ADR 0017).
+		modulate.a = GHOST_ALPHA
 		died.emit()
+
+
+## Back in the fight with full health (coop: next wave after a death).
+func revive() -> void:
+	if not is_dead:
+		return
+	is_dead = false
+	_invulnerable = 0.0
+	modulate.a = 1.0
+	hp = stats.get_value(StatIds.MAX_HP)
+	health_changed.emit(hp, hp)
 
 
 func heal(amount: float) -> void:
@@ -139,6 +161,11 @@ func _on_stat_changed(stat: StringName) -> void:
 
 
 func _draw() -> void:
+	if tag_color.a > 0.0:
+		var feet := Vector2(0.0, radius * SPRITE_FOOT)
+		draw_set_transform(feet, 0.0, Vector2(1.0, 0.45))
+		draw_arc(Vector2.ZERO, radius * 1.5, 0.0, TAU, 32, tag_color, 5.0, true)
+		draw_set_transform(Vector2.ZERO)
 	if animator.sheet != null:
 		animator.sheet.draw(self, animator.frame, radius * SPRITE_HEIGHT_PER_RADIUS, radius * SPRITE_FOOT,
 			animator.facing, Color.WHITE)

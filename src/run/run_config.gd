@@ -19,5 +19,10 @@ extends Resource
 @export var upgrade_choices: int = 3
 @export var max_xp_gems: int = 300
 
+@export_group("Local coop")
+## Two players (ADR 0017): enemy spawn rate and HP multiplied by these.
+@export var coop_spawn_multiplier: float = 1.5
+@export var coop_hp_multiplier: float = 1.2
+
 @export_group("Weapons")
 @export var max_weapon_slots: int = 6

@@ -31,3 +31,47 @@ func test_explosions_alone_cannot_saturate_the_shake() -> void:
 	assert_almost_eq(camera.trauma(), GameCamera.EXPLOSION_CAP, 0.001)
 	camera.add_trauma(0.35)  # a hit on the player still adds on top
 	assert_gt(camera.trauma(), GameCamera.EXPLOSION_CAP)
+
+
+func test_camera_follows_at_the_physics_rate() -> void:
+	# The players move in physics ticks; a camera updated every rendered frame
+	# makes them stutter against the world on high refresh rate screens (seen as blur).
+	assert_eq(_camera().process_callback, Camera2D.CAMERA2D_PROCESS_PHYSICS)
+
+
+func _player_at(pos: Vector2) -> Player:
+	var player := Player.new()
+	player.setup(CharacterData.new(), Rect2(-5000, -5000, 10000, 10000))
+	player.position = pos
+	add_child_autofree(player)
+	return player
+
+
+func test_follows_the_center_of_the_party() -> void:
+	var party := Party.new()
+	party.add(_player_at(Vector2(-100, 0)))
+	party.add(_player_at(Vector2(300, 200)))
+	var camera := _camera()
+	camera.follow(party, 1.0)
+	assert_eq(camera.global_position, Vector2(100, 100))
+
+
+func test_zooms_out_when_two_players_spread_apart() -> void:
+	var party := Party.new()
+	party.add(_player_at(Vector2.ZERO))
+	var far := _player_at(Vector2(Party.MAX_SPREAD, 0))
+	party.add(far)
+	var camera := _camera()
+	camera.follow(party, 1.0)
+	for i in 120:
+		camera._physics_process(1.0 / 60.0)
+	assert_almost_eq(camera.zoom.x, GameCamera.MIN_ZOOM_FACTOR, 0.001)
+
+
+func test_solo_keeps_the_configured_zoom() -> void:
+	var party := Party.solo(_player_at(Vector2(50, 50)))
+	var camera := _camera()
+	camera.follow(party, 1.3)
+	for i in 30:
+		camera._physics_process(1.0 / 60.0)
+	assert_eq(camera.zoom, Vector2(1.3, 1.3))

@@ -1,14 +1,17 @@
 class_name PickupManager
 extends Node2D
-## Owns XP gems: magnet attraction toward the player and collection.
+## Owns XP gems: magnet attraction toward the nearest living player and collection.
 ## Above `max_gems`, new XP is merged into existing gems to cap the entity count.
 
-signal xp_collected(amount: int)
+## `collector`: player number, or SHARED for the end-of-wave sweep (split by Run).
+signal xp_collected(amount: int, collector: int)
+
+const SHARED := -1
 
 const ATTRACT_START_SPEED := 150.0
 const ATTRACT_ACCELERATION := 1500.0
 
-var _player: Player
+var _party: Party
 var _max_gems: int = 300
 var _active: Array[XpGem] = []
 var _pool: ObjectPool
@@ -17,8 +20,8 @@ var _merge_cursor: int = 0
 var _sound_frame: int = -1
 
 
-func setup(player: Player, max_gems: int) -> void:
-	_player = player
+func setup(party: Party, max_gems: int) -> void:
+	_party = party
 	_max_gems = max_gems
 	_pool = ObjectPool.new(_create_gem)
 
@@ -47,7 +50,7 @@ func collect_all() -> void:
 		_pool.release(gem)
 	_active.clear()
 	if total > 0:
-		xp_collected.emit(total)
+		xp_collected.emit(total, SHARED)
 
 
 func active_count() -> int:
@@ -55,20 +58,35 @@ func active_count() -> int:
 
 
 func _physics_process(delta: float) -> void:
-	if _player == null:
+	if _party == null:
 		return
-	var player_pos := _player.global_position
-	var pickup_range := _player.stats.get_value(StatIds.PICKUP_RANGE)
+	for player in _party.members:
+		if not player.is_dead:
+			_update_for(player, delta)
+
+
+## Gems in range of `player` fly to it; the ones it touches are its own.
+## Coop: a gem already flying to the other player may be taken over (rare, harmless).
+func _update_for(player: Player, delta: float) -> void:
+	var player_pos := player.global_position
+	var pickup_range := player.stats.get_value(StatIds.PICKUP_RANGE)
 	var pickup_r2 := pickup_range * pickup_range
-	var collect_dist := _player.radius + XpGem.SIZE
+	var collect_dist := player.radius + XpGem.SIZE
 	var collect_r2 := collect_dist * collect_dist
+	var coop := _party.size() > 1
 	for i in range(_active.size() - 1, -1, -1):
 		var gem := _active[i]
 		var d2 := gem.position.distance_squared_to(player_pos)
-		if not gem.attracted and d2 <= pickup_r2:
+		if gem.attracted and coop and gem.target != player.index:
+			if _party.members[gem.target].is_dead:
+				gem.attracted = false  # its player died: free for the others
+			elif d2 > collect_r2:
+				continue  # flying to the other player: only taken when passing right by
+		if not gem.attracted and d2 <= pickup_r2 and (not coop or _party.nearest_alive(gem.position) == player):
 			gem.attracted = true
+			gem.target = player.index
 			gem.speed = ATTRACT_START_SPEED
-		if gem.attracted:
+		if gem.attracted and gem.target == player.index:
 			gem.speed += ATTRACT_ACCELERATION * delta
 			gem.position = gem.position.move_toward(player_pos, gem.speed * delta)
 			d2 = gem.position.distance_squared_to(player_pos)
@@ -78,7 +96,7 @@ func _physics_process(delta: float) -> void:
 			_active[i] = _active[_active.size() - 1]
 			_active.pop_back()
 			_pool.release(gem)
-			xp_collected.emit(value)
+			xp_collected.emit(value, player.index)
 			if Engine.get_physics_frames() != _sound_frame:
 				_sound_frame = Engine.get_physics_frames()
 				Audio.play(Sounds.PICKUP, -16.0, 0.15)
