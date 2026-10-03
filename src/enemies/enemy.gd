@@ -32,6 +32,8 @@ var burn_time: float = 0.0
 var burn_pending: float = 0.0
 var slow_factor: float = 0.0
 var slow_time: float = 0.0
+## Wave scaling of contact and projectile damage (StageData.damage_multiplier_at).
+var damage_multiplier: float = 1.0
 var animator := SpriteAnimator.new()
 
 

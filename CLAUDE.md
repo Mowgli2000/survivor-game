@@ -47,7 +47,7 @@ Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes, statuts, 4 ennemis, rendu 
 - Compilation de tous les scripts : `powershell -ExecutionPolicy Bypass -File tools/check_scripts.ps1`
 - Lancer le jeu : `& "C:\Program Files\Godot\Godot.exe" --path .`
 - Export Windows : `& "C:\Program Files\Godot\Godot.exe" --headless --path . --export-release "Windows Desktop" builds/windows/survivor-game.exe`
-- Stress test (500 ennemis + 1000 projectiles, imprime FPS/ms) : `& "C:\Program Files\Godot\Godot.exe" --path . res://src/debug/stress_test.tscn -- --duration=20`
+- Stress test (650 ennemis = plafond du jeu + 1000 projectiles, imprime FPS/ms/draw calls) : `& "C:\Program Files\Godot\Godot.exe" --path . res://src/debug/stress_test.tscn -- --duration=20`
 - Capture d'écran automatique (pour vérifier un visuel) : `... res://src/debug/capture.tscn -- --time=20 --out=<chemin.png> [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die]`
 - Planche des icônes d'armes et d'objets : `... res://src/debug/icon_sheet.tscn [-- --out=<chemin.png>]` ; icônes régénérées par `python tools/icons/make_icons.py`
 - Overlay debug en jeu : F3 (action `debug_toggle`).

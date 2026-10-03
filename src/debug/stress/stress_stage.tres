@@ -25,5 +25,5 @@ spawn_rate_last = 150.0
 hp_multiplier_first = 40.0
 hp_multiplier_last = 40.0
 spawn_pool = Array[ExtResource("2_entry")]([SubResource("Entry_grunt"), SubResource("Entry_runner")])
-max_enemies = 500
+max_enemies = 650
 spawn_distance = 900.0

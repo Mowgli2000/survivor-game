@@ -355,3 +355,13 @@ func test_no_stale_target_after_clear_all() -> void:
 	_enemies.clear_all()
 	# Queried before the next physics step (e.g. the first frame after the shop).
 	assert_eq(_enemies.find_nearest(Vector2.ZERO, 1000.0), -1, "cleared enemies are not targets")
+
+
+func test_contact_damage_scales_with_the_wave_multiplier() -> void:
+	_player.invincible = false
+	var data := _enemy_data(10.0, 0.0)
+	data.contact_damage = 10.0
+	_enemies.spawn(data, Vector2.ZERO, 1.0, false, 2.0)
+	var hp_before := _player.hp
+	await wait_physics_frames(2)
+	assert_almost_eq(hp_before - _player.hp, 20.0, 0.01, "10 contact damage x 2")

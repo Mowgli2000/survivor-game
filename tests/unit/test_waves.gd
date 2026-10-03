@@ -289,3 +289,40 @@ func test_material_rate_drops_over_the_run() -> void:
 	stage.material_rate_last = 0.6
 	assert_almost_eq(stage.material_rate_at(1), 1.0, 0.001)
 	assert_almost_eq(stage.material_rate_at(20), 0.6, 0.001)
+
+
+func test_damage_and_group_curves() -> void:
+	var stage := _stage(21)  # t = (wave - 1) / 20
+	stage.damage_multiplier_last = 3.0
+	stage.damage_multiplier_curve = 2.0
+	stage.group_size_last = 11
+	assert_almost_eq(stage.damage_multiplier_at(1), 1.0, 0.001)
+	assert_almost_eq(stage.damage_multiplier_at(11), 1.5, 0.001)
+	assert_almost_eq(stage.damage_multiplier_at(21), 3.0, 0.001)
+	assert_eq(stage.group_size_at(1), 1)
+	assert_eq(stage.group_size_at(11), 6)
+	assert_eq(stage.group_size_at(21), 11)
+
+
+func test_steady_spawns_arrive_in_groups() -> void:
+	var stage := _stage(3)
+	stage.spawn_rate_first = 120.0
+	stage.spawn_rate_last = 120.0
+	stage.group_size_first = 6
+	stage.group_size_last = 6
+	var entry := SpawnEntry.new()
+	entry.enemy = EnemyData.new()
+	stage.spawn_pool = [entry]
+	var parts := _spawn_setup(stage)
+	var director: WaveDirector = parts[0]
+	var spawner: SpawnDirector = parts[1]
+	var enemies: EnemyManager = parts[2]
+	director.start_wave(1)
+	spawner.begin_wave(1)
+	await wait_physics_frames(4)
+	assert_eq(enemies.active_count() % 6, 0, "whole groups only")
+	assert_gt(enemies.active_count(), 0)
+	# A group spawns close together.
+	var first := enemies.get_enemy(0).position
+	for i in range(1, 6):
+		assert_lt(enemies.get_enemy(i).position.distance_to(first), SpawnDirector.GROUP_SPREAD * 2.0 + 1.0)

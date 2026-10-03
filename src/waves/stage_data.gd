@@ -27,6 +27,13 @@ extends Resource
 @export var spawn_rate_curve: float = 1.0
 ## > 1: enemy HP ramps up late (t^curve), 1 = linear.
 @export var hp_multiplier_curve: float = 1.0
+## Enemy contact and projectile damage (Brotato-style: standing still gets riskier).
+@export var damage_multiplier_first: float = 1.0
+@export var damage_multiplier_last: float = 1.0
+@export var damage_multiplier_curve: float = 1.0
+## Steady spawns arrive in groups of this many enemies (1 = one by one).
+@export var group_size_first: int = 1
+@export var group_size_last: int = 1
 ## Materials per XP point collected (the XP itself is never reduced).
 @export var material_rate_first: float = 1.0
 @export var material_rate_last: float = 1.0
@@ -71,6 +78,14 @@ func spawn_rate_at(wave: int) -> float:
 
 func hp_multiplier_at(wave: int) -> float:
 	return lerpf(hp_multiplier_first, hp_multiplier_last, pow(t_at(wave), hp_multiplier_curve))
+
+
+func damage_multiplier_at(wave: int) -> float:
+	return lerpf(damage_multiplier_first, damage_multiplier_last, pow(t_at(wave), damage_multiplier_curve))
+
+
+func group_size_at(wave: int) -> int:
+	return maxi(1, roundi(lerpf(group_size_first, group_size_last, t_at(wave))))
 
 
 func events_for(wave: int) -> Array[WaveEvent]:

@@ -1,10 +1,13 @@
 class_name SpawnDirector
 extends Node
 ## Decides when, what and where enemies spawn during a wave: a steady rate
-## from the stage curves, plus the scripted events of the wave (hordes, elites).
+## from the stage curves, arriving in groups that rush in from one side (bigger
+## late in the run), plus the scripted events of the wave (hordes, elites).
 ## Does nothing between waves.
 
 const POSITION_ATTEMPTS := 8
+## Members of a group appear within this distance of the group's center.
+const GROUP_SPREAD := 90.0
 
 var _stage: StageData
 var _state: RunState
@@ -52,21 +55,27 @@ func _physics_process(delta: float) -> void:
 	if _stage == null or not _waves.in_wave or _wave != _waves.wave:
 		return
 	var hp_multiplier := _stage.hp_multiplier_at(_wave)
-	_fire_events(_waves.wave_elapsed(), hp_multiplier)
+	var damage_multiplier := _stage.damage_multiplier_at(_wave)
+	_fire_events(_waves.wave_elapsed(), hp_multiplier, damage_multiplier)
 	_accumulator += _stage.spawn_rate_at(_wave) * delta
-	while _accumulator >= 1.0:
-		_accumulator -= 1.0
-		if _enemies.active_count() >= _stage.max_enemies:
+	var group := _stage.group_size_at(_wave)
+	while _accumulator >= group:
+		_accumulator -= group
+		if _enemies.active_count() + group > _stage.max_enemies:
 			_accumulator = 0.0
 			break
-		var index := WeightedPicker.pick_index(_weights, _state.rng)
-		if index < 0:
-			break
-		_enemies.spawn(_eligible[index], _pick_position(), hp_multiplier)
-		_state.wave_spawned += 1
+		var center := _pick_position()
+		for k in group:
+			var index := WeightedPicker.pick_index(_weights, _state.rng)
+			if index < 0:
+				return
+			var jitter := Vector2.from_angle(_state.rng.randf() * TAU) * _state.rng.randf() * GROUP_SPREAD
+			_enemies.spawn(_eligible[index], (center + jitter).clamp(_arena.position, _arena.end),
+				hp_multiplier, false, damage_multiplier)
+			_state.wave_spawned += 1
 
 
-func _fire_events(elapsed: float, hp_multiplier: float) -> void:
+func _fire_events(elapsed: float, hp_multiplier: float, damage_multiplier: float) -> void:
 	for i in range(_pending_events.size() - 1, -1, -1):
 		var event := _pending_events[i]
 		if elapsed < event.at_time:
@@ -78,7 +87,8 @@ func _fire_events(elapsed: float, hp_multiplier: float) -> void:
 		for k in event.count:
 			var angle := offset + TAU * k / event.count
 			var pos := _player.global_position + Vector2.from_angle(angle) * _stage.spawn_distance
-			_enemies.spawn(event.enemy, pos.clamp(_arena.position, _arena.end), hp, event.elite)
+			_enemies.spawn(event.enemy, pos.clamp(_arena.position, _arena.end), hp, event.elite,
+				damage_multiplier)
 		_state.wave_spawned += event.count
 
 

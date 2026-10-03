@@ -14,9 +14,9 @@ Dernière mise à jour : 2026-10-03 (session 4)
 | **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. Suite : B. objets à effets et synergies (Phase 3), C. menus, D. playtest |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 205/205 (GUT : unitaires, données, parties simulées) |
-| **Performance (stress test)** | ~145-165 FPS moyen (sprites + armes visibles, ADR 0009/0010) — 500 ennemis, ~1000 projectiles, 7 armes. Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS |
-| **Dernier push** | `develop` à jour sur GitHub (fin de session 4) |
+| **Tests** | 210/210 (GUT : unitaires, données, parties simulées) |
+| **Performance (stress test)** | ~120 FPS moyen, min ~60-75 — 650 ennemis (plafond du jeu), ~1000 projectiles, 7 armes (500 ennemis : ~145-165). Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS |
+| **Dernier push** | `ca472d9` (session 4) — commits suivants pas encore poussés |
 
 **Emplacements**
 - Projet local : `C:\Users\rapha\Projects\survivor-game` (ouvrir `project.godot` dans Godot)
@@ -67,6 +67,7 @@ Dernière mise à jour : 2026-10-03 (session 4)
 | D37 | 2026-10-03 | **Performance : 100 FPS suffisent** | Dev : « même s'il tourne à 100 FPS, ce n'est pas un jeu compétitif ». Seuil du stress test : ≥ 100 FPS moyen (au lieu de 150) |
 | D38 | 2026-10-03 | **Rééquilibrage vagues 12-20 : plus de monstres, plus de PV, moins de pouvoir d'achat** | Apparitions fin de partie 24 → 32/s ; PV ×3 → ×8 en vague 20 avec une courbe tardive (×3,4 vague 12, ×5,4 vague 16) — remontée prévue par D24 ; matériaux par XP 60 % → 30 % en vague 20 ; inflation des prix 10 % → 12 % par vague |
 | D39 | 2026-10-03 | **Caméra plus proche, arène plus petite (façon Brotato)** | Zoom 1,3 ; arène 3200 → 2400 ; apparition à 950 px (au lieu de 1150, toujours hors écran). Plus de pression, personnages plus lisibles. Réglable dans `data/runs/default.tres` |
+| D41 | 2026-10-03 | **Se sentir submergé (vagues 12-20)** : plafond 500 → 650 ennemis, apparitions fin 32 → 45/s **en paquets** (1 à 12 monstres qui arrivent ensemble d'un côté), hordes en plus vagues 14/16/19, plus de chauves-souris dès la vague 14 ; PV ×8 → ×12 en vague 20 ; **dégâts des ennemis qui montent** (×1,3 vague 10, ×1,8 vague 15, ×2,5 vague 20) ; vitesse inchangée ; build non affaibli | Retour du dev (« je ne bouge plus dès la vague 15-16, je veux être submergé ») et proposition validée. Pas d'optimisation au-delà de 1 000 ennemis (inutile : les monstres meurent avant). Mesure : 650 ennemis ≈ 120 FPS, 800 ≈ 90, 1 200 ≈ 48 |
 | D40 | 2026-10-03 | **Thème d'interface « chibi néon »** : contour noir, fond violet nuit, lueur néon ; polices Fredoka + Nunito ; animations discrètes ; tous les écrans | Choix « reco » du dev. Un seul `Theme` construit par `UiTheme`, animations `UiFx`. ADR 0011 |
 | D36 | 2026-10-03 | **Armes visibles façon Brotato + icônes** : positions fixes en cercle, armes petites, icônes d'objets dans le même style, cadre de rang en interface + liseré en jeu | Choix « reco » du dev. Les tirs partent du canon ; la cible reste choisie depuis le centre (pas de rééquilibrage). ADR 0010 |
 
@@ -135,6 +136,7 @@ Dernière mise à jour : 2026-10-03 (session 4)
 | 2026-10-02 | Phase 1 | « Jouabilité correcte, mais difficile à jauger avec une seule arme ; ça devient compliqué avec le temps » | Phase 2 : armes multiples et niveaux d'armes |
 | 2026-10-02 | Phase 2 | « Les chiffres de dégâts sont un peu trop petits et pas assez impactants » ; sinon OK | Chiffres plus grands (30/48), police grasse, effet « pop », critiques jaunes avec secousse (sans « ! », retiré à la demande du dev), taille selon le montant |
 | 2026-10-02 | Phase 4 | « Arrivé à la vague 20, pas de boss. J'ai survécu en fuyant, pas en écrasant les mobs ; à la fin du chrono il en restait beaucoup. » Fuite dès la vague 10 | Boss provisoire (D23), densité réduite (D24), compteur F3 pour mesurer. Le dev accepte que la puissance viendra de la boutique |
+| 2026-10-03 | Après chantier 3 | « De la vague 14 à 20 on devient exponentiellement trop fort, je ne bouge presque plus dès la 15-16. Plus de mobs, un peu plus de PV, se sentir submergé, beaucoup de chiffres. » « Avec beaucoup d'explosions le tremblement rend le jeu flou. » | D41 ; tremblement lissé (bruit fluide, explosions plafonnées) |
 | 2026-10-03 | Chantiers visuels 1-2 | « Dès la manche 12-14 on est trop puissant ; à partir de la vague 15-16 je n'ai plus besoin de bouger. Plus de mobs, moins de pouvoir d'achat. » « 100 FPS, ce n'est pas un jeu compétitif. » Caméra : un peu plus zoomée, arène plus petite (comme Brotato) | D37, D38, D39 |
 | 2026-10-03 | Phase 5 | « Le bazooka avec plus de portée explose après une certaine distance, pas au contact. » « Voir mes stats (dégâts, vitesse, projectiles). » « Dès la vague 10 le build est trop fort : plus d'ennemis, pas moins de puissance ; trop de matériaux en vagues 15-20. » « Laisse tomber la 3D. » | Bug de portée corrigé ; panneau de stats ; D30 ; D29 |
 

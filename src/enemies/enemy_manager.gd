@@ -69,9 +69,11 @@ func _ready() -> void:
 	process_physics_priority = -10
 
 
-func spawn(data: EnemyData, pos: Vector2, hp_multiplier: float = 1.0, elite: bool = false) -> Enemy:
+func spawn(data: EnemyData, pos: Vector2, hp_multiplier: float = 1.0, elite: bool = false,
+		damage_multiplier: float = 1.0) -> Enemy:
 	var enemy: Enemy = _pool.acquire()
 	enemy.reset(data, pos, hp_multiplier, elite, elite_scale if elite else 1.0)
+	enemy.damage_multiplier = damage_multiplier
 	enemy.animator.time = _rng.randf() * 2.0  # desync the horde's steps
 	enemy.fire_timer = data.fire_cooldown * _rng.randf_range(0.5, 1.0)
 	enemy.strafe_sign = 1.0 if _rng.randf() < 0.5 else -1.0
@@ -332,7 +334,7 @@ func _physics_process(delta: float) -> void:
 
 		var touch := enemy.radius + player_radius
 		if distance <= touch:
-			_player.take_damage(enemy.data.contact_damage)
+			_player.take_damage(enemy.data.contact_damage * enemy.damage_multiplier)
 
 
 ## Approach until preferred_distance, back off when too close, strafe in between; shoot.
@@ -350,7 +352,7 @@ func _ranged_velocity(enemy: Enemy, direction: Vector2, distance: float, speed: 
 		enemy.fire_timer = data.fire_cooldown
 		if _enemy_projectiles != null:
 			_enemy_projectiles.spawn(enemy.position, direction * data.projectile_speed,
-				data.projectile_damage, data.projectile_radius)
+				data.projectile_damage * enemy.damage_multiplier, data.projectile_radius)
 	return velocity
 
 
