@@ -1,11 +1,12 @@
 [gd_resource type="Resource" script_class="SpriteSheet" format=3]
 
 [ext_resource type="Script" path="res://src/core/sprite_sheet.gd" id="1_jaxt0"]
-[ext_resource type="Texture2D" path="res://assets/sprites/shooter_elite.png" id="2_xu68w"]
+[ext_resource type="Texture2D" path="res://assets/sprites/atlas.png" id="2_xu68w"]
 
 [resource]
 script = ExtResource("1_jaxt0")
 texture = ExtResource("2_xu68w")
+origin = Vector2i(0, 864)
 cell_size = Vector2i(125, 144)
 animations = Dictionary[StringName, Vector3i]({
 &"idle": Vector3i(0, 6, 8),

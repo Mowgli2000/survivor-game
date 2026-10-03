@@ -32,6 +32,12 @@ func test_region() -> void:
 	assert_eq(_sheet().region(5), Rect2(50, 0, 10, 20))
 
 
+func test_region_is_offset_by_atlas_origin() -> void:
+	var sheet := _sheet()
+	sheet.origin = Vector2i(3, 40)
+	assert_eq(sheet.region(5), Rect2(53, 40, 10, 20))
+
+
 func test_animator_reports_frame_and_facing_changes() -> void:
 	var animator := SpriteAnimator.new()
 	animator.reset(_sheet(), 0.0)

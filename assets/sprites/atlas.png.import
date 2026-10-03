@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cr76vhlcmsrwo"
-path="res://.godot/imported/grunt_elite.png-e0848eb9a302f3a11cf0b03136311a26.ctex"
+uid="uid://7rw0rscqg6ay"
+path="res://.godot/imported/atlas.png-bcdd4d631df90f7329e7a69e21ab7a2f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/grunt_elite.png"
-dest_files=["res://.godot/imported/grunt_elite.png-e0848eb9a302f3a11cf0b03136311a26.ctex"]
+source_file="res://assets/sprites/atlas.png"
+dest_files=["res://.godot/imported/atlas.png-bcdd4d631df90f7329e7a69e21ab7a2f.ctex"]
 
 [params]
 

@@ -13,6 +13,7 @@ var _duration: float = 0.0
 var _samples_fps: PackedFloat32Array = []
 var _samples_physics: PackedFloat32Array = []
 var _samples_process: PackedFloat32Array = []
+var _samples_draw_calls: PackedFloat32Array = []
 var _max_enemies: int = 0
 var _max_projectiles: int = 0
 var _sample_timer: float = 0.0
@@ -45,6 +46,7 @@ func _process(delta: float) -> void:
 		_samples_fps.append(Engine.get_frames_per_second())
 		_samples_physics.append(Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0)
 		_samples_process.append(Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0)
+		_samples_draw_calls.append(Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME))
 		_max_enemies = maxi(_max_enemies, _run.enemies.active_count())
 		_max_projectiles = maxi(_max_projectiles, _run.projectiles.active_count())
 	if _duration > 0.0 and _time >= WARMUP + _duration:
@@ -59,6 +61,7 @@ func _report() -> void:
 	print("FPS        avg %.1f | min %.1f" % [_avg(_samples_fps), _min(_samples_fps)])
 	print("physics ms avg %.2f | max %.2f" % [_avg(_samples_physics), _max(_samples_physics)])
 	print("process ms avg %.2f | max %.2f" % [_avg(_samples_process), _max(_samples_process)])
+	print("draw calls avg %.0f | max %.0f" % [_avg(_samples_draw_calls), _max(_samples_draw_calls)])
 
 
 func _avg(values: PackedFloat32Array) -> float:

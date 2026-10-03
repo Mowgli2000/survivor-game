@@ -1,11 +1,15 @@
 extends SceneTree
 ## Converts the raw RGS_Dev pack into game sprite sheets. Run via tools/bake_sprites.ps1:
-##   phase "images": crop (union of frames), downscale, add a neon glow, write strips;
+##   phase "images": crop (union of frames), downscale, add a neon glow, stack every
+##     strip into one atlas (atlas.png) and record the layout;
 ##   phase "resources": after import, write one SpriteSheet .tres per strip.
 ## Fails loudly when a folder, frame or animation of the recipe is missing.
 
 const RECIPE := "res://tools/sprites/sprites.json"
 const OUT_DIR := "res://assets/sprites/"
+const ATLAS := "res://assets/sprites/atlas.png"
+## Strip positions in the atlas, written by phase "images", read by "resources".
+const LAYOUT := "res://tools/sprites/atlas_layout.json"
 ## Transparent margin around each cell, room for the glow.
 const PAD := 8
 const GLOW_SHRINK := 6
@@ -31,16 +35,21 @@ func _initialize() -> void:
 func _bake_images(recipe: Dictionary) -> bool:
 	var pack := ProjectSettings.globalize_path("res://" + String(recipe.pack))
 	var sprites: Dictionary = recipe.sprites
+	var strips: Dictionary = {}  # id -> Image
+	var cell_widths: Dictionary = {}  # id -> int
 	for id: String in sprites:
 		var def: Dictionary = sprites[id]
 		var frames := _load_frames(pack.path_join(def.src), def.anims)
 		if frames.is_empty():
 			return false
 		var cells := _crop_and_scale(frames, int(recipe.height))
-		_save_strip(cells, Color(def.glow), id)
+		strips[id] = _make_strip(cells, Color(def.glow))
+		cell_widths[id] = cells[0].get_width() + PAD * 2
 		if def.get("elite", false):
-			_save_strip(cells, ELITE_GLOW, id + "_elite")
+			strips[id + "_elite"] = _make_strip(cells, ELITE_GLOW)
+			cell_widths[id + "_elite"] = cell_widths[id]
 		print("  baked " + id)
+	_save_atlas(strips, cell_widths)
 	var ground := Image.load_from_file(pack.path_join(recipe.ground))
 	if ground == null:
 		return _fail("missing ground " + String(recipe.ground))
@@ -86,13 +95,34 @@ func _crop_and_scale(frames: Array[Image], height: int) -> Array[Image]:
 	return cells
 
 
-func _save_strip(cells: Array[Image], glow: Color, id: String) -> void:
+func _make_strip(cells: Array[Image], glow: Color) -> Image:
 	var cw := cells[0].get_width() + PAD * 2
 	var ch := cells[0].get_height() + PAD * 2
 	var strip := Image.create(cw * cells.size(), ch, false, Image.FORMAT_RGBA8)
 	for i in cells.size():
 		strip.blit_rect(_with_glow(cells[i], glow), Rect2i(0, 0, cw, ch), Vector2i(i * cw, 0))
-	strip.save_png(OUT_DIR + id + ".png")
+	return strip
+
+
+## Stacks the strips vertically (recipe order) into one texture; writes the layout.
+func _save_atlas(strips: Dictionary, cell_widths: Dictionary) -> void:
+	var width := 0
+	var height := 0
+	for id: String in strips:
+		var strip: Image = strips[id]
+		width = maxi(width, strip.get_width())
+		height += strip.get_height()
+	var atlas := Image.create(width, height, false, Image.FORMAT_RGBA8)
+	var layout: Dictionary = {}
+	var y := 0
+	for id: String in strips:
+		var strip: Image = strips[id]
+		atlas.blit_rect(strip, Rect2i(Vector2i.ZERO, strip.get_size()), Vector2i(0, y))
+		layout[id] = [0, y, cell_widths[id], strip.get_height()]
+		y += strip.get_height()
+	atlas.save_png(ATLAS)
+	var file := FileAccess.open(LAYOUT, FileAccess.WRITE)
+	file.store_string(JSON.stringify(layout, "	"))
 
 
 ## Pads the cell and puts a soft neon halo (blurred silhouette) behind it.
@@ -115,6 +145,10 @@ func _with_glow(cell: Image, glow: Color) -> Image:
 
 
 func _write_resources(recipe: Dictionary) -> bool:
+	var texture := load(ATLAS) as Texture2D
+	var layout: Variant = JSON.parse_string(FileAccess.get_file_as_string(LAYOUT))
+	if texture == null or not layout is Dictionary:
+		return _fail("atlas not baked/imported: run phase images then --import")
 	var sprites: Dictionary = recipe.sprites
 	for id: String in sprites:
 		var def: Dictionary = sprites[id]
@@ -122,17 +156,16 @@ func _write_resources(recipe: Dictionary) -> bool:
 		if def.get("elite", false):
 			ids.append(id + "_elite")
 		for out_id in ids:
-			var texture := load(OUT_DIR + out_id + ".png") as Texture2D
-			if texture == null:
-				return _fail("strip not imported: " + out_id)
+			var rect: Array = layout[out_id]
 			var sheet := SpriteSheet.new()
 			sheet.texture = texture
+			sheet.origin = Vector2i(int(rect[0]), int(rect[1]))
+			sheet.cell_size = Vector2i(int(rect[2]), int(rect[3]))
 			var start := 0
 			for anim: String in def.anims:
 				var parts := String(def.anims[anim]).split(":")
 				sheet.animations[StringName(anim)] = Vector3i(start, int(parts[1]), int(parts[2]))
 				start += int(parts[1])
-			sheet.cell_size = Vector2i(texture.get_width() / start, texture.get_height())
 			if ResourceSaver.save(sheet, OUT_DIR + out_id + ".tres") != OK:
 				return _fail("cannot save " + out_id)
 	print("Resources written.")
