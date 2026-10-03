@@ -1,7 +1,7 @@
 extends SceneTree
 ## Rasterizes the arena art drawn by tools/art/make_map.py. Run via tools/bake_sprites.ps1:
 ##   phase "images": ground.svg -> assets/sprites/ground.png; decor/*.svg packed into
-##     assets/map/decor_atlas.png (+ layout json);
+##     assets/map/decor_atlas.png (+ layout json); projectile bodies -> assets/sprites/projectiles.png;
 ##   phase "resources": after import, writes assets/map/decor_atlas.tres (DecorAtlas).
 
 const SRC := "res://assets_src/drawn/map"
@@ -9,6 +9,8 @@ const GROUND_OUT := "res://assets/sprites/ground.png"
 const ATLAS := "res://assets/map/decor_atlas.png"
 const LAYOUT := "res://tools/art/decor_layout.json"
 const RESOURCE := "res://assets/map/decor_atlas.tres"
+const PROJECTILES := "res://assets/sprites/projectiles.png"
+const PROJECTILE_CELL := 64
 const PAD := 4
 const ATLAS_WIDTH := 1024
 
@@ -68,9 +70,31 @@ func _images() -> bool:
 		atlas.blit_rect(images[i], Rect2i(Vector2i.ZERO, images[i].get_size()), Vector2i(rect[0], rect[1]))
 		i += 1
 	atlas.save_png(ATLAS)
+	if not _bake_projectiles():
+		return false
 	var file := FileAccess.open(LAYOUT, FileAccess.WRITE)
 	file.store_string(JSON.stringify(layout, "\t"))
 	print("Map images baked (%d decor pieces)." % names.size())
+	return true
+
+
+## Projectile bodies: one 64x64 cell per style, in file name order (1_orb...).
+func _bake_projectiles() -> bool:
+	var dir := "res://assets_src/drawn/projectiles"
+	var names: Array[String] = []
+	for f in DirAccess.get_files_at(dir):
+		if f.ends_with(".svg"):
+			names.append(f)
+	names.sort()
+	if names.is_empty():
+		return _fail("missing %s (run python tools/art/make_map.py)" % dir)
+	var strip := Image.create(PROJECTILE_CELL * names.size(), PROJECTILE_CELL, false, Image.FORMAT_RGBA8)
+	for i in names.size():
+		var image := _raster(dir.path_join(names[i]))
+		if image == null:
+			return _fail("cannot rasterize " + names[i])
+		strip.blit_rect(image, Rect2i(Vector2i.ZERO, image.get_size()), Vector2i(i * PROJECTILE_CELL, 0))
+	strip.save_png(PROJECTILES)
 	return true
 
 

@@ -33,6 +33,7 @@ fire_rate_percent = 0.2
 [resource]
 script = ExtResource("1_weapon")
 id = &"bazooka"
+projectile_style = 4
 name_key = "WEAPON_BAZOOKA"
 description_key = "WEAPON_BAZOOKA_DESC"
 behavior = SubResource("Resource_behavior")

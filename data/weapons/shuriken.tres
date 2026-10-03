@@ -25,6 +25,7 @@ bounces = 2
 [resource]
 script = ExtResource("1_weapon")
 id = &"shuriken"
+projectile_style = 5
 name_key = "WEAPON_SHURIKEN"
 description_key = "WEAPON_SHURIKEN_DESC"
 behavior = SubResource("Resource_behavior")

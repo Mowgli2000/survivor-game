@@ -14,6 +14,8 @@ var knockback: float = 0.0
 var radius: float = 6.0
 var life: float = 0.0
 var color := Color.WHITE
+## WeaponData.ProjectileStyle (0 = glow only).
+var style: int = 0
 var bounces_left: int = 0
 var bounce_range: float = 0.0
 var explosion_radius: float = 0.0
@@ -32,6 +34,7 @@ func reset(pos: Vector2, p_velocity: Vector2, p_damage: float, p_crit: bool, pie
 		weapon.projectile_lifetime * maxf(range_multiplier, 1.0),
 		CRIT_COLOR if p_crit else weapon.color)
 	crit = p_crit
+	style = weapon.projectile_style
 	pierce_left = pierce
 	knockback = p_knockback
 	bounces_left = weapon.bounces
@@ -43,13 +46,14 @@ func reset(pos: Vector2, p_velocity: Vector2, p_damage: float, p_crit: bool, pie
 
 ## Projectile without special features (enemy shots).
 func reset_basic(pos: Vector2, p_velocity: Vector2, p_damage: float, p_radius: float,
-		lifetime: float, p_color: Color) -> void:
+		lifetime: float, p_color: Color, p_style: int = 0) -> void:
 	position = pos
 	velocity = p_velocity
 	damage = p_damage
 	radius = p_radius
 	life = lifetime
 	color = p_color
+	style = p_style
 	crit = false
 	pierce_left = 0
 	knockback = 0.0

@@ -165,7 +165,52 @@ def prop_crates():
     return svg(160, 196, "\n".join(body))
 
 
+# --------------------------------------------------------------------------- projectiles
+# 64x64 cells, pointing right, in WeaponData.ProjectileStyle order (1..6). White
+# parts are tinted by the projectile color in game (orb, bolt, enemy orb).
+
+def proj_orb():
+    return svg(64, 64, '<circle cx="32" cy="32" r="22" fill="#ffffff" stroke="#ffffff" stroke-opacity="0.5" stroke-width="6"/>'
+                       '<circle cx="26" cy="26" r="7" fill="#ffffff"/>')
+
+
+def proj_bolt():
+    return svg(64, 64, '<path d="M 4 32 L 22 22 L 60 30 L 60 34 L 22 42 z" fill="#ffffff"/>'
+                       '<path d="M 22 30 L 56 32 L 22 34 z" fill="#ffffff" opacity="0.9"/>')
+
+
+def proj_bullet():
+    return svg(64, 64, '<path d="M 10 22 h 30 q 18 0 20 10 q -2 10 -20 10 h -30 z" fill="#ffcc4d" stroke="%s" stroke-width="5" '
+                       'stroke-linejoin="round"/><path d="M 14 26 h 24" stroke="#fff4c8" stroke-width="4" stroke-linecap="round"/>'
+                       '<rect x="6" y="20" width="10" height="24" rx="3" fill="#c8963a" stroke="%s" stroke-width="5"/>' % (INK, INK))
+
+
+def proj_missile():
+    return svg(64, 64, '<path d="M 4 32 q 6 -10 14 -6 l 0 12 q -8 4 -14 -6 z" fill="#ffd24d"/>'
+                       '<path d="M 14 22 h 30 q 16 2 18 10 q -2 8 -18 10 h -30 z" fill="#eeeef6" stroke="%s" stroke-width="5" stroke-linejoin="round"/>'
+                       '<path d="M 46 22 q 14 2 16 10 q -2 8 -16 10 z" fill="#ff5a3c" stroke="%s" stroke-width="5" stroke-linejoin="round"/>'
+                       '<path d="M 18 22 l -8 -10 h 12 l 8 10 z M 18 42 l -8 10 h 12 l 8 -10 z" fill="#ff5a3c" stroke="%s" '
+                       'stroke-width="4" stroke-linejoin="round"/>' % (INK, INK, INK))
+
+
+def proj_shuriken():
+    return svg(64, 64, '<path d="M 32 2 L 38 26 L 62 32 L 38 38 L 32 62 L 26 38 L 2 32 L 26 26 z" fill="#d9d9e6" stroke="%s" '
+                       'stroke-width="4" stroke-linejoin="round"/><circle cx="32" cy="32" r="7" fill="#ffffff" stroke="%s" '
+                       'stroke-width="4"/>' % (INK, INK))
+
+
+def proj_enemy_orb():
+    return svg(64, 64, '<circle cx="32" cy="32" r="24" fill="#ffffff" stroke="%s" stroke-width="5"/>'
+                       '<circle cx="32" cy="32" r="13" fill="#ffffff" opacity="0.6"/><circle cx="25" cy="25" r="6" fill="#ffffff"/>' % INK)
+
+
 def main():
+    proj = os.path.join(ROOT, "..", "projectiles")
+    os.makedirs(proj, exist_ok=True)
+    for name, draw in (("1_orb", proj_orb), ("2_bolt", proj_bolt), ("3_bullet", proj_bullet),
+                       ("4_missile", proj_missile), ("5_shuriken", proj_shuriken), ("6_enemy_orb", proj_enemy_orb)):
+        with open(os.path.join(proj, name + ".svg"), "w", encoding="utf-8") as f:
+            f.write(draw())
     out = os.path.join(ROOT, "decor")
     os.makedirs(out, exist_ok=True)
     files = {

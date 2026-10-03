@@ -26,7 +26,12 @@ extends Resource
 @export var crit_chance: float = 0.05
 @export var knockback: float = 100.0
 
+## Look of the projectile body (assets/sprites/projectiles.png cell = style - 1).
+## GLOW = neon halo only.
+enum ProjectileStyle { GLOW, ORB, BOLT, BULLET, MISSILE, SHURIKEN, ENEMY_ORB }
+
 @export_group("Projectiles")
+@export var projectile_style: ProjectileStyle = ProjectileStyle.GLOW
 @export var projectile_speed: float = 600.0
 @export var projectile_count: int = 1
 ## Angle in degrees between two projectiles of the same volley.

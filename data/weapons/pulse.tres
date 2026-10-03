@@ -26,6 +26,7 @@ pierce = 1
 [resource]
 script = ExtResource("1_weapon")
 id = &"pulse"
+projectile_style = 1
 name_key = "WEAPON_PULSE"
 description_key = "WEAPON_PULSE_DESC"
 behavior = SubResource("Resource_behavior")

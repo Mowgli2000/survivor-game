@@ -23,6 +23,7 @@ var arc_degrees: float
 var status: StatusData
 var status_chance: float
 var color: Color
+var projectile_style: int = 0
 
 
 static func compute(data: WeaponData, level: int) -> WeaponStats:
@@ -43,6 +44,7 @@ static func compute(data: WeaponData, level: int) -> WeaponStats:
 	s.status = data.status
 	s.status_chance = data.status_chance
 	s.color = data.color
+	s.projectile_style = data.projectile_style
 
 	var damage_percent := 0.0
 	var fire_rate_percent := 0.0

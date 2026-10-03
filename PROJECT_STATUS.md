@@ -14,7 +14,7 @@ Dernière mise à jour : 2026-10-03 (session 5, suite)
 | **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. B. objets à effets et familles ✅ · C. menus et paramètres ✅ · 6. vrais boss ✅ · 5b. nouveaux ennemis ✅ · 7. méta-progression ✅ · 7b. difficultés + mode infini ✅. Suite (D46) : 6b vertical slice (3 persos de plus, ~10 armes, ~30 objets, direction artistique) + page Steam ; méta-progression en discussion (`docs/design/meta-progression-proposition.md`) |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 299/299 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 303/303 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~100 FPS moyen (pire cas : 650 ennemis, 7 armes rang IV, toutes les familles actives ; ~120 avant les familles). Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS |
 | **Dernier push** | `ca472d9` (session 4) — commits suivants pas encore poussés |
 
@@ -147,7 +147,7 @@ Dernière mise à jour : 2026-10-03 (session 5, suite)
 - **Étape 5b — nouveaux ennemis** (spec `docs/superpowers/specs/2026-10-03-nouveaux-ennemis-design.md`) : Chargeur (annonce puis ruée, dès la vague 7), Kamikaze (mèche puis explosion, pas d'XP s'il explose, dès la vague 5), Pondeuse (appelle 3 coureurs toutes les 4 s, dès la vague 9), gérés dans la boucle d'`EnemyManager`. Stress test 108-110 FPS. 275 tests
 - **Étape 7 — méta-progression** (spec `docs/superpowers/specs/2026-10-03-meta-progression-design.md`, ADR 0015) : profil sauvegardé (`SaveService`, `user://profile.json`), 8 défis, 4 personnages (Vagabond dispo ; Rōnin, Flingueur, Marchand à débloquer) avec règle + bonus/malus + arme de départ au choix, 5 objets forts à débloquer, écrans « Choisis ton personnage » et « Progression », déblocages affichés en fin de partie. Captures `--characters`, `--progression`. 288 tests
 - **Étape 7b — difficultés et mode infini** (spec `docs/superpowers/specs/2026-10-03-modes-design.md`, complément ADR 0015) : Danger 0 à 5 débloqués par perso (élites, PV/dégâts, apparitions, double boss), choisis après l'arme ; « Continuer en infini » après une victoire (courbes qui montent sans fin, boss toutes les 10 vagues, record par perso). Stress test 105,8 FPS. 299 tests
-- **Passe artistique « cartoon lisse » — EN COURS** (spec `docs/superpowers/specs/2026-10-03-passe-artistique-cartoon-design.md`, demande : persos façon Dofus, carte, projectiles par arme, puis playtest du dev). **A. Sprites ✅** : 13 sprites vectoriels dessinés par code (`tools/art/make_sprites.py` → `assets_src/drawn/` → `tools/bake_sprites.ps1`, aperçu `tools/art/preview_sheet.gd`) : 4 persos jouables avec leur propre sprite, 7 ennemis, 2 boss ; joueur un peu plus grand. **B. Carte ✅** : sol en dalles de toit néon (`tools/art/make_map.py`, `tools/art/bake_map.gd`, `DecorAtlas`), décalques au sol, mur néon, décor hors arène (lanternes, cerisiers, enseignes, distributeurs, caisses), un seul atlas. **Reste : C. projectiles, D. docs** (voir spec)
+- **Passe artistique « cartoon lisse »** (spec `docs/superpowers/specs/2026-10-03-passe-artistique-cartoon-design.md`, demande : persos façon Dofus, carte, projectiles par arme, puis playtest du dev). **A. Sprites ✅** : 13 sprites vectoriels dessinés par code (`tools/art/make_sprites.py` → `assets_src/drawn/` → `tools/bake_sprites.ps1`, aperçu `tools/art/preview_sheet.gd`) : 4 persos jouables avec leur propre sprite, 7 ennemis, 2 boss ; joueur un peu plus grand. **B. Carte ✅** : sol en dalles de toit néon (`tools/art/make_map.py`, `tools/art/bake_map.gd`, `DecorAtlas`), décalques au sol, mur néon, décor hors arène (lanternes, cerisiers, enseignes, distributeurs, caisses), un seul atlas. **C. Projectiles ✅** : style par arme (orbe Pulsar, balles mitraillette, missile bazooka, shuriken qui tourne, orbes roses ennemies), 2 appels de dessin, stress test ~102 FPS (ancien ~106 en alternance). **D. Docs ✅** (ADR 0016). **Passe terminée : au dev de faire le playtest.**
 
 ---
 
@@ -176,7 +176,7 @@ Dernière mise à jour : 2026-10-03 (session 5, suite)
 - Boss : sprites réutilisés (Shogun = rôdeur teinté, Ronin = colosse teinté) ; un seul boss final pour l'instant (`enemy_choices`).
 - Valeurs des vagues = premières estimations (durées, densité, PV, vagues spéciales) : à régler après playtest.
 - FPS minimum au stress test ~10 % plus bas qu'avant les vagues (moyenne inchangée) : à surveiller.
-- Sprites provisoires : pas d'animation de coup reçu ni de mort (flash blanc + effet existant) ; le Shogun réutilise le diable violet ; tailles réglées à l'œil sur captures.
+- Sprites dessinés par code (ADR 0016) : style cartoon simple, pas de niveau illustrateur ; pas d'animation de coup reçu ni de mort (flash blanc + effet existant) ; tailles réglées à l'œil (`sprite_scale` dans `data/enemies/`, `SPRITE_HEIGHT_PER_RADIUS` dans `player.gd`). Le pack RGS_Dev d'origine n'est plus dans `assets_src/`.
 - Détails visuels : le titre « Vague X terminée » se devine derrière les cartes de level-up ; projectiles et chiffres figés restent visibles derrière les écrans de fin.
 - Outils : l'installation Claude Code Game Studios demande un redémarrage de Claude Code (Python/jq dans le PATH) et les hooks doivent être branchés dans `.claude/settings.json` par le dev.
 - Outils : l'exécutable `Godot_v4.7.2-stable_win64_console.exe` ne fonctionne pas seul (on utilise `Godot.exe`). GUT 9.7.1 est disponible (on est en 9.6.1).
@@ -185,7 +185,7 @@ Dernière mise à jour : 2026-10-03 (session 5, suite)
 
 ## 6. Prochaines étapes
 
-0. **Dev : playtest complet** (beaucoup de nouveautés d'un coup) :
+0. **Dev : playtest complet** (beaucoup de nouveautés d'un coup), y compris la **nouvelle direction artistique** (persos, ennemis, boss, carte, projectiles : retours bienvenus avec des images de référence) :
    - équilibrage D45 (matériaux, relance, apparitions) : encore trop facile ou trop dur ?
    - boss : Ronin en vague 10 (récompense), Shogun en 3 phases en vague 20 ; lisibilité des annonces ;
    - nouveaux ennemis : kamikaze (vague 5+), chargeur (7+), pondeuse (9+) ;
