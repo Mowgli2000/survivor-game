@@ -14,7 +14,7 @@ Dernière mise à jour : 2026-10-03 (session 4)
 | **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. Suite : Phase 3 (objets à effets), menus, playtest Ensuite Phase 3 (objets à effets), menus, playtest |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 202/202 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 205/205 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~163 FPS moyen (formes néon : ~176, mesuré en alterné) — 500 ennemis, ~1000 projectiles, 6 armes rang IV. Mesures isolées : ±15 FPS (ADR 0009) |
 
 **Emplacements**
@@ -123,7 +123,7 @@ Dernière mise à jour : 2026-10-03 (session 4)
 
 - **Gel au passage à la vague suivante corrigé** (grille des ennemis périmée après le nettoyage de fin de vague, interrogée par la visée des armes) ; **flou de mouvement** : la caméra suit au rythme de la physique.
 - **Rééquilibrage** (D38) et **caméra/arène** (D39) après le retour du dev.
-- **Passe visuelle, chantier 3 — thème des interfaces** (spec + plan dans `docs/superpowers/`, ADR 0011) : `UiTheme` (thème unique, polices Fredoka/Nunito, styles et variations), `UiFx` (apparition, soulèvement, rebond, compteurs), appliqués au HUD, level-up, boutique, fin de vague, game over/victoire, panneau de stats, chiffres de dégâts. 202 tests
+- **Passe visuelle, chantier 3 — thème des interfaces** (spec + plan dans `docs/superpowers/`, ADR 0011) : `UiTheme` (thème unique, polices Fredoka/Nunito, styles et variations), `UiFx` (apparition, soulèvement, rebond, compteurs), appliqués au HUD, level-up, boutique, fin de vague, game over/victoire, panneau de stats, chiffres de dégâts. Revue finale : grossissement à l'apparition et rebond à l'achat annulés par les conteneurs, police par défaut trop fine — corrigés. 205 tests
 
 ---
 
