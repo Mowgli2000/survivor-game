@@ -18,6 +18,7 @@ Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes, statuts, 4 ennemis, rendu 
 - Armes : `WeaponData` (rang I + `levels` pour II..IV) -> `WeaponStats` via `WeaponSlot` ; `WeaponHolder` (doublons, fusion, points de montage `WeaponLayout`) les déclenche ; `WeaponVisuals` les dessine autour du perso (ADR 0010). Ajouter une arme = un `.tres` + une icône (`tools/icons/make_icons.py` ou SVG/PNG externe).
 - Boutique (ADR 0007) : `Shop` (logique pure : stock, relance, verrou, achat, vente, fusion) + `ShopScreen` ; réglages `data/shop/` ; monnaie `Wallet` ; objets `ItemData` (`data/items/`) + `Inventory` ; rangs `Tiers`.
 - Effets d'objets (ADR 0012) : `ItemData.effects` (Resources `ItemEffect` dans `src/items/effects/`, une copie par exemplaire) routés par le nœud `ItemEffects` ; familles d'armes `FamilyData` (`data/families/`) appliquées par `WeaponFamilies`. Ajouter un objet à effet = `.tres` + `effect_key` traduit + icône ; objets forts uniques (`max_count = 1`).
+- Boss (ADR 0014) : `EnemyData.phases` (`BossPhase` + motifs `BossPattern` dans `src/enemies/boss/`) joués par `BossDirector` ; barre `BossBar`. Nouvelle attaque = un script `BossPattern`.
 - **Tous les dégâts passent par l'API d'`EnemyManager`** (`damage_enemy`, `damage_in_radius`, `damage_along_segment`) : armure, statuts, recul et feedback au même endroit (ADR 0005).
 - Feedback : `Vfx` (effets additifs, un seul nœud), `DamageNumbers`, `GameCamera.add_trauma()`. Pas de `draw_*` anticrénelé par entité de masse : précalculer en texture.
 - UI : lit l'état, écoute les signaux, appelle l'API publique des systèmes. Ne modifie jamais l'état directement. Apparence : `theme = UiTheme.get_theme()` sur la racine de chaque écran + variations de type (`TitleLabel`, `SubtitleLabel`, `ValueLabel`, `SmallLabel`, `BigButton`) ; styles colorés via `UiTheme.card_style/panel_style` ; animations via `UiFx` (ADR 0011). Pas de `StyleBoxFlat` construit à la main dans un écran.
@@ -49,7 +50,7 @@ Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes, statuts, 4 ennemis, rendu 
 - Lancer le jeu : `& "C:\Program Files\Godot\Godot.exe" --path .`
 - Export Windows : `& "C:\Program Files\Godot\Godot.exe" --headless --path . --export-release "Windows Desktop" builds/windows/survivor-game.exe`
 - Stress test (650 ennemis = plafond du jeu + 1000 projectiles, imprime FPS/ms/draw calls) : `& "C:\Program Files\Godot\Godot.exe" --path . res://src/debug/stress_test.tscn -- --duration=20`
-- Capture d'écran automatique (pour vérifier un visuel) : `... res://src/debug/capture.tscn -- --time=20 --out=<chemin.png> [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--pause] [--settings] [--menu]`
+- Capture d'écran automatique (pour vérifier un visuel) : `... res://src/debug/capture.tscn -- --time=20 --out=<chemin.png> [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--pause] [--settings] [--menu] [--boss=shogun|ronin]`
 - Planche des icônes d'armes et d'objets : `... res://src/debug/icon_sheet.tscn [-- --out=<chemin.png>]` ; icônes régénérées par `python tools/icons/make_icons.py`
 - Overlay debug en jeu : F3 (action `debug_toggle`).
 - Galerie d'effets et d'ennemis (direction artistique) : `... res://src/debug/vfx_gallery.tscn [-- --out=<chemin.png>]`

@@ -32,6 +32,14 @@ enum Movement {
 
 @export_group("Rewards")
 @export var xp_value: int = 1
+## > 0: killing it grants a random item of this tier or higher (bosses).
+@export var reward_item_tier: int = 0
+
+@export_group("Boss")
+## Non-empty: boss bar and telegraphed patterns (ADR 0014). Sorted by
+## decreasing hp_ratio, the first one at 1.0. `boss` still decides whether
+## killing it ends the wave (a mini-boss has phases but boss = false).
+@export var phases: Array[BossPhase] = []
 
 @export_group("Visual (placeholder)")
 ## Neon outline color; the body is a dark version of it.
@@ -63,6 +71,16 @@ func get_elite_texture(scale: float) -> Texture2D:
 	if _elite_texture == null:
 		_elite_texture = EnemyArt.bake(self, EnemyArt.ELITE_OUTLINE, scale)
 	return _elite_texture
+
+
+## Index of the phase active at `hp_ratio` (HP / max HP): the last phase whose
+## threshold is reached.
+func phase_index_for(hp_ratio: float) -> int:
+	var index := 0
+	for i in phases.size():
+		if hp_ratio <= phases[i].hp_ratio:
+			index = i
+	return index
 
 
 ## Animated sprite of this type (null: placeholder). Elites use "<id>_elite" when it exists.

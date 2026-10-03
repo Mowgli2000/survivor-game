@@ -10,6 +10,8 @@ extends Node2D
 
 signal enemy_damaged(position: Vector2, amount: float, crit: bool)
 signal enemy_killed(data: EnemyData, position: Vector2, elite: bool)
+## An enemy with boss phases appeared (BossDirector takes it from here).
+signal boss_spawned(enemy: Enemy)
 
 const GRID_CELL_SIZE := 64.0
 ## Upper bound for an enemy radius (grid padding, data validation).
@@ -79,6 +81,8 @@ func spawn(data: EnemyData, pos: Vector2, hp_multiplier: float = 1.0, elite: boo
 	enemy.strafe_sign = 1.0 if _rng.randf() < 0.5 else -1.0
 	max_radius = maxf(max_radius, enemy.radius)
 	_active.append(enemy)
+	if not data.phases.is_empty():
+		boss_spawned.emit(enemy)
 	return enemy
 
 
@@ -288,7 +292,7 @@ func _physics_process(delta: float) -> void:
 			_tick_burn(enemy, delta)
 			if not enemy.is_alive():
 				continue
-		var speed := enemy.data.speed
+		var speed := enemy.data.speed * enemy.speed_multiplier
 		if enemy.slow_time > 0.0:
 			speed *= 1.0 - enemy.slow_factor
 			enemy.slow_time -= delta
@@ -300,7 +304,10 @@ func _physics_process(delta: float) -> void:
 		var distance := to_player.length()
 		var direction := to_player / distance if distance > 0.001 else Vector2.RIGHT
 		var velocity: Vector2
-		if enemy.data.movement == EnemyData.Movement.RANGED:
+		if enemy.forced_time > 0.0:
+			enemy.forced_time -= delta
+			velocity = enemy.forced_velocity
+		elif enemy.data.movement == EnemyData.Movement.RANGED:
 			velocity = _ranged_velocity(enemy, direction, distance, speed, delta)
 		else:
 			velocity = direction * speed

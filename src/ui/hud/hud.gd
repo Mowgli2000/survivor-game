@@ -7,6 +7,9 @@ extends CanvasLayer
 
 const WEAPON_ICON := 56.0
 
+## Seconds a toast stays fully visible.
+const TOAST_TIME := 2.5
+
 var _weapons: WeaponHolder
 var _weapons_box: HBoxContainer
 var _hp_bar: ProgressBar
@@ -26,6 +29,8 @@ var _progression: Progression
 var _last_second: int = -1
 var _last_pending: int = -1
 var _level: int = 1
+var _boss_bar: BossBar
+var _toast: Label
 
 
 func setup(player: Player, progression: Progression, waves: WaveDirector, wallet: Wallet) -> void:
@@ -43,6 +48,26 @@ func setup(player: Player, progression: Progression, waves: WaveDirector, wallet
 	_weapons = player.weapons
 	_weapons.weapons_changed.connect(_refresh_weapons)
 	_refresh_weapons()
+
+
+func setup_boss(director: BossDirector) -> void:
+	_boss_bar.setup(director)
+
+
+## Short message under the timer (boss rewards), fades out by itself.
+func show_toast(text: String) -> void:
+	_toast.text = text
+	_toast.visible = true
+	_toast.modulate.a = 1.0
+	UiFx.pop_in(_toast)
+	var tween := _toast.create_tween()
+	tween.tween_interval(TOAST_TIME)
+	tween.tween_property(_toast, "modulate:a", 0.0, 0.4)
+	tween.tween_callback(func() -> void: _toast.visible = false)
+
+
+func toast_text() -> String:
+	return _toast.text if _toast.visible else ""
 
 
 ## Weapon family lines in the Tab stats panel.
@@ -117,6 +142,21 @@ func _init() -> void:
 	_timer_label.offset_top = 64
 	_timer_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	root.add_child(_timer_label)
+
+	_boss_bar = BossBar.new()
+	_boss_bar.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	_boss_bar.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_boss_bar.offset_top = 128
+	root.add_child(_boss_bar)
+
+	_toast = _make_label(&"SubtitleLabel", 34)
+	_toast.add_theme_color_override("font_color", UiTheme.GOLD)
+	_toast.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	_toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_toast.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_toast.offset_top = 210
+	_toast.visible = false
+	root.add_child(_toast)
 
 	_weapons_box = HBoxContainer.new()
 	_weapons_box.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)

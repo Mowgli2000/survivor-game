@@ -1,7 +1,7 @@
 extends Node
 ## Plays a run with a bot and saves a screenshot, so visuals can be checked
 ## without a human at the keyboard (used by Claude Code).
-## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--pause] [--settings] [--menu]
+## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--pause] [--settings] [--menu] [--boss=shogun|ronin]
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
 const MENU_SCENE := preload("res://src/ui/main_menu/main_menu.tscn")
@@ -13,6 +13,7 @@ var _capture_at: float = 10.0
 var _out: String = "user://capture.png"
 var _mode: String = ""
 var _done: bool = false
+var _boss_id: StringName = &""
 
 
 func _ready() -> void:
@@ -28,6 +29,8 @@ func _ready() -> void:
 			stress = true
 		elif arg in ["--levelup", "--die", "--waveend", "--shop", "--pause", "--settings", "--menu"]:
 			_mode = arg
+		elif arg.begins_with("--boss="):
+			_boss_id = StringName(arg.trim_prefix("--boss="))
 		elif arg == "--allweapons":
 			all_weapons = true
 	if _mode == "--menu":
@@ -45,6 +48,9 @@ func _ready() -> void:
 		for def in ContentDB.get_all(&"weapons"):
 			var weapon := def as WeaponData
 			_run.player.weapons.add_weapon(weapon, weapon.max_level())
+	if _boss_id != &"":
+		# Boss next to the player, telegraphs and volleys on screen by --time.
+		_run.enemies.spawn(ContentDB.get_def(&"enemies", _boss_id), Vector2(320, -60), 3.0)
 
 
 func _process(delta: float) -> void:

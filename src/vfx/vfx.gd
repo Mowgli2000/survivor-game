@@ -7,7 +7,7 @@ extends Node2D
 
 signal shake_requested(amount: float)
 
-enum Kind { SLASH, BEAM, EXPLOSION, HIT, LIGHTNING }
+enum Kind { SLASH, BEAM, EXPLOSION, HIT, LIGHTNING, WARN_CIRCLE, WARN_LINE }
 
 const CAPACITY := 384
 
@@ -63,6 +63,16 @@ func hit(pos: Vector2, color: Color = Color(1, 1, 1, 0.8)) -> void:
 
 func lightning(from: Vector2, to: Vector2, color: Color) -> void:
 	_add(Kind.LIGHTNING, from, to, 3.0, _next_seed(), color, 0.18)
+
+
+## Boss telegraph: a ring that fills up during `life` seconds.
+func warning_circle(center: Vector2, radius: float, color: Color, life: float) -> void:
+	_add(Kind.WARN_CIRCLE, center, Vector2.ZERO, radius, 0.0, color, life)
+
+
+## Boss telegraph: a band showing a dash path or an aimed shot.
+func warning_line(from: Vector2, to: Vector2, width: float, color: Color, life: float) -> void:
+	_add(Kind.WARN_LINE, from, to, width, 0.0, color, life)
 
 
 func _add(kind: Kind, a: Vector2, b: Vector2, size: float, extra: float, color: Color, life: float) -> void:
@@ -124,6 +134,12 @@ func _draw() -> void:
 				_draw_hit(_a[i], _size[i], _extra[i], color, t)
 			Kind.LIGHTNING:
 				_draw_lightning(_a[i], _b[i], _extra[i], color, t)
+			Kind.WARN_CIRCLE:
+				draw_circle(_a[i], _size[i] * (1.0 - t), Color(color, 0.18))
+				draw_arc(_a[i], _size[i], 0.0, TAU, 48, Color(color, 0.7), 3.0, true)
+			Kind.WARN_LINE:
+				draw_line(_a[i], _b[i], Color(color, 0.12 + 0.18 * (1.0 - t)), _size[i], true)
+				draw_line(_a[i], _b[i], Color(color, 0.6), 2.0, true)
 
 
 func _draw_slash(center: Vector2, angle: float, radius: float, half: float, color: Color, t: float) -> void:

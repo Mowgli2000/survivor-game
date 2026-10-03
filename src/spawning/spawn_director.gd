@@ -83,11 +83,12 @@ func _fire_events(elapsed: float, hp_multiplier: float, damage_multiplier: float
 		_pending_events.remove_at(i)
 		var hp := hp_multiplier * (_stage.elite_hp_multiplier if event.elite else 1.0)
 		var offset := _state.rng.randf() * TAU
+		var enemy := event.pick_enemy(_state.rng)
 		# Scripted events ignore max_enemies: elites and hordes must always appear.
 		for k in event.count:
 			var angle := offset + TAU * k / event.count
 			var pos := _player.global_position + Vector2.from_angle(angle) * _stage.spawn_distance
-			_enemies.spawn(event.enemy, pos.clamp(_arena.position, _arena.end), hp, event.elite,
+			_enemies.spawn(enemy, pos.clamp(_arena.position, _arena.end), hp, event.elite,
 				damage_multiplier)
 		_state.wave_spawned += event.count
 

@@ -20,7 +20,7 @@ func setup(rect: Rect2, enemies: Array[EnemyData]) -> void:
 	_rect = rect
 	var pool: Array[EnemyData] = []
 	for data in enemies:
-		if not data.boss and data.get_sheet(false) != null:
+		if not data.boss and data.phases.is_empty() and data.get_sheet(false) != null:
 			pool.append(data)
 	if pool.is_empty():
 		return

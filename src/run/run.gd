@@ -31,6 +31,7 @@ var enemy_projectiles: EnemyProjectileManager
 var projectiles: ProjectileManager
 var pickups: PickupManager
 var spawner: SpawnDirector
+var bosses: BossDirector
 var waves: WaveDirector
 var vfx: Vfx
 var damage_numbers: DamageNumbers
@@ -144,8 +145,14 @@ func _ready() -> void:
 	spawner.setup(stage, state, enemies, player, arena_rect, waves)
 	add_child(spawner)
 
+	bosses = BossDirector.new()
+	bosses.name = "BossDirector"
+	bosses.setup(enemies, enemy_projectiles, player, vfx, state.rng, stage, waves)
+	add_child(bosses)
+
 	hud = Hud.new()
 	add_child(hud)
+	hud.setup_boss(bosses)
 	hud.setup(player, progression, waves, state.wallet)
 	hud.setup_families(weapon_families)
 
@@ -240,8 +247,33 @@ func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
 	if elite:
 		xp = roundi(xp * stage.elite_xp_multiplier)
 	pickups.spawn_xp(pos, xp)
+	if data.reward_item_tier > 0:
+		_grant_reward(data.reward_item_tier)
 	if data.boss and not enemies.has_living_boss():
 		waves.finish_wave()
+
+
+## Boss reward: a random item of `min_tier` or higher that can still be owned.
+func _grant_reward(min_tier: int) -> void:
+	var pool: Array[ItemData] = []
+	pool.assign(ContentDB.get_all(&"items"))
+	var item := pick_reward(pool, inventory, min_tier, state.rng)
+	if item == null:
+		return
+	inventory.add(item)
+	Audio.play(Sounds.LEVEL_UP, -4.0)
+	hud.show_toast(tr("UI_BOSS_REWARD") % tr(item.name_key))
+
+
+static func pick_reward(pool: Array[ItemData], owned: Inventory, min_tier: int,
+		rng: RandomNumberGenerator) -> ItemData:
+	var choices: Array[ItemData] = []
+	for item in pool:
+		if item.tier >= min_tier and owned.can_add(item):
+			choices.append(item)
+	if choices.is_empty():
+		return null
+	return choices[rng.randi_range(0, choices.size() - 1)]
 
 
 ## End of a wave: clear the arena, collect gems, heal, then resolve level-ups.

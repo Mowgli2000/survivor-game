@@ -37,6 +37,15 @@ func test_enemies() -> void:
 			assert_gt(enemy.preferred_distance, 0.0, "%s: ranged without distance" % enemy.id)
 			assert_gt(enemy.fire_cooldown, 0.0)
 			assert_gt(enemy.projectile_speed, 0.0)
+		if not enemy.phases.is_empty():
+			assert_eq(enemy.phases[0].hp_ratio, 1.0, "%s: first phase must start at full HP" % enemy.id)
+			for i in enemy.phases.size():
+				var phase := enemy.phases[i]
+				assert_false(phase.patterns.is_empty(), "%s phase %d: no pattern" % [enemy.id, i])
+				if i > 0:
+					assert_lt(phase.hp_ratio, enemy.phases[i - 1].hp_ratio, "%s: phases sorted by HP" % enemy.id)
+				for pattern in phase.patterns:
+					assert_eq(pattern.validate(), "", "%s phase %d: %s" % [enemy.id, i, pattern.validate()])
 		if enemy.sprite_id != &"":
 			var sheet := enemy.get_sheet(false)
 			assert_not_null(sheet, "%s: missing sprite sheet %s" % [enemy.id, enemy.sprite_id])

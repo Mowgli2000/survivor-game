@@ -8,6 +8,8 @@
 [ext_resource type="Resource" path="res://data/enemies/shooter.tres" id="6_shooter"]
 [ext_resource type="Resource" path="res://data/enemies/tank.tres" id="7_tank"]
 [ext_resource type="Resource" path="res://data/enemies/shogun.tres" id="8_shogun"]
+[ext_resource type="Resource" path="res://data/enemies/ronin.tres" id="9_ronin"]
+[ext_resource type="Script" path="res://src/enemies/enemy_data.gd" id="10_enemy_script"]
 
 [sub_resource type="Resource" id="Entry_grunt"]
 script = ExtResource("2_entry")
@@ -51,10 +53,9 @@ elite = true
 [sub_resource type="Resource" id="Event_w10_elites"]
 script = ExtResource("3_event")
 wave = 10
-at_time = 10.0
-enemy = ExtResource("6_shooter")
-count = 2
-elite = true
+at_time = 8.0
+enemy = ExtResource("9_ronin")
+count = 1
 
 [sub_resource type="Resource" id="Event_w12_horde"]
 script = ExtResource("3_event")
@@ -91,6 +92,7 @@ script = ExtResource("3_event")
 wave = 20
 at_time = 1.0
 enemy = ExtResource("8_shogun")
+enemy_choices = Array[ExtResource("10_enemy_script")]([ExtResource("8_shogun")])
 count = 1
 
 [sub_resource type="Resource" id="Entry_runner_late"]

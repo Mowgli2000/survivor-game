@@ -1,0 +1,70 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://src/enemies/enemy_data.gd" id="1_enemy"]
+[ext_resource type="Script" path="res://src/enemies/boss/boss_phase.gd" id="2_phase"]
+[ext_resource type="Script" path="res://src/enemies/boss/radial_burst_pattern.gd" id="3_radial"]
+[ext_resource type="Script" path="res://src/enemies/boss/aimed_fan_pattern.gd" id="4_fan"]
+[ext_resource type="Script" path="res://src/enemies/boss/dash_pattern.gd" id="5_dash"]
+[ext_resource type="Script" path="res://src/enemies/boss/summon_pattern.gd" id="6_summon"]
+[ext_resource type="Script" path="res://src/enemies/boss/boss_pattern.gd" id="7_pattern"]
+
+[sub_resource type="Resource" id="P1_dash"]
+script = ExtResource("5_dash")
+windup = 0.8
+recovery = 1.4
+dash_speed = 800.0
+dash_duration = 0.5
+
+[sub_resource type="Resource" id="P1_fan"]
+script = ExtResource("4_fan")
+windup = 0.7
+repeats = 2
+repeat_interval = 0.4
+recovery = 1.6
+projectile_damage = 10.0
+count = 3
+spread_degrees = 30.0
+
+[sub_resource type="Resource" id="P2_radial"]
+script = ExtResource("3_radial")
+windup = 0.8
+recovery = 1.2
+projectile_damage = 10.0
+count = 10
+
+[sub_resource type="Resource" id="P2_dash"]
+script = ExtResource("5_dash")
+windup = 0.6
+recovery = 1.0
+dash_speed = 900.0
+dash_duration = 0.5
+
+[sub_resource type="Resource" id="Phase_1"]
+script = ExtResource("2_phase")
+hp_ratio = 1.0
+patterns = Array[ExtResource("7_pattern")]([SubResource("P1_dash"), SubResource("P1_fan")])
+speed_multiplier = 1.0
+
+[sub_resource type="Resource" id="Phase_2"]
+script = ExtResource("2_phase")
+hp_ratio = 0.5
+patterns = Array[ExtResource("7_pattern")]([SubResource("P2_radial"), SubResource("P2_dash")])
+speed_multiplier = 1.25
+
+[resource]
+script = ExtResource("1_enemy")
+id = &"ronin"
+name_key = "ENEMY_RONIN"
+max_hp = 350.0
+speed = 95.0
+contact_damage = 18.0
+armor = 4.0
+radius = 40.0
+knockback_taken = 0.0
+xp_value = 30
+reward_item_tier = 2
+color = Color(0.3, 0.95, 1, 1)
+shape_sides = 6
+sprite_id = &"tank"
+sprite_tint = Color(0.6, 1, 1, 1)
+phases = Array[ExtResource("2_phase")]([SubResource("Phase_1"), SubResource("Phase_2")])

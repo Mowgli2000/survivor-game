@@ -11,10 +11,10 @@ Dernière mise à jour : 2026-10-03 (session 5)
 
 | | |
 |---|---|
-| **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. B. objets à effets et familles ✅ · C. menus et paramètres ✅. Suite : D. playtest ; méta-progression en discussion (`docs/design/meta-progression-proposition.md`) |
+| **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. B. objets à effets et familles ✅ · C. menus et paramètres ✅ · 6. vrais boss ✅. Suite (D46) : 5b nouveaux ennemis → 7 méta-progression → 7b modes → 6b vertical slice ; méta-progression en discussion (`docs/design/meta-progression-proposition.md`) |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 259/259 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 270/270 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~100 FPS moyen (pire cas : 650 ennemis, 7 armes rang IV, toutes les familles actives ; ~120 avant les familles). Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS |
 | **Dernier push** | `ca472d9` (session 4) — commits suivants pas encore poussés |
 
@@ -142,6 +142,8 @@ Dernière mise à jour : 2026-10-03 (session 5)
 - **Étape C — menus et paramètres** (spec + plan dans `docs/superpowers/`, ADR 0013) : menu principal (scène de démarrage), menu pause (Échap / P / Start), écran de paramètres partagé, bouton « Menu principal » en fin de partie, captures `--menu`, `--pause`, `--settings`. Les tests n'utilisent jamais les paramètres du joueur (crochet GUT). 256 tests
 - **Manette : la croix / A ne validait rien dans les menus** : dans Godot 4.7, les actions `ui_accept` / `ui_cancel` par défaut n'ont aucun bouton de manette. Ajout de A/Croix et B/Rond dans l'InputMap du projet + test. 257 tests
 - **Manette en boutique : bloqué sur une carte quand les cartes voisines sont vendues** (la recherche automatique de Godot ne saute pas le trou). Boutons Acheter/Verrouiller reliés explicitement d'une carte en vente à la suivante. Manette vue en double (DS4Windows sans HidHide) : réglage côté PC, protection en jeu prévue avec `Platform` (Phase 10). 258 tests
+- **Rééquilibrage D45** (moins de matériaux, relance plus chère, plus d'ennemis plus tôt) et **réponses Q1-Q11 validées** (D46).
+- **Étape 6 — vrais boss** (spec `docs/superpowers/specs/2026-10-03-boss-design.md`, ADR 0014) : phases selon les PV, 4 motifs d'attaque annoncés (cercle, éventail, ruée, invocation), barre de vie, récompense ; Ronin (mini-boss vague 10, remplace les 2 tireurs élites) et Shogun en 3 phases (vague 20). Capture `--boss=shogun|ronin`. 270 tests
 
 ---
 
@@ -165,7 +167,7 @@ Dernière mise à jour : 2026-10-03 (session 5)
 - **Audio provisoire** : sons choisis sans écoute (Kenney), à remplacer au goût du dev.
 - **Équilibrage = premières estimations** (dégâts, courbe d'XP, poids des cartes, apparition des ennemis, prix, chances de rang, objets).
 - **Boutique, socle seulement** : objets sans effets spéciaux ni synergies, pas de caisses lâchées par les élites, pas de stat « récolte » ni « chance », visuel des matériaux provisoire (gemmes d'XP).
-- Boss provisoire seulement : pas de barre de vie de boss, pas d'attaque spéciale, même taille qu'un Colosse élite (rayon max de la grille : 48).
+- Boss : sprites réutilisés (Shogun = rôdeur teinté, Ronin = colosse teinté) ; un seul boss final pour l'instant (`enemy_choices`).
 - Valeurs des vagues = premières estimations (durées, densité, PV, vagues spéciales) : à régler après playtest.
 - FPS minimum au stress test ~10 % plus bas qu'avant les vagues (moyenne inchangée) : à surveiller.
 - Sprites provisoires : pas d'animation de coup reçu ni de mort (flash blanc + effet existant) ; le Shogun réutilise le diable violet ; tailles réglées à l'œil sur captures.

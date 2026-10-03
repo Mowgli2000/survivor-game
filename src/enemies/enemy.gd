@@ -34,6 +34,12 @@ var slow_factor: float = 0.0
 var slow_time: float = 0.0
 ## Wave scaling of contact and projectile damage (StageData.damage_multiplier_at).
 var damage_multiplier: float = 1.0
+## Boss phase speed factor (BossDirector).
+var speed_multiplier: float = 1.0
+## While forced_time > 0, the enemy moves at forced_velocity instead of its
+## own movement (boss dash, standing still while telegraphing).
+var forced_velocity := Vector2.ZERO
+var forced_time: float = 0.0
 var animator := SpriteAnimator.new()
 
 
@@ -54,6 +60,9 @@ func reset(p_data: EnemyData, pos: Vector2, hp_multiplier: float, p_elite: bool 
 	burn_pending = 0.0
 	slow_factor = 0.0
 	slow_time = 0.0
+	speed_multiplier = 1.0
+	forced_velocity = Vector2.ZERO
+	forced_time = 0.0
 	visible = true
 	if look_changed:
 		animator.reset(data.get_sheet(elite), 0.0)
