@@ -16,7 +16,7 @@ Dernière mise à jour : 2026-10-04 (session 6 : perf fin de partie + coop local
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
 | **Tests** | 333/333 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | Solo ~100-125 FPS (pire cas : 650 ennemis, 7 armes rang IV ; séparation des ennemis allégée en session 6). Coop (`--coop`, 2 × 7 armes rang IV, 2 200 projectiles) : 20-28 FPS, pire cas artificiel ; à vérifier en vraie partie. Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS (machine bruyante en session 6) |
-| **Dernier push** | Fin de session 5. Session 6 non commitée (attente de la demande du dev) |
+| **Dernier push** | `develop` à jour sur GitHub (session 6 : perf, coop locale) |
 
 **Emplacements**
 - Projet local : `C:\Users\rapha\Projects\survivor-game` (ouvrir `project.godot` dans Godot)
