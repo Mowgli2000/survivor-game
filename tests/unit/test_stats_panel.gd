@@ -57,3 +57,12 @@ func test_family_lines_show_progress_to_the_next_tier() -> void:
 	for i in 4:
 		holder.add_weapon(katana)
 	assert_eq(panel.family_text(&"blade"), "6 MAX")
+
+
+func test_family_detail_lines_show_active_and_next_bonus() -> void:
+	var blade: FamilyData = ContentDB.get_def(&"families", &"blade")
+	assert_eq(StatsPanel.active_bonus_text(blade, 1), "")
+	assert_eq(StatsPanel.next_bonus_text(blade, 1), "At 2: +5% Crit chance")
+	assert_eq(StatsPanel.active_bonus_text(blade, 3), "Active: +5% Crit chance")
+	assert_string_contains(StatsPanel.next_bonus_text(blade, 3), "At 4: +10% Crit chance, +20% ")
+	assert_eq(StatsPanel.next_bonus_text(blade, 6), "")

@@ -291,6 +291,18 @@ func test_material_rate_drops_over_the_run() -> void:
 	assert_almost_eq(stage.material_rate_at(20), 0.6, 0.001)
 
 
+func test_materials_per_second_stay_flat_when_fully_decoupled() -> void:
+	var stage := _stage(20)
+	stage.spawn_rate_first = 10.0
+	stage.spawn_rate_last = 40.0
+	stage.material_reference_spawn_rate = 10.0
+	stage.material_decoupling = 1.0
+	assert_almost_eq(stage.material_rate_at(1), 1.0, 0.001, "below the reference: unchanged")
+	assert_almost_eq(stage.material_rate_at(20) * 40.0, 10.0, 0.001, "4x enemies, same materials/s")
+	stage.material_decoupling = 0.5
+	assert_almost_eq(stage.material_rate_at(20), 0.5, 0.001, "half decoupled: sqrt(10/40)")
+
+
 func test_damage_and_group_curves() -> void:
 	var stage := _stage(21)  # t = (wave - 1) / 20
 	stage.damage_multiplier_last = 3.0

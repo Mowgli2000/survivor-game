@@ -37,6 +37,13 @@ extends Resource
 ## Materials per XP point collected (the XP itself is never reduced).
 @export var material_rate_first: float = 1.0
 @export var material_rate_last: float = 1.0
+## Above this spawn rate (enemies/s), the material rate shrinks so that more
+## enemies do not mean proportionally more materials (anti-snowball).
+## 0 = disabled.
+@export var material_reference_spawn_rate: float = 0.0
+## 0 = materials follow the kill count, 1 = materials per second stay flat
+## above the reference spawn rate.
+@export_range(0.0, 1.0) var material_decoupling: float = 0.0
 
 @export_group("Spawning")
 @export var spawn_pool: Array[SpawnEntry] = []
@@ -97,4 +104,8 @@ func events_for(wave: int) -> Array[WaveEvent]:
 
 
 func material_rate_at(wave: int) -> float:
-	return lerpf(material_rate_first, material_rate_last, t_at(wave))
+	var rate := lerpf(material_rate_first, material_rate_last, t_at(wave))
+	var spawn_rate := spawn_rate_at(wave)
+	if material_reference_spawn_rate > 0.0 and spawn_rate > material_reference_spawn_rate:
+		rate *= pow(material_reference_spawn_rate / spawn_rate, material_decoupling)
+	return rate

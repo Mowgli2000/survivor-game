@@ -99,6 +99,8 @@ UI_SHOP_MERGE,Merge,Fusionner
 UI_SHOP_ITEMS,Items:,Objets :
 UI_SHOP_UNIQUE,(Unique),(Unique)
 UI_FAMILIES,FAMILIES,FAMILLES
+UI_FAMILY_ACTIVE,Active: %s,Actif : %s
+UI_FAMILY_NEXT,At %d: %s,À %d : %s
 UI_STATS,Stats,Statistiques
 UI_STATS_HINT,[Tab] Stats,[Tab] Statistiques
 FAMILY_BLADE,Blades,Lames
