@@ -13,6 +13,9 @@ var _character_buttons: Dictionary[StringName, Button] = {}
 var _cards: HBoxContainer
 var _weapons: HBoxContainer
 var _weapon_title: Label
+var _dangers: HBoxContainer
+var _danger_title: Label
+var _weapon: WeaponData
 var _back: Button
 var _chosen: CharacterData
 
@@ -49,6 +52,15 @@ func _init() -> void:
 	_weapons.alignment = BoxContainer.ALIGNMENT_CENTER
 	_weapons.add_theme_constant_override("separation", 16)
 	box.add_child(_weapons)
+	_danger_title = Label.new()
+	_danger_title.text = "UI_CHOOSE_DANGER"
+	_danger_title.theme_type_variation = &"SubtitleLabel"
+	_danger_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(_danger_title)
+	_dangers = HBoxContainer.new()
+	_dangers.alignment = BoxContainer.ALIGNMENT_CENTER
+	_dangers.add_theme_constant_override("separation", 12)
+	box.add_child(_dangers)
 	_back = Button.new()
 	_back.text = "UI_BACK"
 	_back.custom_minimum_size = Vector2(260, 64)
@@ -60,6 +72,7 @@ func _init() -> void:
 func open() -> void:
 	_build_cards()
 	_show_weapons(false)
+	_show_dangers(false)
 	visible = true
 	for button: Button in _character_buttons.values():
 		if not button.disabled:
@@ -81,7 +94,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _go_back() -> void:
-	if _weapons.visible:
+	if _dangers.visible:
+		_show_dangers(false)
+		if _weapons.get_child_count() > 0:
+			(_weapons.get_child(0) as Button).grab_focus()
+	elif _weapons.visible:
 		_show_weapons(false)
 		_character_buttons[_chosen.id].grab_focus()
 	else:
@@ -156,7 +173,7 @@ func _choose_character(character: CharacterData) -> void:
 		button.expand_icon = true
 		button.custom_minimum_size = Vector2(280, 72)
 		button.add_theme_color_override("font_color", weapon.color)
-		button.pressed.connect(_start.bind(weapon))
+		button.pressed.connect(_choose_weapon.bind(weapon))
 		_weapons.add_child(button)
 	_show_weapons(true)
 	if _weapons.get_child_count() > 0:
@@ -168,8 +185,37 @@ func _show_weapons(on: bool) -> void:
 	_weapon_title.visible = on
 
 
-func _start(weapon: WeaponData) -> void:
+func _choose_weapon(weapon: WeaponData) -> void:
+	_weapon = weapon
+	for child in _dangers.get_children():
+		_dangers.remove_child(child)
+		child.queue_free()
+	var allowed := SaveService.profile.max_difficulty(_chosen.id)
+	var levels: Array[DifficultyData] = []
+	levels.assign(ContentDB.get_all(&"difficulties"))
+	levels.sort_custom(func(a: DifficultyData, b: DifficultyData) -> bool: return a.level < b.level)
+	for difficulty in levels:
+		var button := Button.new()
+		button.text = difficulty.name_key
+		button.tooltip_text = difficulty.description_key
+		button.custom_minimum_size = Vector2(170, 64)
+		button.disabled = difficulty.level > allowed
+		button.pressed.connect(_start.bind(difficulty))
+		_dangers.add_child(button)
+	_show_dangers(true)
+	var last := mini(allowed, _dangers.get_child_count() - 1)
+	if last >= 0:
+		(_dangers.get_child(last) as Button).grab_focus()
+
+
+func _show_dangers(on: bool) -> void:
+	_dangers.visible = on
+	_danger_title.visible = on
+
+
+func _start(difficulty: DifficultyData) -> void:
 	var setup := RunSetup.new()
 	setup.character = _chosen
-	setup.weapon = weapon
+	setup.weapon = _weapon
+	setup.difficulty = difficulty
 	started.emit(setup)

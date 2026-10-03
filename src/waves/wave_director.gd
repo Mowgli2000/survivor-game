@@ -49,8 +49,9 @@ func wave_count() -> int:
 	return _stage.wave_count
 
 
+## Never true in endless mode: the run goes on until the player dies.
 func is_last_wave() -> bool:
-	return wave >= _stage.wave_count
+	return not _stage.endless and wave >= _stage.wave_count
 
 
 func _physics_process(delta: float) -> void:
@@ -64,5 +65,5 @@ func _physics_process(delta: float) -> void:
 	# Keep the ended wave: a listener may already start the next one during the emit.
 	var ended := wave
 	wave_ended.emit(ended)
-	if ended >= _stage.wave_count:
+	if ended >= _stage.wave_count and not _stage.endless:
 		run_won.emit()

@@ -5,6 +5,7 @@ extends RefCounted
 ## from_dict() never trusts its input (hand-edited or older files).
 
 const VERSION := 1
+const MAX_DIFFICULTY := 5
 
 ## category -> unlocked ids (content whose `locked` flag is lifted).
 var unlocked: Dictionary[StringName, Array] = {}
@@ -14,6 +15,15 @@ var runs_won: int = 0
 var best_wave: int = 0
 var total_kills: int = 0
 var wins_by_character: Dictionary[StringName, int] = {}
+## Highest difficulty level won with each character.
+var best_difficulty_by_character: Dictionary[StringName, int] = {}
+## Best wave reached in endless mode with each character.
+var best_endless_wave_by_character: Dictionary[StringName, int] = {}
+
+
+## Highest difficulty level `character` may pick: one above its best win.
+func max_difficulty(character: StringName) -> int:
+	return mini(best_difficulty_by_character.get(character, -1) + 1, MAX_DIFFICULTY)
 
 
 func is_unlocked(category: StringName, id: StringName) -> bool:
@@ -49,6 +59,8 @@ func to_dict() -> Dictionary:
 		"best_wave": best_wave,
 		"total_kills": total_kills,
 		"wins_by_character": wins,
+		"best_difficulty_by_character": _id_ints(best_difficulty_by_character),
+		"best_endless_wave_by_character": _id_ints(best_endless_wave_by_character),
 	}
 
 
@@ -76,7 +88,24 @@ static func from_dict(d: Dictionary) -> Profile:
 		for character: Variant in wins:
 			if typeof(wins[character]) in [TYPE_INT, TYPE_FLOAT]:
 				profile.wins_by_character[StringName(str(character))] = int(wins[character])
+	_read_id_ints(d.get("best_difficulty_by_character"), profile.best_difficulty_by_character)
+	_read_id_ints(d.get("best_endless_wave_by_character"), profile.best_endless_wave_by_character)
 	return profile
+
+
+static func _id_ints(source: Dictionary[StringName, int]) -> Dictionary:
+	var out := {}
+	for key in source:
+		out[String(key)] = source[key]
+	return out
+
+
+static func _read_id_ints(source: Variant, target: Dictionary[StringName, int]) -> void:
+	if not source is Dictionary:
+		return
+	for key: Variant in source:
+		if typeof(source[key]) in [TYPE_INT, TYPE_FLOAT]:
+			target[StringName(str(key))] = int(source[key])
 
 
 static func _int(d: Dictionary, key: String) -> int:

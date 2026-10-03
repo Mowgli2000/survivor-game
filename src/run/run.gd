@@ -62,8 +62,7 @@ func _ready() -> void:
 	if config == null:
 		config = ContentDB.get_def(&"runs", DEFAULT_CONFIG_ID)
 	assert(config != null, "Run: no RunConfig (expected data/runs/default.tres)")
-	stage = config.stage
-	assert(stage != null, "Run: RunConfig has no stage")
+	assert(config.stage != null, "Run: RunConfig has no stage")
 	if config.shop == null:
 		config.shop = ContentDB.get_def(&"shop", &"default")
 	var arena_rect := Rect2(-config.arena_size * 0.5, config.arena_size)
@@ -73,6 +72,8 @@ func _ready() -> void:
 	if setup == null and get_parent() == get_tree().root:
 		setup = SceneRouter.next_run
 	_character = setup.character if setup != null and setup.character != null else config.character
+	# Always a copy: difficulty and endless mode change it, never the shared data.
+	stage = config.stage.with_difficulty(setup.difficulty if setup != null else null)
 	state = RunState.new(seed_override if seed_override >= 0 else randi())
 	progression = Progression.new(config.xp_base, config.xp_exponent)
 	_upgrade_pool.assign(ContentDB.get_all(&"upgrades"))
@@ -205,6 +206,7 @@ func _ready() -> void:
 	level_up_screen.offer_chosen.connect(_apply_offer)
 	level_up_screen.reroll_requested.connect(_on_level_up_reroll)
 	game_over_screen.retry_requested.connect(_on_retry_requested)
+	game_over_screen.endless_requested.connect(_continue_endless)
 	game_over_screen.main_menu_requested.connect(SceneRouter.goto_main_menu)
 	pause_menu.resume_requested.connect(_resume_from_pause)
 	pause_menu.restart_requested.connect(_on_retry_requested)
@@ -289,6 +291,7 @@ func _record_run(won: bool) -> void:
 	var result := RunResult.new()
 	result.character_id = _character.id
 	result.won = won
+	result.difficulty = setup.difficulty.level if setup.difficulty != null else 0
 	result.wave = waves.wave
 	result.kills = state.kills
 	result.max_materials = maxi(_max_materials, state.wallet.amount)
@@ -434,7 +437,22 @@ func _on_player_died() -> void:
 	Audio.play(Sounds.DEFEAT)
 	get_tree().paused = true
 	game_over_screen.open(state.elapsed, progression.level, state.kills, waves.wave)
-	_record_run(false)
+	if stage.endless:
+		# The run was recorded at the victory: only the endless record remains.
+		if setup != null:
+			SaveService.record_endless(_character.id, waves.wave)
+	else:
+		_record_run(false)
+
+
+## After a victory: the waves go on (level-ups, shop, wave 21...) until death.
+func _continue_endless() -> void:
+	stage.endless = true
+	state.is_over = false
+	game_over_screen.close()
+	Audio.play_music(Sounds.MUSIC_RUN)
+	_level_up_rerolls = 0
+	_resolve_level_ups()
 
 
 func _on_retry_requested() -> void:

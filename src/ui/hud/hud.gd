@@ -196,7 +196,10 @@ func _process(_delta: float) -> void:
 	if seconds != _last_second:
 		_last_second = seconds
 		_timer_label.text = format_time(seconds)
-		_wave_label.text = "%s %d/%d" % [tr("UI_WAVE"), _waves.wave, _waves.wave_count()]
+		if _waves.wave > _waves.wave_count():
+			_wave_label.text = tr("UI_WAVE_ENDLESS") % _waves.wave
+		else:
+			_wave_label.text = "%s %d/%d" % [tr("UI_WAVE"), _waves.wave, _waves.wave_count()]
 	if _progression.pending_level_ups != _last_pending:
 		_last_pending = _progression.pending_level_ups
 		_refresh_level()

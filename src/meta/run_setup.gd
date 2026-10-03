@@ -6,3 +6,5 @@ extends RefCounted
 var character: CharacterData
 ## Starting weapon; null = the character's default.
 var weapon: WeaponData
+## Null = Danger 0.
+var difficulty: DifficultyData

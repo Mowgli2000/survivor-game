@@ -4,6 +4,8 @@ extends RefCounted
 
 var character_id: StringName
 var won: bool = false
+## Difficulty level played (DifficultyData.level).
+var difficulty: int = 0
 var wave: int = 0
 var kills: int = 0
 ## Most materials held at once during the run.

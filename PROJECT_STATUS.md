@@ -3,7 +3,7 @@
 > Journal de suivi entre les sessions : état actuel, décisions prises, changements, retours de playtest et prochaines étapes.
 > **À lire au début de chaque session, à mettre à jour à la fin.** Les règles de développement sont dans `CLAUDE.md`, le design dans `docs/design/gdd.md`, les décisions techniques détaillées dans `docs/decisions/`.
 
-Dernière mise à jour : 2026-10-03 (session 5)
+Dernière mise à jour : 2026-10-03 (session 5, suite)
 
 ---
 
@@ -11,10 +11,10 @@ Dernière mise à jour : 2026-10-03 (session 5)
 
 | | |
 |---|---|
-| **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. B. objets à effets et familles ✅ · C. menus et paramètres ✅ · 6. vrais boss ✅ · 5b. nouveaux ennemis ✅ · 7. méta-progression ✅. Suite (D46) : 7b modes (infini, difficultés) → 6b vertical slice ; méta-progression en discussion (`docs/design/meta-progression-proposition.md`) |
+| **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. B. objets à effets et familles ✅ · C. menus et paramètres ✅ · 6. vrais boss ✅ · 5b. nouveaux ennemis ✅ · 7. méta-progression ✅ · 7b. difficultés + mode infini ✅. Suite (D46) : 6b vertical slice (3 persos de plus, ~10 armes, ~30 objets, direction artistique) + page Steam ; méta-progression en discussion (`docs/design/meta-progression-proposition.md`) |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 288/288 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 299/299 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~100 FPS moyen (pire cas : 650 ennemis, 7 armes rang IV, toutes les familles actives ; ~120 avant les familles). Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS |
 | **Dernier push** | `ca472d9` (session 4) — commits suivants pas encore poussés |
 
@@ -146,6 +146,7 @@ Dernière mise à jour : 2026-10-03 (session 5)
 - **Étape 6 — vrais boss** (spec `docs/superpowers/specs/2026-10-03-boss-design.md`, ADR 0014) : phases selon les PV, 4 motifs d'attaque annoncés (cercle, éventail, ruée, invocation), barre de vie, récompense ; Ronin (mini-boss vague 10, remplace les 2 tireurs élites) et Shogun en 3 phases (vague 20). Capture `--boss=shogun|ronin`. 270 tests
 - **Étape 5b — nouveaux ennemis** (spec `docs/superpowers/specs/2026-10-03-nouveaux-ennemis-design.md`) : Chargeur (annonce puis ruée, dès la vague 7), Kamikaze (mèche puis explosion, pas d'XP s'il explose, dès la vague 5), Pondeuse (appelle 3 coureurs toutes les 4 s, dès la vague 9), gérés dans la boucle d'`EnemyManager`. Stress test 108-110 FPS. 275 tests
 - **Étape 7 — méta-progression** (spec `docs/superpowers/specs/2026-10-03-meta-progression-design.md`, ADR 0015) : profil sauvegardé (`SaveService`, `user://profile.json`), 8 défis, 4 personnages (Vagabond dispo ; Rōnin, Flingueur, Marchand à débloquer) avec règle + bonus/malus + arme de départ au choix, 5 objets forts à débloquer, écrans « Choisis ton personnage » et « Progression », déblocages affichés en fin de partie. Captures `--characters`, `--progression`. 288 tests
+- **Étape 7b — difficultés et mode infini** (spec `docs/superpowers/specs/2026-10-03-modes-design.md`, complément ADR 0015) : Danger 0 à 5 débloqués par perso (élites, PV/dégâts, apparitions, double boss), choisis après l'arme ; « Continuer en infini » après une victoire (courbes qui montent sans fin, boss toutes les 10 vagues, record par perso). Stress test 105,8 FPS. 299 tests
 
 ---
 
@@ -165,6 +166,8 @@ Dernière mise à jour : 2026-10-03 (session 5)
 
 ## 5. Limites connues / dette
 
+- **Méta-progression** : le perso jouable « Rōnin » et le mini-boss « Ronin » portent le même nom (à renommer l'un des deux si gênant) ; tous les persos utilisent le même sprite ; record du mode infini pas encore affiché à l'écran Progression.
+- **Manette vue en double** (DS4Windows sans HidHide) : chaque appui compte deux fois ; réglage côté PC, protection en jeu prévue avec `Platform` (Phase 10).
 - **Paramètres** : pas de remappage des touches ni de choix de résolution (Phase 9). Le titre du menu est le titre de travail (`GAME_TITLE`).
 - **Audio provisoire** : sons choisis sans écoute (Kenney), à remplacer au goût du dev.
 - **Équilibrage = premières estimations** (dégâts, courbe d'XP, poids des cartes, apparition des ennemis, prix, chances de rang, objets).
@@ -181,13 +184,15 @@ Dernière mise à jour : 2026-10-03 (session 5)
 
 ## 6. Prochaines étapes
 
-0. **Dev : rejouer une run complète** (F3 pour le compteur) pour juger D43 : matériaux des vagues 12-20, densité, panneau des familles (Tab). Leviers restants si besoin : PV fin de partie ×12 → ×16, inflation des prix 12 % → 15 %, plafond 650 → 800 (~77 FPS en pire cas).
-1. **Dev : valider le chantier 1 en jeu** (sprites, tailles, sol, Shogun) ; lancer le jeu ou la galerie `vfx_gallery.tscn`. Réglages rapides : `SPRITE_HEIGHT_PER_RADIUS` (`enemy.gd`, `player.gd`), `sprite_scale` / `sprite_tint` dans `data/enemies/`, `FLOOR_TINT` (`arena.gd`), halo dans `tools/sprites/bake_sprites.gd`.
-2. **Dev : valider le chantier 2** (icônes, armes autour du perso, boutique). Question ouverte : **zoom de la caméra** (aujourd'hui 1 : le perso fait ~60 px en 1080p, plus petit que dans Brotato ; zoomer agrandit tout mais montre moins d'arène). Re-mesurer le stress test sur une machine au repos (ADR 0010).
-3. **Dev : répondre aux 11 questions de `docs/design/meta-progression-proposition.md`** (méta-progression, persos, difficultés, ennemis, boss, mode infini, ordre des étapes), puis planifier les étapes 6/7/8.
-4. **D.** playtest (nouveaux objets, familles, équilibrage D41/D43) ; **dev : tester les menus** (Échap en partie, paramètres, plein écran, langue, manette).
-4. **Dev** : écouter le son en jeu (sons choisis sans écoute, à changer au goût) ; rejouer une run complète (F3) : densité des vagues 10-20, matériaux, panneau de stats (Tab) ; ajuster D30.
-6. Phase 6 (vrai boss), puis 6b (vertical slice + page Steam). Roadmap complète : `docs/design/gdd.md`.
+0. **Dev : playtest complet** (beaucoup de nouveautés d'un coup) :
+   - équilibrage D45 (matériaux, relance, apparitions) : encore trop facile ou trop dur ?
+   - boss : Ronin en vague 10 (récompense), Shogun en 3 phases en vague 20 ; lisibilité des annonces ;
+   - nouveaux ennemis : kamikaze (vague 5+), chargeur (7+), pondeuse (9+) ;
+   - méta : écran de choix du perso, défis (écran Progression), déblocages en fin de partie, Danger 1+ après une victoire, « Continuer en infini ».
+   Réglages rapides : `data/stages/default.tres`, `data/enemies/*.tres` (phases des boss), `data/difficulties/`, `data/challenges/`, `data/characters/`.
+1. **6b — Vertical slice** : 2 persos de plus (Technomancien, Berserker, idées de la proposition), ~4 armes de plus (≈ 10), ~10 objets de plus (≈ 30), un 2e boss final pour le tirage aléatoire, direction artistique appliquée (vrais sprites par perso/boss), écran Progression avec records ; puis page Steam « Coming Soon » (dev).
+2. **Dev** : écouter le son en jeu (si toujours muet : sortie audio Windows, manette PS4 en USB).
+3. Phases 8 à 12 : contenu, finitions (remappage, accessibilité), Steam (`Platform`, succès = défis, protection manette en double), démo, sortie. Roadmap : `docs/design/gdd.md`.
 
 ---
 

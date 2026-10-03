@@ -132,6 +132,24 @@ func test_challenges() -> void:
 	assert_gt(unlocked_characters, 0, "at least one playable character from the start")
 
 
+## Danger 0..5: one level each, level 0 changes nothing.
+func test_difficulties() -> void:
+	var levels := {}
+	for def in ContentDB.get_all(&"difficulties"):
+		var difficulty := def as DifficultyData
+		assert_not_null(difficulty, "data/difficulties must contain DifficultyData")
+		_assert_common(difficulty, &"difficulties")
+		assert_true(_keys.has(difficulty.description_key), "%s: missing description" % difficulty.id)
+		assert_gte(difficulty.hp_multiplier, 1.0)
+		assert_gte(difficulty.damage_multiplier, 1.0)
+		levels[difficulty.level] = difficulty
+	assert_eq(levels.size(), Profile.MAX_DIFFICULTY + 1, "one definition per level 0..MAX")
+	var zero: DifficultyData = levels.get(0)
+	assert_eq(zero.hp_multiplier, 1.0)
+	assert_eq(zero.steady_elite_chance, 0.0)
+	assert_false(zero.double_final_boss)
+
+
 func test_upgrades() -> void:
 	for def in ContentDB.get_all(&"upgrades"):
 		var upgrade := def as UpgradeData

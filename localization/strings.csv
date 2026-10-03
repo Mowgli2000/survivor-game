@@ -183,3 +183,18 @@ CHALLENGE_KILLS_5000,Exterminator,Exterminateur
 CHALLENGE_KILLS_5000_DESC,Kill 5000 enemies (all runs),Tuer 5 000 ennemis (toutes parties)
 CHALLENGE_WIN_RONIN,Way of the blade,La voie de la lame
 CHALLENGE_WIN_RONIN_DESC,Win a run with the Rōnin,Gagner une partie avec le Rōnin
+UI_CHOOSE_DANGER,Danger level,Niveau de danger
+UI_CONTINUE_ENDLESS,Continue (endless),Continuer en infini
+UI_WAVE_ENDLESS,Wave %d (∞),Vague %d (∞)
+DANGER_0,Danger 0,Danger 0
+DANGER_1,Danger 1,Danger 1
+DANGER_2,Danger 2,Danger 2
+DANGER_3,Danger 3,Danger 3
+DANGER_4,Danger 4,Danger 4
+DANGER_5,Danger 5,Danger 5
+DANGER_0_DESC,The normal run.,La partie normale.
+DANGER_1_DESC,Some normal enemies are elites.,Quelques ennemis normaux sont des élites.
+DANGER_2_DESC,Enemies: +15% HP and damage.,Ennemis : +15 % de PV et de dégâts.
+DANGER_3_DESC,"More enemies, bigger groups.","Plus d'ennemis, groupes plus grands."
+DANGER_4_DESC,"Enemies: +30% HP and damage, more elites.","Ennemis : +30 % de PV et de dégâts, plus d'élites."
+DANGER_5_DESC,Two bosses on the final wave.,Deux boss à la dernière vague.

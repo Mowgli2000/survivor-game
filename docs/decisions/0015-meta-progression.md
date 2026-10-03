@@ -18,3 +18,7 @@ Il faut des objectifs d'une partie à l'autre sans puissance permanente (méta h
 - Ajouter un défi : un `.tres` ; un nouveau type de condition = une valeur de `ChallengeData.Kind` (et une donnée de `RunResult` si besoin).
 - Migrations futures : dans `Profile.from_dict`, selon `version`.
 - Chaque défi pourra devenir un succès Steam via `Platform` (Phase 10).
+
+## Complément (étape 7b — difficultés et mode infini)
+- **Danger 0 à 5** = Resources `DifficultyData` (`data/difficulties/`), débloquées par personnage (`Profile.best_difficulty_by_character`, gagner au niveau N ouvre N+1). Appliquées par `StageData.with_difficulty()` sur une **copie** du stage (`StageData.copy()` : événements copiés, ennemis partagés) : `Run` ne modifie jamais les données partagées.
+- **Mode infini** après une victoire : `StageData.endless` (sur la copie) prolonge les courbes (croissance composée par vague), le boss final revient toutes les 10 vagues ; `WaveDirector` n'émet plus `run_won`. Record par perso (`SaveService.record_endless`), la partie n'est pas recomptée.

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="DifficultyData" format=3]
+
+[ext_resource type="Script" path="res://src/meta/difficulty_data.gd" id="1_difficulty"]
+
+[resource]
+script = ExtResource("1_difficulty")
+id = &"danger_1"
+level = 1
+name_key = "DANGER_1"
+description_key = "DANGER_1_DESC"
+steady_elite_chance = 0.01

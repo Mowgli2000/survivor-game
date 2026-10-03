@@ -55,6 +55,8 @@ func record_run(result: RunResult, challenges: Array[ChallengeData] = []) -> Arr
 	if result.won:
 		profile.runs_won += 1
 		profile.wins_by_character[result.character_id] = profile.wins_by_character.get(result.character_id, 0) + 1
+		profile.best_difficulty_by_character[result.character_id] = maxi(
+			profile.best_difficulty_by_character.get(result.character_id, -1), result.difficulty)
 	var done: Array[ChallengeData] = []
 	for challenge in challenges:
 		if profile.completed.has(challenge.id) or not challenge.is_met(profile, result):
@@ -65,6 +67,14 @@ func record_run(result: RunResult, challenges: Array[ChallengeData] = []) -> Arr
 	save_profile()
 	profile_changed.emit()
 	return done
+
+
+## Endless mode ended (the run itself was recorded at the victory).
+func record_endless(character_id: StringName, wave: int) -> void:
+	profile.best_endless_wave_by_character[character_id] = maxi(
+		profile.best_endless_wave_by_character.get(character_id, 0), wave)
+	save_profile()
+	profile_changed.emit()
 
 
 func all_challenges() -> Array[ChallengeData]:
