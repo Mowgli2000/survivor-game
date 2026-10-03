@@ -104,6 +104,7 @@ func _ready() -> void:
 	add_child(projectiles)
 
 	actors.add_child(player)
+	player.camera.zoom = Vector2.ONE * config.camera_zoom
 	player.weapon_visuals.setup(player.weapons, enemies, player)
 	add_child(enemy_projectiles)
 	add_child(vfx)

@@ -5,6 +5,8 @@ extends Resource
 @export var id: StringName
 @export var character: CharacterData
 @export var arena_size: Vector2 = Vector2(3200, 3200)
+## > 1 shows the action closer (bigger characters, less of the arena on screen).
+@export var camera_zoom: float = 1.0
 ## Waves, enemies and difficulty of the run (data/stages/).
 @export var stage: StageData
 ## Shop and tier tuning (data/shop/).

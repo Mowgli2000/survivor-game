@@ -30,6 +30,14 @@ func test_curves_interpolate_from_first_to_last_wave() -> void:
 	assert_almost_eq(stage.hp_multiplier_at(20), 5.0, 0.001)
 
 
+func test_hp_curve_ramps_up_late() -> void:
+	var stage := _stage(21)  # t = (wave - 1) / 20
+	stage.hp_multiplier_curve = 2.0
+	assert_almost_eq(stage.hp_multiplier_at(1), 1.0, 0.001)
+	assert_almost_eq(stage.hp_multiplier_at(11), 1.0 + 4.0 * 0.25, 0.001, "t = 0.5 -> 0.25 of the way")
+	assert_almost_eq(stage.hp_multiplier_at(21), 5.0, 0.001)
+
+
 func test_durations_step_up_to_the_cap() -> void:
 	var stage := _stage(20)
 	assert_almost_eq(stage.duration_at(1), 20.0, 0.001)

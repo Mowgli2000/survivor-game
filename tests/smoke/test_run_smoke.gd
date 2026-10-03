@@ -243,3 +243,9 @@ func test_hud_shows_one_icon_per_weapon() -> void:
 	var tiles := _run.hud._weapons_box.get_children().filter(func(c: Node) -> bool: return c is IconTile)
 	assert_eq(tiles.size(), _run.player.weapons.slot_count())
 	assert_gt(tiles.size(), 0)
+
+
+func test_camera_uses_the_configured_zoom() -> void:
+	var zoom := _run.config.camera_zoom
+	assert_gt(zoom, 0.0)
+	assert_eq(_run.player.camera.zoom, Vector2(zoom, zoom))
