@@ -51,7 +51,7 @@ func _refresh_weapons() -> void:
 		child.queue_free()
 	for slot in _weapons.get_slots():
 		if slot.data.icon == null:
-			var label := _make_label(24)
+			var label := _make_label(&"ValueLabel", 24)
 			label.text = "%s  %s" % [tr(slot.data.name_key), Tiers.roman(slot.level)]
 			label.add_theme_color_override("font_color", slot.data.color)
 			_weapons_box.add_child(label)
@@ -66,45 +66,50 @@ func _init() -> void:
 	var root := Control.new()
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.theme = UiTheme.get_theme()
 	add_child(root)
 
-	_xp_bar = _make_bar(Color(0.35, 0.75, 1.0))
+	_xp_bar = _make_bar(UiTheme.XP)
 	_xp_bar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	_xp_bar.offset_bottom = 14
+	_xp_bar.offset_left = 8
+	_xp_bar.offset_right = -8
+	_xp_bar.offset_top = 6
+	_xp_bar.offset_bottom = 22
 	root.add_child(_xp_bar)
 
 	var box := VBoxContainer.new()
-	box.position = Vector2(32, 36)
+	box.position = Vector2(32, 40)
 	box.add_theme_constant_override("separation", 8)
 	root.add_child(box)
 
-	_hp_bar = _make_bar(Color(0.9, 0.25, 0.3))
-	_hp_bar.custom_minimum_size = Vector2(360, 32)
+	_hp_bar = _make_bar(UiTheme.BAD)
+	_hp_bar.custom_minimum_size = Vector2(380, 38)
 	box.add_child(_hp_bar)
-	_hp_label = _make_label(22)
+	_hp_label = _make_label(&"ValueLabel", 22)
 	_hp_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_hp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_hp_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	_hp_bar.add_child(_hp_label)
 
-	_level_label = _make_label(28)
+	_level_label = _make_label(&"ValueLabel", 28)
 	box.add_child(_level_label)
 
-	_materials_label = _make_label(28)
-	_materials_label.add_theme_color_override("font_color", Color(0.45, 1.0, 0.55))
+	_materials_label = _make_label(&"ValueLabel", 28)
+	_materials_label.add_theme_color_override("font_color", UiTheme.GOOD)
 	box.add_child(_materials_label)
 
-	_wave_label = _make_label(28)
+	_wave_label = _make_label(&"SubtitleLabel", 30)
 	_wave_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
 	_wave_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_wave_label.offset_top = 24
+	_wave_label.offset_top = 28
 	_wave_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	root.add_child(_wave_label)
 
-	_timer_label = _make_label(40)
+	_timer_label = _make_label(&"TitleLabel", 48)
+	_timer_label.add_theme_color_override("font_color", UiTheme.TEXT)
 	_timer_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
 	_timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_timer_label.offset_top = 60
+	_timer_label.offset_top = 64
 	_timer_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	root.add_child(_timer_label)
 
@@ -124,9 +129,8 @@ func _init() -> void:
 	_stats_panel.visible = false
 	root.add_child(_stats_panel)
 
-	var hint := _make_label(18)
+	var hint := _make_label(&"SmallLabel", 18)
 	hint.text = "UI_STATS_HINT"
-	hint.add_theme_color_override("font_color", Color(1, 1, 1, 0.5))
 	hint.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
 	hint.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	hint.grow_vertical = Control.GROW_DIRECTION_BEGIN
@@ -138,8 +142,9 @@ func _init() -> void:
 func _process(_delta: float) -> void:
 	_stats_panel.visible = Input.is_action_pressed("show_stats")
 	if _materials != _shown_materials:
+		var from := maxi(_shown_materials, 0)
 		_shown_materials = _materials
-		_materials_label.text = "%s %d" % [tr("UI_MATERIALS"), _materials]
+		UiFx.count_to(_materials_label, from, _materials, tr("UI_MATERIALS") + " %d")
 	if _waves == null:
 		return
 	var seconds := ceili(_waves.time_left)
@@ -188,20 +193,14 @@ func _make_bar(fill_color: Color) -> ProgressBar:
 	var bar := ProgressBar.new()
 	bar.show_percentage = false
 	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var bg := StyleBoxFlat.new()
-	bg.bg_color = Color(0.05, 0.05, 0.08, 0.85)
-	bg.set_corner_radius_all(4)
-	var fill := StyleBoxFlat.new()
-	fill.bg_color = fill_color
-	fill.set_corner_radius_all(4)
-	bar.add_theme_stylebox_override("background", bg)
-	bar.add_theme_stylebox_override("fill", fill)
+	var styles := UiTheme.bar_styles(fill_color)
+	bar.add_theme_stylebox_override("background", styles[0])
+	bar.add_theme_stylebox_override("fill", styles[1])
 	return bar
 
 
-func _make_label(size: int) -> Label:
+func _make_label(variation: StringName, size: int) -> Label:
 	var label := Label.new()
+	label.theme_type_variation = variation
 	label.add_theme_font_size_override("font_size", size)
-	label.add_theme_color_override("font_outline_color", Color.BLACK)
-	label.add_theme_constant_override("outline_size", 6)
 	return label

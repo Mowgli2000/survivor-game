@@ -23,14 +23,20 @@ func _init() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	visible = false
 
+	var root := Control.new()
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.theme = UiTheme.get_theme()
+	add_child(root)
+
 	var dim := ColorRect.new()
 	dim.color = Color(0, 0, 0, 0.65)
 	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(dim)
+	root.add_child(dim)
 
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(center)
+	root.add_child(center)
 
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 40)

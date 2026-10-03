@@ -3,7 +3,7 @@ extends PanelContainer
 ## Square tile showing a weapon/item icon on a dark background, framed with the
 ## rarity tier color, with an optional count badge (bottom right). Display only.
 
-const BACKGROUND := Color(0.06, 0.06, 0.1, 0.9)
+const BACKGROUND := UiTheme.PANEL_BG
 const BORDER := 3
 const RADIUS := 8
 

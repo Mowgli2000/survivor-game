@@ -249,3 +249,18 @@ func test_camera_uses_the_configured_zoom() -> void:
 	var zoom := _run.config.camera_zoom
 	assert_gt(zoom, 0.0)
 	assert_eq(_run.player.camera.zoom, Vector2(zoom, zoom))
+
+
+func test_screens_use_the_shared_theme() -> void:
+	var theme := UiTheme.get_theme()
+	assert_same(_run.hud.get_child(0).theme, theme, "HUD")
+	for screen: CanvasLayer in [_run.level_up_screen, _run.shop_screen, _run.wave_end_screen,
+			_run.game_over_screen]:
+		assert_same(_ui_root(screen).theme, theme, screen.name)
+
+
+func _ui_root(screen: CanvasLayer) -> Control:
+	for child in screen.get_children():
+		if child is Control and (child as Control).theme != null:
+			return child
+	return screen.get_child(0) as Control

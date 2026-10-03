@@ -47,8 +47,7 @@ func _init() -> void:
 	_value.resize(CAPACITY)
 	_crit.resize(CAPACITY)
 	_life.resize(CAPACITY)
-	_font = FontVariation.new()
-	_font.base_font = ThemeDB.fallback_font
+	_font = UiTheme.font(700, true).duplicate() as FontVariation
 	_font.variation_embolden = EMBOLDEN
 
 

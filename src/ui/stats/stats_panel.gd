@@ -7,9 +7,9 @@ extends PanelContainer
 ## Stats stored as multipliers (1.0 = +0 %): shown as a bonus percent.
 const MULTIPLIER_STATS: Array[StringName] = [StatIds.DAMAGE, StatIds.ATTACK_SPEED,
 	StatIds.PROJECTILE_SPEED, StatIds.KNOCKBACK, StatIds.RANGE, StatIds.AREA]
-const BETTER := Color(0.45, 1.0, 0.55)
-const WORSE := Color(1.0, 0.4, 0.4)
-const NEUTRAL := Color(0.92, 0.94, 1.0)
+const BETTER := UiTheme.GOOD
+const WORSE := UiTheme.BAD
+const NEUTRAL := UiTheme.TEXT
 
 var _stats: StatBlock
 var _grid: GridContainer
@@ -18,13 +18,7 @@ var _values: Dictionary[StringName, Label] = {}
 
 func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.05, 0.05, 0.1, 0.92)
-	style.border_color = Color(0.4, 0.95, 1.0, 0.6)
-	style.set_border_width_all(2)
-	style.set_corner_radius_all(10)
-	style.set_content_margin_all(16)
-	add_theme_stylebox_override("panel", style)
+	theme = UiTheme.get_theme()
 
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 10)
@@ -32,8 +26,9 @@ func _init() -> void:
 	var title := Label.new()
 	title.text = "UI_STATS"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 26)
-	title.add_theme_color_override("font_color", Color(0.4, 0.95, 1.0))
+	title.theme_type_variation = &"SubtitleLabel"
+	title.add_theme_font_size_override("font_size", 28)
+	title.add_theme_color_override("font_color", UiTheme.ACCENT)
 	box.add_child(title)
 	_grid = GridContainer.new()
 	_grid.columns = 2
@@ -99,6 +94,6 @@ func _refresh(stat: StringName) -> void:
 
 func _label(color: Color) -> Label:
 	var label := Label.new()
-	label.add_theme_font_size_override("font_size", 20)
+	label.add_theme_font_size_override("font_size", 19)
 	label.add_theme_color_override("font_color", color)
 	return label
