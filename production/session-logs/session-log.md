@@ -599,3 +599,169 @@ production/session-logs/.session-end.hash
 production/session-logs/session-log.md
 ---
 
+## Session End: 20261003_154409
+### Commits
+ca472d9 docs: project status end of session 4
+cc8499b docs: status after chantier 3 review; add missing .uid files
+a89fcfc fix: appear/bounce scale survives container layout; bold project default font
+f695a36 docs: ADR 0011 UI theme, status
+e98ac3d feat: themed shop (tier cards, staggered appear, buy bounce, rolling materials)
+ad3bfaf feat: themed level-up, wave end and game over screens
+aa1cc13 feat: themed HUD, stats panel and icon tiles; theme root on every screen
+1d6cc5c feat: UI theme (chibi neon) and UI animations
+d212649 docs: UI theme spec and plan (visual pass 3/3)
+2a1ca0f chore: editor re-saved audio bus layout with its uid
+b2cb858 fix: freeze on next wave (stale enemy grid after clear_all); camera follows at physics rate (motion blur)
+684cfbe balance: more enemies and HP late, fewer materials, pricier shop; closer camera, smaller arena
+dc52efd feat: late-ramping enemy HP curve, configurable camera zoom
+4d02d57 chore: add missing test .uid files
+ead7045 docs: status after chantier 2 review
+a3d2925 fix: beam reaches targets from far mounts, no shot spawned past a point-blank target, weapons fade with the player
+23812ef docs: ADR 0010 visible weapons and icons, status
+5eed2d2 feat: icons in shop and HUD, shop capture mode
+fc923ca feat: weapons visible around the player
+05c2dc8 feat: weapon and item SVG icons
+a8f4175 feat: weapon mounts, muzzle origin, weapon_fired signal
+dbd3968 docs: weapons and items visuals spec and plan (visual pass 2/3)
+---
+
+## Session End: 20261003_160110
+### Commits
+ae7805b fix: smooth noise screen shake, explosions capped (blur with many explosions)
+ca472d9 docs: project status end of session 4
+cc8499b docs: status after chantier 3 review; add missing .uid files
+a89fcfc fix: appear/bounce scale survives container layout; bold project default font
+f695a36 docs: ADR 0011 UI theme, status
+e98ac3d feat: themed shop (tier cards, staggered appear, buy bounce, rolling materials)
+ad3bfaf feat: themed level-up, wave end and game over screens
+aa1cc13 feat: themed HUD, stats panel and icon tiles; theme root on every screen
+1d6cc5c feat: UI theme (chibi neon) and UI animations
+d212649 docs: UI theme spec and plan (visual pass 3/3)
+2a1ca0f chore: editor re-saved audio bus layout with its uid
+b2cb858 fix: freeze on next wave (stale enemy grid after clear_all); camera follows at physics rate (motion blur)
+684cfbe balance: more enemies and HP late, fewer materials, pricier shop; closer camera, smaller arena
+dc52efd feat: late-ramping enemy HP curve, configurable camera zoom
+4d02d57 chore: add missing test .uid files
+ead7045 docs: status after chantier 2 review
+a3d2925 fix: beam reaches targets from far mounts, no shot spawned past a point-blank target, weapons fade with the player
+23812ef docs: ADR 0010 visible weapons and icons, status
+5eed2d2 feat: icons in shop and HUD, shop capture mode
+fc923ca feat: weapons visible around the player
+05c2dc8 feat: weapon and item SVG icons
+a8f4175 feat: weapon mounts, muzzle origin, weapon_fired signal
+dbd3968 docs: weapons and items visuals spec and plan (visual pass 2/3)
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261003_161033
+### Commits
+201423c balance: overwhelm late waves (650 cap, group spawns, more hordes and runners, HP x12, scaling enemy damage)
+ae7805b fix: smooth noise screen shake, explosions capped (blur with many explosions)
+ca472d9 docs: project status end of session 4
+cc8499b docs: status after chantier 3 review; add missing .uid files
+a89fcfc fix: appear/bounce scale survives container layout; bold project default font
+f695a36 docs: ADR 0011 UI theme, status
+e98ac3d feat: themed shop (tier cards, staggered appear, buy bounce, rolling materials)
+ad3bfaf feat: themed level-up, wave end and game over screens
+aa1cc13 feat: themed HUD, stats panel and icon tiles; theme root on every screen
+1d6cc5c feat: UI theme (chibi neon) and UI animations
+d212649 docs: UI theme spec and plan (visual pass 3/3)
+2a1ca0f chore: editor re-saved audio bus layout with its uid
+b2cb858 fix: freeze on next wave (stale enemy grid after clear_all); camera follows at physics rate (motion blur)
+684cfbe balance: more enemies and HP late, fewer materials, pricier shop; closer camera, smaller arena
+dc52efd feat: late-ramping enemy HP curve, configurable camera zoom
+4d02d57 chore: add missing test .uid files
+ead7045 docs: status after chantier 2 review
+a3d2925 fix: beam reaches targets from far mounts, no shot spawned past a point-blank target, weapons fade with the player
+23812ef docs: ADR 0010 visible weapons and icons, status
+5eed2d2 feat: icons in shop and HUD, shop capture mode
+fc923ca feat: weapons visible around the player
+05c2dc8 feat: weapon and item SVG icons
+a8f4175 feat: weapon mounts, muzzle origin, weapon_fired signal
+dbd3968 docs: weapons and items visuals spec and plan (visual pass 2/3)
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261003_165405
+### Commits
+92bc313 perf: lifesteal hook only while active; docs: ADR 0012, status
+640d89d feat: weapon families shown on weapon cards and in the stats panel
+f32e568 feat: 13 new items with effects (unique strong items, effect text on cards)
+f92a4b0 feat: item effects (explode/materials on kill, interest, conditional stat, kill stacks, periodic heal)
+f20e6cc feat: weapon families with set bonuses
+fa28013 feat: dodge, lifesteal, luck and harvest stats; ItemEffects run system
+7f38167 docs: item effects and weapon families spec and plan
+5f9d00c docs: meta-progression, enemies, bosses and modes proposal
+201423c balance: overwhelm late waves (650 cap, group spawns, more hordes and runners, HP x12, scaling enemy damage)
+ae7805b fix: smooth noise screen shake, explosions capped (blur with many explosions)
+ca472d9 docs: project status end of session 4
+cc8499b docs: status after chantier 3 review; add missing .uid files
+a89fcfc fix: appear/bounce scale survives container layout; bold project default font
+f695a36 docs: ADR 0011 UI theme, status
+e98ac3d feat: themed shop (tier cards, staggered appear, buy bounce, rolling materials)
+ad3bfaf feat: themed level-up, wave end and game over screens
+aa1cc13 feat: themed HUD, stats panel and icon tiles; theme root on every screen
+1d6cc5c feat: UI theme (chibi neon) and UI animations
+d212649 docs: UI theme spec and plan (visual pass 3/3)
+2a1ca0f chore: editor re-saved audio bus layout with its uid
+b2cb858 fix: freeze on next wave (stale enemy grid after clear_all); camera follows at physics rate (motion blur)
+684cfbe balance: more enemies and HP late, fewer materials, pricier shop; closer camera, smaller arena
+dc52efd feat: late-ramping enemy HP curve, configurable camera zoom
+4d02d57 chore: add missing test .uid files
+ead7045 docs: status after chantier 2 review
+a3d2925 fix: beam reaches targets from far mounts, no shot spawned past a point-blank target, weapons fade with the player
+23812ef docs: ADR 0010 visible weapons and icons, status
+5eed2d2 feat: icons in shop and HUD, shop capture mode
+fc923ca feat: weapons visible around the player
+05c2dc8 feat: weapon and item SVG icons
+a8f4175 feat: weapon mounts, muzzle origin, weapon_fired signal
+dbd3968 docs: weapons and items visuals spec and plan (visual pass 2/3)
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261003_170311
+### Commits
+4879a02 fix: kill explosions queued (nested area damage cut weapon hits short)
+92bc313 perf: lifesteal hook only while active; docs: ADR 0012, status
+640d89d feat: weapon families shown on weapon cards and in the stats panel
+f32e568 feat: 13 new items with effects (unique strong items, effect text on cards)
+f92a4b0 feat: item effects (explode/materials on kill, interest, conditional stat, kill stacks, periodic heal)
+f20e6cc feat: weapon families with set bonuses
+fa28013 feat: dodge, lifesteal, luck and harvest stats; ItemEffects run system
+7f38167 docs: item effects and weapon families spec and plan
+5f9d00c docs: meta-progression, enemies, bosses and modes proposal
+201423c balance: overwhelm late waves (650 cap, group spawns, more hordes and runners, HP x12, scaling enemy damage)
+ae7805b fix: smooth noise screen shake, explosions capped (blur with many explosions)
+ca472d9 docs: project status end of session 4
+cc8499b docs: status after chantier 3 review; add missing .uid files
+a89fcfc fix: appear/bounce scale survives container layout; bold project default font
+f695a36 docs: ADR 0011 UI theme, status
+e98ac3d feat: themed shop (tier cards, staggered appear, buy bounce, rolling materials)
+ad3bfaf feat: themed level-up, wave end and game over screens
+aa1cc13 feat: themed HUD, stats panel and icon tiles; theme root on every screen
+1d6cc5c feat: UI theme (chibi neon) and UI animations
+d212649 docs: UI theme spec and plan (visual pass 3/3)
+2a1ca0f chore: editor re-saved audio bus layout with its uid
+b2cb858 fix: freeze on next wave (stale enemy grid after clear_all); camera follows at physics rate (motion blur)
+684cfbe balance: more enemies and HP late, fewer materials, pricier shop; closer camera, smaller arena
+dc52efd feat: late-ramping enemy HP curve, configurable camera zoom
+4d02d57 chore: add missing test .uid files
+ead7045 docs: status after chantier 2 review
+a3d2925 fix: beam reaches targets from far mounts, no shot spawned past a point-blank target, weapons fade with the player
+23812ef docs: ADR 0010 visible weapons and icons, status
+5eed2d2 feat: icons in shop and HUD, shop capture mode
+fc923ca feat: weapons visible around the player
+05c2dc8 feat: weapon and item SVG icons
+a8f4175 feat: weapon mounts, muzzle origin, weapon_fired signal
+dbd3968 docs: weapons and items visuals spec and plan (visual pass 2/3)
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
