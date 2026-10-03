@@ -14,7 +14,7 @@ Dernière mise à jour : 2026-10-03 (session 4)
 | **Phase actuelle** | Passe visuelle (3 chantiers) : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles autour du joueur · 3. thème des interfaces. Ensuite Phase 3 (objets à effets), menus, playtest |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 167/167 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 168/168 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~163 FPS moyen (formes néon : ~176, mesuré en alterné) — 500 ennemis, ~1000 projectiles, 6 armes rang IV. Mesures isolées : ±15 FPS (ADR 0009) |
 
 **Emplacements**
@@ -112,7 +112,7 @@ Dernière mise à jour : 2026-10-03 (session 4)
 
 ### Session 4 — 2026-10-03
 
-- **Passe visuelle, chantier 1 — sprites animés** (spec + plan dans `docs/superpowers/`, ADR 0009) : outil de conversion du pack RGS_Dev (recadrage, réduction, halo néon, variantes élite dorées, atlas unique), `SpriteSheet` / `SpriteAnimator`, ennemis et joueur animés (idle/marche, orientés vers le joueur / selon le déplacement), Shogun = diable violet géant teinté magenta, tri en profondeur (y-sort), sol texturé bleu-violet. Galerie mise à jour (ennemis animés, brûlés, élites). Stress test : nouvelle ligne « draw calls ». 167 tests
+- **Passe visuelle, chantier 1 — sprites animés** (spec + plan dans `docs/superpowers/`, ADR 0009) : outil de conversion du pack RGS_Dev (recadrage, réduction, halo néon, variantes élite dorées, atlas unique), `SpriteSheet` / `SpriteAnimator`, ennemis et joueur animés (idle/marche, orientés vers le joueur / selon le déplacement), Shogun = diable violet géant teinté magenta, tri en profondeur (y-sort), sol texturé bleu-violet. Galerie mise à jour (ennemis animés, brûlés, élites). Stress test : nouvelle ligne « draw calls ». Revue finale : correction du retournement vers la gauche (sprite décalé de sa zone de collision), outil de conversion qui échoue proprement. 168 tests
 
 ---
 
