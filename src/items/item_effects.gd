@@ -17,6 +17,8 @@ var wallet: Wallet
 var rng: RandomNumberGenerator
 ## May be null (tests).
 var vfx: Vfx
+## True while an effect deals damage: kills it causes do not trigger more effect damage.
+var effect_damage_running: bool = false
 
 var _effects: Array[ItemEffect] = []
 var _heal_budget: float = LIFESTEAL_MAX_PER_SECOND
