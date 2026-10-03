@@ -1041,3 +1041,132 @@ a8f4175 feat: weapon mounts, muzzle origin, weapon_fired signal
 dbd3968 docs: weapons and items visuals spec and plan (visual pass 2/3)
 ---
 
+## Session End: 20261003_220428
+### Commits
+d616e83 feat: character select and unlocks shown as cards with the character
+7cce359 feat: homing bazooka missiles, smaller missiles, wider weapon ring
+680013f balance: tougher waves 13-20 and a much harder endless mode
+fe0f5cb art: per-weapon projectile bodies (orb, bullet, missile, shuriken) (ADR 0016)
+8026392 art: neon dojo rooftop arena with floor decals and outside props
+4043417 art: smooth cartoon sprites drawn as SVG for every character and enemy
+1e5249e feat: Danger 0-5 per character and endless mode after victory (step 7b)
+fadb161 feat: meta progression with profile, challenges and characters (ADR 0015)
+ba102e1 feat: charger, kamikaze and brood mother enemies (step 5b)
+247b34a feat: real bosses with HP phases and telegraphed patterns (ADR 0014)
+38637e1 balance: less purchasing power from wave 1, more enemies earlier (D45)
+a2aa207 fix: shop gamepad navigation jumps over sold cards
+ca7b9e2 docs: status, CLAUDE.md autoloads, session logs (session 5)
+242a845 feat: main menu, pause menu and persisted settings (ADR 0013)
+70d56cd feat: family bonuses in stats panel; anti-snowball materials, more late spawns
+516135f docs: playtest feedback after step B (families panel, snowball economy); notes and session logs
+4879a02 fix: kill explosions queued (nested area damage cut weapon hits short)
+92bc313 perf: lifesteal hook only while active; docs: ADR 0012, status
+640d89d feat: weapon families shown on weapon cards and in the stats panel
+f32e568 feat: 13 new items with effects (unique strong items, effect text on cards)
+f92a4b0 feat: item effects (explode/materials on kill, interest, conditional stat, kill stacks, periodic heal)
+f20e6cc feat: weapon families with set bonuses
+fa28013 feat: dodge, lifesteal, luck and harvest stats; ItemEffects run system
+7f38167 docs: item effects and weapon families spec and plan
+5f9d00c docs: meta-progression, enemies, bosses and modes proposal
+201423c balance: overwhelm late waves (650 cap, group spawns, more hordes and runners, HP x12, scaling enemy damage)
+ae7805b fix: smooth noise screen shake, explosions capped (blur with many explosions)
+ca472d9 docs: project status end of session 4
+cc8499b docs: status after chantier 3 review; add missing .uid files
+a89fcfc fix: appear/bounce scale survives container layout; bold project default font
+f695a36 docs: ADR 0011 UI theme, status
+e98ac3d feat: themed shop (tier cards, staggered appear, buy bounce, rolling materials)
+ad3bfaf feat: themed level-up, wave end and game over screens
+aa1cc13 feat: themed HUD, stats panel and icon tiles; theme root on every screen
+1d6cc5c feat: UI theme (chibi neon) and UI animations
+d212649 docs: UI theme spec and plan (visual pass 3/3)
+2a1ca0f chore: editor re-saved audio bus layout with its uid
+b2cb858 fix: freeze on next wave (stale enemy grid after clear_all); camera follows at physics rate (motion blur)
+---
+
+## Session End: 20261003_221026
+### Commits
+01c891b ui: weapon and item names in their rarity color everywhere
+d616e83 feat: character select and unlocks shown as cards with the character
+7cce359 feat: homing bazooka missiles, smaller missiles, wider weapon ring
+680013f balance: tougher waves 13-20 and a much harder endless mode
+fe0f5cb art: per-weapon projectile bodies (orb, bullet, missile, shuriken) (ADR 0016)
+8026392 art: neon dojo rooftop arena with floor decals and outside props
+4043417 art: smooth cartoon sprites drawn as SVG for every character and enemy
+1e5249e feat: Danger 0-5 per character and endless mode after victory (step 7b)
+fadb161 feat: meta progression with profile, challenges and characters (ADR 0015)
+ba102e1 feat: charger, kamikaze and brood mother enemies (step 5b)
+247b34a feat: real bosses with HP phases and telegraphed patterns (ADR 0014)
+38637e1 balance: less purchasing power from wave 1, more enemies earlier (D45)
+a2aa207 fix: shop gamepad navigation jumps over sold cards
+ca7b9e2 docs: status, CLAUDE.md autoloads, session logs (session 5)
+242a845 feat: main menu, pause menu and persisted settings (ADR 0013)
+70d56cd feat: family bonuses in stats panel; anti-snowball materials, more late spawns
+516135f docs: playtest feedback after step B (families panel, snowball economy); notes and session logs
+4879a02 fix: kill explosions queued (nested area damage cut weapon hits short)
+92bc313 perf: lifesteal hook only while active; docs: ADR 0012, status
+640d89d feat: weapon families shown on weapon cards and in the stats panel
+f32e568 feat: 13 new items with effects (unique strong items, effect text on cards)
+f92a4b0 feat: item effects (explode/materials on kill, interest, conditional stat, kill stacks, periodic heal)
+f20e6cc feat: weapon families with set bonuses
+fa28013 feat: dodge, lifesteal, luck and harvest stats; ItemEffects run system
+7f38167 docs: item effects and weapon families spec and plan
+5f9d00c docs: meta-progression, enemies, bosses and modes proposal
+201423c balance: overwhelm late waves (650 cap, group spawns, more hordes and runners, HP x12, scaling enemy damage)
+ae7805b fix: smooth noise screen shake, explosions capped (blur with many explosions)
+ca472d9 docs: project status end of session 4
+cc8499b docs: status after chantier 3 review; add missing .uid files
+a89fcfc fix: appear/bounce scale survives container layout; bold project default font
+f695a36 docs: ADR 0011 UI theme, status
+e98ac3d feat: themed shop (tier cards, staggered appear, buy bounce, rolling materials)
+ad3bfaf feat: themed level-up, wave end and game over screens
+aa1cc13 feat: themed HUD, stats panel and icon tiles; theme root on every screen
+1d6cc5c feat: UI theme (chibi neon) and UI animations
+d212649 docs: UI theme spec and plan (visual pass 3/3)
+2a1ca0f chore: editor re-saved audio bus layout with its uid
+b2cb858 fix: freeze on next wave (stale enemy grid after clear_all); camera follows at physics rate (motion blur)
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261003_225819
+### Commits
+48db24c fix: picking another character resets its weapon and Danger rows
+01c891b ui: weapon and item names in their rarity color everywhere
+d616e83 feat: character select and unlocks shown as cards with the character
+7cce359 feat: homing bazooka missiles, smaller missiles, wider weapon ring
+680013f balance: tougher waves 13-20 and a much harder endless mode
+fe0f5cb art: per-weapon projectile bodies (orb, bullet, missile, shuriken) (ADR 0016)
+8026392 art: neon dojo rooftop arena with floor decals and outside props
+4043417 art: smooth cartoon sprites drawn as SVG for every character and enemy
+1e5249e feat: Danger 0-5 per character and endless mode after victory (step 7b)
+fadb161 feat: meta progression with profile, challenges and characters (ADR 0015)
+ba102e1 feat: charger, kamikaze and brood mother enemies (step 5b)
+247b34a feat: real bosses with HP phases and telegraphed patterns (ADR 0014)
+38637e1 balance: less purchasing power from wave 1, more enemies earlier (D45)
+a2aa207 fix: shop gamepad navigation jumps over sold cards
+ca7b9e2 docs: status, CLAUDE.md autoloads, session logs (session 5)
+242a845 feat: main menu, pause menu and persisted settings (ADR 0013)
+70d56cd feat: family bonuses in stats panel; anti-snowball materials, more late spawns
+516135f docs: playtest feedback after step B (families panel, snowball economy); notes and session logs
+4879a02 fix: kill explosions queued (nested area damage cut weapon hits short)
+92bc313 perf: lifesteal hook only while active; docs: ADR 0012, status
+640d89d feat: weapon families shown on weapon cards and in the stats panel
+f32e568 feat: 13 new items with effects (unique strong items, effect text on cards)
+f92a4b0 feat: item effects (explode/materials on kill, interest, conditional stat, kill stacks, periodic heal)
+f20e6cc feat: weapon families with set bonuses
+fa28013 feat: dodge, lifesteal, luck and harvest stats; ItemEffects run system
+7f38167 docs: item effects and weapon families spec and plan
+5f9d00c docs: meta-progression, enemies, bosses and modes proposal
+201423c balance: overwhelm late waves (650 cap, group spawns, more hordes and runners, HP x12, scaling enemy damage)
+ae7805b fix: smooth noise screen shake, explosions capped (blur with many explosions)
+ca472d9 docs: project status end of session 4
+cc8499b docs: status after chantier 3 review; add missing .uid files
+a89fcfc fix: appear/bounce scale survives container layout; bold project default font
+f695a36 docs: ADR 0011 UI theme, status
+e98ac3d feat: themed shop (tier cards, staggered appear, buy bounce, rolling materials)
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+

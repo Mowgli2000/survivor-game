@@ -3,7 +3,7 @@
 > Journal de suivi entre les sessions : état actuel, décisions prises, changements, retours de playtest et prochaines étapes.
 > **À lire au début de chaque session, à mettre à jour à la fin.** Les règles de développement sont dans `CLAUDE.md`, le design dans `docs/design/gdd.md`, les décisions techniques détaillées dans `docs/decisions/`.
 
-Dernière mise à jour : 2026-10-03 (session 5, suite)
+Dernière mise à jour : 2026-10-03 (fin de session 5)
 
 ---
 
@@ -11,12 +11,12 @@ Dernière mise à jour : 2026-10-03 (session 5, suite)
 
 | | |
 |---|---|
-| **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. B. objets à effets et familles ✅ · C. menus et paramètres ✅ · 6. vrais boss ✅ · 5b. nouveaux ennemis ✅ · 7. méta-progression ✅ · 7b. difficultés + mode infini ✅. Suite (D46) : 6b vertical slice (3 persos de plus, ~10 armes, ~30 objets, direction artistique) + page Steam ; méta-progression en discussion (`docs/design/meta-progression-proposition.md`) |
+| **Phase actuelle** | Faits : passe visuelle, B. objets à effets/familles, C. menus/paramètres, 6. vrais boss, 5b. nouveaux ennemis, 7. méta-progression, 7b. difficultés + mode infini, passe artistique « cartoon lisse » (ADR 0016), retours de playtest D47 (équilibrage, infini dur, bazooka à tête chercheuse, cartes de sélection et de déblocage, noms en couleur de rareté, bug du Danger par perso). **En attente : playtest du dev.** Ensuite (D46) : 6b vertical slice + page Steam |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
 | **Tests** | 312/312 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~100 FPS moyen (pire cas : 650 ennemis, 7 armes rang IV, toutes les familles actives ; ~120 avant les familles). Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS |
-| **Dernier push** | `ca472d9` (session 4) — commits suivants pas encore poussés |
+| **Dernier push** | `develop` à jour sur GitHub (fin de session 5, tout poussé) |
 
 **Emplacements**
 - Projet local : `C:\Users\rapha\Projects\survivor-game` (ouvrir `project.godot` dans Godot)
@@ -188,6 +188,8 @@ Dernière mise à jour : 2026-10-03 (session 5, suite)
 ---
 
 ## 6. Prochaines étapes
+
+> **Reprise de session (après `/clear`)** : lire ce fichier et `CLAUDE.md`, puis attendre les retours de playtest du dev. Le dev préfère : enchaîner sans demander à chaque étape, regrouper les questions, suivre la logique de Brotato, mais **demander confirmation avant d'appliquer une liste de changements qu'il vient de donner** (dernière consigne en date). Pour l'art, il fournira des images de référence s'il veut refaire persos/monstres (`tools/art/make_sprites.py`).
 
 0. **Dev : playtest complet** (beaucoup de nouveautés d'un coup), y compris la **nouvelle direction artistique** (persos, ennemis, boss, carte, projectiles : retours bienvenus avec des images de référence) :
    - équilibrage D45 (matériaux, relance, apparitions) : encore trop facile ou trop dur ?
