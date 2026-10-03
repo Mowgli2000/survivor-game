@@ -365,3 +365,23 @@ func test_contact_damage_scales_with_the_wave_multiplier() -> void:
 	var hp_before := _player.hp
 	await wait_physics_frames(2)
 	assert_almost_eq(hp_before - _player.hp, 20.0, 0.01, "10 contact damage x 2")
+
+
+## Bazooka missiles: homing turns them toward an enemy off their straight line.
+func test_homing_projectile_turns_toward_the_enemy() -> void:
+	watch_signals(_enemies)
+	_enemies.spawn(_data, Vector2(300, 200))
+	await wait_physics_frames(1)
+	_projectiles.spawn(Vector2(0, 0), Vector2(300, 0), 3.0, false, 0, 0.0, 1.0,
+		_weapon(func(d: WeaponData) -> void: d.homing = 6.0))
+	await wait_physics_frames(90)
+	assert_signal_emitted(_enemies, "enemy_damaged", "a straight shot would have missed")
+
+
+func test_straight_projectile_misses_the_same_enemy() -> void:
+	watch_signals(_enemies)
+	_enemies.spawn(_data, Vector2(300, 200))
+	await wait_physics_frames(1)
+	_projectiles.spawn(Vector2(0, 0), Vector2(300, 0), 3.0, false, 0, 0.0, 1.0, _weapon(func(_d: WeaponData) -> void: pass))
+	await wait_physics_frames(90)
+	assert_signal_not_emitted(_enemies, "enemy_damaged")

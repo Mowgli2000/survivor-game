@@ -16,6 +16,8 @@ var life: float = 0.0
 var color := Color.WHITE
 ## WeaponData.ProjectileStyle (0 = glow only).
 var style: int = 0
+## Turn rate toward the nearest enemy, radians/s (0 = straight).
+var homing: float = 0.0
 var bounces_left: int = 0
 var bounce_range: float = 0.0
 var explosion_radius: float = 0.0
@@ -35,6 +37,7 @@ func reset(pos: Vector2, p_velocity: Vector2, p_damage: float, p_crit: bool, pie
 		CRIT_COLOR if p_crit else weapon.color)
 	crit = p_crit
 	style = weapon.projectile_style
+	homing = weapon.homing
 	pierce_left = pierce
 	knockback = p_knockback
 	bounces_left = weapon.bounces
@@ -54,6 +57,7 @@ func reset_basic(pos: Vector2, p_velocity: Vector2, p_damage: float, p_radius: f
 	life = lifetime
 	color = p_color
 	style = p_style
+	homing = 0.0
 	crit = false
 	pierce_left = 0
 	knockback = 0.0

@@ -3,6 +3,9 @@ extends Node2D
 ## Owns every active player projectile: movement, lifetime, hits (through the
 ## EnemyManager damage API), bounces and explosions. Runs after EnemyManager.
 
+## Homing projectiles look for enemies within this distance.
+const HOMING_RANGE := 520.0
+
 var _enemies: EnemyManager
 var _vfx: Vfx
 var _arena: Rect2
@@ -49,6 +52,8 @@ func _physics_process(delta: float) -> void:
 		return
 	for i in range(_active.size() - 1, -1, -1):
 		var p := _active[i]
+		if p.homing > 0.0:
+			_steer(p, delta)
 		p.position += p.velocity * delta
 		p.life -= delta
 		var alive := p.life > 0.0 and _arena.has_point(p.position)
@@ -65,6 +70,18 @@ func _physics_process(delta: float) -> void:
 
 
 ## Applies the projectile to touched enemies. Returns false when it is used up.
+## Turns a homing projectile toward the nearest enemy ahead (few projectiles
+## home, so one grid query each per frame is cheap).
+func _steer(p: Projectile, delta: float) -> void:
+	var target := _enemies.find_nearest(p.position, HOMING_RANGE)
+	if target < 0:
+		return
+	var wanted := (_enemies.get_enemy(target).position - p.position).angle()
+	var current := p.velocity.angle()
+	var turn := clampf(angle_difference(current, wanted), -p.homing * delta, p.homing * delta)
+	p.velocity = p.velocity.rotated(turn)
+
+
 func _resolve_hits(p: Projectile) -> bool:
 	var found := _enemies.grid.query_radius(p.position, p.radius + _enemies.max_radius, _candidates)
 	for k in found:

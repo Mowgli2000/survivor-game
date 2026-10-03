@@ -13,7 +13,7 @@ const CELL_CODE := 8.0
 ## Per style (index = WeaponData.ProjectileStyle): body length / width ratio,
 ## body size vs. hitbox, how much the projectile color tints the body.
 const BODY_STRETCH: Array[float] = [1.0, 1.0, 1.9, 1.7, 2.0, 1.0, 1.0]
-const BODY_SCALE: Array[float] = [0.0, 1.6, 2.2, 2.2, 2.4, 2.6, 1.6]
+const BODY_SCALE: Array[float] = [0.0, 1.6, 2.2, 2.2, 1.7, 2.6, 1.6]
 const BODY_TINT: Array[float] = [0.0, 1.0, 1.0, 0.0, 0.0, 0.25, 1.0]
 ## Shuriken spin, radians per second of flight.
 const SPIN_SPEED := 18.0

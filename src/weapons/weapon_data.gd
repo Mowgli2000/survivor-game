@@ -39,6 +39,8 @@ enum ProjectileStyle { GLOW, ORB, BOLT, BULLET, MISSILE, SHURIKEN, ENEMY_ORB }
 ## Random deviation in degrees applied to each projectile.
 @export var inaccuracy_deg: float = 0.0
 @export var pierce: int = 0
+## > 0: turn rate (radians/s) toward the nearest enemy (bazooka missiles).
+@export var homing: float = 0.0
 @export var projectile_radius: float = 6.0
 @export var projectile_lifetime: float = 1.0
 ## Number of times a projectile jumps to another enemy after a hit.

@@ -24,6 +24,7 @@ var status: StatusData
 var status_chance: float
 var color: Color
 var projectile_style: int = 0
+var homing: float = 0.0
 
 
 static func compute(data: WeaponData, level: int) -> WeaponStats:
@@ -45,6 +46,7 @@ static func compute(data: WeaponData, level: int) -> WeaponStats:
 	s.status_chance = data.status_chance
 	s.color = data.color
 	s.projectile_style = data.projectile_style
+	s.homing = data.homing
 
 	var damage_percent := 0.0
 	var fire_rate_percent := 0.0
