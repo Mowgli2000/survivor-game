@@ -11,3 +11,5 @@ extends Resource
 @export var modifiers: Array[StatModifier] = []
 ## 0 = unlimited.
 @export var max_count: int = 0
+## Shop icon (null: text only).
+@export var icon: Texture2D

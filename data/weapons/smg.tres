@@ -4,6 +4,7 @@
 [ext_resource type="Script" path="res://src/weapons/behaviors/projectile_shooter_behavior.gd" id="2_behavior"]
 [ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
 [ext_resource type="AudioStream" path="res://assets/audio/sfx/weapon_smg.ogg" id="9_sound"]
+[ext_resource type="Texture2D" path="res://assets/icons/weapons/smg.svg" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")
@@ -43,3 +44,4 @@ projectile_lifetime = 0.6
 fire_sound = ExtResource("9_sound")
 fire_volume_db = -12.0
 color = Color(0.55, 1, 0.3, 1)
+icon = ExtResource("icon_tex")

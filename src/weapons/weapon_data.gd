@@ -54,6 +54,9 @@ extends Resource
 
 @export_group("Visual")
 @export var color: Color = Color(1.0, 0.9, 0.4)
+## Shop/HUD icon, also drawn as the in-game weapon (profile, barrel pointing right,
+## centered). Null: text only in the UI, not drawn in game.
+@export var icon: Texture2D
 
 
 func max_level() -> int:

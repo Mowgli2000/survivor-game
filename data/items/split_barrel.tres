@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://src/items/item_data.gd" id="1_item"]
 [ext_resource type="Script" path="res://src/core/stat_modifier.gd" id="2_mod"]
+[ext_resource type="Texture2D" path="res://assets/icons/items/split_barrel.svg" id="icon_tex"]
 
 [sub_resource type="Resource" id="Mod_1"]
 script = ExtResource("2_mod")
@@ -21,3 +22,4 @@ tier = 3
 base_price = 70
 max_count = 2
 modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2")])
+icon = ExtResource("icon_tex")

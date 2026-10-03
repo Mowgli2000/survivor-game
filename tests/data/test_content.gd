@@ -58,6 +58,7 @@ func test_weapons() -> void:
 		assert_true(_keys.has(weapon.description_key), "%s: missing description key" % weapon.id)
 		assert_eq(weapon.levels.size(), Tiers.COUNT - 1, "%s: one level entry per tier II..IV" % weapon.id)
 		assert_gt(weapon.base_price, 0, "%s has no price" % weapon.id)
+		assert_not_null(weapon.icon, "%s has no icon" % weapon.id)
 		for bonus in weapon.levels:
 			assert_not_null(bonus, "%s: empty level entry" % weapon.id)
 		if weapon.behavior is MeleeArcBehavior or weapon.behavior is BeamBehavior:
@@ -146,6 +147,7 @@ func test_items() -> void:
 		_assert_common(item, &"items")
 		assert_between(item.tier, 1, Tiers.COUNT, "%s: tier out of range" % item.id)
 		assert_gt(item.base_price, 0, "%s has no price" % item.id)
+		assert_not_null(item.icon, "%s has no icon" % item.id)
 		assert_gte(item.max_count, 0)
 		assert_gt(item.modifiers.size(), 0, "%s has no modifier" % item.id)
 		for mod in item.modifiers:
