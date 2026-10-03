@@ -32,8 +32,12 @@ func setup(p_player: Player, p_enemies: EnemyManager, p_wallet: Wallet, p_rng: R
 	wallet = p_wallet
 	rng = p_rng
 	vfx = p_vfx
-	enemies.enemy_damaged.connect(_on_enemy_damaged)
 	enemies.enemy_killed.connect(_on_enemy_killed)
+	# Hits fire thousands of times per second: listen only while lifesteal > 0.
+	stats.changed.connect(func(stat: StringName) -> void:
+		if stat == StatIds.LIFESTEAL:
+			_update_lifesteal_hook())
+	_update_lifesteal_hook()
 
 
 ## True with probability `chance`, raised by the luck stat.
@@ -69,6 +73,15 @@ func _physics_process(delta: float) -> void:
 	_heal_budget = minf(_heal_budget + LIFESTEAL_MAX_PER_SECOND * delta, LIFESTEAL_MAX_PER_SECOND)
 	for effect in _effects:
 		effect.on_tick(self, delta)
+
+
+func _update_lifesteal_hook() -> void:
+	var active := stats.get_value(StatIds.LIFESTEAL) > 0.0
+	if active != enemies.enemy_damaged.is_connected(_on_enemy_damaged):
+		if active:
+			enemies.enemy_damaged.connect(_on_enemy_damaged)
+		else:
+			enemies.enemy_damaged.disconnect(_on_enemy_damaged)
 
 
 func _on_enemy_damaged(_pos: Vector2, _amount: float, _crit: bool) -> void:

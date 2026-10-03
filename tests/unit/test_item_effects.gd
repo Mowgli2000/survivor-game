@@ -200,3 +200,11 @@ func test_owned_unique_item_is_never_offered_again() -> void:
 	shop.open(10)
 	for offer in shop.offers:
 		assert_ne(offer.item, unique)
+
+
+func test_lifesteal_hook_only_listens_when_the_stat_is_positive() -> void:
+	assert_false(_enemies.enemy_damaged.is_connected(_effects._on_enemy_damaged), "no cost per hit by default")
+	_player.stats.set_base(StatIds.LIFESTEAL, 0.05)
+	assert_true(_enemies.enemy_damaged.is_connected(_effects._on_enemy_damaged))
+	_player.stats.set_base(StatIds.LIFESTEAL, 0.0)
+	assert_false(_enemies.enemy_damaged.is_connected(_effects._on_enemy_damaged))

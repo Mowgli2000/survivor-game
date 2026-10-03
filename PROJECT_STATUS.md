@@ -11,11 +11,11 @@ Dernière mise à jour : 2026-10-03 (session 4)
 
 | | |
 |---|---|
-| **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. Suite : B. objets à effets et synergies (Phase 3), C. menus, D. playtest |
+| **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. B. objets à effets et familles ✅. Suite : C. menus, D. playtest ; méta-progression en discussion (`docs/design/meta-progression-proposition.md`) |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 210/210 (GUT : unitaires, données, parties simulées) |
-| **Performance (stress test)** | ~120 FPS moyen, min ~60-75 — 650 ennemis (plafond du jeu), ~1000 projectiles, 7 armes (500 ennemis : ~145-165). Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS |
+| **Tests** | 233/233 (GUT : unitaires, données, parties simulées) |
+| **Performance (stress test)** | ~100 FPS moyen (pire cas : 650 ennemis, 7 armes rang IV, toutes les familles actives ; ~120 avant les familles). Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS |
 | **Dernier push** | `ca472d9` (session 4) — commits suivants pas encore poussés |
 
 **Emplacements**
@@ -67,6 +67,7 @@ Dernière mise à jour : 2026-10-03 (session 4)
 | D37 | 2026-10-03 | **Performance : 100 FPS suffisent** | Dev : « même s'il tourne à 100 FPS, ce n'est pas un jeu compétitif ». Seuil du stress test : ≥ 100 FPS moyen (au lieu de 150) |
 | D38 | 2026-10-03 | **Rééquilibrage vagues 12-20 : plus de monstres, plus de PV, moins de pouvoir d'achat** | Apparitions fin de partie 24 → 32/s ; PV ×3 → ×8 en vague 20 avec une courbe tardive (×3,4 vague 12, ×5,4 vague 16) — remontée prévue par D24 ; matériaux par XP 60 % → 30 % en vague 20 ; inflation des prix 10 % → 12 % par vague |
 | D39 | 2026-10-03 | **Caméra plus proche, arène plus petite (façon Brotato)** | Zoom 1,3 ; arène 3200 → 2400 ; apparition à 950 px (au lieu de 1150, toujours hors écran). Plus de pression, personnages plus lisibles. Réglable dans `data/runs/default.tres` |
+| D42 | 2026-10-03 | **Objets à effets et familles d'armes (étape B)** : 4 stats (esquive, vol de vie, chance, récolte), 4 familles à paliers 2/4/6 (lames, armes à feu, énergie, explosif), 6 types d'effets, 13 nouveaux objets (28 au total), objets forts uniques | Choix « reco » du dev. ADR 0012 |
 | D41 | 2026-10-03 | **Se sentir submergé (vagues 12-20)** : plafond 500 → 650 ennemis, apparitions fin 32 → 45/s **en paquets** (1 à 12 monstres qui arrivent ensemble d'un côté), hordes en plus vagues 14/16/19, plus de chauves-souris dès la vague 14 ; PV ×8 → ×12 en vague 20 ; **dégâts des ennemis qui montent** (×1,3 vague 10, ×1,8 vague 15, ×2,5 vague 20) ; vitesse inchangée ; build non affaibli | Retour du dev (« je ne bouge plus dès la vague 15-16, je veux être submergé ») et proposition validée. Pas d'optimisation au-delà de 1 000 ennemis (inutile : les monstres meurent avant). Mesure : 650 ennemis ≈ 120 FPS, 800 ≈ 90, 1 200 ≈ 48 |
 | D40 | 2026-10-03 | **Thème d'interface « chibi néon »** : contour noir, fond violet nuit, lueur néon ; polices Fredoka + Nunito ; animations discrètes ; tous les écrans | Choix « reco » du dev. Un seul `Theme` construit par `UiTheme`, animations `UiFx`. ADR 0011 |
 | D36 | 2026-10-03 | **Armes visibles façon Brotato + icônes** : positions fixes en cercle, armes petites, icônes d'objets dans le même style, cadre de rang en interface + liseré en jeu | Choix « reco » du dev. Les tirs partent du canon ; la cible reste choisie depuis le centre (pas de rééquilibrage). ADR 0010 |
@@ -127,6 +128,8 @@ Dernière mise à jour : 2026-10-03 (session 4)
 - **Rééquilibrage** (D38) et **caméra/arène** (D39) après le retour du dev.
 - **Passe visuelle, chantier 3 — thème des interfaces** (spec + plan dans `docs/superpowers/`, ADR 0011) : `UiTheme` (thème unique, polices Fredoka/Nunito, styles et variations), `UiFx` (apparition, soulèvement, rebond, compteurs), appliqués au HUD, level-up, boutique, fin de vague, game over/victoire, panneau de stats, chiffres de dégâts. Revue finale : grossissement à l'apparition et rebond à l'achat annulés par les conteneurs, police par défaut trop fine — corrigés. 205 tests
 
+- **Étape B — objets à effets et familles d'armes** (spec + plan dans `docs/superpowers/`, ADR 0012) : esquive, vol de vie, chance, récolte ; `ItemEffects` + 6 types d'effets ; 4 familles d'armes avec bonus 2/4/6 ; 13 nouveaux objets avec icônes ; familles affichées en boutique et dans le panneau de stats. Proposition de méta-progression rédigée (11 questions). 233 tests
+
 ---
 
 ## 4. Retours du dev (playtests)
@@ -163,7 +166,8 @@ Dernière mise à jour : 2026-10-03 (session 4)
 
 1. **Dev : valider le chantier 1 en jeu** (sprites, tailles, sol, Shogun) ; lancer le jeu ou la galerie `vfx_gallery.tscn`. Réglages rapides : `SPRITE_HEIGHT_PER_RADIUS` (`enemy.gd`, `player.gd`), `sprite_scale` / `sprite_tint` dans `data/enemies/`, `FLOOR_TINT` (`arena.gd`), halo dans `tools/sprites/bake_sprites.gd`.
 2. **Dev : valider le chantier 2** (icônes, armes autour du perso, boutique). Question ouverte : **zoom de la caméra** (aujourd'hui 1 : le perso fait ~60 px en 1080p, plus petit que dans Brotato ; zoomer agrandit tout mais montre moins d'arène). Re-mesurer le stress test sur une machine au repos (ADR 0010).
-3. **Dev : valider le thème des interfaces** (captures ou en jeu). Puis, dans l'ordre demandé : **B.** objets à effets et synergies (Phase 3), **C.** menus (principal, pause, paramètres avec volumes et « réduire les animations » → `UiFx.reduce_motion`), **D.** playtest et ajustements.
+3. **Dev : répondre aux 11 questions de `docs/design/meta-progression-proposition.md`** (méta-progression, persos, difficultés, ennemis, boss, mode infini, ordre des étapes), puis planifier les étapes 6/7/8.
+4. **C.** menus (principal, pause, paramètres avec volumes et « réduire les animations » → `UiFx.reduce_motion`), **D.** playtest (nouveaux objets, familles, équilibrage D41).
 4. **Dev** : écouter le son en jeu (sons choisis sans écoute, à changer au goût) ; rejouer une run complète (F3) : densité des vagues 10-20, matériaux, panneau de stats (Tab) ; ajuster D30.
 5. **Phase 3 — Objets à effets et synergies** (vendus par la boutique), puis **menus** (principal, pause, paramètres avec volumes).
 6. Phase 6 (vrai boss), puis 6b (vertical slice + page Steam). Roadmap complète : `docs/design/gdd.md`.
