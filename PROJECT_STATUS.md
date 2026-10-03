@@ -14,7 +14,7 @@ Dernière mise à jour : 2026-10-03 (session 4)
 | **Phase actuelle** | Passe visuelle (3 chantiers) terminée : 1. sprites animés ✅ · 2. icônes d'armes/objets + armes visibles ✅ · 3. thème des interfaces ✅. B. objets à effets et familles ✅. Suite : C. menus, D. playtest ; méta-progression en discussion (`docs/design/meta-progression-proposition.md`) |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 233/233 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 234/234 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | ~100 FPS moyen (pire cas : 650 ennemis, 7 armes rang IV, toutes les familles actives ; ~120 avant les familles). Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS |
 | **Dernier push** | `ca472d9` (session 4) — commits suivants pas encore poussés |
 
@@ -128,7 +128,7 @@ Dernière mise à jour : 2026-10-03 (session 4)
 - **Rééquilibrage** (D38) et **caméra/arène** (D39) après le retour du dev.
 - **Passe visuelle, chantier 3 — thème des interfaces** (spec + plan dans `docs/superpowers/`, ADR 0011) : `UiTheme` (thème unique, polices Fredoka/Nunito, styles et variations), `UiFx` (apparition, soulèvement, rebond, compteurs), appliqués au HUD, level-up, boutique, fin de vague, game over/victoire, panneau de stats, chiffres de dégâts. Revue finale : grossissement à l'apparition et rebond à l'achat annulés par les conteneurs, police par défaut trop fine — corrigés. 205 tests
 
-- **Étape B — objets à effets et familles d'armes** (spec + plan dans `docs/superpowers/`, ADR 0012) : esquive, vol de vie, chance, récolte ; `ItemEffects` + 6 types d'effets ; 4 familles d'armes avec bonus 2/4/6 ; 13 nouveaux objets avec icônes ; familles affichées en boutique et dans le panneau de stats. Proposition de méta-progression rédigée (11 questions). 233 tests
+- **Étape B — objets à effets et familles d'armes** (spec + plan dans `docs/superpowers/`, ADR 0012) : esquive, vol de vie, chance, récolte ; `ItemEffects` + 6 types d'effets ; 4 familles d'armes avec bonus 2/4/6 ; 13 nouveaux objets avec icônes ; familles affichées en boutique et dans le panneau de stats. Revue finale : une attaque de zone interrompue quand une élimination déclenchait le Réacteur en chaîne — corrigé (explosions en file d'attente). Proposition de méta-progression rédigée (11 questions). 234 tests
 
 ---
 

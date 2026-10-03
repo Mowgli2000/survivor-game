@@ -107,6 +107,8 @@ func test_explode_on_kill_damages_nearby_enemies_without_chaining_forever() -> v
 	var far := _enemies.spawn(_enemy(200.0), Vector2(600, 0))
 	await wait_physics_frames(1)
 	_enemies.enemy_killed.emit(_enemy(1.0), Vector2(300, 0), false)
+	assert_eq(_effects.pending_explosions(), 1, "queued, resolved next physics frame")
+	await wait_physics_frames(2)
 	assert_almost_eq(near.hp, 150.0, 0.01, "caught in the blast")
 	assert_eq(far.hp, 200.0, "out of range")
 
@@ -208,3 +210,20 @@ func test_lifesteal_hook_only_listens_when_the_stat_is_positive() -> void:
 	assert_true(_enemies.enemy_damaged.is_connected(_effects._on_enemy_damaged))
 	_player.stats.set_base(StatIds.LIFESTEAL, 0.0)
 	assert_false(_enemies.enemy_damaged.is_connected(_effects._on_enemy_damaged))
+
+
+func test_kill_explosion_during_an_area_hit_does_not_cut_the_hit_short() -> void:
+	var effect := ExplodeOnKillEffect.new()
+	effect.chance = 1.0
+	effect.radius = 100.0
+	effect.damage = 1.0
+	_effects.add_item(_item(effect))
+	_enemies.spawn(_enemy(1.0), Vector2(300, 0))  # dies in the hit and explodes
+	var tanks: Array[Enemy] = []
+	for i in 5:
+		tanks.append(_enemies.spawn(_enemy(1000.0), Vector2(300 + 20 * (i + 1), 0)))
+	await wait_physics_frames(1)
+	var hits := _enemies.damage_in_radius(Vector2(300, 0), 300.0, 10.0, false, 0.0)
+	assert_eq(hits, 6, "every enemy of the weapon hit is touched")
+	for tank in tanks:
+		assert_lt(tank.hp, 1000.0)

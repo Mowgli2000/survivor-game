@@ -1,7 +1,8 @@
 class_name ExplodeOnKillEffect
 extends ItemEffect
-## Killed enemies may explode, damaging the enemies around them. Kills made by
-## these explosions do not trigger new ones (no chain across the whole horde).
+## Killed enemies may explode, damaging the enemies around them (resolved by
+## ItemEffects on the next physics frame). Kills made by these explosions do not
+## trigger new ones (no chain across the whole horde).
 
 const COLOR := Color(1.0, 0.55, 0.2)
 
@@ -14,8 +15,4 @@ const COLOR := Color(1.0, 0.55, 0.2)
 func on_enemy_killed(effects: ItemEffects, _data: EnemyData, pos: Vector2, _elite: bool) -> void:
 	if effects.effect_damage_running or not effects.roll(chance):
 		return
-	effects.effect_damage_running = true
-	effects.enemies.damage_in_radius(pos, radius, damage * effects.stats.get_value(StatIds.DAMAGE), false, 150.0)
-	effects.effect_damage_running = false
-	if effects.vfx != null:
-		effects.vfx.explosion(pos, radius, COLOR, false)
+	effects.queue_explosion(pos, radius, damage * effects.stats.get_value(StatIds.DAMAGE))

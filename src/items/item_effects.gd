@@ -7,6 +7,9 @@ extends Node
 ## Reacts to existing signals only: nothing is added to the per-enemy loops.
 
 const LIFESTEAL_MAX_PER_SECOND := 10.0
+## Effect explosions resolved per physics frame; queue size limit (extras are dropped).
+const MAX_EXPLOSIONS_PER_FRAME := 12
+const MAX_QUEUED_EXPLOSIONS := 64
 ## Harvest grows by this fraction per wave already played.
 const HARVEST_GROWTH := 0.05
 
@@ -21,6 +24,10 @@ var vfx: Vfx
 var effect_damage_running: bool = false
 
 var _effects: Array[ItemEffect] = []
+## Pending effect explosions, 4 floats each: x, y, radius, damage. Queued instead of
+## dealt at once: kills happen inside EnemyManager's area-damage loops, whose
+## scratch buffers a nested damage_in_radius would overwrite.
+var _explosions := PackedFloat32Array()
 var _heal_budget: float = LIFESTEAL_MAX_PER_SECOND
 
 
@@ -69,10 +76,36 @@ func on_wave_ended(wave: int) -> int:
 	return harvest
 
 
+## Damage around `pos` on the next physics frame (no chain: these kills trigger nothing).
+func queue_explosion(pos: Vector2, radius: float, damage: float) -> void:
+	if _explosions.size() < MAX_QUEUED_EXPLOSIONS * 4:
+		_explosions.append_array([pos.x, pos.y, radius, damage])
+
+
+func pending_explosions() -> int:
+	return _explosions.size() / 4
+
+
 func _physics_process(delta: float) -> void:
+	_resolve_explosions()
 	_heal_budget = minf(_heal_budget + LIFESTEAL_MAX_PER_SECOND * delta, LIFESTEAL_MAX_PER_SECOND)
 	for effect in _effects:
 		effect.on_tick(self, delta)
+
+
+func _resolve_explosions() -> void:
+	var count := mini(_explosions.size() / 4, MAX_EXPLOSIONS_PER_FRAME)
+	if count == 0:
+		return
+	effect_damage_running = true
+	for i in count:
+		var pos := Vector2(_explosions[i * 4], _explosions[i * 4 + 1])
+		var radius := _explosions[i * 4 + 2]
+		enemies.damage_in_radius(pos, radius, _explosions[i * 4 + 3], false, 150.0)
+		if vfx != null:
+			vfx.explosion(pos, radius, ExplodeOnKillEffect.COLOR, false)
+	effect_damage_running = false
+	_explosions = _explosions.slice(count * 4)
 
 
 func _update_lifesteal_hook() -> void:
