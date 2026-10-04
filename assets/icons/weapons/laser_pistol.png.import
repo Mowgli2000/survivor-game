@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dijnj5sxi8iqv"
-path="res://.godot/imported/katana.svg-271e01ddf2c0d4b88b45c4961ace2f24.ctex"
+uid="uid://c6dtu2d0wx6co"
+path="res://.godot/imported/laser_pistol.png-3958b9d799e506b973d9b748f12bb49a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/icons/weapons/katana.svg"
-dest_files=["res://.godot/imported/katana.svg-271e01ddf2c0d4b88b45c4961ace2f24.ctex"]
+source_file="res://assets/icons/weapons/laser_pistol.png"
+dest_files=["res://.godot/imported/laser_pistol.png-3958b9d799e506b973d9b748f12bb49a.ctex"]
 
 [params]
 
@@ -23,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

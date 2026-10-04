@@ -38,7 +38,7 @@ UPGRADE_PIERCING,Piercing,Perforation
 UPGRADE_MAGNET,Magnet,Aimant
 UPGRADE_PRECISION,Precision,Précision
 UPGRADE_PLATING,Plating,Blindage
-WEAPON_PULSE,Pulse,Pulsar
+WEAPON_PULSE,Arcane orb,Orbe arcanique
 ENEMY_GRUNT,Orc,Orc
 ENEMY_RUNNER,Dungeon wolf,Loup du donjon
 CHARACTER_DRIFTER,Rank-E Hunter,Chasseur de rang E
@@ -49,17 +49,17 @@ STAT_AREA,Area,Zone
 WSTAT_FIRE_RATE,Fire rate,Cadence
 WSTAT_BOUNCES,Bounces,Rebonds
 UPGRADE_AMPLITUDE,Amplitude,Amplitude
-WEAPON_PULSE_DESC,Fires energy pulses at the nearest enemy.,Tire des impulsions d'énergie sur l'ennemi le plus proche.
-WEAPON_KATANA,Plasma katana,Katana à plasma
-WEAPON_KATANA_DESC,Wide plasma slash that sets enemies on fire.,Large coup de plasma qui enflamme les ennemis.
-WEAPON_LASER_PISTOL,Laser pistol,Pistolet laser
-WEAPON_LASER_PISTOL_DESC,Instant beam that pierces everything. Can electrocute.,Rayon instantané qui transperce tout. Peut électrocuter.
-WEAPON_SHURIKEN,Shuriken,Shuriken
-WEAPON_SHURIKEN_DESC,Bounces from enemy to enemy.,Ricoche d'ennemi en ennemi.
-WEAPON_SMG,Submachine gun,Mitraillette
-WEAPON_SMG_DESC,Very fast but inaccurate bursts.,Rafales très rapides mais imprécises.
-WEAPON_BAZOOKA,Bazooka,Bazooka
-WEAPON_BAZOOKA_DESC,Slow rocket that explodes and slows enemies.,Roquette lente qui explose et ralentit les ennemis.
+WEAPON_PULSE_DESC,Fires arcane bolts at the nearest enemy.,Tire des éclats d'arcane sur l'ennemi le plus proche.
+WEAPON_KATANA,Flame sword,Épée flamboyante
+WEAPON_KATANA_DESC,Wide flaming slash that sets enemies on fire.,Large coup d'épée qui enflamme les ennemis.
+WEAPON_LASER_PISTOL,Crystal wand,Baguette de cristal
+WEAPON_LASER_PISTOL_DESC,Instant crystal beam that pierces everything. Can electrocute.,Rayon de cristal instantané qui transperce tout. Peut électrocuter.
+WEAPON_SHURIKEN,Throwing daggers,Dagues de lancer
+WEAPON_SHURIKEN_DESC,Bounce from enemy to enemy.,Ricochent d'ennemi en ennemi.
+WEAPON_SMG,Repeating crossbow,Arbalète à répétition
+WEAPON_SMG_DESC,Very fast but inaccurate bolts.,Carreaux très rapides mais imprécis.
+WEAPON_BAZOOKA,Bomb flask,Fiole explosive
+WEAPON_BAZOOKA_DESC,Slow flask that explodes and slows enemies.,Fiole lente qui explose et ralentit les ennemis.
 ENEMY_SHOOTER,Goblin shaman,Chaman gobelin
 ENEMY_TANK,Stone golem,Golem de pierre
 ENEMY_SHOGUN,Demon Knight,Chevalier démon

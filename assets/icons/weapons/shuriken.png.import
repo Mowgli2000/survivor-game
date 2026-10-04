@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://brs2c2ayvvbtv"
-path="res://.godot/imported/bazooka.svg-ea3e864bf7707f1e8d644f698a701359.ctex"
+uid="uid://cjqin1bohpyn4"
+path="res://.godot/imported/shuriken.png-d2d1e8e6d8da39a72ce2109ca938acca.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/icons/weapons/bazooka.svg"
-dest_files=["res://.godot/imported/bazooka.svg-ea3e864bf7707f1e8d644f698a701359.ctex"]
+source_file="res://assets/icons/weapons/shuriken.png"
+dest_files=["res://.godot/imported/shuriken.png-d2d1e8e6d8da39a72ce2109ca938acca.ctex"]
 
 [params]
 
@@ -23,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

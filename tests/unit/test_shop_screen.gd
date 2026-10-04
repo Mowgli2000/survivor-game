@@ -22,7 +22,7 @@ func test_weapon_card_text() -> void:
 	offer.tier = 3
 	var texts := ShopScreen.describe(offer)
 	assert_eq(texts[0], "Weapon · III · Blades")
-	assert_eq(texts[1], "Plasma katana")
+	assert_eq(texts[1], "Flame sword")
 
 
 # --- Focus (keyboard/gamepad): a confirm press must never land on "Next wave" by accident ---
