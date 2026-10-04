@@ -7,16 +7,16 @@
 script = ExtResource("1_fio14")
 texture = ExtResource("2_heq2g")
 regions = Dictionary[StringName, Rect2]({
-&"decal_cable": Rect2(0, 0, 256, 64),
-&"decal_grate": Rect2(260, 0, 128, 88),
-&"decal_manhole": Rect2(392, 0, 128, 128),
-&"decal_puddle": Rect2(524, 0, 160, 96),
-&"decal_seal_cyan": Rect2(688, 0, 160, 160),
-&"decal_seal_pink": Rect2(852, 0, 160, 160),
-&"prop_crates": Rect2(0, 164, 160, 196),
-&"prop_lantern": Rect2(164, 164, 128, 248),
-&"prop_sign_cyan": Rect2(296, 164, 128, 248),
-&"prop_sign_pink": Rect2(428, 164, 128, 248),
-&"prop_tree": Rect2(560, 164, 192, 256),
-&"prop_vending": Rect2(756, 164, 144, 256)
+&"decal_bones": Rect2(0, 0, 86, 95),
+&"decal_cracks": Rect2(90, 0, 131, 130),
+&"decal_grate": Rect2(225, 0, 128, 88),
+&"decal_puddle": Rect2(357, 0, 160, 96),
+&"decal_rune_circle": Rect2(521, 0, 166, 170),
+&"prop_banner": Rect2(691, 0, 200, 260),
+&"prop_barrels": Rect2(0, 264, 159, 160),
+&"prop_bones": Rect2(163, 264, 87, 100),
+&"prop_brazier": Rect2(254, 264, 138, 180),
+&"prop_chest": Rect2(396, 264, 117, 115),
+&"prop_crystals": Rect2(517, 264, 155, 160),
+&"prop_pillar": Rect2(676, 264, 125, 240)
 })

@@ -27,9 +27,13 @@ func add_value(amount: int) -> void:
 
 
 func _draw() -> void:
-	# Bigger and bluer as the value grows (merged gems).
+	# Mana crystal (art bible): bigger and more violet as the value grows (merged gems).
 	var t := clampf(log(float(value)) / log(50.0), 0.0, 1.0)
-	var color := Color(0.35, 1.0, 0.5).lerp(Color(0.5, 0.6, 1.0), t)
+	var color := Color(0.35, 0.78, 1.0).lerp(Color(0.68, 0.45, 1.0), t)
 	var s := SIZE * (1.0 + t)
 	var points := PackedVector2Array([Vector2(0, -s), Vector2(s * 0.7, 0), Vector2(0, s), Vector2(-s * 0.7, 0)])
 	draw_colored_polygon(points, color)
+	# Lit facet, then the black outline of the art style (no antialiasing: mass pickups).
+	draw_colored_polygon(PackedVector2Array([Vector2(0, -s), Vector2(s * 0.7, 0), Vector2(0, 0)]), color.lerp(Color.WHITE, 0.55))
+	points.append(points[0])
+	draw_polyline(points, Color(0.05, 0.04, 0.1), 2.0)

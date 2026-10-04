@@ -1,16 +1,17 @@
 class_name Arena
 extends Node2D
-## Arena art (tools/art/make_map.py): tiled neon-dojo rooftop slabs, flat decals
-## scattered on the floor (no collision, low contrast), a low neon wall on the
-## border and tall props (lanterns, trees, signs...) only outside the arena.
+## Arena art (tools/art/make_map.py + AI decor, docs/design/art-bible.md): tiled
+## dungeon stone slabs, flat decals scattered on the floor (no collision, low
+## contrast), a low stone wall on the border and tall props (pillars, braziers,
+## crystals...) only outside the arena.
 ## Everything is drawn once (static canvas) from one ground texture and one
 ## decor atlas. Decor placement uses a fixed seed: same layout every run.
 
 const GROUND := preload("res://assets/sprites/ground.png")
 const DECOR := preload("res://assets/map/decor_atlas.tres")
-const OUTSIDE_COLOR := Color(0.16, 0.14, 0.26)
-const WALL_COLOR := Color(0.2, 0.18, 0.34)
-const BORDER_COLOR := Color(1.0, 0.2, 0.6)
+const OUTSIDE_COLOR := Color(0.12, 0.11, 0.18)
+const WALL_COLOR := Color(0.25, 0.23, 0.34)
+const BORDER_COLOR := Color(0.62, 0.58, 0.78)
 const WALL_THICKNESS := 26.0
 ## One floor decal per this many square pixels of arena (sparse: readability first).
 const DECAL_AREA := 300000.0
@@ -91,7 +92,7 @@ func _draw() -> void:
 		draw_set_transform(decal[1], decal[2])
 		draw_texture_rect_region(texture, Rect2(-region.size * 0.5, region.size), region, Color(1, 1, 1, decal[3]))
 	draw_set_transform(Vector2.ZERO)
-	# Low wall: dark band outside the floor, neon top edge.
+	# Low wall: dark stone band outside the floor, lighter worn top edge.
 	draw_rect(rect.grow(WALL_THICKNESS), WALL_COLOR, false, WALL_THICKNESS * 2.0)
 	draw_rect(rect.grow(WALL_THICKNESS * 0.5), Color(BORDER_COLOR, 0.12), false, 30.0)
 	draw_rect(rect, Color(BORDER_COLOR, 0.3), false, 12.0)

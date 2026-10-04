@@ -12,7 +12,7 @@ func test_item_card_text() -> void:
 	offer.tier = 1
 	var texts := ShopScreen.describe(offer)
 	assert_eq(texts[0], "Item · I")
-	assert_eq(texts[1], "Sharpened edge")
+	assert_eq(texts[1], "Whetstone")
 	assert_eq(texts[2], "+8% Damage\n-3% Attack speed")
 
 

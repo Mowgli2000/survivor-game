@@ -75,21 +75,21 @@ UI_NEXT_WAVE,Next wave,Vague suivante
 UI_MATERIALS,Materials,Matériaux
 UI_VICTORY,Victory!,Victoire !
 UI_WAVE_REACHED,Wave reached:,Vague atteinte :
-ITEM_SHARPENED_EDGE,Sharpened edge,Lame affûtée
-ITEM_NEON_COIL,Neon coil,Bobine néon
-ITEM_KEVLAR_WEAVE,Kevlar weave,Trame kevlar
-ITEM_NANO_STIMS,Nano-stims,Nano-stimulants
-ITEM_EXO_KNEES,Exo-knees,Exo-genoux
-ITEM_MAGNET_GLOVE,Magnet glove,Gant magnétique
-ITEM_TARGETING_CHIP,Targeting chip,Puce de visée
-ITEM_HEAVY_CORE,Heavy core,Noyau lourd
-ITEM_FOCUS_LENS,Focus lens,Lentille focale
-ITEM_SHOCK_ABSORBER,Shock absorber,Amortisseur
-ITEM_RONIN_SEAL,Ronin seal,Sceau du rōnin
-ITEM_SPLIT_BARREL,Split barrel,Canon fendu
-ITEM_PLASMA_RING,Plasma ring,Anneau plasma
-ITEM_ONI_MASK,Oni mask,Masque oni
-ITEM_PHANTOM_DRIVE,Phantom drive,Moteur fantôme
+ITEM_SHARPENED_EDGE,Whetstone,Pierre à aiguiser
+ITEM_NEON_COIL,Griffin feather,Plume de griffon
+ITEM_KEVLAR_WEAVE,Chainmail,Cotte de mailles
+ITEM_NANO_STIMS,Regeneration potion,Potion de régénération
+ITEM_EXO_KNEES,Winged boots,Bottes ailées
+ITEM_MAGNET_GLOVE,Lodestone glove,Gant de magnétite
+ITEM_TARGETING_CHIP,Hawk eye amulet,Amulette œil de faucon
+ITEM_HEAVY_CORE,Stone heart,Cœur de pierre
+ITEM_FOCUS_LENS,Spyglass,Longue-vue
+ITEM_SHOCK_ABSORBER,Round shield,Bouclier rond
+ITEM_RONIN_SEAL,Hunter's seal,Sceau du chasseur
+ITEM_SPLIT_BARREL,Twin quiver,Carquois double
+ITEM_PLASMA_RING,Arcane ring,Anneau arcanique
+ITEM_ONI_MASK,Demon mask,Masque de démon
+ITEM_PHANTOM_DRIVE,Phoenix feather,Plume de phénix
 UI_SHOP_TITLE,Shop — Wave %d,Boutique — Vague %d
 UI_SHOP_WEAPON,Weapon,Arme
 UI_SHOP_ITEM,Item,Objet
@@ -109,29 +109,29 @@ UI_FAMILY_NEXT,At %d: %s,À %d : %s
 UI_STATS,Stats,Statistiques
 UI_STATS_HINT,[Tab] Stats,[Tab] Statistiques
 FAMILY_BLADE,Blades,Lames
-FAMILY_GUN,Guns,Armes à feu
-FAMILY_ENERGY,Energy,Énergie
-FAMILY_EXPLOSIVE,Explosive,Explosif
+FAMILY_GUN,Ranged,Armes de jet
+FAMILY_ENERGY,Magic,Magie
+FAMILY_EXPLOSIVE,Alchemy,Alchimie
 ITEM_CHAIN_REACTOR_EFFECT,20% chance: killed enemies explode,20 % de chance : les ennemis tués explosent
-ITEM_CHAIN_REACTOR,Chain reactor,Réacteur en chaîne
+ITEM_CHAIN_REACTOR,Unstable rune,Rune instable
 ITEM_SCRAP_MAGNET_EFFECT,8% chance: killed enemies give 1 material,8 % de chance : les ennemis tués donnent 1 matériau
-ITEM_SCRAP_MAGNET,Scrap magnet,Aimant à ferraille
-ITEM_NANO_LEECH,Nano leech,Sangsue nano
-ITEM_GHOST_CLOAK,Ghost cloak,Cape fantôme
-ITEM_MANEKI_NEON,Maneki-neon,Maneki-néon
-ITEM_HYDROPONIC_FARM,Hydroponic farm,Ferme hydroponique
+ITEM_SCRAP_MAGNET,Loot sack,Sac à butin
+ITEM_NANO_LEECH,Vampire fang,Croc de vampire
+ITEM_GHOST_CLOAK,Phantom cloak,Cape fantôme
+ITEM_MANEKI_NEON,Golden clover,Trèfle doré
+ITEM_HYDROPONIC_FARM,Mana herb pot,Pot d'herbe de mana
 ITEM_CREDIT_CHIP_EFFECT,End of wave: +10% of your materials (max 25),Fin de vague : +10 % de vos matériaux (max 25)
-ITEM_CREDIT_CHIP,Credit chip,Puce de crédit
+ITEM_CREDIT_CHIP,Smuggler's purse,Bourse du contrebandier
 ITEM_IRON_WILL_EFFECT,+1% Damage per bonus armor point,+1 % de dégâts par point d'armure bonus
 ITEM_IRON_WILL,Iron will,Volonté de fer
 ITEM_SWIFT_BLADE_EFFECT,+1% Attack speed per 10 bonus move speed,+1 % de vitesse d'attaque par 10 de vitesse de déplacement bonus
 ITEM_SWIFT_BLADE,Swift blade,Lame véloce
-ITEM_GLASS_CANNON,Glass cannon,Canon de verre
-ITEM_OVERCLOCK,Overclock,Overclock
+ITEM_GLASS_CANNON,Glass dagger,Dague de verre
+ITEM_OVERCLOCK,Enchanted hourglass,Sablier enchanté
 ITEM_SOUL_HARVESTER_EFFECT,+1 Max HP every 20 kills (max +60),+1 PV max tous les 20 ennemis tués (max +60)
-ITEM_SOUL_HARVESTER,Soul harvester,Moissonneur d'âmes
+ITEM_SOUL_HARVESTER,Soul lantern,Lanterne des âmes
 ITEM_MED_DRONE_EFFECT,Heals 3 HP every 5 s,Soigne 3 PV toutes les 5 s
-ITEM_MED_DRONE,Med drone,Drone médical
+ITEM_MED_DRONE,Healing fairy,Fée guérisseuse
 UI_SETTINGS,Settings,Paramètres
 UI_BACK,Back,Retour
 UI_MAIN_MENU,Main menu,Menu principal

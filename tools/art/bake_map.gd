@@ -42,7 +42,8 @@ func _images() -> bool:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(ATLAS.get_base_dir()))
 	var names: Array[String] = []
 	for f in DirAccess.get_files_at(SRC.path_join("decor")):
-		if f.ends_with(".svg"):
+		# SVG drawn by make_map.py, or PNG made from AI art (tools/art/make_icon.gd --height).
+		if f.ends_with(".svg") or f.ends_with(".png"):
 			names.append(f)
 	names.sort()
 	# Shelf packing: left to right, new row when the width is full.
@@ -52,7 +53,8 @@ func _images() -> bool:
 	var y := 0
 	var row_h := 0
 	for f in names:
-		var image := _raster(SRC.path_join("decor").path_join(f))
+		var path := SRC.path_join("decor").path_join(f)
+		var image := _raster(path) if f.ends_with(".svg") else Image.load_from_file(path)
 		if image == null:
 			return _fail("cannot rasterize " + f)
 		if x + image.get_width() > ATLAS_WIDTH:

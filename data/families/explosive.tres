@@ -43,5 +43,5 @@ modifiers = Array[ExtResource("3_mod")]([SubResource("Mod_3"), SubResource("Mod_
 script = ExtResource("1_family")
 id = &"explosive"
 name_key = "FAMILY_EXPLOSIVE"
-color = Color(1, 0.55, 0.15, 1)
+color = Color(1, 0.54, 0.17, 1)
 bonuses = Array[ExtResource("2_bonus")]([SubResource("Bonus_1"), SubResource("Bonus_2"), SubResource("Bonus_3")])

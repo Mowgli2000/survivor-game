@@ -3,7 +3,7 @@ extends Node2D
 ## Enemy shots: movement, lifetime and contact damage to any player.
 ## Drawn in a hot pink that player weapons never use, to stay readable.
 
-const COLOR := Color(1.0, 0.2, 0.45)
+const COLOR := Color(1.0, 0.24, 0.43)
 const LIFETIME := 4.0
 
 var _party: Party
