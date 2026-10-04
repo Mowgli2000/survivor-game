@@ -14,7 +14,7 @@
     "kamikaze":   { "src": "assets_src/ai/ai_kamikaze",   "anims": { "idle": "idle:6:10", "walk": "walk:8:14" }, "glow": "#000000", "elite": true },
     "charger":    { "src": "assets_src/ai/ai_charger",    "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#000000", "elite": true },
     "spawner":    { "src": "assets_src/ai/ai_spawner",    "anims": { "idle": "idle:6:6", "walk": "walk:8:8" }, "glow": "#000000", "elite": true, "height": 168 },
-    "ronin_boss": { "svg": "assets_src/drawn/ronin_boss", "anims": { "idle": "idle:6:8", "walk": "walk:8:10" }, "glow": "#4df2ff" },
-    "shogun":     { "svg": "assets_src/drawn/shogun",     "anims": { "idle": "idle:6:6", "walk": "walk:8:9" }, "glow": "#ff33b8" }
+    "ronin_boss": { "src": "assets_src/ai/ai_ronin_boss", "anims": { "idle": "idle:6:8", "walk": "walk:8:10" }, "glow": "#000000", "height": 288 },
+    "shogun":     { "src": "assets_src/ai/ai_shogun",     "anims": { "idle": "idle:6:6", "walk": "walk:8:9" }, "glow": "#000000", "height": 288 }
   }
 }

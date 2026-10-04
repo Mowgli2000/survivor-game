@@ -39,8 +39,8 @@ UPGRADE_MAGNET,Magnet,Aimant
 UPGRADE_PRECISION,Precision,Précision
 UPGRADE_PLATING,Plating,Blindage
 WEAPON_PULSE,Pulse,Pulsar
-ENEMY_GRUNT,Grunt,Rôdeur
-ENEMY_RUNNER,Runner,Coureur
+ENEMY_GRUNT,Orc,Orc
+ENEMY_RUNNER,Dungeon wolf,Loup du donjon
 CHARACTER_DRIFTER,Rank-E Hunter,Chasseur de rang E
 UI_LEVEL_LABEL,Level:,Niveau :
 UI_NEW_WEAPON,New weapon,Nouvelle arme
@@ -60,13 +60,13 @@ WEAPON_SMG,Submachine gun,Mitraillette
 WEAPON_SMG_DESC,Very fast but inaccurate bursts.,Rafales très rapides mais imprécises.
 WEAPON_BAZOOKA,Bazooka,Bazooka
 WEAPON_BAZOOKA_DESC,Slow rocket that explodes and slows enemies.,Roquette lente qui explose et ralentit les ennemis.
-ENEMY_SHOOTER,Gunner,Tireur
-ENEMY_TANK,Juggernaut,Colosse
-ENEMY_SHOGUN,Shogun,Shogun
-ENEMY_RONIN,Ronin,Rōnin
-ENEMY_CHARGER,Charger,Chargeur
-ENEMY_KAMIKAZE,Kamikaze,Kamikaze
-ENEMY_SPAWNER,Brood mother,Pondeuse
+ENEMY_SHOOTER,Goblin shaman,Chaman gobelin
+ENEMY_TANK,Stone golem,Golem de pierre
+ENEMY_SHOGUN,Demon Knight,Chevalier démon
+ENEMY_RONIN,Venom Serpent,Serpent venimeux
+ENEMY_CHARGER,War boar,Sanglier de guerre
+ENEMY_KAMIKAZE,Blast beetle,Scarabée explosif
+ENEMY_SPAWNER,Spider nest,Nid d'araignées
 UI_BOSS_REWARD,Reward: %s,Récompense : %s
 WEAPON_STRESS,Stress test gun,Arme de test
 UI_WAVE,Wave,Vague
