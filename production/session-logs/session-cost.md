@@ -1,13 +1,13 @@
 # Session Subagent Cost
 
-**Session:** `6bd7441d-611f-440f-bbee-c1fef5ec958f`  
-**Updated:** 20261003_174204
+**Session:** `f222ab71-0e1a-4001-8201-d938dccff29c`  
+**Updated:** 20261004_183336
 
-Subagent spawns this session: **4**
+Subagent spawns this session: **1**
 
 | Agent | Spawns |
 |-------|--------|
-| general-purpose | 4 |
+| art-director | 1 |
 
 Each spawn is a fresh context window that re-reads its own inputs.
 To reduce this: lower `modes.review_mode` (`/settings modes.review_mode=solo`)

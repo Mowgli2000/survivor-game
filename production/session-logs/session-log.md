@@ -1754,3 +1754,387 @@ tools/sprites/atlas_layout.json
 tools/sprites/sprites.json
 ---
 
+## Session End: 20261004_131602
+### Commits
+c218b0a docs: session 7 status (art pilot validated, D50-D51)
+9b4b4f1 feat(player): procedural lean, coat sway, step dust and hit reaction
+0af6cb6 feat(art): AI image generator and pilot sprites (assassin, orc, wolf)
+---
+
+## Session End: 20261004_132611
+### Commits
+c218b0a docs: session 7 status (art pilot validated, D50-D51)
+9b4b4f1 feat(player): procedural lean, coat sway, step dust and hit reaction
+0af6cb6 feat(art): AI image generator and pilot sprites (assassin, orc, wolf)
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261004_132807
+### Commits
+c218b0a docs: session 7 status (art pilot validated, D50-D51)
+9b4b4f1 feat(player): procedural lean, coat sway, step dust and hit reaction
+0af6cb6 feat(art): AI image generator and pilot sprites (assassin, orc, wolf)
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/agent-audit.log
+production/session-logs/session-log.md
+---
+
+## Session End: 20261004_133123
+### Commits
+c218b0a docs: session 7 status (art pilot validated, D50-D51)
+9b4b4f1 feat(player): procedural lean, coat sway, step dust and hit reaction
+0af6cb6 feat(art): AI image generator and pilot sprites (assassin, orc, wolf)
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/agent-audit.log
+production/session-logs/session-cost.md
+production/session-logs/session-log.md
+---
+
+## Session End: 20261004_133936
+### Commits
+4765169 feat(ui): detailed card illustration on the character select screen
+447a35c docs: art bible (D52) with bosses in Solo Leveling arc order
+c218b0a docs: session 7 status (art pilot validated, D50-D51)
+9b4b4f1 feat(player): procedural lean, coat sway, step dust and hit reaction
+0af6cb6 feat(art): AI image generator and pilot sprites (assassin, orc, wolf)
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/agent-audit.log
+production/session-logs/session-cost.md
+production/session-logs/session-log.md
+---
+
+## Session End: 20261004_134641
+### Commits
+4765169 feat(ui): detailed card illustration on the character select screen
+447a35c docs: art bible (D52) with bosses in Solo Leveling arc order
+c218b0a docs: session 7 status (art pilot validated, D50-D51)
+9b4b4f1 feat(player): procedural lean, coat sway, step dust and hit reaction
+0af6cb6 feat(art): AI image generator and pilot sprites (assassin, orc, wolf)
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/agent-audit.log
+production/session-logs/session-cost.md
+production/session-logs/session-log.md
+tools/art/gen_image.py
+---
+
+## Session End: 20261004_142315
+### Commits
+c4021c1 feat(art): four playable classes with card art and AI sprites
+4765169 feat(ui): detailed card illustration on the character select screen
+447a35c docs: art bible (D52) with bosses in Solo Leveling arc order
+c218b0a docs: session 7 status (art pilot validated, D50-D51)
+9b4b4f1 feat(player): procedural lean, coat sway, step dust and hit reaction
+0af6cb6 feat(art): AI image generator and pilot sprites (assassin, orc, wolf)
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/agent-audit.log
+production/session-logs/session-cost.md
+production/session-logs/session-log.md
+---
+
+## Session End: 20261004_144221
+### Commits
+3e6d3bf feat(art): regenerate playable characters with gpt-image-2.5-sunburst
+c4021c1 feat(art): four playable classes with card art and AI sprites
+4765169 feat(ui): detailed card illustration on the character select screen
+447a35c docs: art bible (D52) with bosses in Solo Leveling arc order
+c218b0a docs: session 7 status (art pilot validated, D50-D51)
+9b4b4f1 feat(player): procedural lean, coat sway, step dust and hit reaction
+0af6cb6 feat(art): AI image generator and pilot sprites (assassin, orc, wolf)
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/agent-audit.log
+production/session-logs/session-cost.md
+production/session-logs/session-log.md
+---
+
+## Session End: 20261004_145400
+### Commits
+ed11832 feat(art): bestiary with gpt-image-2.5-sunburst (7 monsters)
+3e6d3bf feat(art): regenerate playable characters with gpt-image-2.5-sunburst
+c4021c1 feat(art): four playable classes with card art and AI sprites
+4765169 feat(ui): detailed card illustration on the character select screen
+447a35c docs: art bible (D52) with bosses in Solo Leveling arc order
+c218b0a docs: session 7 status (art pilot validated, D50-D51)
+9b4b4f1 feat(player): procedural lean, coat sway, step dust and hit reaction
+0af6cb6 feat(art): AI image generator and pilot sprites (assassin, orc, wolf)
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/agent-audit.log
+production/session-logs/session-cost.md
+production/session-logs/session-log.md
+---
+
+## Session End: 20261004_155333
+### Commits
+eb754b3 docs: session 7 status (D53, full visual production)
+8e39b4d feat(art): item icons, menu key art, manga title font, boss gate
+ce1415c feat(art): dungeon arena, manga VFX, mana crystals, fantasy names
+316e253 feat(art): fantasy weapons (icons, floating weapons, names)
+d0d7481 feat(art): venom serpent and demon knight bosses, fantasy enemy names
+8f4beec chore(art): cut-out rig part sheets for the five playable characters
+ed11832 feat(art): bestiary with gpt-image-2.5-sunburst (7 monsters)
+3e6d3bf feat(art): regenerate playable characters with gpt-image-2.5-sunburst
+c4021c1 feat(art): four playable classes with card art and AI sprites
+4765169 feat(ui): detailed card illustration on the character select screen
+447a35c docs: art bible (D52) with bosses in Solo Leveling arc order
+c218b0a docs: session 7 status (art pilot validated, D50-D51)
+9b4b4f1 feat(player): procedural lean, coat sway, step dust and hit reaction
+0af6cb6 feat(art): AI image generator and pilot sprites (assassin, orc, wolf)
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/agent-audit.log
+production/session-logs/session-cost.md
+production/session-logs/session-log.md
+---
+
+## Session End: 20261004_162433
+### Commits
+030c3e0 feat(ui): stat preview on level-up cards, item tooltips, weapon icon fix
+eb754b3 docs: session 7 status (D53, full visual production)
+8e39b4d feat(art): item icons, menu key art, manga title font, boss gate
+ce1415c feat(art): dungeon arena, manga VFX, mana crystals, fantasy names
+316e253 feat(art): fantasy weapons (icons, floating weapons, names)
+d0d7481 feat(art): venom serpent and demon knight bosses, fantasy enemy names
+8f4beec chore(art): cut-out rig part sheets for the five playable characters
+ed11832 feat(art): bestiary with gpt-image-2.5-sunburst (7 monsters)
+3e6d3bf feat(art): regenerate playable characters with gpt-image-2.5-sunburst
+c4021c1 feat(art): four playable classes with card art and AI sprites
+4765169 feat(ui): detailed card illustration on the character select screen
+447a35c docs: art bible (D52) with bosses in Solo Leveling arc order
+c218b0a docs: session 7 status (art pilot validated, D50-D51)
+9b4b4f1 feat(player): procedural lean, coat sway, step dust and hit reaction
+0af6cb6 feat(art): AI image generator and pilot sprites (assassin, orc, wolf)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/agent-audit.log
+production/session-logs/session-cost.md
+production/session-logs/session-log.md
+---
+
+## Session End: 20261004_163538
+### Commits
+5b4a8a0 docs: class identity proposal (Brotato-style rules)
+030c3e0 feat(ui): stat preview on level-up cards, item tooltips, weapon icon fix
+eb754b3 docs: session 7 status (D53, full visual production)
+8e39b4d feat(art): item icons, menu key art, manga title font, boss gate
+ce1415c feat(art): dungeon arena, manga VFX, mana crystals, fantasy names
+316e253 feat(art): fantasy weapons (icons, floating weapons, names)
+d0d7481 feat(art): venom serpent and demon knight bosses, fantasy enemy names
+8f4beec chore(art): cut-out rig part sheets for the five playable characters
+ed11832 feat(art): bestiary with gpt-image-2.5-sunburst (7 monsters)
+3e6d3bf feat(art): regenerate playable characters with gpt-image-2.5-sunburst
+c4021c1 feat(art): four playable classes with card art and AI sprites
+4765169 feat(ui): detailed card illustration on the character select screen
+447a35c docs: art bible (D52) with bosses in Solo Leveling arc order
+c218b0a docs: session 7 status (art pilot validated, D50-D51)
+9b4b4f1 feat(player): procedural lean, coat sway, step dust and hit reaction
+0af6cb6 feat(art): AI image generator and pilot sprites (assassin, orc, wolf)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/agent-audit.log
+production/session-logs/session-cost.md
+production/session-logs/session-log.md
+---
+
+## Session End: 20261004_170405
+### Commits
+dcc83ef docs: D54 class identity and working title
+2e09fe3 feat: class rules (melee/ranged only, awakening, shadow step, black market)
+5b4a8a0 docs: class identity proposal (Brotato-style rules)
+030c3e0 feat(ui): stat preview on level-up cards, item tooltips, weapon icon fix
+eb754b3 docs: session 7 status (D53, full visual production)
+8e39b4d feat(art): item icons, menu key art, manga title font, boss gate
+ce1415c feat(art): dungeon arena, manga VFX, mana crystals, fantasy names
+316e253 feat(art): fantasy weapons (icons, floating weapons, names)
+d0d7481 feat(art): venom serpent and demon knight bosses, fantasy enemy names
+8f4beec chore(art): cut-out rig part sheets for the five playable characters
+ed11832 feat(art): bestiary with gpt-image-2.5-sunburst (7 monsters)
+3e6d3bf feat(art): regenerate playable characters with gpt-image-2.5-sunburst
+c4021c1 feat(art): four playable classes with card art and AI sprites
+4765169 feat(ui): detailed card illustration on the character select screen
+447a35c docs: art bible (D52) with bosses in Solo Leveling arc order
+c218b0a docs: session 7 status (art pilot validated, D50-D51)
+9b4b4f1 feat(player): procedural lean, coat sway, step dust and hit reaction
+0af6cb6 feat(art): AI image generator and pilot sprites (assassin, orc, wolf)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/agent-audit.log
+production/session-logs/session-cost.md
+production/session-logs/session-log.md
+---
+
+## Session End: 20261004_174910
+### Commits
+dcc83ef docs: D54 class identity and working title
+2e09fe3 feat: class rules (melee/ranged only, awakening, shadow step, black market)
+5b4a8a0 docs: class identity proposal (Brotato-style rules)
+030c3e0 feat(ui): stat preview on level-up cards, item tooltips, weapon icon fix
+eb754b3 docs: session 7 status (D53, full visual production)
+8e39b4d feat(art): item icons, menu key art, manga title font, boss gate
+ce1415c feat(art): dungeon arena, manga VFX, mana crystals, fantasy names
+316e253 feat(art): fantasy weapons (icons, floating weapons, names)
+d0d7481 feat(art): venom serpent and demon knight bosses, fantasy enemy names
+8f4beec chore(art): cut-out rig part sheets for the five playable characters
+ed11832 feat(art): bestiary with gpt-image-2.5-sunburst (7 monsters)
+3e6d3bf feat(art): regenerate playable characters with gpt-image-2.5-sunburst
+c4021c1 feat(art): four playable classes with card art and AI sprites
+4765169 feat(ui): detailed card illustration on the character select screen
+447a35c docs: art bible (D52) with bosses in Solo Leveling arc order
+c218b0a docs: session 7 status (art pilot validated, D50-D51)
+9b4b4f1 feat(player): procedural lean, coat sway, step dust and hit reaction
+0af6cb6 feat(art): AI image generator and pilot sprites (assassin, orc, wolf)
+### Uncommitted Changes
+art_source/ai/decor/decal_rune_circle.png
+art_source/ai/decor/prop_bones.png
+art_source/ai/items/exo_knees.png
+art_source/ai/items/maneki_neon.png
+art_source/ai/items/nano_leech.png
+art_source/ai/items/overclock.png
+art_source/ai/items/plasma_ring.png
+art_source/ai/items/ronin_seal.png
+art_source/ai/items/sharpened_edge.png
+art_source/ai/items/soul_harvester.png
+art_source/ai/items/split_barrel.png
+art_source/ai/items/swift_blade.png
+art_source/ai/weapons/shuriken.png
+art_source/ai/weapons/smg.png
+data/difficulties/danger_0.tres
+data/difficulties/danger_1.tres
+data/difficulties/danger_2.tres
+data/difficulties/danger_3.tres
+data/difficulties/danger_4.tres
+data/difficulties/danger_5.tres
+docs/design/art-bible.md
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/agent-audit.log
+production/session-logs/session-cost.md
+production/session-logs/session-log.md
+src/meta/difficulty_data.gd
+src/player/character_data.gd
+src/run/arena.gd
+src/run/run.gd
+src/ui/character_select/character_select.gd
+src/waves/stage_data.gd
+src/weapons/weapon_holder.gd
+src/weapons/weapon_slot.gd
+tests/unit/test_characters.gd
+tests/unit/test_item_effects.gd
+tools/art/bake_map.gd
+tools/art/fill_alpha_holes.gd
+tools/sprites/sprites.json
+---
+
+## Session End: 20261004_182237
+### Commits
+e3667da docs: 6b status (D55-D56)
+57b1640 feat: Mage and Berserker, 5 new weapons, 19 items, playtest fixes
+eee2274 feat: seals and biomes, Iron seal sunken temple (ADR 0018)
+dcc83ef docs: D54 class identity and working title
+2e09fe3 feat: class rules (melee/ranged only, awakening, shadow step, black market)
+5b4a8a0 docs: class identity proposal (Brotato-style rules)
+030c3e0 feat(ui): stat preview on level-up cards, item tooltips, weapon icon fix
+eb754b3 docs: session 7 status (D53, full visual production)
+8e39b4d feat(art): item icons, menu key art, manga title font, boss gate
+ce1415c feat(art): dungeon arena, manga VFX, mana crystals, fantasy names
+316e253 feat(art): fantasy weapons (icons, floating weapons, names)
+d0d7481 feat(art): venom serpent and demon knight bosses, fantasy enemy names
+8f4beec chore(art): cut-out rig part sheets for the five playable characters
+ed11832 feat(art): bestiary with gpt-image-2.5-sunburst (7 monsters)
+3e6d3bf feat(art): regenerate playable characters with gpt-image-2.5-sunburst
+c4021c1 feat(art): four playable classes with card art and AI sprites
+4765169 feat(ui): detailed card illustration on the character select screen
+447a35c docs: art bible (D52) with bosses in Solo Leveling arc order
+c218b0a docs: session 7 status (art pilot validated, D50-D51)
+9b4b4f1 feat(player): procedural lean, coat sway, step dust and hit reaction
+0af6cb6 feat(art): AI image generator and pilot sprites (assassin, orc, wolf)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/agent-audit.log
+production/session-logs/session-cost.md
+production/session-logs/session-log.md
+---
+
+## Session End: 20261004_183336
+### Commits
+1a72d17 docs: end of session 7 status and next steps
+e3667da docs: 6b status (D55-D56)
+57b1640 feat: Mage and Berserker, 5 new weapons, 19 items, playtest fixes
+eee2274 feat: seals and biomes, Iron seal sunken temple (ADR 0018)
+dcc83ef docs: D54 class identity and working title
+2e09fe3 feat: class rules (melee/ranged only, awakening, shadow step, black market)
+5b4a8a0 docs: class identity proposal (Brotato-style rules)
+030c3e0 feat(ui): stat preview on level-up cards, item tooltips, weapon icon fix
+eb754b3 docs: session 7 status (D53, full visual production)
+8e39b4d feat(art): item icons, menu key art, manga title font, boss gate
+ce1415c feat(art): dungeon arena, manga VFX, mana crystals, fantasy names
+316e253 feat(art): fantasy weapons (icons, floating weapons, names)
+d0d7481 feat(art): venom serpent and demon knight bosses, fantasy enemy names
+8f4beec chore(art): cut-out rig part sheets for the five playable characters
+ed11832 feat(art): bestiary with gpt-image-2.5-sunburst (7 monsters)
+3e6d3bf feat(art): regenerate playable characters with gpt-image-2.5-sunburst
+c4021c1 feat(art): four playable classes with card art and AI sprites
+4765169 feat(ui): detailed card illustration on the character select screen
+447a35c docs: art bible (D52) with bosses in Solo Leveling arc order
+c218b0a docs: session 7 status (art pilot validated, D50-D51)
+9b4b4f1 feat(player): procedural lean, coat sway, step dust and hit reaction
+0af6cb6 feat(art): AI image generator and pilot sprites (assassin, orc, wolf)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/agent-audit.log
+production/session-logs/session-cost.md
+production/session-logs/session-log.md
+---
+
+## Session End: 20261004_194006
+### Commits
+f174c4d docs: session 8 status, seal places in ADR 0018 and art bible (D57)
+75e6288 feat: Obsidian and Astral seal places, the underground hive and the dragon's lair
+9de90da feat: Gold seal place, the infernal citadel
+eab6327 feat: Silver seal place, the frozen forest
+f1ceb7e feat: boss patterns for the seal places (breath, impact zones, wall, summon around player)
+77de198 chore: shelf-packed sprite atlas with one page per place
+9bf4cda feat: readable seal selection (numerals, skulls, heat colors, effects line)
+1a72d17 docs: end of session 7 status and next steps
+e3667da docs: 6b status (D55-D56)
+57b1640 feat: Mage and Berserker, 5 new weapons, 19 items, playtest fixes
+eee2274 feat: seals and biomes, Iron seal sunken temple (ADR 0018)
+dcc83ef docs: D54 class identity and working title
+2e09fe3 feat: class rules (melee/ranged only, awakening, shadow step, black market)
+5b4a8a0 docs: class identity proposal (Brotato-style rules)
+030c3e0 feat(ui): stat preview on level-up cards, item tooltips, weapon icon fix
+eb754b3 docs: session 7 status (D53, full visual production)
+8e39b4d feat(art): item icons, menu key art, manga title font, boss gate
+ce1415c feat(art): dungeon arena, manga VFX, mana crystals, fantasy names
+316e253 feat(art): fantasy weapons (icons, floating weapons, names)
+d0d7481 feat(art): venom serpent and demon knight bosses, fantasy enemy names
+8f4beec chore(art): cut-out rig part sheets for the five playable characters
+ed11832 feat(art): bestiary with gpt-image-2.5-sunburst (7 monsters)
+3e6d3bf feat(art): regenerate playable characters with gpt-image-2.5-sunburst
+c4021c1 feat(art): four playable classes with card art and AI sprites
+4765169 feat(ui): detailed card illustration on the character select screen
+447a35c docs: art bible (D52) with bosses in Solo Leveling arc order
+c218b0a docs: session 7 status (art pilot validated, D50-D51)
+9b4b4f1 feat(player): procedural lean, coat sway, step dust and hit reaction
+0af6cb6 feat(art): AI image generator and pilot sprites (assassin, orc, wolf)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/agent-audit.log
+production/session-logs/session-cost.md
+production/session-logs/session-log.md
+---
+
