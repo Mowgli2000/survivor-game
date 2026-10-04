@@ -1,9 +1,9 @@
-"""Generate one image with OpenAI gpt-image-1 (D50). Standard library only.
+"""Generate images with an OpenAI image model (D50; default gpt-image-2.5-sunburst). Standard library only.
 
 The API key is read from the OPENAI_API_KEY environment variable and is never
 written anywhere. Usage:
     python tools/art/gen_image.py --out <file.png> --prompt "..." [--style tools/art/style_block.txt]
-        [--size 1024x1024] [--quality medium] [--n 1] [--opaque] [--image ref.png ...]
+        [--size 1024x1024] [--quality medium] [--n 1] [--opaque] [--image ref.png ...] [--model name]
 With --image, the reference image(s) are edited instead (same character, new pose/version).
 With --n > 1 the files are named <file>_1.png, <file>_2.png, ...
 """
@@ -51,6 +51,7 @@ def main() -> int:
     parser.add_argument("--n", type=int, default=1)
     parser.add_argument("--opaque", action="store_true", help="keep a background (default: transparent)")
     parser.add_argument("--image", nargs="+", help="reference image(s) to edit (keeps the character's design)")
+    parser.add_argument("--model", default="gpt-image-2.5-sunburst")
     parser.add_argument("--mask", help="with --image: PNG, same size as the first image, transparent where it may change")
     args = parser.parse_args()
 
@@ -65,7 +66,7 @@ def main() -> int:
             prompt = f.read().strip() + "\n\n" + prompt
 
     body = {
-        "model": "gpt-image-1",
+        "model": args.model,
         "prompt": prompt,
         "size": args.size,
         "quality": args.quality,
@@ -74,7 +75,9 @@ def main() -> int:
         "background": "opaque" if args.opaque else "transparent",
     }
     if args.image:
-        body["input_fidelity"] = "high"
+        # Only gpt-image-1 accepts input_fidelity; newer models keep references by default.
+        if args.model == "gpt-image-1":
+            body["input_fidelity"] = "high"
         files = [("image[]", path) for path in args.image]
         if args.mask:
             files.append(("mask", args.mask))

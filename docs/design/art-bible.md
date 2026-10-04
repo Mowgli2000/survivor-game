@@ -227,7 +227,7 @@ Nommage :
 - **Ne jamais renommer un id de contenu** (sauvegardes) : on change le visuel et la clé de nom affichée, pas l'id.
 
 Pipeline :
-1. `python tools/art/gen_image.py` (gpt-image-1, `--style`, `--image` pour la cohérence d'un perso, fond transparent).
+1. `python tools/art/gen_image.py` (modèle **`gpt-image-2.5-sunburst`** par défaut depuis le 2026-10-04, `--model` pour en changer ; `--style`, `--image` pour la cohérence d'un perso, fond transparent). Puis **toujours** `tools/art/fill_alpha_holes.gd` sur l'image retenue (ombres et auras semi-transparentes à l'intérieur du perso).
 2. `tools/art/prepare_ai_sprite.gd` : 1 image → idle 6 + walk 8 images (respiration/sautillement procéduraux + ombre au sol).
 3. Entrée dans `tools/sprites/sprites.json` : `src`, `height`, `"glow": "#000000"` (pas de halo néon pour les sprites IA), `"elite": true` pour les monstres.
 4. `powershell -ExecutionPolicy Bypass -File tools/bake_sprites.ps1` → atlas unique `assets/sprites/atlas.png`.
@@ -252,6 +252,7 @@ Checklist de génération :
 - [ ] Aperçu rapide de la planche : `tools/art/preview_sheet.gd -- --out=<png> --id=<id>`.
 
 Leçons IA (règles) :
+- Références : la carte de l'assassin (`art_source/ai/assassin_card.png`) est la référence de style des cartes ; son sprite (`art_source/ai/assassin.png`) celle des sprites. Nouveau perso = sa carte (1re image) + la référence de style (2e image).
 - L'IA rate souvent l'orientation des lames et les prises → toujours vérifier mains et armes.
 - Les retouches masquées (`--mask`) sur image transparente échouent (boîte noire) → retouche par référence complète, sans masque.
 - Les retouches successives dégradent le détail → toujours repartir de **la meilleure image d'origine**, jamais enchaîner les retouches.
