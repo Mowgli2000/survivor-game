@@ -1,13 +1,15 @@
 extends SceneTree
 ## Converts the drawn SVG frames (tools/art/make_sprites.py, entries with "svg")
 ## or a raw PNG pack (entries with "src") into game sprite sheets. Run via tools/bake_sprites.ps1:
-##   phase "images": crop (union of frames), downscale, add a neon glow, stack every
-##     strip into one atlas (atlas.png) and record the layout;
+##   phase "images": crop (union of frames), downscale, add a neon glow, pack every
+##     strip into its atlas page (atlas.png, or atlas_<page>.png for a sprite with
+##     "page": one page per place, ADR 0018) and record the layout;
 ##   phase "resources": after import, write one SpriteSheet .tres per strip.
 ## Fails loudly when a folder, frame or animation of the recipe is missing.
 
 const RECIPE := "res://tools/sprites/sprites.json"
 const OUT_DIR := "res://assets/sprites/"
+## Default atlas page; a sprite with "page": "<name>" goes to atlas_<name>.png.
 const ATLAS := "res://assets/sprites/atlas.png"
 ## Strip positions in the atlas, written by phase "images", read by "resources".
 const LAYOUT := "res://tools/sprites/atlas_layout.json"
@@ -17,6 +19,8 @@ const GLOW_SHRINK := 6
 const GLOW_GAIN := 3.5
 const ELITE_GLOW := Color(1.0, 0.8, 0.2)
 const GROUND_SIZE := 512
+## Shelf width of the atlas (widened to the widest strip if one is wider).
+const ATLAS_WIDTH := 4096
 ## SVG frames are rasterized at this scale before cropping and downscaling.
 const SVG_SCALE := 1.0
 
@@ -38,7 +42,7 @@ func _initialize() -> void:
 func _bake_images(recipe: Dictionary) -> bool:
 	var pack := ProjectSettings.globalize_path("res://" + String(recipe.get("pack", "")))
 	var sprites: Dictionary = recipe.sprites
-	var strips: Dictionary = {}  # id -> Image
+	var pages: Dictionary = {}  # atlas path -> {id -> Image}
 	var cell_widths: Dictionary = {}  # id -> int
 	for id: String in sprites:
 		var def: Dictionary = sprites[id]
@@ -47,13 +51,21 @@ func _bake_images(recipe: Dictionary) -> bool:
 			return false
 		# Per-sprite "height" override: bigger on screen = baked bigger (stays sharp).
 		var cells := _crop_and_scale(frames, int(def.get("height", recipe.height)))
+		var page := atlas_path(String(def.get("page", "")))
+		if not pages.has(page):
+			pages[page] = {}
+		var strips: Dictionary = pages[page]
 		strips[id] = _make_strip(cells, Color(def.glow))
 		cell_widths[id] = cells[0].get_width() + PAD * 2
 		if def.get("elite", false):
 			strips[id + "_elite"] = _make_strip(cells, ELITE_GLOW)
 			cell_widths[id + "_elite"] = cell_widths[id]
 		print("  baked " + id)
-	_save_atlas(strips, cell_widths)
+	var layout: Dictionary = {}
+	for page: String in pages:
+		_save_atlas(page, pages[page], cell_widths, layout)
+	var file := FileAccess.open(LAYOUT, FileAccess.WRITE)
+	file.store_string(JSON.stringify(layout, "	"))
 	if recipe.has("ground"):
 		var ground := Image.load_from_file(pack.path_join(recipe.ground))
 		if ground == null:
@@ -137,25 +149,47 @@ func _make_strip(cells: Array[Image], glow: Color) -> Image:
 	return strip
 
 
-## Stacks the strips vertically (recipe order) into one texture; writes the layout.
-func _save_atlas(strips: Dictionary, cell_widths: Dictionary) -> void:
-	var width := 0
-	var height := 0
-	for id: String in strips:
-		var strip: Image = strips[id]
-		width = maxi(width, strip.get_width())
-		height += strip.get_height()
-	var atlas := Image.create(width, height, false, Image.FORMAT_RGBA8)
-	var layout: Dictionary = {}
+## Packs the strips into one texture in shelves (tallest first, side by side up to
+## ATLAS_WIDTH, or the widest strip); writes the layout. Stacking one strip per row
+## wasted most of the width and made the atlas grow past 8192 px with each place.
+func _save_atlas(path: String, strips: Dictionary, cell_widths: Dictionary, layout: Dictionary) -> void:
+	var ids: Array = strips.keys()
+	ids.sort_custom(func(a: String, b: String) -> bool:
+		var ha: int = (strips[a] as Image).get_height()
+		var hb: int = (strips[b] as Image).get_height()
+		return ha > hb or ha == hb and a < b)
+	var width := ATLAS_WIDTH
+	for id: String in ids:
+		width = maxi(width, (strips[id] as Image).get_width())
+	var positions: Dictionary = {}  # id -> Vector2i
+	var x := 0
 	var y := 0
-	for id: String in strips:
+	var shelf := 0
+	for id: String in ids:
 		var strip: Image = strips[id]
-		atlas.blit_rect(strip, Rect2i(Vector2i.ZERO, strip.get_size()), Vector2i(0, y))
-		layout[id] = [0, y, cell_widths[id], strip.get_height()]
-		y += strip.get_height()
-	atlas.save_png(ATLAS)
-	var file := FileAccess.open(LAYOUT, FileAccess.WRITE)
-	file.store_string(JSON.stringify(layout, "	"))
+		if x + strip.get_width() > width:
+			x = 0
+			y += shelf
+			shelf = 0
+		positions[id] = Vector2i(x, y)
+		x += strip.get_width()
+		shelf = maxi(shelf, strip.get_height())
+	var used_width := 0
+	for id: String in ids:
+		used_width = maxi(used_width, (positions[id] as Vector2i).x + (strips[id] as Image).get_width())
+	var atlas := Image.create(used_width, y + shelf, false, Image.FORMAT_RGBA8)
+	for id: String in ids:
+		var strip: Image = strips[id]
+		var at: Vector2i = positions[id]
+		atlas.blit_rect(strip, Rect2i(Vector2i.ZERO, strip.get_size()), at)
+		layout[id] = [at.x, at.y, cell_widths[id], strip.get_height(), path]
+	atlas.save_png(path)
+	print("  %s %d x %d" % [path.get_file(), atlas.get_width(), atlas.get_height()])
+
+
+## Atlas page file for a recipe "page" ("" = the default atlas).
+static func atlas_path(page: String) -> String:
+	return ATLAS if page == "" else ATLAS.get_basename() + "_" + page + ".png"
 
 
 ## Pads the cell and puts a soft neon halo (blurred silhouette) behind it.
@@ -181,10 +215,9 @@ func _with_glow(cell: Image, glow: Color) -> Image:
 
 
 func _write_resources(recipe: Dictionary) -> bool:
-	var texture := load(ATLAS) as Texture2D
 	var layout: Variant = JSON.parse_string(FileAccess.get_file_as_string(LAYOUT))
-	if texture == null or not layout is Dictionary:
-		return _fail("atlas not baked/imported: run phase images then --import")
+	if not layout is Dictionary:
+		return _fail("atlas not baked: run phase images then --import")
 	var sprites: Dictionary = recipe.sprites
 	for id: String in sprites:
 		var def: Dictionary = sprites[id]
@@ -195,6 +228,9 @@ func _write_resources(recipe: Dictionary) -> bool:
 			if not layout.has(out_id):
 				return _fail("%s not in the atlas layout: run the whole bake_sprites.ps1" % out_id)
 			var rect: Array = layout[out_id]
+			var texture := load(String(rect[4])) as Texture2D
+			if texture == null:
+				return _fail("%s not imported: run the whole bake_sprites.ps1" % rect[4])
 			var sheet := SpriteSheet.new()
 			sheet.texture = texture
 			sheet.origin = Vector2i(int(rect[0]), int(rect[1]))

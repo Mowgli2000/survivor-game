@@ -236,3 +236,20 @@ func test_shop_configs() -> void:
 			assert_eq(array.size(), Tiers.COUNT, "%s: one value per tier" % shop.resource_path)
 	for def in ContentDB.get_all(&"runs"):
 		assert_not_null((def as RunConfig).shop, "%s has no shop config" % def.resource_path)
+
+
+## Every baked sprite strip lies inside its atlas page (shelf packing, one page per place).
+func test_sprite_sheets_fit_their_atlas_page() -> void:
+	for file in DirAccess.get_files_at("res://assets/sprites/"):
+		if not file.ends_with(".tres"):
+			continue
+		var sheet := load("res://assets/sprites/" + file) as SpriteSheet
+		if sheet == null:
+			continue
+		var frames := 0
+		for info: Vector3i in sheet.animations.values():
+			frames = maxi(frames, info.x + info.y)
+		var strip := Rect2i(sheet.origin, Vector2i(sheet.cell_size.x * frames, sheet.cell_size.y))
+		var page := Rect2i(Vector2i.ZERO, Vector2i(sheet.texture.get_size()))
+		assert_true(page.encloses(strip), "%s: %s outside %s" % [file, strip, page])
+		assert_lte(maxi(page.size.x, page.size.y), 8192, file + ": atlas page over 8192 px")
