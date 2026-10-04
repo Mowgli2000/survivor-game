@@ -38,6 +38,8 @@ var _core := PackedVector2Array()
 var _outline := PackedVector2Array()
 var _strip_indices := PackedInt32Array()
 var _band_colors := PackedColorArray()
+var _tri_colors := PackedColorArray()
+var _no_uvs := PackedVector2Array()
 
 
 func _init() -> void:
@@ -246,6 +248,14 @@ func _draw_crescent(center: Vector2, angle: float, radius: float, half: float, t
 		_draw_band(_core, Color(light, fade))
 
 
+## One filled triangle from _poly[0..2]. draw_primitive does not triangulate,
+## so a triangle that flattens at the end of its animation never fails.
+func _draw_triangle(color: Color) -> void:
+	_tri_colors.resize(3)
+	_tri_colors.fill(color)
+	draw_primitive(_poly, _tri_colors, _no_uvs)
+
+
 ## Fills a band given as SLASH_POINTS outer points then the inner ones reversed,
 ## as a triangle strip: a crescent is concave, so a polygon fill could fail to
 ## triangulate; the strip never does.
@@ -280,7 +290,7 @@ func _draw_thrust(center: Vector2, angle: float, radius: float, color: Color, li
 	_outline[2] = _poly[2]
 	_outline[3] = _poly[0]
 	draw_polyline(_outline, Color(INK, 0.85 * fade), 5.0)
-	draw_colored_polygon(_poly, Color(color, 0.95 * fade))
+	_draw_triangle(Color(color, 0.95 * fade))
 	draw_line(base, tip.lerp(base, 0.1), Color(light, fade), maxf(w * 0.4, 2.0))
 	for k in [-1.0, 1.0]:
 		var offset: Vector2 = side * w * 2.2 * k
@@ -304,7 +314,7 @@ func _draw_flames(center: Vector2, angle: float, radius: float, half: float, hea
 		_poly[0] = root + dir.orthogonal() * radius * 0.04
 		_poly[1] = root + dir * length + dir.orthogonal() * -radius * 0.05
 		_poly[2] = root - dir.orthogonal() * radius * 0.04
-		draw_colored_polygon(_poly, Color(1.0, 0.75, 0.2, fade))
+		_draw_triangle(Color(1.0, 0.75, 0.2, fade))
 
 
 ## Zigzag spark running along a crescent (runic blade).

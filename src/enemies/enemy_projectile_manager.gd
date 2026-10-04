@@ -40,6 +40,11 @@ func clear_all() -> void:
 	_renderer.render(_active)
 
 
+## Live enemy shots (read only: bots, debug).
+func active_projectiles() -> Array[Projectile]:
+	return _active
+
+
 func active_count() -> int:
 	return _active.size()
 

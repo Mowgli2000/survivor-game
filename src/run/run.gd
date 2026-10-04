@@ -30,6 +30,14 @@ const COOP_START_GAP := 120.0
 @export_range(1, 2) var player_count: int = 1
 ## When valid, drives the players instead of the input (bots, tests, stress test).
 var bot_input: Callable
+## Balance simulator (ADR 0019): picks level-up cards and plays the shop when
+## auto_choose_upgrades is on. Duck-typed: choose_upgrade(offers, rp) -> UpgradeOffer
+## and shop_turn(rp, wave). Null: first card, first affordable offer.
+var bot_policy: Object
+## False: the run never touches the player profile (simulations).
+var record_profile: bool = true
+## True: every weapon and item can show up, whatever the profile unlocked.
+var unlock_all: bool = false
 ## Character and weapon chosen in the menu (SceneRouter.next_run when null).
 ## Only runs with a setup are recorded in the profile: tests and debug
 ## tools instantiate run.tscn without one.
@@ -401,7 +409,7 @@ func _give_xp(rp: RunPlayer, amount: int) -> void:
 func _unlocked(category: StringName) -> Array[Resource]:
 	var list: Array[Resource] = []
 	for def in ContentDB.get_all(category):
-		if SaveService.is_unlocked(category, def):
+		if unlock_all or SaveService.is_unlocked(category, def):
 			list.append(def)
 	return list
 
@@ -409,7 +417,7 @@ func _unlocked(category: StringName) -> Array[Resource]:
 ## Menu runs only: profile statistics, challenges, unlocks shown on the end screen.
 ## Coop: recorded once per player's character.
 func _record_run(won: bool) -> void:
-	if setup == null:
+	if setup == null or not record_profile:
 		return
 	var unlocks: Array[ChallengeData] = []
 	for rp in players:
@@ -511,7 +519,7 @@ func _resolve_level_ups() -> void:
 	for offer in offers:
 		offer.bonus_scale = rp.character.upgrade_scale
 	if auto_choose_upgrades:
-		_apply_offer(offers[0])
+		_apply_offer(bot_policy.choose_upgrade(offers, rp) if bot_policy != null else offers[0])
 		return
 	var cost := _level_up_reroll_cost()
 	level_up_screen.open(offers, cost, rp.wallet.can_afford(cost), rp.player.stats)
@@ -543,7 +551,10 @@ func _on_level_ups_resolved() -> void:
 	var rp := current_player()
 	rp.shop.open(waves.wave)
 	if auto_choose_upgrades:
-		_auto_buy(rp)
+		if bot_policy != null:
+			bot_policy.shop_turn(rp, waves.wave)
+		else:
+			_auto_buy(rp)
 		_on_shop_done()
 		return
 	wave_end_screen.close()

@@ -57,3 +57,6 @@ assets_src/ai/ai_test/
 # AI art test images (local only)
 art_tests/
 __pycache__/
+
+# Balance simulator output (tools/balance/run_balance.py)
+balance_reports/
