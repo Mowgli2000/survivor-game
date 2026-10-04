@@ -3,7 +3,7 @@
 > Journal de suivi entre les sessions : état actuel, décisions prises, changements, retours de playtest et prochaines étapes.
 > **À lire au début de chaque session, à mettre à jour à la fin.** Les règles de développement sont dans `CLAUDE.md`, le design dans `docs/design/gdd.md`, les décisions techniques détaillées dans `docs/decisions/`.
 
-Dernière mise à jour : 2026-10-04 (session 7 : direction artistique D50-D53 — tout le jeu passé au donjon fantasy avec gpt-image-2.5-sunburst)
+Dernière mise à jour : 2026-10-04 (fin de session 7 : direction artistique complète D50-D53, classes D54, sceaux et 6b D55-D56)
 
 ---
 
@@ -11,12 +11,12 @@ Dernière mise à jour : 2026-10-04 (session 7 : direction artistique D50-D53 �
 
 | | |
 |---|---|
-| **Phase actuelle** | Faits : passe visuelle, B. objets à effets/familles, C. menus/paramètres, 6. vrais boss, 5b. nouveaux ennemis, 7. méta-progression, 7b. difficultés + mode infini, passe artistique « cartoon lisse » (ADR 0016), retours de playtest D47 (équilibrage, infini dur, bazooka à tête chercheuse, cartes de sélection et de déblocage, noms en couleur de rareté, bug du Danger par perso), **perf en fin de partie**, **coop locale à 2 joueurs (D48, ADR 0017)**. Exploration de direction artistique faite puis **mise en pause** (D49). **En attente : playtest du dev (coop + FPS en infini).** Ensuite (D46) : 6b vertical slice + page Steam |
+| **Phase actuelle** | Session 7 : **direction artistique « donjon fantasy »** appliquée à tout le jeu (D50-D53, `docs/design/art-bible.md`, images `gpt-image-2.5-sunburst`), **identité des classes** façon Brotato (D54), **sceaux et lieux** (D55, ADR 0018 ; Cuivre + Fer faits), **6b** en grande partie (D56 : Mage, Berserker, 11 armes, 47 objets). Nom de travail : **Gatebound**. **Prochaine session : écran des sceaux plus lisible, puis contenu des sceaux Argent → Astral, puis 6 à 8 armes par famille** (§6) |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 333/333 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 353/353 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | Solo ~100-125 FPS (pire cas : 650 ennemis, 7 armes rang IV ; séparation des ennemis allégée en session 6). Coop (`--coop`, 2 × 7 armes rang IV, 2 200 projectiles) : 20-28 FPS, pire cas artificiel ; à vérifier en vraie partie. Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS (machine bruyante en session 6) |
-| **Dernier push** | `develop` à jour sur GitHub (fin de session 6) |
+| **Dernier push** | `develop` à jour sur GitHub (fin de session 7) |
 
 **Emplacements**
 - Projet local : `C:\Users\rapha\Projects\survivor-game` (ouvrir `project.godot` dans Godot)
@@ -186,13 +186,17 @@ Dernière mise à jour : 2026-10-04 (session 7 : direction artistique D50-D53 �
 | 2026-10-03 | Après étape B | « Le panneau de stats liste les familles (énergie, armes à feu, explosif, lames) mais ne dit pas quels bonus elles donnent. » « Vagues 12-20 : plus d'ennemis, mais le perso évolue toujours aussi vite : plus je tue, plus j'ai de matériaux et de pouvoir d'achat. Mettre encore plus d'ennemis, un peu plus de PV, limiter un tout petit peu le pouvoir d'achat. J'aime avoir des stats cheatées, mais alors il faut plus de PV ou d'ennemis. Le plafond de 650 n'est jamais atteint : je les tue bien avant. » | **À faire en début de prochaine session** (voir §6, point 1) |
 | 2026-10-03 | Après chantier 3 | « De la vague 14 à 20 on devient exponentiellement trop fort, je ne bouge presque plus dès la 15-16. Plus de mobs, un peu plus de PV, se sentir submergé, beaucoup de chiffres. » « Avec beaucoup d'explosions le tremblement rend le jeu flou. » | D41 ; tremblement lissé (bruit fluide, explosions plafonnées) |
 | 2026-10-03 | Chantiers visuels 1-2 | « Dès la manche 12-14 on est trop puissant ; à partir de la vague 15-16 je n'ai plus besoin de bouger. Plus de mobs, moins de pouvoir d'achat. » « 100 FPS, ce n'est pas un jeu compétitif. » Caméra : un peu plus zoomée, arène plus petite (comme Brotato) | D37, D38, D39 |
+| 2026-10-04 | Session 7 (Épéiste, Danger 0, puis infini jusqu'à la vague 31) | « Vague 14 : six armes légendaires, je ne bouge plus. » « Vague 31 en infini : 15 000 matériaux, plus rien à acheter, je me suis lassé. » Fumée noire autour des persos. Carte de déblocage sans explication. Pas de progression visible entre les Danger dans le menu | Halo noir retiré, cartes de déblocage avec type + info-bulle. **Équilibrage non touché (demande du dev)** : causes identifiées = classe mêlée seule (3 armes, doublons, fusions rapides), mêlée qui touche toute une zone, Danger 0, pas d'achat utile en fin de partie, infini pas assez dur. Pistes en §6. Écran des sceaux : proposition validée (§6) |
 | 2026-10-03 | Phase 5 | « Le bazooka avec plus de portée explose après une certaine distance, pas au contact. » « Voir mes stats (dégâts, vitesse, projectiles). » « Dès la vague 10 le build est trop fort : plus d'ennemis, pas moins de puissance ; trop de matériaux en vagues 15-20. » « Laisse tomber la 3D. » | Bug de portée corrigé ; panneau de stats ; D30 ; D29 |
 
 ---
 
 ## 5. Limites connues / dette
 
-- **Méta-progression** : le perso jouable « Rōnin » et le mini-boss « Ronin » portent le même nom (à renommer l'un des deux si gênant) ; tous les persos utilisent le même sprite ; record du mode infini pas encore affiché à l'écran Progression.
+- **Ids historiques** (jamais renommés, ils sont dans les sauvegardes) : `drifter` = Chasseur novice, `hero` = Assassin, `ronin` (perso) = Épéiste, `gunslinger` = Archer, `merchant` = Contrebandier ; ennemis `ronin` = Serpent venimeux, `shogun` = Chevalier démon ; armes `katana` = Épée flamboyante, `shuriken` = Dagues de lancer, `smg` = Arbalète à répétition, `laser_pistol` = Baguette de cristal, `pulse` = Orbe arcanique, `bazooka` = Fiole explosive ; familles `blade` = Lames, `gun` = Armes de jet, `energy` = Magie, `explosive` = Alchimie ; sceaux = `danger_0..5`. Record du mode infini pas encore affiché à l'écran Progression.
+- **Équilibrage (session 7)** : classes exclusives → trop de fusions ; mêlée très forte en foule ; pas d'achat utile en fin de partie ; infini trop facile (voir §6).
+- **Atlas des sprites** 3976×7232 : grossit à chaque lieu (≈ 9 sprites par lieu) ; prévoir un 2e atlas ou une réduction au-delà de 8192.
+- Sceaux Argent à Astral sans lieu propre (donjon de pierre en attendant).
 - **Manette vue en double** (DS4Windows sans HidHide) : chaque appui compte deux fois ; réglage côté PC, protection en jeu prévue avec `Platform` (Phase 10).
 - **Paramètres** : pas de remappage des touches ni de choix de résolution (Phase 9). Le titre du menu est le titre de travail (`GAME_TITLE`).
 - **Audio provisoire** : sons choisis sans écoute (Kenney), à remplacer au goût du dev.
@@ -210,24 +214,21 @@ Dernière mise à jour : 2026-10-04 (session 7 : direction artistique D50-D53 �
 
 ## 6. Prochaines étapes
 
-> **Reprise de session (après `/clear`)** : lire ce fichier et `CLAUDE.md`, puis attendre les retours de playtest du dev. Le dev préfère : enchaîner sans demander à chaque étape, regrouper les questions, suivre la logique de Brotato, mais **demander confirmation avant d'appliquer une liste de changements qu'il vient de donner** (dernière consigne en date). Pour l'art, il fournira des images de référence s'il veut refaire persos/monstres (`tools/art/make_sprites.py`).
+> **Reprise de session (après `/clear`)** : lire ce fichier, `CLAUDE.md`, `docs/design/art-bible.md` et `docs/decisions/0018-sceaux-et-lieux.md`. Le dev préfère : **recevoir un plan détaillé, valider une seule fois, puis que tout soit exécuté sans nouvelle question** (commits par étape, push à la fin) ; regrouper les questions ; recommandations claires ; suivre la logique de Brotato ; éviter ce qui copie trop Solo Leveling (archétypes seulement). Ses retours de playtest arrivent dans `notes.md` (racine, non versionné) : le relire quand il le dit.
 
-> **Direction artistique (D50/D51)** — suite, dans l'ordre :
-> 1. ~~Art bible~~ faite (D52, `docs/design/art-bible.md`). Rappel du contenu : palette donjon fantasy, sol et décor, trait, ombre, vue 35°, taille à l'écran, bestiaire par rôle (`grunt` orc ✔, `runner` loup ✔, `tank` orc géant/golem, `charger` ours de glace/sanglier, `shooter` chaman/archer, `kamikaze` insecte explosif, `spawner` nid d'araignées ; boss serpent, reine araignée, roi fourmi, chevalier démon), classes (chasseur rang E, épéiste, archer, contrebandier, assassin, mage, berserker…), équivalents fantasy des armes. Nouvel ADR pour le pipeline IA (remplace ADR 0016).
-> 2. Écran de sélection : afficher l'illustration détaillée de la carte (`art_source/ai/assassin_card.png`).
-> 3. Production : persos jouables (carte + sprite) → monstres + élites → boss → sol et décor du donjon → armes et objets (icônes).
-> 4. Plus tard (après tous les designs des persos) : pantin articulé des persos jouables (D51).
-0. **Dev : tester la coop locale** (2 manettes ; avec DS4Windows, activer HidHide sinon une manette compte pour deux) et **revérifier les FPS en infini vagues 23-25** (depuis l'éditeur ou l'exe exporté ?). Points à juger : difficulté à deux (×1,5 apparitions, ×1,2 PV), boutique à tour de rôle (assez bien ou côte à côte nécessaire ?), caméra, lisibilité des deux persos.
-0b. **Dev : playtest complet** (beaucoup de nouveautés d'un coup) (hors direction artistique, en pause ; persos, ennemis, boss, carte, projectiles : retours bienvenus avec des images de référence) :
-   - équilibrage D45 (matériaux, relance, apparitions) : encore trop facile ou trop dur ?
-   - boss : Ronin en vague 10 (récompense), Shogun en 3 phases en vague 20 ; lisibilité des annonces ;
-   - nouveaux ennemis : kamikaze (vague 5+), chargeur (7+), pondeuse (9+) ;
-   - méta : écran de choix du perso, défis (écran Progression), déblocages en fin de partie, Danger 1+ après une victoire, « Continuer en infini ».
-   Réglages rapides : `data/stages/default.tres`, `data/enemies/*.tres` (phases des boss), `data/difficulties/`, `data/challenges/`, `data/characters/`.
-0c. **Coop, suites possibles** : boutique/level-up côte à côte (un SubViewport par joueur), armes de J2 visibles dans le HUD, perf des projectiles en coop si la vraie partie rame (stress coop 20-28 FPS au pire cas).
-1. **6b — Vertical slice** : 2 persos de plus (Technomancien, Berserker, idées de la proposition), ~4 armes de plus (≈ 10), ~10 objets de plus (≈ 30), un 2e boss final pour le tirage aléatoire, direction artistique appliquée (vrais sprites par perso/boss), écran Progression avec records ; puis page Steam « Coming Soon » (dev).
-2. **Dev** : écouter le son en jeu (si toujours muet : sortie audio Windows, manette PS4 en USB).
-3. Phases 8 à 12 : contenu, finitions (remappage, accessibilité), Steam (`Platform`, succès = défis, protection manette en double), démo, sortie. Roadmap : `docs/design/gdd.md`.
+**Pipeline d'images (rappel)** : `python tools/art/gen_image.py` (modèle `gpt-image-2.5-sunburst`, clé `OPENAI_API_KEY`, relance auto sur la limite de 5 images/min) ; références de style : `art_source/ai/assassin_card.png` (cartes), `art_source/ai/assassin.png` (sprites persos), `art_source/ai/grunt.png` (monstres, décor), `art_source/ai/weapons/katana.png` (icônes) ; puis `tools/art/fill_alpha_holes.gd` (**`--keep-holes` pour objets, armes, décor**) ; sprites : `tools/art/prepare_ai_sprite.gd --id=ai_<id>` + entrée `src` dans `tools/sprites/sprites.json` (`glow` `#00000000`) ; icônes : `tools/art/make_icon.gd` (armes horizontales, pointe à droite) ; décor : `make_icon.gd --height=N` vers `assets_src/drawn/map/decor_<lieu>/` ; puis `tools/bake_sprites.ps1`. Planches de vérification dans `art_tests/` (non versionné). Capture d'un sceau : `capture.tscn -- --danger=N --character=<id> [--boss=<id>]`.
+
+1. **Écran des sceaux plus lisible (validé, à faire en premier)** : sur chaque bouton un numéro romain I à VI en gros, de 0 à 5 crânes ☠, une couleur qui « chauffe » du vert-bleu au rouge sang (bordure + numéro ; la couleur du métal reste pour le nom) ; sous la rangée, une ligne « effets + lieu » du sceau survolé (aujourd'hui seulement en info-bulle). Sceaux verrouillés grisés avec cadenas ; « Lieu à venir » pour les sceaux sans lieu propre. Seulement `character_select.gd` + 2-3 textes.
+2. **Configurer les sceaux 0 à 5 (demande du dev)** : un lieu complet par sceau (`BiomeData` : décor ~8 éléments, teinte du sol et des murs, couleur des portails ; 7 monstres par rôle ; mini-boss + boss final), même méthode que le temple (ADR 0018). Lieux prévus (art bible) :
+   - Argent : **forêt gelée** — mini-boss Ours de givre, boss Géant des glaces ;
+   - Or : **citadelle infernale** — Molosse à trois têtes, Seigneur démon ;
+   - Obsidienne : **ruche souterraine** — Mante géante, Reine de la ruche ;
+   - Astral : **antre du dragon** — Wyverne, Dragon ancien.
+   Le dev veut aussi de **nouveaux motifs d'attaque** : aujourd'hui les boss d'un lieu reprennent ceux du Serpent / Chevalier démon. Prévoir 1-2 nouveaux `BossPattern` par lieu (souffle de glace en cône, pluie de météores, ponte de larves, charge en ligne…). Vérifier le stress test et la taille de l'atlas.
+3. **6 à 8 armes par famille (demande du dev)** : aujourd'hui Lames 5 (épée, dagues, hache, lance + ?), Armes de jet 3 (arbalète, baguette de cristal, arc long), Magie 5 (orbe, baguette, bâton de feu, sceptre de givre…), Alchimie 1 (fiole). Recompter avec `families` dans `data/weapons/`. Viser 6-8 par famille, avec assez d'armes de **mêlée** et de **distance** pour l'Épéiste et l'Archer et de **Magie** pour le Mage. Chaque arme : `.tres` (comportement existant ou nouveau), icône, noms FR/EN, niveaux II-IV.
+4. **Équilibrage (quand le dev le demandera)** : limiter doublons/fusions des classes exclusives ou élargir leur pool (point 3), zone de la mêlée un peu réduite, achats utiles en fin de partie (améliorations répétables), infini plus dur, matériaux en excès.
+5. Reste du 6b : aura au level-up, phase enragée du boss final, page Steam « Coming Soon » (nom de travail **Gatebound**, illustration `art_source/ai/keyart_heroes.png`).
+6. Plus tard : pantin articulé des persos jouables (planches `art_source/ai/rig/`, D51) ; coop (boutique côte à côte) ; son ; phases 8-12 (`docs/design/gdd.md`).
 
 ---
 
