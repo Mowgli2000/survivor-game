@@ -2448,3 +2448,43 @@ production/session-logs/.session-end.hash
 production/session-logs/session-log.md
 ---
 
+## Session End: 20261004_224538
+### Commits
+e464155 docs: session 8 status, weapon restyle (D60)
+0ee9f80 feat: ornate flat weapon art for all 26 weapons, bigger in game
+7fec18c chore: weapon restyle preview shows variants, --only and a real-size band
+3920d05 chore: icon sheet --art=<folder> preview of a weapon restyle
+b10e7de docs: session 8 status, latest playtest notes
+06f7e11 fix: playtest notes (crossbow sound, seal info layout, ornate weapons, Shuriken)
+ec74aa6 docs: session 8 status, playtest feedback batch (D59)
+afa21a8 feat: fantasy weapon sounds, one per weapon (CC0)
+a2b7819 feat: combat visuals, per-weapon melee slashes and illustrated projectiles
+d447aea fix: playtest quick fixes (starting weapons, cards, damage numbers, weapon ring, windowed debug)
+eb7a66c docs: session 8 status, 15 new weapons (D58)
+b43db08 feat: 15 new weapons, at least 7 per family and 6 per class
+d723e80 feat: StrikeBehavior, weapons that strike from the sky
+4d21ec9 docs: session 8 playtest notes and session logs
+f174c4d docs: session 8 status, seal places in ADR 0018 and art bible (D57)
+75e6288 feat: Obsidian and Astral seal places, the underground hive and the dragon's lair
+9de90da feat: Gold seal place, the infernal citadel
+eab6327 feat: Silver seal place, the frozen forest
+f1ceb7e feat: boss patterns for the seal places (breath, impact zones, wall, summon around player)
+77de198 chore: shelf-packed sprite atlas with one page per place
+9bf4cda feat: readable seal selection (numerals, skulls, heat colors, effects line)
+1a72d17 docs: end of session 7 status and next steps
+e3667da docs: 6b status (D55-D56)
+57b1640 feat: Mage and Berserker, 5 new weapons, 19 items, playtest fixes
+eee2274 feat: seals and biomes, Iron seal sunken temple (ADR 0018)
+dcc83ef docs: D54 class identity and working title
+2e09fe3 feat: class rules (melee/ranged only, awakening, shadow step, black market)
+5b4a8a0 docs: class identity proposal (Brotato-style rules)
+030c3e0 feat(ui): stat preview on level-up cards, item tooltips, weapon icon fix
+eb754b3 docs: session 7 status (D53, full visual production)
+8e39b4d feat(art): item icons, menu key art, manga title font, boss gate
+ce1415c feat(art): dungeon arena, manga VFX, mana crystals, fantasy names
+316e253 feat(art): fantasy weapons (icons, floating weapons, names)
+d0d7481 feat(art): venom serpent and demon knight bosses, fantasy enemy names
+8f4beec chore(art): cut-out rig part sheets for the five playable characters
+ed11832 feat(art): bestiary with gpt-image-2.5-sunburst (7 monsters)
+---
+
