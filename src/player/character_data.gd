@@ -28,3 +28,5 @@ extends Resource
 @export var sprite_id: StringName
 ## On-screen size of the sprite (1 = the standard character height). Gameplay radius unchanged.
 @export var sprite_scale: float = 1.0
+## Detailed illustration shown on the character select card (null: the animated sprite).
+@export var card_art: Texture2D

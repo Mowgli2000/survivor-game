@@ -9,8 +9,10 @@ extends Control
 signal started(setup: RunSetup)
 signal closed
 
-const CARD_SIZE := Vector2(300, 430)
+const CARD_SIZE := Vector2(300, 500)
 const PREVIEW_HEIGHT := 170.0
+## Height of a card illustration (CharacterData.card_art, 2:3 portrait).
+const ART_HEIGHT := 250.0
 
 var _character_buttons: Dictionary[StringName, Button] = {}
 var _cards: HBoxContainer
@@ -181,9 +183,7 @@ func _build_cards() -> void:
 		text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		text.add_theme_constant_override("separation", 10)
 		button.add_child(text)
-		var preview := SpritePreview.create(character_sheet(character), PREVIEW_HEIGHT, not unlocked)
-		preview.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		text.add_child(preview)
+		text.add_child(_portrait(character, unlocked))
 		var name_label := Label.new()
 		name_label.text = character.name_key
 		name_label.theme_type_variation = &"SubtitleLabel"
@@ -209,6 +209,27 @@ func _build_cards() -> void:
 		UiFx.hover_lift(button)
 		_cards.add_child(button)
 		_character_buttons[character.id] = button
+
+
+## Card illustration when the character has one, else its animated sprite.
+## Locked characters are shown as a dark silhouette.
+func _portrait(character: CharacterData, unlocked: bool) -> Control:
+	if character.card_art == null:
+		# Same height as an illustration so the names line up across cards.
+		var frame := CenterContainer.new()
+		frame.custom_minimum_size = Vector2(0.0, ART_HEIGHT)
+		frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		frame.add_child(SpritePreview.create(character_sheet(character), PREVIEW_HEIGHT, not unlocked))
+		return frame
+	var art := TextureRect.new()
+	art.texture = character.card_art
+	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	art.custom_minimum_size = Vector2(0.0, ART_HEIGHT)
+	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if not unlocked:
+		art.modulate = SpritePreview.SILHOUETTE
+	return art
 
 
 ## Sprite sheet of a character (same path rule as Player), or null.
