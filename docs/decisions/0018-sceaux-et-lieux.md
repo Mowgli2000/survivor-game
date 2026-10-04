@@ -12,7 +12,9 @@ Les 6 niveaux de difficulté (« Danger 0-5 », ADR 0015) ne changeaient que des
 4. Les monstres d'un lieu sont des `EnemyData` à part (ids `iron_*`…), qui reprennent les comportements existants (rôles : base, rapide, tireur, tank, chargeur, kamikaze, invocateur, mini-boss, boss final).
 5. **Décor par lieu** : `tools/art/bake_map.gd` cuit un atlas par dossier `assets_src/drawn/map/decor_<lieu>/` → `assets/map/decor_atlas_<lieu>.tres`. `Arena.setup(rect, biome)`.
 6. **Portails visibles** (`ArenaGates`) : un portail animé au milieu de chaque côté de l'arène, aux couleurs du lieu ; décoratifs (les règles d'apparition ne changent pas).
-7. Un sceau sans lieu dédié utilise le donjon de pierre (contenu des sceaux Argent à Astral à venir).
+7. Un sceau sans lieu dédié utilise le donjon de pierre. Depuis la session 8, les six sceaux ont chacun leur lieu : Cuivre = donjon de pierre, Fer = temple englouti, Argent = forêt gelée, Or = citadelle infernale, Obsidienne = ruche souterraine, Astral = antre du dragon (test : un lieu par sceau).
+8. **Pages d'atlas par lieu** (complément d'ADR 0009, session 8) : l'atlas unique dépassait 8192 px. `tools/sprites/bake_sprites.gd` range les bandes côte à côte et place les sprites ayant `"page": "<lieu>"` dans `assets/sprites/atlas_<lieu>.png`. Les monstres d'un lieu partagent une page, donc aucun changement de texture entre eux ; le stress test est inchangé (mesure alternée).
+9. **Motifs de boss par lieu** : `ConeBreathPattern` (souffle en cône qui balaie), `ImpactZonesPattern` (zones annoncées au sol puis impact : stalactites, météores, acide), `WallPattern` (mur de projectiles avec une brèche), `SummonPattern.around_target` (invocation autour du joueur). Les invocations d'un boss viennent de son lieu (test).
 
 ## Conséquences
 - Ajouter un lieu = un `BiomeData` + ses `EnemyData` + leurs sprites + un dossier de décor ; aucun code.

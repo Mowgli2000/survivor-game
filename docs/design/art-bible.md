@@ -162,6 +162,11 @@ Boss et lieux : **un lieu par sceau** (ADR 0018, décision du dev 2026-10-04). P
 | Astral | Antre du dragon | Wyverne | Dragon ancien |
 
 Temple englouti (Fer) : sol grès (teinte chaude), murs ocre, portails cyan ; monstres : soldat squelette, chauve-souris, gargouille, gardien de bronze, chevalier squelette, crâne maudit, sarcophage.
+Forêt gelée (Argent, ids `silver_*`) : sol bleu acier sombre, portails cyan pâle ; gobelin des glaces, renard de givre, esprit du blizzard, troll des glaces, élan cuirassé, cristal instable, totem de givre.
+Citadelle infernale (Or, `gold_*`) : sol basalte rouge sombre, portails orange ; diablotin, chien de l'enfer, démon cracheur, golem de magma, taureau infernal, âme ardente, chaudron infernal.
+Ruche souterraine (Obsidienne, `obsidian_*`) : sol terre brune, portails vert acide ; fourmi soldat, scarabée coureur, fourmi cracheuse, coléoptère blindé, lucane, larve gonflée, couvée d'œufs.
+Antre du dragon (Astral, `astral_*`) : sol roche sombre chaude, portails rouge ; kobold, raptor, dragonnet cracheur, drakéide en armure, drake de charge, salamandre de magma, couvée de dragon.
+Règle de lisibilité des lieux : la teinte du sol doit contraster avec les monstres du lieu (monstres pâles sur sol sombre, monstres sombres sur sol moyen) ; vérifier par capture `--danger=N`.
 
 Élites : même sprite, contour or (`"elite": true` dans `sprites.json`) + taille ×1,15 ; aucun redessin.
 
@@ -230,8 +235,8 @@ Pipeline :
 1. `python tools/art/gen_image.py` (modèle **`gpt-image-2.5-sunburst`** par défaut depuis le 2026-10-04, `--model` pour en changer ; `--style`, `--image` pour la cohérence d'un perso, fond transparent). Puis **toujours** `tools/art/fill_alpha_holes.gd` sur l'image retenue (ombres et auras semi-transparentes à l'intérieur du perso) ; **avec `--keep-holes` pour les objets, armes et décor** (sinon l'intérieur d'un anneau ou d'un arc est rebouché en noir).
 2. `tools/art/prepare_ai_sprite.gd` : 1 image → idle 6 + walk 8 images (respiration/sautillement procéduraux + ombre au sol).
 3. Entrée dans `tools/sprites/sprites.json` : `src`, `height`, `"glow": "#000000"` (pas de halo néon pour les sprites IA), `"elite": true` pour les monstres.
-4. `powershell -ExecutionPolicy Bypass -File tools/bake_sprites.ps1` → atlas unique `assets/sprites/atlas.png`.
-5. Contrainte perf : un seul atlas partagé ; vérifier sa taille et le stress test (≥ 100 FPS moyen, D37) après ajout de monstres.
+4. `powershell -ExecutionPolicy Bypass -File tools/bake_sprites.ps1` → `assets/sprites/atlas.png` (persos, donjon) et une page par lieu `atlas_<page>.png` (entrée `"page"` dans `sprites.json`), bandes rangées côte à côte (4096 px de large). Un nouveau dossier/page demande parfois deux passes (import).
+5. Contrainte perf : les monstres d'un lieu sont sur une seule page (pas de changement de texture entre eux) ; page ≤ 8192 px (test) ; stress test (≥ 100 FPS moyen, D37) après ajout de monstres.
 
 Structure de prompt (préfixe canonique = fichier de style, ne pas le réécrire dans le prompt) :
 - Sprites : `--style tools/art/style_block.txt`, qui commence par « 2D game sprite for a top-down roguelite, in the style of Brawlhalla character art: thick clean black outline of constant weight, flat colors with one hard cel-shadow tone… Transparent background, no ground, no shadow on the floor, no text, no frame. »
