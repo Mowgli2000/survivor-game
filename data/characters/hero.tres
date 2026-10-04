@@ -27,7 +27,7 @@ flat = 0.5
 [sub_resource type="Resource" id="Mod_4"]
 script = ExtResource("2_mod")
 stat = &"max_hp"
-percent = -0.3
+percent = -0.15
 
 [sub_resource type="Resource" id="Mod_crit"]
 script = ExtResource("2_mod")

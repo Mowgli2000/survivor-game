@@ -8,3 +8,4 @@ id = &"default"
 price_growth_per_wave = 0.13
 reroll_wave_factor = 0.75
 reroll_step_factor = 0.6
+late_price_growth_per_wave = 0.15

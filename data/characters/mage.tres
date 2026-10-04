@@ -17,12 +17,12 @@ percent = 0.15
 [sub_resource type="Resource" id="Mod_2"]
 script = ExtResource("2_mod")
 stat = &"armor"
-flat = -2.0
+flat = -1.0
 
 [sub_resource type="Resource" id="Mod_per_weapon"]
 script = ExtResource("2_mod")
 stat = &"damage"
-percent = 0.08
+percent = 0.12
 
 [sub_resource type="Resource" id="Affinity"]
 script = ExtResource("6_family")

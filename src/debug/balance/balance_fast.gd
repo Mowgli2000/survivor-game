@@ -29,7 +29,11 @@ func _ready() -> void:
 		if arg.begins_with("--") and arg.contains("="):
 			var parts := arg.trim_prefix("--").split("=", true, 1)
 			args[parts[0]] = parts[1]
-	if args.get("search", "") != "":
+	if args.get("evaluate", "") != "":
+		var m := evaluate({}, load_calibration(), int(args.seeds))
+		print("EVAL wins %s random %s spread %.2f classes %s margins %s" % [m.win_decent, m.win_random,
+			m.spread, m.class_wins, m.margins])
+	elif args.get("search", "") != "":
 		_search(args)
 	elif args.get("compare", "") != "":
 		_compare(args.compare)
@@ -148,12 +152,14 @@ func _loss(real: Array, params: Dictionary) -> float:
 ## Seal win-rate targets for a decent player (dev's Brotato-like choice).
 const TARGET_WIN: Array[float] = [0.80, 0.68, 0.56, 0.44, 0.34, 0.25]
 const SEARCH_GRID := {
-	"hp_last": [14.0, 20.0, 28.0, 36.0],
-	"dmg_last": [2.5, 3.5, 5.0],
-	"mat_last": [0.35, 0.25, 0.15],
-	"late_price": [0.0, 0.05, 0.1],
-	"seal_scale": [1.0, 1.75, 2.5],
+	"hp_last": [40.0, 50.0, 60.0, 70.0],
+	"mat_last": [0.35, 0.25],
+	"late_price": [0.15, 0.25, 0.35],
+	"seal_scale": [2.5, 3.5, 5.0],
 }
+## Power margin (kill capacity / HP that spawns) the dev finds right: waves 1-12
+## sit around it; late waves should stay there instead of snowballing.
+const TARGET_MARGIN := 1.35
 
 
 ## Tries every combination of SEARCH_GRID on the whole roster (first starting
@@ -186,8 +192,9 @@ func _search(args: Dictionary) -> void:
 	file.close()
 	results.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.loss < b.loss)
 	for r in results.slice(0, 10):
-		print("loss %.3f %s wins %s random %s trivial %s spread %.2f" % [r.loss, r.overrides, r.win_decent,
-			r.win_random, r.trivial, r.spread])
+		print("loss %.3f %s wins %s spread %.2f margin w10 %.2f w15 %.2f w19 %.2f classes %s" % [r.loss,
+			r.overrides, r.win_decent, r.spread, r.margins.get(10, 0.0), r.margins.get(15, 0.0),
+			r.margins.get(19, 0.0), r.class_wins])
 
 
 ## Metrics of one set of overrides and its distance ("loss") to the targets.
@@ -197,6 +204,7 @@ func evaluate(overrides: Dictionary, params: Dictionary, seeds: int) -> Dictiona
 	var class_wins := {}
 	var trivial := []
 	var early_damage := []
+	var margins := {}  # wave -> Array[float] (decent players, all seals)
 	for seal in 6:
 		var decent := 0
 		var decent_n := 0
@@ -220,11 +228,16 @@ func evaluate(overrides: Dictionary, params: Dictionary, seeds: int) -> Dictiona
 					for w in run.waves:
 						if w.wave <= 10:
 							early_damage.append(w.damage_ratio)
+						if not margins.has(w.wave):
+							margins[w.wave] = []
+						margins[w.wave].append(1.0 / maxf(w.pressure, 0.001))
 		win_decent.append(float(decent) / decent_n)
 		win_random.append(float(random) / random_n)
 	var class_rates := []
+	var per_class := {}
 	for id in class_wins:
 		class_rates.append(class_wins[id] / (6.0 * 2.0 * seeds))
+		per_class[String(id)] = snappedf(class_wins[id] / (6.0 * 2.0 * seeds), 0.01)
 	var mean := 0.0
 	for v in class_rates:
 		mean += v
@@ -236,17 +249,23 @@ func evaluate(overrides: Dictionary, params: Dictionary, seeds: int) -> Dictiona
 	trivial.sort()
 	early_damage.sort()
 	var trivial_median: float = trivial[trivial.size() / 2] if not trivial.is_empty() else 21.0
+	var margin_median := {}
+	for wave in margins:
+		var list: Array = margins[wave]
+		list.sort()
+		margin_median[wave] = list[list.size() / 2]
 	var loss := 0.0
 	for seal in 6:
 		loss += pow(win_decent[seal] - TARGET_WIN[seal], 2.0) * 10.0
-	loss += pow(maxf(17.0 - trivial_median, 0.0), 2.0) * 0.05
+	for wave in range(13, 20):
+		loss += pow(margin_median.get(wave, TARGET_MARGIN) - TARGET_MARGIN, 2.0) * 3.0
 	loss += spread * 2.0
-	loss += pow(win_random[0] - 0.4, 2.0) * 2.0
+	loss += pow(win_random[0] - 0.4, 2.0)
 	return {"loss": loss, "win_decent": win_decent.map(func(v: float) -> float: return snappedf(v, 0.01)),
 		"win_random": win_random.map(func(v: float) -> float: return snappedf(v, 0.01)),
-		"trivial": trivial_median, "spread": spread,
+		"trivial": trivial_median, "spread": spread, "margins": margin_median,
 		"early_damage_median": early_damage[early_damage.size() / 2] if not early_damage.is_empty() else 0.0,
-		"class_wins": class_rates}
+		"class_wins": per_class}
 
 
 ## First wave from which the player never loses more than 5 % HP again.
