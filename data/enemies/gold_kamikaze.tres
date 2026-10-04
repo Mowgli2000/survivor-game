@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://src/enemies/enemy_data.gd" id="1_enemy"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = &"gold_kamikaze"
+name_key = "ENEMY_GOLD_KAMIKAZE"
+movement = 3
+max_hp = 8.0
+speed = 170.0
+contact_damage = 4.0
+radius = 14.0
+knockback_taken = 1.2
+fuse_range = 70.0
+fuse_time = 0.55
+blast_radius = 110.0
+blast_damage = 18.0
+xp_value = 1
+color = Color(1.0, 0.8, 0.3, 1)
+shape_sides = 3
+sprite_id = &"gold_kamikaze"
+sprite_scale = 1.0

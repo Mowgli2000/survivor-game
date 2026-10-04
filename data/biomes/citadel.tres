@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="BiomeData" format=3]
+
+[ext_resource type="Script" path="res://src/waves/biome_data.gd" id="1_biome"]
+[ext_resource type="Script" path="res://src/enemies/enemy_data.gd" id="2_enemy_script"]
+[ext_resource type="Resource" path="res://data/enemies/gold_grunt.tres" id="e0"]
+[ext_resource type="Resource" path="res://data/enemies/gold_runner.tres" id="e1"]
+[ext_resource type="Resource" path="res://data/enemies/gold_shooter.tres" id="e2"]
+[ext_resource type="Resource" path="res://data/enemies/gold_tank.tres" id="e3"]
+[ext_resource type="Resource" path="res://data/enemies/gold_charger.tres" id="e4"]
+[ext_resource type="Resource" path="res://data/enemies/gold_kamikaze.tres" id="e5"]
+[ext_resource type="Resource" path="res://data/enemies/gold_spawner.tres" id="e6"]
+[ext_resource type="Resource" path="res://data/enemies/gold_boss_mini.tres" id="e7"]
+[ext_resource type="Resource" path="res://data/enemies/gold_boss_final.tres" id="e8"]
+[ext_resource type="Resource" path="res://assets/map/decor_atlas_citadel.tres" id="decor"]
+
+[resource]
+script = ExtResource("1_biome")
+id = &"citadel"
+name_key = "BIOME_CITADEL"
+enemy_swaps = Dictionary[StringName, ExtResource("2_enemy_script")]({
+&"grunt": ExtResource("e0"),
+&"runner": ExtResource("e1"),
+&"shooter": ExtResource("e2"),
+&"tank": ExtResource("e3"),
+&"charger": ExtResource("e4"),
+&"kamikaze": ExtResource("e5"),
+&"spawner": ExtResource("e6"),
+&"ronin": ExtResource("e7"),
+&"shogun": ExtResource("e8")
+})
+decor = ExtResource("decor")
+ground_tint = Color(0.72, 0.5, 0.48, 1)
+outside_color = Color(0.12, 0.05, 0.05, 1)
+wall_color = Color(0.32, 0.13, 0.1, 1)
+border_color = Color(0.95, 0.45, 0.2, 1)
+gate_color = Color(1.0, 0.5, 0.15, 1)

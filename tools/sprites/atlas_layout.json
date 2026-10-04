@@ -34,6 +34,118 @@
 		208,
 		"res://assets/sprites/atlas.png"
 	],
+	"gold_boss_final": [
+		0,
+		0,
+		277,
+		304,
+		"res://assets/sprites/atlas_gold.png"
+	],
+	"gold_boss_mini": [
+		0,
+		304,
+		286,
+		304,
+		"res://assets/sprites/atlas_gold.png"
+	],
+	"gold_charger": [
+		0,
+		1344,
+		153,
+		144,
+		"res://assets/sprites/atlas_gold.png"
+	],
+	"gold_charger_elite": [
+		0,
+		1488,
+		153,
+		144,
+		"res://assets/sprites/atlas_gold.png"
+	],
+	"gold_grunt": [
+		0,
+		1632,
+		142,
+		144,
+		"res://assets/sprites/atlas_gold.png"
+	],
+	"gold_grunt_elite": [
+		1988,
+		1632,
+		142,
+		144,
+		"res://assets/sprites/atlas_gold.png"
+	],
+	"gold_kamikaze": [
+		0,
+		1776,
+		103,
+		144,
+		"res://assets/sprites/atlas_gold.png"
+	],
+	"gold_kamikaze_elite": [
+		1442,
+		1776,
+		103,
+		144,
+		"res://assets/sprites/atlas_gold.png"
+	],
+	"gold_runner": [
+		0,
+		1920,
+		125,
+		144,
+		"res://assets/sprites/atlas_gold.png"
+	],
+	"gold_runner_elite": [
+		1750,
+		1920,
+		125,
+		144,
+		"res://assets/sprites/atlas_gold.png"
+	],
+	"gold_shooter": [
+		0,
+		2064,
+		128,
+		144,
+		"res://assets/sprites/atlas_gold.png"
+	],
+	"gold_shooter_elite": [
+		1792,
+		2064,
+		128,
+		144,
+		"res://assets/sprites/atlas_gold.png"
+	],
+	"gold_spawner": [
+		0,
+		608,
+		164,
+		184,
+		"res://assets/sprites/atlas_gold.png"
+	],
+	"gold_spawner_elite": [
+		0,
+		792,
+		164,
+		184,
+		"res://assets/sprites/atlas_gold.png"
+	],
+	"gold_tank": [
+		0,
+		976,
+		174,
+		184,
+		"res://assets/sprites/atlas_gold.png"
+	],
+	"gold_tank_elite": [
+		0,
+		1160,
+		174,
+		184,
+		"res://assets/sprites/atlas_gold.png"
+	],
 	"grunt": [
 		0,
 		2320,

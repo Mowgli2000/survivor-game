@@ -284,3 +284,13 @@ ENEMY_SILVER_SPAWNER,Frost totem,Totem de givre
 ENEMY_SILVER_BOSS_MINI,Frost Bear,Ours de givre
 ENEMY_SILVER_BOSS_FINAL,Ice Giant,Géant des glaces
 BIOME_FOREST,Frozen forest,Forêt gelée
+ENEMY_GOLD_GRUNT,Imp,Diablotin
+ENEMY_GOLD_RUNNER,Hellhound,Chien de l'enfer
+ENEMY_GOLD_SHOOTER,Fire spitter,Démon cracheur
+ENEMY_GOLD_TANK,Magma golem,Golem de magma
+ENEMY_GOLD_CHARGER,Infernal bull,Taureau infernal
+ENEMY_GOLD_KAMIKAZE,Burning soul,Âme ardente
+ENEMY_GOLD_SPAWNER,Infernal cauldron,Chaudron infernal
+ENEMY_GOLD_BOSS_MINI,Three-headed Hound,Molosse à trois têtes
+ENEMY_GOLD_BOSS_FINAL,Demon Lord,Seigneur démon
+BIOME_CITADEL,Infernal citadel,Citadelle infernale

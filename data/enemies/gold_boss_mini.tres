@@ -1,0 +1,83 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://src/enemies/enemy_data.gd" id="1_enemy"]
+[ext_resource type="Script" path="res://src/enemies/boss/boss_phase.gd" id="2_phase"]
+[ext_resource type="Script" path="res://src/enemies/boss/boss_pattern.gd" id="3_pattern"]
+[ext_resource type="Script" path="res://src/enemies/boss/cone_breath_pattern.gd" id="s_cone"]
+[ext_resource type="Script" path="res://src/enemies/boss/dash_pattern.gd" id="s_dash"]
+[ext_resource type="Script" path="res://src/enemies/boss/wall_pattern.gd" id="s_wall"]
+
+[sub_resource type="Resource" id="P1_1_cone"]
+script = ExtResource("s_cone")
+windup = 0.7
+repeats = 4
+repeat_interval = 0.18
+recovery = 1.4
+projectile_damage = 10.0
+count = 4
+spread_degrees = 20.0
+sweep_degrees = 60.0
+
+[sub_resource type="Resource" id="P1_2_dash"]
+script = ExtResource("s_dash")
+windup = 0.8
+recovery = 1.4
+dash_speed = 800.0
+dash_duration = 0.5
+
+[sub_resource type="Resource" id="Phase_1"]
+script = ExtResource("2_phase")
+hp_ratio = 1.0
+patterns = Array[ExtResource("3_pattern")]([SubResource("P1_1_cone"), SubResource("P1_2_dash")])
+speed_multiplier = 1.0
+
+[sub_resource type="Resource" id="P2_1_wall"]
+script = ExtResource("s_wall")
+windup = 0.8
+recovery = 1.2
+projectile_damage = 10.0
+projectile_speed = 260.0
+count = 12
+gap = 3
+
+[sub_resource type="Resource" id="P2_2_dash"]
+script = ExtResource("s_dash")
+windup = 0.6
+recovery = 1.0
+dash_speed = 900.0
+dash_duration = 0.5
+
+[sub_resource type="Resource" id="P2_3_cone"]
+script = ExtResource("s_cone")
+windup = 0.6
+repeats = 5
+repeat_interval = 0.15
+recovery = 1.0
+projectile_damage = 10.0
+count = 4
+spread_degrees = 20.0
+sweep_degrees = 90.0
+
+[sub_resource type="Resource" id="Phase_2"]
+script = ExtResource("2_phase")
+hp_ratio = 0.5
+patterns = Array[ExtResource("3_pattern")]([SubResource("P2_1_wall"), SubResource("P2_2_dash"), SubResource("P2_3_cone")])
+speed_multiplier = 1.25
+
+[resource]
+script = ExtResource("1_enemy")
+id = &"gold_boss_mini"
+name_key = "ENEMY_GOLD_BOSS_MINI"
+max_hp = 350.0
+speed = 95.0
+contact_damage = 18.0
+armor = 4.0
+radius = 40.0
+knockback_taken = 0.0
+xp_value = 30
+reward_item_tier = 2
+color = Color(1.0, 0.45, 0.15, 1)
+shape_sides = 6
+sprite_id = &"gold_boss_mini"
+sprite_scale = 1.0
+phases = Array[ExtResource("2_phase")]([SubResource("Phase_1"), SubResource("Phase_2")])

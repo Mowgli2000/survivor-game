@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://src/enemies/enemy_data.gd" id="1_enemy"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = &"gold_shooter"
+name_key = "ENEMY_GOLD_SHOOTER"
+movement = 1
+max_hp = 10.0
+speed = 120.0
+contact_damage = 5.0
+radius = 16.0
+preferred_distance = 380.0
+fire_cooldown = 2.4
+projectile_damage = 8.0
+projectile_speed = 300.0
+projectile_radius = 9.0
+xp_value = 2
+color = Color(0.8, 0.35, 0.6, 1)
+shape_sides = 4
+sprite_id = &"gold_shooter"

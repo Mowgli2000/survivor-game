@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="DecorAtlas" format=3]
+
+[ext_resource type="Script" path="res://src/run/decor_atlas.gd" id="1_0b6so"]
+[ext_resource type="Texture2D" path="res://assets/map/decor_atlas_citadel.png" id="2_ieri1"]
+
+[resource]
+script = ExtResource("1_0b6so")
+texture = ExtResource("2_ieri1")
+regions = Dictionary[StringName, Rect2]({
+&"decal_lava_crack": Rect2(0, 0, 96, 110),
+&"decal_scorch": Rect2(100, 0, 102, 110),
+&"prop_demon_statue": Rect2(206, 0, 148, 240),
+&"prop_lava_brazier": Rect2(358, 0, 138, 180),
+&"prop_obsidian_spikes": Rect2(500, 0, 190, 240),
+&"prop_red_banner": Rect2(694, 0, 170, 240),
+&"prop_skull_pile": Rect2(868, 0, 120, 130),
+&"prop_spiked_pillar": Rect2(0, 244, 124, 240)
+})

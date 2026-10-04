@@ -1,0 +1,50 @@
+{
+	"decal_lava_crack": [
+		0,
+		0,
+		96,
+		110
+	],
+	"decal_scorch": [
+		100,
+		0,
+		102,
+		110
+	],
+	"prop_demon_statue": [
+		206,
+		0,
+		148,
+		240
+	],
+	"prop_lava_brazier": [
+		358,
+		0,
+		138,
+		180
+	],
+	"prop_obsidian_spikes": [
+		500,
+		0,
+		190,
+		240
+	],
+	"prop_red_banner": [
+		694,
+		0,
+		170,
+		240
+	],
+	"prop_skull_pile": [
+		868,
+		0,
+		120,
+		130
+	],
+	"prop_spiked_pillar": [
+		0,
+		244,
+		124,
+		240
+	]
+}
