@@ -7,12 +7,14 @@ shader_type canvas_item;
 // Vertex-only work, one texture sample: cheap for 1000+ projectiles.
 
 // Number of cells in the strip (one per WeaponData.ProjectileStyle except GLOW).
-uniform float cells : hint_range(1.0, 64.0) = 6.0;
+uniform float cells : hint_range(1.0, 64.0) = 21.0;
 // Must match ProjectileRenderer.CELL_CODE.
-const float CELL_CODE = 8.0;
+const float CELL_CODE = 32.0;
 
 void vertex() {
 	float cell = floor(COLOR.a * CELL_CODE);
 	UV.x = (UV.x + cell) / cells;
-	COLOR.a = 1.0;
+	// The quad covers only the used band of the cell (height = COLOR.r).
+	UV.y = 0.5 + (UV.y - 0.5) * COLOR.r;
+	COLOR = vec4(1.0);
 }

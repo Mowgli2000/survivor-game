@@ -32,6 +32,8 @@ enum Movement {
 @export var projectile_damage: float = 8.0
 @export var projectile_speed: float = 300.0
 @export var projectile_radius: float = 9.0
+## Look of this enemy's shots, boss patterns included (an ENEMY_* style).
+@export var projectile_style: WeaponData.ProjectileStyle = WeaponData.ProjectileStyle.ENEMY_ORB
 
 @export_group("Special (charger / kamikaze / spawner)")
 @export var charge_range: float = 380.0

@@ -25,9 +25,10 @@ func _ready() -> void:
 	add_child(_renderer)
 
 
-func spawn(pos: Vector2, velocity: Vector2, damage: float, radius: float) -> void:
+func spawn(pos: Vector2, velocity: Vector2, damage: float, radius: float,
+		style: WeaponData.ProjectileStyle = WeaponData.ProjectileStyle.ENEMY_ORB) -> void:
 	var projectile: Projectile = _pool.acquire()
-	projectile.reset_basic(pos, velocity, damage, radius, LIFETIME, COLOR, WeaponData.ProjectileStyle.ENEMY_ORB)
+	projectile.reset_basic(pos, velocity, damage, radius, LIFETIME, COLOR, style)
 	_active.append(projectile)
 
 

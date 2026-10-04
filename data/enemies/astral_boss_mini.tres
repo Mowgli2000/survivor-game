@@ -81,3 +81,4 @@ shape_sides = 6
 sprite_id = &"astral_boss_mini"
 sprite_scale = 1.0
 phases = Array[ExtResource("2_phase")]([SubResource("Phase_1"), SubResource("Phase_2")])
+projectile_style = 19

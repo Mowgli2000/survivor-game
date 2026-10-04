@@ -36,7 +36,7 @@ func validate() -> String:
 
 func _shoot(ctx: BossContext, boss: Enemy, direction: Vector2) -> void:
 	ctx.enemy_projectiles.spawn(boss.position, direction * projectile_speed,
-		projectile_damage * boss.damage_multiplier, projectile_radius)
+		projectile_damage * boss.damage_multiplier, projectile_radius, boss.data.projectile_style)
 
 
 func _warn_circle(ctx: BossContext, boss: Enemy, radius: float) -> void:

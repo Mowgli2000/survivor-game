@@ -399,7 +399,7 @@ func _ranged_velocity(enemy: Enemy, direction: Vector2, distance: float, speed: 
 		enemy.fire_timer = data.fire_cooldown
 		if _enemy_projectiles != null:
 			_enemy_projectiles.spawn(enemy.position, direction * data.projectile_speed,
-				data.projectile_damage * enemy.damage_multiplier, data.projectile_radius)
+				data.projectile_damage * enemy.damage_multiplier, data.projectile_radius, data.projectile_style)
 	return velocity
 
 

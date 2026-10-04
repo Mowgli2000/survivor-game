@@ -9,7 +9,7 @@ const SRC := "res://assets_src/drawn/map"
 const GROUND_OUT := "res://assets/sprites/ground.png"
 const ATLAS := "res://assets/map/decor_atlas.png"
 const PROJECTILES := "res://assets/sprites/projectiles.png"
-const PROJECTILE_CELL := 64
+const PROJECTILE_CELL := 128
 const PAD := 4
 const ATLAS_WIDTH := 1024
 
@@ -108,21 +108,30 @@ func _bake_decor(set_name: String) -> bool:
 	return true
 
 
-## Projectile bodies: one 64x64 cell per style, in file name order (1_orb...).
+## Projectile bodies: one square cell per style (WeaponData.ProjectileStyle 1..),
+## in file name order. AI art PNGs (01_orb.png..., art_source/ai/projectiles/ via
+## make_icon.gd) win over the old code-drawn SVGs (make_map.py).
 func _bake_projectiles() -> bool:
 	var dir := "res://assets_src/drawn/projectiles"
 	var names: Array[String] = []
-	for f in DirAccess.get_files_at(dir):
-		if f.ends_with(".svg"):
-			names.append(f)
+	for ext in [".png", ".svg"]:
+		for f in DirAccess.get_files_at(dir):
+			if f.ends_with(ext):
+				names.append(f)
+		if not names.is_empty():
+			break
 	names.sort()
 	if names.is_empty():
 		return _fail("missing %s (run python tools/art/make_map.py)" % dir)
 	var strip := Image.create(PROJECTILE_CELL * names.size(), PROJECTILE_CELL, false, Image.FORMAT_RGBA8)
 	for i in names.size():
-		var image := _raster(dir.path_join(names[i]))
+		var path := dir.path_join(names[i])
+		var image := Image.load_from_file(ProjectSettings.globalize_path(path)) if names[i].ends_with(".png") 			else _raster(path)
 		if image == null:
-			return _fail("cannot rasterize " + names[i])
+			return _fail("cannot read " + names[i])
+		image.convert(Image.FORMAT_RGBA8)
+		if image.get_size() != Vector2i(PROJECTILE_CELL, PROJECTILE_CELL):
+			image.resize(PROJECTILE_CELL, PROJECTILE_CELL, Image.INTERPOLATE_LANCZOS)
 		strip.blit_rect(image, Rect2i(Vector2i.ZERO, image.get_size()), Vector2i(i * PROJECTILE_CELL, 0))
 	strip.save_png(PROJECTILES)
 	return true

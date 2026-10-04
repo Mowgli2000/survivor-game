@@ -25,7 +25,7 @@ func fire(ctx: BossContext, boss: Enemy, aim: Vector2, _repeat: int) -> void:
 			continue
 		var pos := boss.position + side * spacing * (k - (count - 1) * 0.5)
 		ctx.enemy_projectiles.spawn(pos, direction * projectile_speed,
-			projectile_damage * boss.damage_multiplier, projectile_radius)
+			projectile_damage * boss.damage_multiplier, projectile_radius, boss.data.projectile_style)
 
 
 func validate() -> String:

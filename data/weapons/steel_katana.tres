@@ -37,6 +37,7 @@ crit_chance = 0.25
 knockback = 180.0
 area = 150.0
 arc_degrees = 140.0
+slash_style = 1
 fire_sound = ExtResource("9_sound")
 fire_volume_db = -4.0
 color = Color(0.75, 0.88, 1.0, 1)

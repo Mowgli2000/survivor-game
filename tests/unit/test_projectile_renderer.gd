@@ -20,9 +20,14 @@ func test_bodies_only_for_styled_projectiles() -> void:
 
 func test_every_style_has_render_settings_and_a_cell() -> void:
 	var styles := WeaponData.ProjectileStyle.size()
-	assert_eq(ProjectileRenderer.BODY_STRETCH.size(), styles)
 	assert_eq(ProjectileRenderer.BODY_SCALE.size(), styles)
 	assert_lt(styles, int(ProjectileRenderer.CELL_CODE), "cell code fits every style")
-	assert_eq(ProjectileRenderer.BODY_TINT.size(), styles)
 	assert_eq(ProjectileRenderer.BODY_CELLS, styles - 1)
-	assert_eq(ProjectileRenderer.BODY_TEXTURE.get_width(), 64 * ProjectileRenderer.BODY_CELLS)
+	var texture := ProjectileRenderer.BODY_TEXTURE
+	assert_eq(texture.get_width(), texture.get_height() * ProjectileRenderer.BODY_CELLS, "one square cell per style")
+
+
+func test_enemy_shooters_use_enemy_styles() -> void:
+	for enemy: EnemyData in ContentDB.get_all(&"enemies"):
+		var name: String = WeaponData.ProjectileStyle.keys()[enemy.projectile_style]
+		assert_true(name.begins_with("ENEMY_"), "%s shoots %s" % [enemy.id, name])

@@ -7,16 +7,20 @@ extends MultiMeshInstance2D
 
 const BODY_TEXTURE := preload("res://assets/sprites/projectiles.png")
 const BODY_SHADER := preload("res://src/weapons/projectiles/projectile_body.gdshader")
-const BODY_CELLS := 6
+const BODY_CELLS := 21
 ## Cell index code in the body color's alpha (see projectile_body.gdshader).
-const CELL_CODE := 8.0
-## Per style (index = WeaponData.ProjectileStyle): body length / width ratio,
-## body size vs. hitbox, how much the projectile color tints the body.
-const BODY_STRETCH: Array[float] = [1.0, 1.0, 1.9, 1.7, 2.0, 1.0, 1.0]
-const BODY_SCALE: Array[float] = [0.0, 1.6, 2.2, 2.2, 1.7, 2.6, 1.6]
-const BODY_TINT: Array[float] = [0.0, 1.0, 1.0, 0.0, 0.0, 0.25, 1.0]
+const CELL_CODE := 32.0
+## Per style (index = WeaponData.ProjectileStyle): length of the square art cell
+## vs. the hitbox diameter. The art (AI, pointing right, trail on the left) keeps
+## its own proportions inside the cell and its own colors (no tint).
+const BODY_SCALE: Array[float] = [0.0, 4.0, 4.0, 4.5, 4.0, 4.0, 3.6, 4.2, 4.0, 4.0, 6.0, 3.2, 6.0,
+	3.0, 4.0, 4.0, 3.6, 3.6, 3.6, 3.6, 3.6, 3.6]
 ## Shuriken spin, radians per second of flight.
 const SPIN_SPEED := 18.0
+
+## Per cell: height of the used band (centered) vs. the cell, measured once from
+## the texture. The body quad is that much flatter: far less transparent overdraw.
+static var _band: PackedFloat32Array = PackedFloat32Array()
 
 var _stretch: float
 var _glow: float
@@ -36,11 +40,15 @@ func _init(stretch: float = 1.8, glow: float = 1.8) -> void:
 	_body = MultiMeshInstance2D.new()
 	_body.multimesh = _make_multimesh()
 	_body.texture = BODY_TEXTURE
+	# 128 px cells drawn at 20-60 px: mipmaps keep them crisp and cheap to sample.
+	_body.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	var body_material := ShaderMaterial.new()
 	body_material.shader = BODY_SHADER
 	body_material.set_shader_parameter("cells", float(BODY_CELLS))
 	_body.material = body_material
 	add_child(_body)
+	if _band.is_empty():
+		_band = measure_bands(BODY_TEXTURE, BODY_CELLS)
 
 
 func body_count() -> int:
@@ -69,14 +77,35 @@ func render(projectiles: Array[Projectile]) -> void:
 			continue
 		var body := p.radius * 2.0 * BODY_SCALE[style]
 		var angle := (_time + p.life) * SPIN_SPEED if style == WeaponData.ProjectileStyle.SHURIKEN 			else p.velocity.angle()
+		var band := _band[style - 1]
 		_body.multimesh.set_instance_transform_2d(bodies,
-			Transform2D(angle, Vector2(body * BODY_STRETCH[style], body), 0.0, p.position))
-		var tint := Color.WHITE.lerp(p.color, BODY_TINT[style])
-		tint.a = (style - 1 + 0.5) / CELL_CODE
+			Transform2D(angle, Vector2(body, body * band), 0.0, p.position))
+		# Red carries the band to the shader (the art is not tinted).
+		var tint := Color(band, 1.0, 1.0, (style - 1 + 0.5) / CELL_CODE)
 		_body.multimesh.set_instance_color(bodies, tint)
 		bodies += 1
 	multimesh.visible_instance_count = glows
 	_body.multimesh.visible_instance_count = bodies
+
+
+## Used height of each square cell of `texture`, symmetric around the middle (0..1].
+static func measure_bands(texture: Texture2D, cells: int) -> PackedFloat32Array:
+	var bands := PackedFloat32Array()
+	bands.resize(cells)
+	bands.fill(1.0)
+	var image := texture.get_image()
+	if image == null:
+		return bands
+	if image.is_compressed():
+		image.decompress()
+	var cell := image.get_height()
+	for c in cells:
+		var used := image.get_region(Rect2i(c * cell, 0, cell, cell)).get_used_rect()
+		if used.size.y <= 0:
+			continue
+		var half := maxf(cell * 0.5 - used.position.y, used.end.y - cell * 0.5)
+		bands[c] = clampf(half * 2.0 / cell + 0.04, 0.1, 1.0)
+	return bands
 
 
 ## Grows in steps; resizing clears the buffer, but render() rewrites what it shows.

@@ -27,8 +27,10 @@ extends Resource
 @export var knockback: float = 100.0
 
 ## Look of the projectile body (assets/sprites/projectiles.png cell = style - 1).
-## GLOW = neon halo only.
-enum ProjectileStyle { GLOW, ORB, BOLT, BULLET, MISSILE, SHURIKEN, ENEMY_ORB }
+## GLOW = neon halo only. Values are saved in .tres files: only append new ones.
+enum ProjectileStyle { GLOW, ORB, BOLT, BULLET, MISSILE, SHURIKEN, ENEMY_ORB, FIREBALL, ICE_SHARD,
+	LIGHTNING, ARROW, STONE, JAVELIN, BOMB, FIRE_FLASK, FROST_FLASK, GRENADE, CANNONBALL,
+	ENEMY_ICE, ENEMY_FIRE, ENEMY_ACID, ENEMY_STONE }
 
 @export_group("Projectiles")
 @export var projectile_style: ProjectileStyle = ProjectileStyle.GLOW
@@ -54,6 +56,9 @@ enum ProjectileStyle { GLOW, ORB, BOLT, BULLET, MISSILE, SHURIKEN, ENEMY_ORB }
 @export var area: float = 0.0
 ## Opening of a melee arc, in degrees.
 @export var arc_degrees: float = 120.0
+## Look of a melee hit (Vfx.slash): each weapon reads differently in a crowd.
+enum SlashStyle { CRESCENT, THIN, THRUST, HEAVY, SMASH, FLAME, RUNIC }
+@export var slash_style: SlashStyle = SlashStyle.CRESCENT
 
 @export_group("Status")
 @export var status: StatusData

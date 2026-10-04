@@ -33,7 +33,7 @@ pierce = 1
 [resource]
 script = ExtResource("1_weapon")
 id = &"fire_staff"
-projectile_style = 1
+projectile_style = 7
 name_key = "WEAPON_FIRE_STAFF"
 description_key = "WEAPON_FIRE_STAFF_DESC"
 behavior = SubResource("Resource_behavior")

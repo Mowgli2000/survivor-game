@@ -46,6 +46,7 @@ knockback = 260.0
 projectile_count = 1
 area = 150.0
 arc_degrees = 140.0
+slash_style = 5
 status = SubResource("Resource_burn")
 status_chance = 1.0
 fire_sound = ExtResource("9_sound")
