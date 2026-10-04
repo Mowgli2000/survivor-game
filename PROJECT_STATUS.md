@@ -3,7 +3,7 @@
 > Journal de suivi entre les sessions : état actuel, décisions prises, changements, retours de playtest et prochaines étapes.
 > **À lire au début de chaque session, à mettre à jour à la fin.** Les règles de développement sont dans `CLAUDE.md`, le design dans `docs/design/gdd.md`, les décisions techniques détaillées dans `docs/decisions/`.
 
-Dernière mise à jour : 2026-10-04 (fin de session 8 : écran des sceaux lisible, lieux des 6 sceaux, nouveaux motifs de boss, pages d'atlas — D57)
+Dernière mise à jour : 2026-10-04 (fin de session 8 : écran des sceaux lisible, lieux des 6 sceaux, nouveaux motifs de boss, pages d'atlas, 15 nouvelles armes — D57-D58)
 
 ---
 
@@ -11,10 +11,10 @@ Dernière mise à jour : 2026-10-04 (fin de session 8 : écran des sceaux lisibl
 
 | | |
 |---|---|
-| **Phase actuelle** | Session 7 : **direction artistique « donjon fantasy »** appliquée à tout le jeu (D50-D53, `docs/design/art-bible.md`, images `gpt-image-2.5-sunburst`), **identité des classes** façon Brotato (D54), **sceaux et lieux** (D55, ADR 0018 ; Cuivre + Fer faits), **6b** en grande partie (D56 : Mage, Berserker, 11 armes, 47 objets). Nom de travail : **Gatebound**. Session 8 : **écran des sceaux lisible** et **un lieu complet par sceau** (forêt gelée, citadelle infernale, ruche souterraine, antre du dragon : 36 monstres et boss, décors, 4 nouveaux motifs de boss). **Prochaine session : 6 à 8 armes par famille** (§6) |
+| **Phase actuelle** | Session 7 : **direction artistique « donjon fantasy »** appliquée à tout le jeu (D50-D53, `docs/design/art-bible.md`, images `gpt-image-2.5-sunburst`), **identité des classes** façon Brotato (D54), **sceaux et lieux** (D55, ADR 0018 ; Cuivre + Fer faits), **6b** en grande partie (D56 : Mage, Berserker, 11 armes, 47 objets). Nom de travail : **Gatebound**. Session 8 : **écran des sceaux lisible** et **un lieu complet par sceau** (forêt gelée, citadelle infernale, ruche souterraine, antre du dragon : 36 monstres et boss, décors, 4 nouveaux motifs de boss). Puis **15 nouvelles armes** (26 au total, 7+ par famille, 6+ par classe). **Prochaine session : playtest des lieux et des armes, puis équilibrage** (§6) |
 | **Branche de travail** | `develop` (ne jamais commiter sur `main` sans demande explicite) |
 | **Dernière version sur `main`** | `00e60be` — Phase 2 (combat + rendu néon) |
-| **Tests** | 368/368 (GUT : unitaires, données, parties simulées) |
+| **Tests** | 371/371 (GUT : unitaires, données, parties simulées) |
 | **Performance (stress test)** | Solo ~100-125 FPS (pire cas : 650 ennemis, 7 armes rang IV ; séparation des ennemis allégée en session 6). Coop (`--coop`, 2 × 7 armes rang IV, 2 200 projectiles) : 20-28 FPS, pire cas artificiel ; à vérifier en vraie partie. Seuil : ≥ 100 FPS (D37). Mesures isolées : ±15 FPS (machine bruyante en session 6) |
 | **Dernier push** | `develop` à jour sur GitHub (fin de session 8) |
 
@@ -85,6 +85,7 @@ Dernière mise à jour : 2026-10-04 (fin de session 8 : écran des sceaux lisibl
 | D55 | 2026-10-04 | **Sceaux et lieux (ADR 0018)** | Les Danger 0-5 deviennent les sceaux Cuivre, Fer, Argent, Or, Obsidienne, Astral (ids `danger_N` conservés). Chaque sceau mène à un lieu (`BiomeData`) : bestiaire, boss et arène propres. Pas de rangs E-S ni d'ordre des arcs de Solo Leveling (trop proche de la série). Fait : Cuivre = donjon de pierre, Fer = temple englouti (7 monstres + Gardien de pierre + Idole colossale). Argent à Astral : à faire (utilisent le donjon en attendant). Portails animés au bord de l'arène. « Chasseur de rang E » → « Chasseur novice » |
 | D56 | 2026-10-04 | **6b : Mage et Berserker, armes, objets** | Mage (+8 % dégâts par arme de Magie, autres familles −25 %), Berserker (+1 % dégâts par % de PV manquants, pas d'esquive), débloqués par « Gagner avec l'Archer » et « Vaincre le Chevalier démon ». Armes : bâton de feu, sceptre de givre, arc long (+ hache, lance). 19 objets autour des styles de classe (47 au total) |
 | D57 | 2026-10-04 | **Lieux des sceaux Argent → Astral (plan validé « Go tout »)** | Forêt gelée (Ours de givre, Géant des glaces), citadelle infernale (Molosse à trois têtes, Seigneur démon), ruche souterraine (Mante géante, Reine de la ruche), antre du dragon (Wyverne, Dragon ancien) ; 7 monstres par rôle, stats des rôles de base ; nouveaux motifs : souffle en cône, zones d'impact, mur de feu, invocation autour du joueur. Écran des sceaux : chiffres romains, crânes, couleur qui chauffe, ligne d'effets |
+| D58 | 2026-10-04 | **15 nouvelles armes, toutes en boutique** | Choix du dev : liste proposée + **katana** (id `steel_katana`, l'id `katana` reste l'Épée flamboyante) ; au moins 6 armes par classe ; une nouvelle arme de départ par classe (Épéiste katana, Archer fronde, Mage bâton de foudre, Contrebandier bombe, Berserker marteau de guerre) |
 | D36 | 2026-10-03 | **Armes visibles façon Brotato + icônes** : positions fixes en cercle, armes petites, icônes d'objets dans le même style, cadre de rang en interface + liseré en jeu | Choix « reco » du dev. Les tirs partent du canon ; la cible reste choisie depuis le centre (pas de rééquilibrage). ADR 0010 |
 
 ### Décisions volontairement reportées
@@ -181,6 +182,7 @@ Dernière mise à jour : 2026-10-04 (fin de session 8 : écran des sceaux lisibl
 - **Atlas des sprites rangé et découpé en pages** : bandes côte à côte (4096 px) au lieu d'une par ligne (3976×7232 → 3976×2896), une page par lieu (`"page"` dans `sprites.json`, `atlas_<lieu>.png`). Test : chaque bande tient dans sa page, pages ≤ 8192 px.
 - **4 nouveaux motifs de boss** : `ConeBreathPattern`, `ImpactZonesPattern`, `WallPattern`, `SummonPattern.around_target` (+ tests).
 - **Lieux des sceaux (D57)** : Argent = forêt gelée, Or = citadelle infernale, Obsidienne = ruche souterraine, Astral = antre du dragon. 36 sprites et 32 décors générés (`gpt-image-2.5-sunburst`, références `grunt.png` et `iron/prop_obelisk.png`), sources dans `art_source/ai/<sceau>/`. Teintes de sol réglées pour la lisibilité (captures). Le boss du temple invoque maintenant ses chauves-souris (au lieu des loups du donjon). Tests : chaque lieu remplace les 9 rôles avec sprites, une partie d'un sceau ne croise que les monstres de son lieu, invocations du même lieu, un lieu par sceau. 368 tests.
+- **15 nouvelles armes (D58)** : Lames (katana, faux de guerre, rapière, marteau de guerre, lame runique), Armes de jet (arbalète lourde, fronde, javelots, canon alchimique), Magie (bâton de foudre, grimoire des météores), Alchimie (bombe, fiole de feu, fiole de givre, grenades à fragments). Familles : Lames 9, Armes de jet 8, Magie 7, Alchimie 7 ; Épéiste 8 armes de mêlée, Mage 7 de Magie. Nouveau comportement `StrikeBehavior` (frappe du ciel, grimoire). Icônes générées (les objets lancés régénérés sans poignée d'épée). Test : 6+ armes par classe, 7+ par famille. 371 tests.
 - **Stress test** : ~79-83 FPS, **identique** à la version de début de session mesurée en alternance (80-84) : la machine est plus lente qu'en début de session 7 (112), pas de régression. Sous le seuil D37 : à remesurer machine au repos.
 
 ---
@@ -227,10 +229,9 @@ Dernière mise à jour : 2026-10-04 (fin de session 8 : écran des sceaux lisibl
 
 **Pipeline d'images (rappel)** : `python tools/art/gen_image.py` (modèle `gpt-image-2.5-sunburst`, clé `OPENAI_API_KEY`, relance auto sur la limite de 5 images/min) ; références de style : `art_source/ai/assassin_card.png` (cartes), `art_source/ai/assassin.png` (sprites persos), `art_source/ai/grunt.png` (monstres, décor), `art_source/ai/weapons/katana.png` (icônes) ; puis `tools/art/fill_alpha_holes.gd` (**`--keep-holes` pour objets, armes, décor**) ; sprites : `tools/art/prepare_ai_sprite.gd --id=ai_<id>` + entrée `src` dans `tools/sprites/sprites.json` (`glow` `#00000000`) ; icônes : `tools/art/make_icon.gd` (armes horizontales, pointe à droite) ; décor : `make_icon.gd --height=N` vers `assets_src/drawn/map/decor_<lieu>/` ; puis `tools/bake_sprites.ps1`. Planches de vérification dans `art_tests/` (non versionné). Capture d'un sceau : `capture.tscn -- --danger=N --character=<id> [--boss=<id>]`.
 
-1. **6 à 8 armes par famille (demande du dev)** : aujourd'hui Lames 5 (épée, dagues, hache, lance + ?), Armes de jet 3 (arbalète, baguette de cristal, arc long), Magie 5 (orbe, baguette, bâton de feu, sceptre de givre…), Alchimie 1 (fiole). Recompter avec `families` dans `data/weapons/`. Viser 6-8 par famille, avec assez d'armes de **mêlée** et de **distance** pour l'Épéiste et l'Archer et de **Magie** pour le Mage. Chaque arme : `.tres` (comportement existant ou nouveau), icône, noms FR/EN, niveaux II-IV.
-2. **Playtest des 4 nouveaux lieux** (sceaux 2-5 : lisibilité, difficulté des nouveaux motifs de boss) puis **équilibrage (quand le dev le demandera)** : limiter doublons/fusions des classes exclusives ou élargir leur pool (point 1), zone de la mêlée un peu réduite, achats utiles en fin de partie (améliorations répétables), infini plus dur, matériaux en excès.
-3. Reste du 6b : aura au level-up, phase enragée du boss final, page Steam « Coming Soon » (nom de travail **Gatebound**, illustration `art_source/ai/keyart_heroes.png`).
-4. Plus tard : pantin articulé des persos jouables (planches `art_source/ai/rig/`, D51) ; coop (boutique côte à côte) ; son ; phases 8-12 (`docs/design/gdd.md`).
+1. **Playtest des 4 nouveaux lieux et des 15 armes** (sceaux 2-5 : lisibilité, difficulté des nouveaux motifs de boss ; valeurs des armes = premières estimations) puis **équilibrage (quand le dev le demandera)** : limiter doublons/fusions des classes exclusives ou pool désormais élargi (D58), zone de la mêlée un peu réduite, achats utiles en fin de partie (améliorations répétables), infini plus dur, matériaux en excès.
+2. Reste du 6b : aura au level-up, phase enragée du boss final, page Steam « Coming Soon » (nom de travail **Gatebound**, illustration `art_source/ai/keyart_heroes.png`).
+3. Plus tard : pantin articulé des persos jouables (planches `art_source/ai/rig/`, D51) ; coop (boutique côte à côte) ; son ; phases 8-12 (`docs/design/gdd.md`).
 
 ---
 
