@@ -1,6 +1,6 @@
 # Survivor Game (titre de travail) — Guide Claude Code
 
-Survivor-like / roguelite 2D vue de dessus pour PC/Steam. Arène bornée, vagues chronométrées, **boutique entre les vagues** (pilier du design). Attaque 100 % automatique : le joueur ne contrôle que le déplacement. Thème de travail : **cyber-samouraï / ninja néon** (lames, armes high-tech et imaginaires, couleurs néon : une couleur forte par arme).
+Survivor-like / roguelite 2D vue de dessus pour PC/Steam. Arène bornée, vagues chronométrées, **boutique entre les vagues** (pilier du design). Attaque 100 % automatique : le joueur ne contrôle que le déplacement. Thème : **donjon fantasy façon Solo Leveling** (chasseurs contre monstres sortis de portails), rendu façon Brawlhalla : trait épais, aplats, proportions trapues (D50 ; l'ancien thème cyber-samouraï néon est abandonné).
 Boucle : combat → ressources → boutique/choix → build → combat plus dur → boss → récompense.
 Moteur : Godot 4.7.2 · GDScript typé · renderer Compatibility · cible 60 FPS avec 500+ ennemis.
 Le développeur n'est pas senior : expliquer les décisions importantes, signaler les problèmes, préférer la solution simple.

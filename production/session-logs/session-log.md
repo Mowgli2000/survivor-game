@@ -1612,3 +1612,145 @@ tools/sprites/bake_sprites.gd
 tools/sprites/sprites.json
 ---
 
+## Session End: 20261004_022714
+### Commits
+a9892ae docs: art direction exploration (paused) and end of session 6 status
+abd3dd7 feat(art): hand-drawn manga test hero and art pipeline helpers
+4d25763 docs: push status
+d7784af docs: session 6 status (perf, local co-op); session logs
+2d0831a feat: local co-op for two players (ADR 0017)
+6090756 perf: lighter enemy separation for late-game crowds
+c4b0ef9 docs: end of session 5 status and handoff; session logs
+48db24c fix: picking another character resets its weapon and Danger rows
+01c891b ui: weapon and item names in their rarity color everywhere
+d616e83 feat: character select and unlocks shown as cards with the character
+7cce359 feat: homing bazooka missiles, smaller missiles, wider weapon ring
+680013f balance: tougher waves 13-20 and a much harder endless mode
+fe0f5cb art: per-weapon projectile bodies (orb, bullet, missile, shuriken) (ADR 0016)
+8026392 art: neon dojo rooftop arena with floor decals and outside props
+4043417 art: smooth cartoon sprites drawn as SVG for every character and enemy
+1e5249e feat: Danger 0-5 per character and endless mode after victory (step 7b)
+fadb161 feat: meta progression with profile, challenges and characters (ADR 0015)
+ba102e1 feat: charger, kamikaze and brood mother enemies (step 5b)
+247b34a feat: real bosses with HP phases and telegraphed patterns (ADR 0014)
+38637e1 balance: less purchasing power from wave 1, more enemies earlier (D45)
+a2aa207 fix: shop gamepad navigation jumps over sold cards
+ca7b9e2 docs: status, CLAUDE.md autoloads, session logs (session 5)
+242a845 feat: main menu, pause menu and persisted settings (ADR 0013)
+70d56cd feat: family bonuses in stats panel; anti-snowball materials, more late spawns
+---
+
+## Session End: 20261004_105909
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261004_112617
+### Uncommitted Changes
+CLAUDE.md
+PROJECT_STATUS.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261004_114730
+### Uncommitted Changes
+.gitignore
+CLAUDE.md
+PROJECT_STATUS.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261004_124121
+### Uncommitted Changes
+.gitignore
+CLAUDE.md
+PROJECT_STATUS.md
+assets/sprites/atlas.png
+assets/sprites/charger.tres
+assets/sprites/charger_elite.tres
+assets/sprites/grunt.tres
+assets/sprites/grunt_elite.tres
+assets/sprites/kamikaze.tres
+assets/sprites/kamikaze_elite.tres
+assets/sprites/ronin_boss.tres
+assets/sprites/runner.tres
+assets/sprites/runner_elite.tres
+assets/sprites/shogun.tres
+assets/sprites/shooter.tres
+assets/sprites/shooter_elite.tres
+assets/sprites/spawner.tres
+assets/sprites/spawner_elite.tres
+assets/sprites/tank.tres
+assets/sprites/tank_elite.tres
+data/characters/hero.tres
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+tools/sprites/atlas_layout.json
+tools/sprites/sprites.json
+---
+
+## Session End: 20261004_130512
+### Uncommitted Changes
+.gitignore
+CLAUDE.md
+PROJECT_STATUS.md
+assets/sprites/atlas.png
+assets/sprites/charger.tres
+assets/sprites/charger_elite.tres
+assets/sprites/grunt.tres
+assets/sprites/grunt_elite.tres
+assets/sprites/kamikaze.tres
+assets/sprites/kamikaze_elite.tres
+assets/sprites/ronin_boss.tres
+assets/sprites/runner.tres
+assets/sprites/runner_elite.tres
+assets/sprites/shogun.tres
+assets/sprites/shooter.tres
+assets/sprites/shooter_elite.tres
+assets/sprites/spawner.tres
+assets/sprites/spawner_elite.tres
+assets/sprites/tank.tres
+assets/sprites/tank_elite.tres
+data/characters/hero.tres
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/player/character_data.gd
+src/player/player.gd
+tools/sprites/atlas_layout.json
+tools/sprites/sprites.json
+---
+
+## Session End: 20261004_131306
+### Uncommitted Changes
+.gitignore
+CLAUDE.md
+PROJECT_STATUS.md
+assets/sprites/atlas.png
+assets/sprites/charger.tres
+assets/sprites/charger_elite.tres
+assets/sprites/grunt.tres
+assets/sprites/grunt_elite.tres
+assets/sprites/kamikaze.tres
+assets/sprites/kamikaze_elite.tres
+assets/sprites/ronin_boss.tres
+assets/sprites/runner.tres
+assets/sprites/runner_elite.tres
+assets/sprites/shogun.tres
+assets/sprites/shooter.tres
+assets/sprites/shooter_elite.tres
+assets/sprites/spawner.tres
+assets/sprites/spawner_elite.tres
+assets/sprites/tank.tres
+assets/sprites/tank_elite.tres
+data/characters/hero.tres
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+src/player/player.gd
+tools/sprites/atlas_layout.json
+tools/sprites/sprites.json
+---
+
