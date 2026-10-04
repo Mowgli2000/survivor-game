@@ -10,10 +10,18 @@ signal started(setup: RunSetup)
 signal closed
 
 ## Seven characters must fit a 1920 px row.
-const CARD_SIZE := Vector2(250, 560)
+const CARD_SIZE := Vector2(250, 510)
 const PREVIEW_HEIGHT := 170.0
 ## Height of a card illustration (CharacterData.card_art, 2:3 portrait).
 const ART_HEIGHT := 200.0
+## Six seals must fit a 1920 px row.
+const SEAL_SIZE := Vector2(200, 116)
+const ROMAN: Array[String] = ["I", "II", "III", "IV", "V", "VI"]
+const SKULL := "☠"
+const LOCK := "🔒"
+## Copper -> Astral: sea green, lime, yellow, orange, red, blood red.
+const SEAL_HEAT: Array[Color] = [Color("4de0b8"), Color("a6e34d"), Color("ffd84d"),
+		Color("ff9a3d"), Color("ff4a3d"), Color("c8102e")]
 
 var _character_buttons: Dictionary[StringName, Button] = {}
 var _cards: HBoxContainer
@@ -21,6 +29,7 @@ var _weapons: HBoxContainer
 var _weapon_title: Label
 var _dangers: HBoxContainer
 var _danger_title: Label
+var _seal_info: Label
 var _weapon: WeaponData
 var _back: Button
 var _chosen: CharacterData
@@ -48,7 +57,7 @@ func _init() -> void:
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 22)
+	box.add_theme_constant_override("separation", 12)
 	center.add_child(box)
 	var title := Label.new()
 	title.text = "UI_CHOOSE_CHARACTER"
@@ -82,6 +91,11 @@ func _init() -> void:
 	_dangers.alignment = BoxContainer.ALIGNMENT_CENTER
 	_dangers.add_theme_constant_override("separation", 12)
 	box.add_child(_dangers)
+	# Effects and place of the hovered / focused seal.
+	_seal_info = Label.new()
+	_seal_info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_seal_info.add_theme_font_size_override("font_size", 20)
+	box.add_child(_seal_info)
 	_back = Button.new()
 	_back.text = "UI_BACK"
 	_back.custom_minimum_size = Vector2(260, 64)
@@ -271,7 +285,7 @@ func _choose_character(character: CharacterData) -> void:
 		button.icon = weapon.icon
 		# Fixed icon size: with expand_icon a long name squeezed the icon to nothing.
 		button.add_theme_constant_override("icon_max_width", 64)
-		button.custom_minimum_size = Vector2(300, 80)
+		button.custom_minimum_size = Vector2(300, 72)
 		button.add_theme_color_override("font_color", Tiers.color(1))
 		button.pressed.connect(_choose_weapon.bind(weapon))
 		_weapons.add_child(button)
@@ -306,26 +320,96 @@ func _choose_weapon(weapon: WeaponData) -> void:
 	levels.assign(ContentDB.get_all(&"difficulties"))
 	levels.sort_custom(func(a: DifficultyData, b: DifficultyData) -> bool: return a.level < b.level)
 	for difficulty in levels:
-		var button := Button.new()
-		# Seal name and where its gate leads.
-		var place := TranslationServer.translate(difficulty.biome.name_key) if difficulty.biome != null else TranslationServer.translate("BIOME_DUNGEON")
-		button.text = "%s\n%s" % [TranslationServer.translate(difficulty.name_key), place]
-		button.tooltip_text = difficulty.description_key
-		button.add_theme_color_override("font_color", difficulty.color)
-		button.add_theme_font_size_override("font_size", 20)
-		button.custom_minimum_size = Vector2(200, 84)
-		button.disabled = difficulty.level > allowed
+		var button := _seal_button(difficulty, difficulty.level <= allowed)
 		button.pressed.connect(_start.bind(difficulty))
+		var info := _seal_info_text(difficulty, levels, difficulty.level <= allowed)
+		button.focus_entered.connect(_show_seal_info.bind(info))
+		button.mouse_entered.connect(_show_seal_info.bind(info))
 		_dangers.add_child(button)
 	_show_dangers(true)
 	var last := mini(allowed, _dangers.get_child_count() - 1)
 	if last >= 0:
 		(_dangers.get_child(last) as Button).grab_focus()
+		_show_seal_info(_seal_info_text(levels[last], levels, true))
+
+
+## Seal button: big roman numeral and skulls in the seal's heat color, metal-colored
+## name. Locked seals are greyed out with a padlock.
+func _seal_button(difficulty: DifficultyData, unlocked: bool) -> Button:
+	var heat := seal_heat(difficulty.level)
+	var button := Button.new()
+	button.custom_minimum_size = SEAL_SIZE
+	button.disabled = not unlocked
+	button.add_theme_stylebox_override("normal", UiTheme.card_style(heat, 0.6))
+	button.add_theme_stylebox_override("hover", UiTheme.card_style(heat, 1.0))
+	button.add_theme_stylebox_override("pressed", UiTheme.card_style(heat, 1.0))
+	button.add_theme_stylebox_override("disabled", UiTheme.card_style(UiTheme.MUTED, 0.1))
+	var box := VBoxContainer.new()
+	box.set_anchors_preset(Control.PRESET_FULL_RECT)
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_theme_constant_override("separation", 0)
+	button.add_child(box)
+	var numeral := _seal_label(ROMAN[difficulty.level], 44, heat if unlocked else UiTheme.MUTED)
+	numeral.add_theme_font_override("font", UiTheme.BANGERS)
+	box.add_child(numeral)
+	# Locked: a padlock instead of the skulls. Copper (0 skulls) keeps an empty line.
+	var marks := LOCK if not unlocked else SKULL.repeat(difficulty.level)
+	box.add_child(_seal_label(marks if marks != "" else " ", 18, heat if unlocked else UiTheme.MUTED))
+	var name_label := _seal_label(difficulty.name_key, 16, difficulty.color if unlocked else UiTheme.MUTED)
+	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	box.add_child(name_label)
+	return button
+
+
+func _seal_label(text: String, size: int, color: Color) -> Label:
+	var label := Label.new()
+	label.text = text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.add_theme_font_size_override("font_size", size)
+	label.add_theme_color_override("font_color", color)
+	return label
+
+
+## Seal color that "heats up" from sea green (Copper) to blood red (Astral).
+static func seal_heat(level: int) -> Color:
+	return SEAL_HEAT[clampi(level, 0, SEAL_HEAT.size() - 1)]
+
+
+## One line: "<seal> · <place> — <effects>" (a seal stacks the ones below it).
+## A seal sharing a lower seal's place has no place of its own yet.
+func _seal_info_text(difficulty: DifficultyData, levels: Array[DifficultyData], unlocked: bool) -> String:
+	var place := tr("BIOME_DUNGEON") if difficulty.biome == null else tr(difficulty.biome.name_key)
+	for other in levels:
+		if other.level < difficulty.level and other.biome == difficulty.biome:
+			place = tr("SEAL_PLACE_COMING")
+			break
+	var effects: Array[String] = []
+	if difficulty.steady_elite_chance > 0.0:
+		effects.append(tr("SEAL_FX_ELITES") % roundi(difficulty.steady_elite_chance * 100.0))
+	if difficulty.hp_multiplier > 1.0:
+		effects.append(tr("SEAL_FX_HP_DAMAGE") % roundi((difficulty.hp_multiplier - 1.0) * 100.0))
+	if difficulty.spawn_rate_multiplier > 1.0 or difficulty.group_size_bonus > 0:
+		effects.append(tr("SEAL_FX_SPAWN") % roundi((difficulty.spawn_rate_multiplier - 1.0) * 100.0))
+	if difficulty.double_final_boss:
+		effects.append(tr("SEAL_FX_DOUBLE_BOSS"))
+	if effects.is_empty():
+		effects.append(tr("SEAL_FX_NONE"))
+	var text := "%s · %s — %s" % [tr(difficulty.name_key), place, " · ".join(effects)]
+	if not unlocked:
+		text += " — " + tr("SEAL_LOCKED_HINT")
+	return text
+
+
+func _show_seal_info(text: String) -> void:
+	_seal_info.text = text
 
 
 func _show_dangers(on: bool) -> void:
 	_dangers.visible = on
 	_danger_title.visible = on
+	_seal_info.visible = on
 
 
 func _start(difficulty: DifficultyData) -> void:

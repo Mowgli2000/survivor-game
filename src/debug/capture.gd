@@ -50,6 +50,9 @@ func _ready() -> void:
 			# With --character=<id>: open that character's starting weapon choice.
 			if character_id != "":
 				menu._character_select._choose_character(ContentDB.get_def(&"characters", StringName(character_id)))
+				# With --danger=N too: pick the first weapon to show the seals row.
+				if danger >= 0:
+					(menu._character_select._weapons.get_child(0) as Button).pressed.emit()
 		elif _mode == "--progression":
 			menu._open_progression()
 		return

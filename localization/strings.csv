@@ -267,3 +267,10 @@ UI_COOP_ONE_PAD,"Player 1: keyboard, Player 2: gamepad","Joueur 1 : clavier, Jou
 UI_COOP_NO_PAD,Connect a gamepad for player 2.,Branche une manette pour le joueur 2.
 CHARACTER_HERO,Assassin,Assassin
 CHARACTER_HERO_RULE,"Shadow step: after a dodge, +25% crit chance for 2 s.","Pas d'ombre : après une esquive, +25 % de chance de critique pendant 2 s."
+SEAL_PLACE_COMING,Place to come (stone dungeon for now),Lieu à venir (donjon de pierre en attendant)
+SEAL_FX_NONE,The normal run,La partie normale
+SEAL_FX_ELITES,%d%% of enemies are elites,%d %% des ennemis sont des élites
+SEAL_FX_HP_DAMAGE,Enemies +%d%% HP and damage,Ennemis : +%d %% de PV et de dégâts
+SEAL_FX_SPAWN,"+%d%% enemies, bigger groups","+%d %% d'ennemis, groupes plus grands"
+SEAL_FX_DOUBLE_BOSS,Two bosses on the final wave,Deux boss à la dernière vague
+SEAL_LOCKED_HINT,Win the previous seal with this hunter to unlock it,Gagne le sceau précédent avec ce chasseur pour le débloquer
