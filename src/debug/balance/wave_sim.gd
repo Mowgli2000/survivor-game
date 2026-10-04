@@ -50,13 +50,18 @@ var _dynamic: Array[StatModifier] = []
 var _kills_total: int = 0
 
 
+## `overrides` (balance search, never saved): hp_last, dmg_last, mat_last (late
+## end of the curves, re-shaped so that wave PIVOT_WAVE keeps its value),
+## late_price (ShopConfig.late_price_growth_per_wave), seal_scale (seal HP /
+## damage / spawn bonuses x this).
 func setup(p_character: CharacterData, weapon: WeaponData, difficulty: DifficultyData, policy_kind: String,
-		seed: int, p_config: RunConfig) -> void:
+		seed: int, p_config: RunConfig, overrides: Dictionary = {}) -> void:
 	character = p_character
 	config = p_config
 	rng.seed = seed
 	policy = BalancePolicy.new(policy_kind, seed)
-	stage = config.stage.with_difficulty(difficulty)
+	var base := apply_overrides(config.stage.copy(), overrides)
+	stage = base.with_difficulty(scaled_difficulty(difficulty, overrides.get("seal_scale", 1.0)))
 	stats = StatBlock.from_defaults()
 	weapons = WeaponHolder.new()
 	weapons.max_slots = config.max_weapon_slots
@@ -69,6 +74,9 @@ func setup(p_character: CharacterData, weapon: WeaponData, difficulty: Difficult
 	inventory = Inventory.new(stats)
 	progression = Progression.new(config.xp_base, config.xp_exponent)
 	var shop_config: ShopConfig = config.shop if config.shop != null else ContentDB.get_def(&"shop", &"default")
+	if overrides.has("late_price"):
+		shop_config = shop_config.duplicate() as ShopConfig
+		shop_config.late_price_growth_per_wave = overrides.late_price
 	_shop_config = shop_config
 	var weapon_pool: Array[WeaponData] = []
 	weapon_pool.assign(ContentDB.get_all(&"weapons").filter(character.allows_weapon))
@@ -83,6 +91,45 @@ func setup(p_character: CharacterData, weapon: WeaponData, difficulty: Difficult
 		stats.add_modifier(mod)
 	wallet.add(shop_config.starting_materials)
 	weapons.add_weapon(weapon)
+
+
+## Wave whose values the late-curve overrides keep (the dev likes waves 1-10).
+const PIVOT_WAVE := 10
+
+
+static func apply_overrides(stage: StageData, overrides: Dictionary) -> StageData:
+	var t := stage.t_at(PIVOT_WAVE)
+	if overrides.has("hp_last"):
+		var pivot := stage.hp_multiplier_at(PIVOT_WAVE)
+		stage.hp_multiplier_last = overrides.hp_last
+		stage.hp_multiplier_curve = _curve_through(stage.hp_multiplier_first, stage.hp_multiplier_last, t, pivot)
+	if overrides.has("dmg_last"):
+		var pivot := stage.damage_multiplier_at(PIVOT_WAVE)
+		stage.damage_multiplier_last = overrides.dmg_last
+		stage.damage_multiplier_curve = _curve_through(stage.damage_multiplier_first, stage.damage_multiplier_last, t, pivot)
+	if overrides.has("mat_last"):
+		var pivot := lerpf(stage.material_rate_first, stage.material_rate_last, pow(t, stage.material_rate_curve))
+		stage.material_rate_last = overrides.mat_last
+		stage.material_rate_curve = _curve_through(stage.material_rate_first, stage.material_rate_last, t, pivot)
+	return stage
+
+
+## Exponent x such that lerp(first, last, t^x) == value (keeps the pivot wave).
+static func _curve_through(first: float, last: float, t: float, value: float) -> float:
+	var ratio := (value - first) / (last - first) if not is_equal_approx(last, first) else 1.0
+	if ratio <= 0.0 or ratio >= 1.0 or t <= 0.0 or t >= 1.0:
+		return 1.0
+	return log(ratio) / log(t)
+
+
+static func scaled_difficulty(difficulty: DifficultyData, scale: float) -> DifficultyData:
+	if is_equal_approx(scale, 1.0):
+		return difficulty
+	var dup := difficulty.duplicate() as DifficultyData
+	dup.hp_multiplier = 1.0 + (difficulty.hp_multiplier - 1.0) * scale
+	dup.damage_multiplier = 1.0 + (difficulty.damage_multiplier - 1.0) * scale
+	dup.spawn_rate_multiplier = 1.0 + (difficulty.spawn_rate_multiplier - 1.0) * scale
+	return dup
 
 
 ## Plays the whole run; returns the same report shape as balance_sim.gd.

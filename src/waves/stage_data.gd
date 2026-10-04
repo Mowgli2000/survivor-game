@@ -37,6 +37,9 @@ extends Resource
 ## Materials per XP point collected (the XP itself is never reduced).
 @export var material_rate_first: float = 1.0
 @export var material_rate_last: float = 1.0
+## Shape of the material rate curve (1 = linear; above 1 the drop comes late:
+## early waves keep their economy, late waves earn less).
+@export var material_rate_curve: float = 1.0
 ## Above this spawn rate (enemies/s), the material rate shrinks so that more
 ## enemies do not mean proportionally more materials (anti-snowball).
 ## 0 = disabled.
@@ -127,7 +130,7 @@ func events_for(wave: int) -> Array[WaveEvent]:
 
 
 func material_rate_at(wave: int) -> float:
-	var rate := lerpf(material_rate_first, material_rate_last, t_at(wave))
+	var rate := lerpf(material_rate_first, material_rate_last, pow(t_at(wave), material_rate_curve))
 	var spawn_rate := spawn_rate_at(wave)
 	if material_reference_spawn_rate > 0.0 and spawn_rate > material_reference_spawn_rate:
 		rate *= pow(material_reference_spawn_rate / spawn_rate, material_decoupling)

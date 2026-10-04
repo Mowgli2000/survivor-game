@@ -10,6 +10,10 @@ extends Resource
 @export var starting_materials: int = 30
 ## price = base * (1 + growth * (wave - 1))
 @export var price_growth_per_wave: float = 0.10
+## Extra price growth per wave after `late_price_from_wave` (late-game
+## anti-snowball; 0 = none).
+@export var late_price_growth_per_wave: float = 0.0
+@export var late_price_from_wave: int = 10
 @export var weapon_tier_price: Array[float] = [1.0, 1.9, 3.4, 6.0]
 ## Reroll cost = 1 + floor(wave x reroll_wave_factor)
 ## + max(1, floor(wave x reroll_step_factor)) x rerolls already done in this shop.
@@ -46,7 +50,8 @@ func roll_tier(wave: int, rng: RandomNumberGenerator, luck: float = 0.0) -> int:
 
 
 func scaled_price(base: float, wave: int) -> int:
-	return maxi(1, roundi(base * (1.0 + price_growth_per_wave * maxi(wave - 1, 0))))
+	return maxi(1, roundi(base * (1.0 + price_growth_per_wave * maxi(wave - 1, 0)
+		+ late_price_growth_per_wave * maxi(wave - late_price_from_wave, 0))))
 
 
 func weapon_price(weapon: WeaponData, tier: int, wave: int) -> int:

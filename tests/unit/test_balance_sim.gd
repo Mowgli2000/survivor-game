@@ -86,3 +86,21 @@ func test_model_counts_more_targets_for_area_weapons() -> void:
 	var sling: WeaponData = ContentDB.get_def(&"weapons", &"sling")
 	assert_gt(model.targets_hit(axe, WeaponStats.compute(axe, 1)), model.targets_hit(sling, WeaponStats.compute(sling, 1)))
 	assert_eq(model.targets_hit(sling, WeaponStats.compute(sling, 1)), 1.0)
+
+
+func test_late_curve_overrides_keep_wave_ten() -> void:
+	var base: StageData = ContentDB.get_def(&"stages", &"default")
+	var stage := WaveSim.apply_overrides(base.copy(), {"hp_last": 30.0, "dmg_last": 4.0, "mat_last": 0.15})
+	assert_almost_eq(stage.hp_multiplier_at(10), base.hp_multiplier_at(10), 0.01)
+	assert_almost_eq(stage.damage_multiplier_at(10), base.damage_multiplier_at(10), 0.01)
+	assert_almost_eq(stage.material_rate_at(10), base.material_rate_at(10), 0.01)
+	assert_gt(stage.hp_multiplier_at(18), base.hp_multiplier_at(18), "harder late")
+	assert_lt(stage.material_rate_at(18), base.material_rate_at(18), "fewer materials late")
+
+
+func test_late_price_growth_only_after_its_wave() -> void:
+	var shop: ShopConfig = (ContentDB.get_def(&"shop", &"default") as ShopConfig).duplicate()
+	var before := [shop.scaled_price(20.0, 8), shop.scaled_price(20.0, 15)]
+	shop.late_price_growth_per_wave = 0.1
+	assert_eq(shop.scaled_price(20.0, 8), before[0], "early prices unchanged")
+	assert_gt(shop.scaled_price(20.0, 15), before[1])

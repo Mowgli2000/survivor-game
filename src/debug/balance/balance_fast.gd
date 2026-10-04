@@ -29,7 +29,9 @@ func _ready() -> void:
 		if arg.begins_with("--") and arg.contains("="):
 			var parts := arg.trim_prefix("--").split("=", true, 1)
 			args[parts[0]] = parts[1]
-	if args.get("compare", "") != "":
+	if args.get("search", "") != "":
+		_search(args)
+	elif args.get("compare", "") != "":
 		_compare(args.compare)
 	elif args.calibrate != "":
 		_calibrate(args.calibrate)
@@ -46,13 +48,13 @@ static func load_calibration() -> Dictionary:
 
 
 func _new_sim(character: CharacterData, weapon: WeaponData, seal: int, policy: String, seed: int,
-		params: Dictionary) -> WaveSim:
+		params: Dictionary, overrides: Dictionary = {}) -> WaveSim:
 	var sim := WaveSim.new()
 	for key in params:
 		if key in GRID:
 			sim.set(key, float(params[key]))
 	var difficulty: DifficultyData = ContentDB.get_def(&"difficulties", StringName("danger_%d" % seal))
-	sim.setup(character, weapon, difficulty, policy, seed, _config)
+	sim.setup(character, weapon, difficulty, policy, seed, _config, overrides)
 	return sim
 
 
@@ -139,6 +141,125 @@ func _loss(real: Array, params: Dictionary) -> float:
 			loss += absf(kills[kills.size() / 2] - minf(w.kill_ratio, 1.0)) * 0.5
 			loss += absf(minf(damage[damage.size() / 2], 1.5) - minf(w.damage_ratio, 1.5))
 	return loss
+
+
+# --- Balance search (overnight, ADR 0019) ---
+
+## Seal win-rate targets for a decent player (dev's Brotato-like choice).
+const TARGET_WIN: Array[float] = [0.80, 0.68, 0.56, 0.44, 0.34, 0.25]
+const SEARCH_GRID := {
+	"hp_last": [14.0, 20.0, 28.0, 36.0],
+	"dmg_last": [2.5, 3.5, 5.0],
+	"mat_last": [0.35, 0.25, 0.15],
+	"late_price": [0.0, 0.05, 0.1],
+	"seal_scale": [1.0, 1.75, 2.5],
+}
+
+
+## Tries every combination of SEARCH_GRID on the whole roster (first starting
+## weapon, all seals, dps / family / random, `--seeds` seeds) and ranks them by
+## distance to the targets. Writes <out>/search.jsonl, prints the top 10.
+func _search(args: Dictionary) -> void:
+	var params := load_calibration()
+	var seeds := int(args.seeds)
+	DirAccess.make_dir_recursive_absolute(args.out)
+	var file := FileAccess.open(String(args.out).path_join("search.jsonl"), FileAccess.WRITE)
+	var combos: Array = [{}]
+	for key in SEARCH_GRID:
+		var next: Array = []
+		for combo in combos:
+			for value in SEARCH_GRID[key]:
+				var c: Dictionary = combo.duplicate()
+				c[key] = value
+				next.append(c)
+		combos = next
+	combos.push_front({})  # current game, for reference
+	var started := Time.get_ticks_msec()
+	var results := []
+	for i in combos.size():
+		var metrics := evaluate(combos[i], params, seeds)
+		metrics["overrides"] = combos[i]
+		results.append(metrics)
+		file.store_line(JSON.stringify(metrics))
+		if i % 20 == 0:
+			print("search %d/%d (%.0f s)" % [i + 1, combos.size(), (Time.get_ticks_msec() - started) / 1000.0])
+	file.close()
+	results.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.loss < b.loss)
+	for r in results.slice(0, 10):
+		print("loss %.3f %s wins %s random %s trivial %s spread %.2f" % [r.loss, r.overrides, r.win_decent,
+			r.win_random, r.trivial, r.spread])
+
+
+## Metrics of one set of overrides and its distance ("loss") to the targets.
+func evaluate(overrides: Dictionary, params: Dictionary, seeds: int) -> Dictionary:
+	var win_decent: Array[float] = []
+	var win_random: Array[float] = []
+	var class_wins := {}
+	var trivial := []
+	var early_damage := []
+	for seal in 6:
+		var decent := 0
+		var decent_n := 0
+		var random := 0
+		var random_n := 0
+		for def in ContentDB.get_all(&"characters"):
+			var character := def as CharacterData
+			for policy in ["dps", "family", "random"]:
+				for seed in range(1, seeds + 1):
+					var run := _new_sim(character, character.starting_weapons[0], seal, policy, seed, params,
+						overrides).play()
+					if policy == "random":
+						random += int(run.won)
+						random_n += 1
+						continue
+					decent += int(run.won)
+					decent_n += 1
+					class_wins[character.id] = class_wins.get(character.id, 0) + int(run.won)
+					if run.won:
+						trivial.append(_trivial_wave(run.waves))
+					for w in run.waves:
+						if w.wave <= 10:
+							early_damage.append(w.damage_ratio)
+		win_decent.append(float(decent) / decent_n)
+		win_random.append(float(random) / random_n)
+	var class_rates := []
+	for id in class_wins:
+		class_rates.append(class_wins[id] / (6.0 * 2.0 * seeds))
+	var mean := 0.0
+	for v in class_rates:
+		mean += v
+	mean /= maxf(class_rates.size(), 1.0)
+	var spread := 0.0
+	for v in class_rates:
+		spread += (v - mean) * (v - mean)
+	spread = sqrt(spread / maxf(class_rates.size(), 1.0))
+	trivial.sort()
+	early_damage.sort()
+	var trivial_median: float = trivial[trivial.size() / 2] if not trivial.is_empty() else 21.0
+	var loss := 0.0
+	for seal in 6:
+		loss += pow(win_decent[seal] - TARGET_WIN[seal], 2.0) * 10.0
+	loss += pow(maxf(17.0 - trivial_median, 0.0), 2.0) * 0.05
+	loss += spread * 2.0
+	loss += pow(win_random[0] - 0.4, 2.0) * 2.0
+	return {"loss": loss, "win_decent": win_decent.map(func(v: float) -> float: return snappedf(v, 0.01)),
+		"win_random": win_random.map(func(v: float) -> float: return snappedf(v, 0.01)),
+		"trivial": trivial_median, "spread": spread,
+		"early_damage_median": early_damage[early_damage.size() / 2] if not early_damage.is_empty() else 0.0,
+		"class_wins": class_rates}
+
+
+## First wave from which the player never loses more than 5 % HP again.
+static func _trivial_wave(waves: Array) -> float:
+	for i in waves.size():
+		var calm := true
+		for j in range(i, waves.size()):
+			if waves[j].damage_ratio > 0.05:
+				calm = false
+				break
+		if calm:
+			return float(waves[i].wave)
+	return 21.0
 
 
 ## Diagnostic: one real run next to its simulation, wave by wave.
