@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://src/player/character_data.gd" id="1_char"]
 [ext_resource type="Script" path="res://src/core/stat_modifier.gd" id="2_mod"]
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_weapon_script"]
-[ext_resource type="Script" path="res://src/items/effects/interest_effect.gd" id="4_interest"]
 [ext_resource type="Script" path="res://src/items/effects/item_effect.gd" id="5_effect"]
+[ext_resource type="Script" path="res://src/items/effects/interest_effect.gd" id="4_interest"]
 [ext_resource type="Resource" path="res://data/weapons/pulse.tres" id="w0"]
 [ext_resource type="Resource" path="res://data/weapons/bazooka.tres" id="w1"]
 [ext_resource type="Texture2D" path="res://assets/characters/cards/merchant_card.png" id="card"]
@@ -34,6 +34,8 @@ starting_weapon = ExtResource("w0")
 starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1")])
 modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2")])
 effects = Array[ExtResource("5_effect")]([SubResource("Interest")])
+shop_price_multiplier = 0.8
+reroll_cost_multiplier = 1.5
 stat_overrides = {
 "max_hp": 100.0,
 "move_speed": 300.0

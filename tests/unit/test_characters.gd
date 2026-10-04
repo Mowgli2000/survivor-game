@@ -26,10 +26,10 @@ func _run(setup: RunSetup) -> Run:
 
 
 func test_character_modifiers_and_chosen_weapon_apply() -> void:
-	var run := _run(_setup(&"ronin", &"shuriken"))
-	assert_eq(run.player.weapons.get_slots()[0].data.id, &"shuriken")
-	assert_gt(run.player.stats.get_value(StatIds.CRIT_CHANCE), StatIds.DEFAULTS[StatIds.CRIT_CHANCE])
-	assert_lt(run.player.stats.get_value(StatIds.RANGE), 1.0, "Ronin malus: less range")
+	var run := _run(_setup(&"ronin", &"spear"))
+	assert_eq(run.player.weapons.get_slots()[0].data.id, &"spear")
+	assert_gt(run.player.stats.get_value(StatIds.DAMAGE), 1.0, "Swordswoman bonus: more damage")
+	assert_lt(run.player.stats.get_value(StatIds.RANGE), 1.0, "Swordswoman malus: less range")
 
 
 func test_merchant_rule_effects_are_active() -> void:
@@ -130,3 +130,29 @@ func _find_previews(node: Node) -> Array[SpritePreview]:
 			found.append(child)
 		found.append_array(_find_previews(child))
 	return found
+
+
+# --- Class rules (docs/design/classes-proposition.md) --------------------------
+
+func test_melee_and_ranged_classes_only_get_their_weapons() -> void:
+	var swordswoman: CharacterData = ContentDB.get_def(&"characters", &"ronin")
+	var archer: CharacterData = ContentDB.get_def(&"characters", &"gunslinger")
+	var melee := 0
+	for weapon: WeaponData in ContentDB.get_all(&"weapons"):
+		assert_ne(swordswoman.allows_weapon(weapon), archer.allows_weapon(weapon), String(weapon.id))
+		if weapon.is_melee():
+			melee += 1
+	assert_gte(melee, 3, "the melee-only class needs at least 3 melee weapons")
+
+
+func test_starting_weapons_follow_the_class_rule() -> void:
+	for character: CharacterData in ContentDB.get_all(&"characters"):
+		for weapon in character.starting_weapons:
+			assert_true(character.allows_weapon(weapon), "%s: %s" % [character.id, weapon.id])
+
+
+func test_rank_e_hunter_cards_are_stronger() -> void:
+	var hunter: CharacterData = ContentDB.get_def(&"characters", &"drifter")
+	var offer := UpgradeOffer.for_stat(ContentDB.get_def(&"upgrades", &"vitality"), 1)
+	offer.bonus_scale = hunter.upgrade_scale
+	assert_eq(offer.scaled_modifiers()[0].flat, 15.0, "+10 HP card gives +15")

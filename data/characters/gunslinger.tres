@@ -3,8 +3,10 @@
 [ext_resource type="Script" path="res://src/player/character_data.gd" id="1_char"]
 [ext_resource type="Script" path="res://src/core/stat_modifier.gd" id="2_mod"]
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_weapon_script"]
-[ext_resource type="Resource" path="res://data/weapons/laser_pistol.tres" id="w0"]
-[ext_resource type="Resource" path="res://data/weapons/smg.tres" id="w1"]
+[ext_resource type="Script" path="res://src/items/effects/item_effect.gd" id="5_effect"]
+[ext_resource type="Script" path="res://src/items/effects/conditional_stat_effect.gd" id="6_cond"]
+[ext_resource type="Resource" path="res://data/weapons/smg.tres" id="w0"]
+[ext_resource type="Resource" path="res://data/weapons/laser_pistol.tres" id="w1"]
 [ext_resource type="Texture2D" path="res://assets/characters/cards/gunslinger_card.png" id="card"]
 
 [sub_resource type="Resource" id="Mod_1"]
@@ -14,13 +16,25 @@ percent = 0.25
 
 [sub_resource type="Resource" id="Mod_2"]
 script = ExtResource("2_mod")
-stat = &"attack_speed"
-percent = 0.1
+stat = &"pierce"
+flat = 1.0
 
 [sub_resource type="Resource" id="Mod_3"]
 script = ExtResource("2_mod")
 stat = &"armor"
 flat = -3.0
+
+[sub_resource type="Resource" id="Mod_4"]
+script = ExtResource("2_mod")
+stat = &"max_hp"
+percent = -0.1
+
+[sub_resource type="Resource" id="Eagle"]
+script = ExtResource("6_cond")
+source_stat = &"range"
+step = 0.1
+target_stat = &"damage"
+percent_per_step = 0.03
 
 [resource]
 script = ExtResource("1_char")
@@ -30,7 +44,9 @@ locked = true
 description_key = "CHARACTER_GUNSLINGER_RULE"
 starting_weapon = ExtResource("w0")
 starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1")])
-modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2"), SubResource("Mod_3")])
+modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2"), SubResource("Mod_3"), SubResource("Mod_4")])
+effects = Array[ExtResource("5_effect")]([SubResource("Eagle")])
+weapon_kind = 2
 stat_overrides = {
 "max_hp": 100.0,
 "move_speed": 300.0

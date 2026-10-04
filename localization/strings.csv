@@ -62,6 +62,10 @@ WEAPON_SMG,Repeating crossbow,Arbalète à répétition
 WEAPON_SMG_DESC,Very fast but inaccurate bolts.,Carreaux très rapides mais imprécis.
 WEAPON_BAZOOKA,Bomb flask,Fiole explosive
 WEAPON_BAZOOKA_DESC,Slow flask that explodes and slows enemies.,Fiole lente qui explose et ralentit les ennemis.
+WEAPON_HEAVY_AXE,War axe,Hache de guerre
+WEAPON_HEAVY_AXE_DESC,Slow but huge sweeping blow that knocks enemies back.,Coup lent mais très large qui repousse les ennemis.
+WEAPON_SPEAR,Spear,Lance
+WEAPON_SPEAR_DESC,Fast long-reach thrust in a narrow line.,Estoc rapide et long sur une ligne étroite.
 ENEMY_SHOOTER,Goblin shaman,Chaman gobelin
 ENEMY_TANK,Stone golem,Golem de pierre
 ENEMY_SHOGUN,Demon Knight,Chevalier démon
@@ -162,13 +166,13 @@ UI_LOCKED,Locked — %s,Verrouillé — %s
 UI_PROGRESSION,Progression,Progression
 UI_UNLOCKED,Unlocked: %s,Débloqué : %s
 UI_PROFILE_STATS,Runs %d · Wins %d · Best wave %d · Enemies killed %d,Parties %d · Victoires %d · Meilleure vague %d · Ennemis tués %d
-CHARACTER_DRIFTER_RULE,Balanced. No weakness.,Équilibré. Aucun point faible.
+CHARACTER_DRIFTER_RULE,Awakening: level-up cards are 50% stronger.,Éveil : les cartes d'amélioration sont 50 % plus fortes.
 CHARACTER_RONIN,Swordswoman,Épéiste
-CHARACTER_RONIN_RULE,Starts with a blade.,Commence avec une lame.
+CHARACTER_RONIN_RULE,Melee weapons only.,Armes de mêlée uniquement.
 CHARACTER_GUNSLINGER,Archer,Archer
-CHARACTER_GUNSLINGER_RULE,Starts with a ranged weapon.,Commence avec une arme à distance.
+CHARACTER_GUNSLINGER_RULE,Ranged weapons only. +3% damage per 10% bonus range.,Armes à distance uniquement. +3 % de dégâts par 10 % de portée bonus.
 CHARACTER_MERCHANT,Gate Smuggler,Contrebandier
-CHARACTER_MERCHANT_RULE,End of wave: +10% of your materials (max 25).,Fin de vague : +10 % de tes matériaux (max 25).
+CHARACTER_MERCHANT_RULE,"Black market: shop prices -20%, rerolls +50%. End of wave: +10% of your materials (max 25).","Marché noir : prix de la boutique -20 %, relances +50 %. Fin de vague : +10 % de tes matériaux (max 25)."
 CHALLENGE_WIN_DRIFTER,Drifter's road,La route du Vagabond
 CHALLENGE_WIN_DRIFTER_DESC,Win a run with the Drifter,Gagner une partie avec le Vagabond
 CHALLENGE_KILLS_2000,Trigger happy,Gâchette facile
@@ -209,4 +213,4 @@ UI_COOP_PADS,"Player 1: keyboard + gamepad 1, Player 2: gamepad 2","Joueur 1 : c
 UI_COOP_ONE_PAD,"Player 1: keyboard, Player 2: gamepad","Joueur 1 : clavier, Joueur 2 : manette"
 UI_COOP_NO_PAD,Connect a gamepad for player 2.,Branche une manette pour le joueur 2.
 CHARACTER_HERO,Assassin,Assassin
-CHARACTER_HERO_RULE,Shadow assassin (test of the new art direction).,Assassin de l'ombre (test de la nouvelle direction artistique).
+CHARACTER_HERO_RULE,"Shadow step: after a dodge, +25% crit chance for 2 s.","Pas d'ombre : après une esquive, +25 % de chance de critique pendant 2 s."

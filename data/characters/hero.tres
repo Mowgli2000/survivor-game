@@ -1,10 +1,43 @@
 [gd_resource type="Resource" script_class="CharacterData" format=3]
 
 [ext_resource type="Script" path="res://src/player/character_data.gd" id="1_char"]
+[ext_resource type="Script" path="res://src/core/stat_modifier.gd" id="2_mod"]
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_weapon_script"]
-[ext_resource type="Resource" path="res://data/weapons/katana.tres" id="w0"]
-[ext_resource type="Resource" path="res://data/weapons/shuriken.tres" id="w1"]
+[ext_resource type="Script" path="res://src/items/effects/item_effect.gd" id="5_effect"]
+[ext_resource type="Script" path="res://src/items/effects/dodge_buff_effect.gd" id="6_dodge"]
+[ext_resource type="Resource" path="res://data/weapons/shuriken.tres" id="w0"]
+[ext_resource type="Resource" path="res://data/weapons/katana.tres" id="w1"]
 [ext_resource type="Texture2D" path="res://assets/characters/cards/assassin_card.png" id="card"]
+
+[sub_resource type="Resource" id="Mod_1"]
+script = ExtResource("2_mod")
+stat = &"dodge"
+flat = 0.15
+
+[sub_resource type="Resource" id="Mod_2"]
+script = ExtResource("2_mod")
+stat = &"move_speed"
+percent = 0.1
+
+[sub_resource type="Resource" id="Mod_3"]
+script = ExtResource("2_mod")
+stat = &"crit_damage"
+flat = 0.5
+
+[sub_resource type="Resource" id="Mod_4"]
+script = ExtResource("2_mod")
+stat = &"max_hp"
+percent = -0.3
+
+[sub_resource type="Resource" id="Mod_crit"]
+script = ExtResource("2_mod")
+stat = &"crit_chance"
+flat = 0.25
+
+[sub_resource type="Resource" id="ShadowStep"]
+script = ExtResource("6_dodge")
+modifier = SubResource("Mod_crit")
+duration = 2.0
 
 [resource]
 script = ExtResource("1_char")
@@ -13,6 +46,8 @@ name_key = "CHARACTER_HERO"
 description_key = "CHARACTER_HERO_RULE"
 starting_weapon = ExtResource("w0")
 starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1")])
+modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2"), SubResource("Mod_3"), SubResource("Mod_4")])
+effects = Array[ExtResource("5_effect")]([SubResource("ShadowStep")])
 stat_overrides = {
 "max_hp": 100.0,
 "move_speed": 300.0

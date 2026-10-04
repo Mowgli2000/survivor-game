@@ -4,20 +4,26 @@
 [ext_resource type="Script" path="res://src/core/stat_modifier.gd" id="2_mod"]
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_weapon_script"]
 [ext_resource type="Resource" path="res://data/weapons/katana.tres" id="w0"]
-[ext_resource type="Resource" path="res://data/weapons/shuriken.tres" id="w1"]
+[ext_resource type="Resource" path="res://data/weapons/spear.tres" id="w1"]
+[ext_resource type="Resource" path="res://data/weapons/heavy_axe.tres" id="w2"]
 [ext_resource type="Texture2D" path="res://assets/characters/cards/ronin_card.png" id="card"]
 
 [sub_resource type="Resource" id="Mod_1"]
 script = ExtResource("2_mod")
-stat = &"crit_chance"
-flat = 0.15
+stat = &"damage"
+percent = 0.2
 
 [sub_resource type="Resource" id="Mod_2"]
 script = ExtResource("2_mod")
-stat = &"attack_speed"
-percent = 0.2
+stat = &"armor"
+flat = 4.0
 
 [sub_resource type="Resource" id="Mod_3"]
+script = ExtResource("2_mod")
+stat = &"area"
+percent = 0.1
+
+[sub_resource type="Resource" id="Mod_4"]
 script = ExtResource("2_mod")
 stat = &"range"
 percent = -0.25
@@ -29,8 +35,9 @@ name_key = "CHARACTER_RONIN"
 locked = true
 description_key = "CHARACTER_RONIN_RULE"
 starting_weapon = ExtResource("w0")
-starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1")])
-modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2"), SubResource("Mod_3")])
+starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1"), ExtResource("w2")])
+modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2"), SubResource("Mod_3"), SubResource("Mod_4")])
+weapon_kind = 1
 stat_overrides = {
 "max_hp": 100.0,
 "move_speed": 300.0

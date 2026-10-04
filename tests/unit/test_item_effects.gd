@@ -227,3 +227,23 @@ func test_kill_explosion_during_an_area_hit_does_not_cut_the_hit_short() -> void
 	assert_eq(hits, 6, "every enemy of the weapon hit is touched")
 	for tank in tanks:
 		assert_lt(tank.hp, 1000.0)
+
+
+# --- Class rules -------------------------------------------------------------
+
+func test_dodge_buff_lasts_its_duration_and_does_not_stack() -> void:
+	var mod := StatModifier.new()
+	mod.stat = StatIds.CRIT_CHANCE
+	mod.flat = 0.25
+	var effect := DodgeBuffEffect.new()
+	effect.modifier = mod
+	effect.duration = 2.0
+	var effects: Array[ItemEffect] = [effect]
+	_effects.add_effects(effects)
+	var base := _player.stats.get_value(StatIds.CRIT_CHANCE)
+	_player.dodged.emit()
+	_player.dodged.emit()
+	assert_almost_eq(_player.stats.get_value(StatIds.CRIT_CHANCE), base + 0.25, 0.0001, "one bonus, not two")
+	for i in 130:
+		_effects._physics_process(1.0 / 60.0)
+	assert_almost_eq(_player.stats.get_value(StatIds.CRIT_CHANCE), base, 0.0001, "gone after 2 s")

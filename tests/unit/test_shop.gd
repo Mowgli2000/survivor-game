@@ -289,3 +289,26 @@ func test_same_seed_same_stock() -> void:
 	second.open(6)
 	for i in second.offers.size():
 		assert_eq([second.offers[i].weapon, second.offers[i].item, second.offers[i].tier], ids[i])
+
+
+# --- Class rules (CharacterData) ---------------------------------------------
+
+func test_class_price_multiplier_lowers_prices() -> void:
+	var shop := _shop([], [_item_cheap])
+	shop.price_multiplier = 0.8
+	shop.open(1)
+	var base := _config.item_price(_item_cheap, 1)
+	var checked := 0
+	for offer in shop.offers:
+		if offer.item == _item_cheap:
+			assert_eq(offer.price, maxi(1, roundi(base * 0.8)))
+			checked += 1
+	assert_gt(checked, 0)
+
+
+func test_class_reroll_multiplier_raises_reroll_cost() -> void:
+	var shop := _shop([], [_item_cheap])
+	shop.open(10)
+	var normal := shop.reroll_cost()
+	shop.reroll_multiplier = 1.5
+	assert_eq(shop.reroll_cost(), roundi(normal * 1.5))

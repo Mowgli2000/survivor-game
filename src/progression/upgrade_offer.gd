@@ -5,6 +5,8 @@ extends RefCounted
 
 var upgrade: UpgradeData
 var tier: int = 1
+## Class rule (CharacterData.upgrade_scale): multiplies the card on top of its tier.
+var bonus_scale: float = 1.0
 
 
 static func for_stat(p_upgrade: UpgradeData, p_tier: int = 1) -> UpgradeOffer:
@@ -16,7 +18,7 @@ static func for_stat(p_upgrade: UpgradeData, p_tier: int = 1) -> UpgradeOffer:
 
 ## New modifiers scaled by the tier (the UpgradeData resource is never changed).
 func scaled_modifiers() -> Array[StatModifier]:
-	var scale := Tiers.UPGRADE_SCALE[tier - 1]
+	var scale := Tiers.UPGRADE_SCALE[tier - 1] * bonus_scale
 	var result: Array[StatModifier] = []
 	for mod in upgrade.modifiers:
 		var scaled := StatModifier.new()

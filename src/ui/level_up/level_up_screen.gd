@@ -184,7 +184,8 @@ static func _percent_line(value: float, key: String) -> String:
 
 
 static func _format_flat(stat: StringName, value: float) -> String:
-	if stat in StatIds.SHOWN_AS_PERCENT:
+	# Crit damage is a multiplier (x1.5): a flat +0.5 reads as +50%.
+	if stat in StatIds.SHOWN_AS_PERCENT or stat == StatIds.CRIT_DAMAGE:
 		return "%+d%%" % roundi(value * 100.0)
 	if is_equal_approx(value, roundf(value)):
 		return "%+d" % roundi(value)

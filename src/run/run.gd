@@ -286,7 +286,12 @@ func _equip_player(rp: RunPlayer, weapon_pool: Array[WeaponData], item_pool: Arr
 	var ctx := WeaponContext.new(p, p.stats, enemies, projectiles, state.rng, vfx)
 	ctx.source = rp.index
 	p.weapons.setup(ctx, config.max_weapon_slots)
-	rp.shop = Shop.new(config.shop, rp.wallet, rp.inventory, p.weapons, weapon_pool, item_pool, state.rng)
+	# Class rule: only the weapons this character may use are sold to it.
+	var allowed_weapons: Array[WeaponData] = []
+	allowed_weapons.assign(weapon_pool.filter(rp.character.allows_weapon))
+	rp.shop = Shop.new(config.shop, rp.wallet, rp.inventory, p.weapons, allowed_weapons, item_pool, state.rng)
+	rp.shop.price_multiplier = rp.character.shop_price_multiplier
+	rp.shop.reroll_multiplier = rp.character.reroll_cost_multiplier
 	rp.shop.luck_stats = p.stats
 	rp.families = WeaponFamilies.new()
 	rp.families.setup(p.weapons, p.stats, families)
@@ -501,6 +506,8 @@ func _resolve_level_ups() -> void:
 		rp.progression.pending_level_ups = 0
 		_on_level_ups_resolved()
 		return
+	for offer in offers:
+		offer.bonus_scale = rp.character.upgrade_scale
 	if auto_choose_upgrades:
 		_apply_offer(offers[0])
 		return
@@ -515,7 +522,8 @@ func _apply_offer(offer: UpgradeOffer) -> void:
 
 
 func _level_up_reroll_cost() -> int:
-	return config.shop.reroll_cost(waves.wave, current_player().level_up_rerolls)
+	return current_player().shop.scaled_reroll_cost(
+		config.shop.reroll_cost(waves.wave, current_player().level_up_rerolls))
 
 
 ## Paid reroll of the current level-up cards (same cost rule as the shop).

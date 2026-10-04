@@ -11,6 +11,9 @@ const RUN_SCENE := preload("res://src/run/run.tscn")
 const STRESS_CONFIG := preload("res://src/debug/stress/stress_run.tres")
 const WARMUP := 5.0
 
+## One weapon per behavior and projectile style (one melee, beam, orb, bolt, rocket, bounce).
+const REFERENCE_WEAPONS: Array[StringName] = [&"pulse", &"katana", &"laser_pistol", &"shuriken", &"smg", &"bazooka"]
+
 var _run: Run
 var _time: float = 0.0
 var _duration: float = 0.0
@@ -50,10 +53,11 @@ func _ready() -> void:
 		_run.player_count = 2
 	_run.bot_input = func() -> Vector2: return Vector2.from_angle(_time * 0.5)
 	add_child(_run)
-	# Every real weapon at max level on top of the stress weapon: worst case for effects.
+	# The six reference weapons at max level on top of the stress weapon: worst case
+	# for effects, kept fixed so measurements stay comparable as weapons are added.
 	for rp in _run.players:
-		for def in ContentDB.get_all(&"weapons"):
-			var weapon := def as WeaponData
+		for id in REFERENCE_WEAPONS:
+			var weapon: WeaponData = ContentDB.get_def(&"weapons", id)
 			rp.player.weapons.add_weapon(weapon, weapon.max_level())
 	if _endless_wave > 0:
 		_run.stage.endless = true

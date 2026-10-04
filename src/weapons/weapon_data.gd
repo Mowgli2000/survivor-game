@@ -72,3 +72,8 @@ enum ProjectileStyle { GLOW, ORB, BOLT, BULLET, MISSILE, SHURIKEN, ENEMY_ORB }
 
 func max_level() -> int:
 	return levels.size() + 1
+
+
+## Close-range slashing weapon (MeleeArcBehavior); everything else is ranged.
+func is_melee() -> bool:
+	return behavior is MeleeArcBehavior

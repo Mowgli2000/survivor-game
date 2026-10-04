@@ -17,6 +17,9 @@ var _config: ShopConfig
 var _wallet: Wallet
 var _inventory: Inventory
 var _weapons: WeaponHolder
+## Character class rules (CharacterData): price and reroll cost multipliers.
+var price_multiplier: float = 1.0
+var reroll_multiplier: float = 1.0
 var _weapon_pool: Array[WeaponData] = []
 var _item_pool: Array[ItemData] = []
 var _rng: RandomNumberGenerator
@@ -42,7 +45,12 @@ func open(p_wave: int) -> void:
 
 
 func reroll_cost() -> int:
-	return _config.reroll_cost(wave, rerolls)
+	return scaled_reroll_cost(_config.reroll_cost(wave, rerolls))
+
+
+## A reroll cost after the class multiplier (never free).
+func scaled_reroll_cost(cost: int) -> int:
+	return maxi(1, roundi(cost * reroll_multiplier))
 
 
 func reroll() -> bool:
@@ -184,6 +192,6 @@ func _pick_weapon(taken: Array[Resource]) -> WeaponData:
 
 
 func _price(offer: ShopOffer) -> int:
-	if offer.is_weapon():
-		return _config.weapon_price(offer.weapon, offer.tier, wave)
-	return _config.item_price(offer.item, wave)
+	var base := _config.weapon_price(offer.weapon, offer.tier, wave) if offer.is_weapon() \
+		else _config.item_price(offer.item, wave)
+	return maxi(1, roundi(base * price_multiplier))

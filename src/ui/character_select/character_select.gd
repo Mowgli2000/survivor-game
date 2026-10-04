@@ -9,10 +9,10 @@ extends Control
 signal started(setup: RunSetup)
 signal closed
 
-const CARD_SIZE := Vector2(300, 500)
+const CARD_SIZE := Vector2(300, 560)
 const PREVIEW_HEIGHT := 170.0
 ## Height of a card illustration (CharacterData.card_art, 2:3 portrait).
-const ART_HEIGHT := 250.0
+const ART_HEIGHT := 220.0
 
 var _character_buttons: Dictionary[StringName, Button] = {}
 var _cards: HBoxContainer
@@ -181,7 +181,7 @@ func _build_cards() -> void:
 		text.offset_right = -16
 		text.offset_top = 16
 		text.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		text.add_theme_constant_override("separation", 10)
+		text.add_theme_constant_override("separation", 6)
 		button.add_child(text)
 		text.add_child(_portrait(character, unlocked))
 		var name_label := Label.new()
