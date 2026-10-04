@@ -92,7 +92,7 @@ func _ready() -> void:
 	_upgrade_pool.assign(ContentDB.get_all(&"upgrades"))
 
 	var arena := Arena.new()
-	arena.setup(arena_rect)
+	arena.setup(arena_rect, setup.difficulty.biome if setup != null and setup.difficulty != null else null)
 	add_child(arena)
 
 	vfx = Vfx.new()
@@ -286,6 +286,8 @@ func _equip_player(rp: RunPlayer, weapon_pool: Array[WeaponData], item_pool: Arr
 	var ctx := WeaponContext.new(p, p.stats, enemies, projectiles, state.rng, vfx)
 	ctx.source = rp.index
 	p.weapons.setup(ctx, config.max_weapon_slots)
+	p.weapons.favored_family = rp.character.favored_family
+	p.weapons.off_family_scale = rp.character.off_family_damage_scale
 	# Class rule: only the weapons this character may use are sold to it.
 	var allowed_weapons: Array[WeaponData] = []
 	allowed_weapons.assign(weapon_pool.filter(rp.character.allows_weapon))

@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="DifficultyData" format=3]
 
 [ext_resource type="Script" path="res://src/meta/difficulty_data.gd" id="1_difficulty"]
+[ext_resource type="Resource" path="res://data/biomes/temple.tres" id="biome"]
 
 [resource]
 script = ExtResource("1_difficulty")
@@ -9,3 +10,5 @@ level = 1
 name_key = "DANGER_1"
 description_key = "DANGER_1_DESC"
 steady_elite_chance = 0.01
+color = Color(0.68, 0.72, 0.78, 1)
+biome = ExtResource("biome")

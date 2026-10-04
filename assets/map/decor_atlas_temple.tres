@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="DecorAtlas" format=3]
+
+[ext_resource type="Script" path="res://src/run/decor_atlas.gd" id="1_6p1yf"]
+[ext_resource type="Texture2D" path="res://assets/map/decor_atlas_temple.png" id="2_6qilo"]
+
+[resource]
+script = ExtResource("1_6p1yf")
+texture = ExtResource("2_6qilo")
+regions = Dictionary[StringName, Rect2]({
+&"decal_mosaic": Rect2(0, 0, 109, 110),
+&"decal_sand": Rect2(113, 0, 110, 110),
+&"prop_altar": Rect2(227, 0, 115, 130),
+&"prop_brazier_blue": Rect2(346, 0, 92, 190),
+&"prop_obelisk": Rect2(442, 0, 169, 200),
+&"prop_pillar_carved": Rect2(615, 0, 199, 250),
+&"prop_statue": Rect2(818, 0, 173, 230),
+&"prop_urns": Rect2(0, 254, 126, 120)
+})

@@ -22,6 +22,7 @@ func _ready() -> void:
 	var all_weapons := false
 	var coop := false
 	var character_id := ""
+	var danger := -1
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--time="):
 			_capture_at = arg.trim_prefix("--time=").to_float()
@@ -37,6 +38,8 @@ func _ready() -> void:
 			character_id = arg.trim_prefix("--character=")
 		elif arg.begins_with("--boss="):
 			_boss_id = StringName(arg.trim_prefix("--boss="))
+		elif arg.begins_with("--danger="):
+			danger = arg.trim_prefix("--danger=").to_int()
 		elif arg == "--allweapons":
 			all_weapons = true
 	if _mode in ["--menu", "--characters", "--coopselect", "--progression"]:
@@ -59,6 +62,13 @@ func _ready() -> void:
 		var config := base.duplicate() as RunConfig
 		config.character = ContentDB.get_def(&"characters", StringName(character_id))
 		_run.config = config
+	if danger >= 0:
+		# A seal (ADR 0018): its biome, bestiary and bosses. The capture ends before the
+		# run does, so nothing is recorded in the profile.
+		_run.setup = RunSetup.new()
+		_run.setup.difficulty = ContentDB.get_def(&"difficulties", StringName("danger_%d" % danger))
+		if character_id != "":
+			_run.setup.character = ContentDB.get_def(&"characters", StringName(character_id))
 	_run.seed_override = 7
 	_run.player_invincible = true
 	_run.auto_choose_upgrades = _mode not in ["--levelup", "--waveend", "--shop", "--pause", "--settings"]

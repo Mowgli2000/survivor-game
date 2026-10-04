@@ -8,10 +8,7 @@ extends Node2D
 ## decor atlas. Decor placement uses a fixed seed: same layout every run.
 
 const GROUND := preload("res://assets/sprites/ground.png")
-const DECOR := preload("res://assets/map/decor_atlas.tres")
-const OUTSIDE_COLOR := Color(0.12, 0.11, 0.18)
-const WALL_COLOR := Color(0.25, 0.23, 0.34)
-const BORDER_COLOR := Color(0.62, 0.58, 0.78)
+const DEFAULT_DECOR := preload("res://assets/map/decor_atlas.tres")
 const WALL_THICKNESS := 26.0
 ## One floor decal per this many square pixels of arena (sparse: readability first).
 const DECAL_AREA := 300000.0
@@ -24,15 +21,33 @@ const PROP_OFFSET := 70.0
 const DECOR_SEED := 11
 
 var rect: Rect2
+## Look of the arena (null fields: default dungeon).
+var biome: BiomeData
+var _decor: DecorAtlas = DEFAULT_DECOR
+var _ground_tint := Color.WHITE
+var _outside := Color(0.12, 0.11, 0.18)
+var _wall := Color(0.25, 0.23, 0.34)
+var _border := Color(0.62, 0.58, 0.78)
 var _decals: Array[Array] = []  # [name, position, rotation, alpha]
 var _props: Array[Array] = []  # [name, foot position]
 
 
-func setup(p_rect: Rect2) -> void:
+func setup(p_rect: Rect2, p_biome: BiomeData = null) -> void:
 	rect = p_rect
+	biome = p_biome
+	if biome != null:
+		if biome.decor != null:
+			_decor = biome.decor
+		_ground_tint = biome.ground_tint
+		_outside = biome.outside_color
+		_wall = biome.wall_color
+		_border = biome.border_color
 	z_index = -10
 	texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 	_place_decor()
+	var gates := ArenaGates.new()
+	gates.setup(rect, biome.gate_color if biome != null else ArenaGates.DEFAULT_COLOR)
+	add_child(gates)
 	queue_redraw()
 
 
@@ -49,8 +64,8 @@ func _place_decor() -> void:
 	_props.clear()
 	var rng := RandomNumberGenerator.new()
 	rng.seed = DECOR_SEED
-	var decal_names := DECOR.names_with("decal_")
-	var prop_names := DECOR.names_with("prop_")
+	var decal_names := _decor.names_with("decal_")
+	var prop_names := _decor.names_with("prop_")
 	if decal_names.is_empty() or prop_names.is_empty():
 		return
 	var inner := rect.grow(-DECAL_MARGIN)
@@ -84,20 +99,20 @@ func _place_decor() -> void:
 
 
 func _draw() -> void:
-	draw_rect(rect.grow(2400.0), OUTSIDE_COLOR)
-	draw_texture_rect(GROUND, rect, true)
-	var texture := DECOR.texture
+	draw_rect(rect.grow(2400.0), _outside)
+	draw_texture_rect(GROUND, rect, true, _ground_tint)
+	var texture := _decor.texture
 	for decal in _decals:
-		var region: Rect2 = DECOR.regions[decal[0]]
+		var region: Rect2 = _decor.regions[decal[0]]
 		draw_set_transform(decal[1], decal[2])
 		draw_texture_rect_region(texture, Rect2(-region.size * 0.5, region.size), region, Color(1, 1, 1, decal[3]))
 	draw_set_transform(Vector2.ZERO)
 	# Low wall: dark stone band outside the floor, lighter worn top edge.
-	draw_rect(rect.grow(WALL_THICKNESS), WALL_COLOR, false, WALL_THICKNESS * 2.0)
-	draw_rect(rect.grow(WALL_THICKNESS * 0.5), Color(BORDER_COLOR, 0.12), false, 30.0)
-	draw_rect(rect, Color(BORDER_COLOR, 0.3), false, 12.0)
-	draw_rect(rect, BORDER_COLOR, false, 4.0)
+	draw_rect(rect.grow(WALL_THICKNESS), _wall, false, WALL_THICKNESS * 2.0)
+	draw_rect(rect.grow(WALL_THICKNESS * 0.5), Color(_border, 0.12), false, 30.0)
+	draw_rect(rect, Color(_border, 0.3), false, 12.0)
+	draw_rect(rect, _border, false, 4.0)
 	for prop in _props:
-		var region: Rect2 = DECOR.regions[prop[0]]
+		var region: Rect2 = _decor.regions[prop[0]]
 		var foot: Vector2 = prop[1]
 		draw_texture_rect_region(texture, Rect2(foot - Vector2(region.size.x * 0.5, region.size.y), region.size), region)

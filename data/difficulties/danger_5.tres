@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="DifficultyData" format=3]
 
 [ext_resource type="Script" path="res://src/meta/difficulty_data.gd" id="1_difficulty"]
+[ext_resource type="Resource" path="res://data/biomes/dungeon.tres" id="biome"]
 
 [resource]
 script = ExtResource("1_difficulty")
@@ -14,3 +15,5 @@ spawn_rate_multiplier = 1.15
 group_size_bonus = 2
 steady_elite_chance = 0.02
 double_final_boss = true
+color = Color(0.5, 0.9, 1, 1)
+biome = ExtResource("biome")

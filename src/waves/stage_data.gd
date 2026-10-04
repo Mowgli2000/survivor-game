@@ -163,7 +163,25 @@ func with_difficulty(difficulty: DifficultyData) -> StageData:
 		for event in dup.events:
 			if event.wave == wave_count:
 				event.count *= 2
+	if difficulty.biome != null:
+		dup.apply_biome(difficulty.biome)
 	return dup
+
+
+## Swaps every monster and boss for the biome's one in the same role. Call on a copy.
+func apply_biome(biome: BiomeData) -> void:
+	var pool: Array[SpawnEntry] = []
+	for entry in spawn_pool:
+		var swapped := entry.duplicate() as SpawnEntry
+		swapped.enemy = biome.swap(entry.enemy)
+		pool.append(swapped)
+	spawn_pool = pool
+	for event in events:
+		event.enemy = biome.swap(event.enemy)
+		var choices: Array[EnemyData] = []
+		for choice in event.enemy_choices:
+			choices.append(biome.swap(choice))
+		event.enemy_choices = choices
 
 
 ## Two players (ADR 0017): more and tougher enemies. Call on a copy only.

@@ -150,18 +150,18 @@ Bestiaire (rôles inchangés ; tailles d'après `data/enemies/*.tres`) :
 
 L'orc (`grunt`) est l'humanoïde le plus nombreux : **aucune classe jouable en vert mousse**.
 
-Boss : **ordre calqué sur la progression des arcs de Solo Leveling** (décision du dev, 2026-10-04 ; archétypes seulement, aucun nom ni design copié). Les ids existants sont conservés, seuls les visuels changent ; motifs `BossPattern` à adapter.
+Boss et lieux : **un lieu par sceau** (ADR 0018, décision du dev 2026-10-04). Pas de rangs E à S ni d'ordre des arcs de Solo Leveling (trop proche de la série) : archétypes fantasy génériques.
 
-| Ordre | Arc évoqué | Boss (archétype) | Place dans le jeu |
+| Sceau | Lieu | Mini-boss (vague 10) | Boss final (vague 20) |
 |---|---|---|---|
-| 1 | Premier donjon instantané | **Serpent géant venimeux** : corps segmenté bleu-vert, crochets, motifs en arc | Mini-boss vague 10 (id `ronin`) |
-| 2 | Quête de changement de classe | **Chevalier démon** : armure noire à cornes, épée flamboyante rouge-violet ; reprend les motifs dash/coup du ronin actuel | Boss final vague 20 (id `shogun`, 3 phases ; phase 3 enragée, aura, yeux lumineux) |
-| 3 | Château des démons | **Molosse des enfers à trois têtes** (gardien) puis **Roi démon** | Boss suivants : mode infini, Danger élevé ou futurs stages (nouveaux ids) |
-| 4 | Portail rouge (glace) | **Chef des elfes de glace** | idem |
-| 5 | Île infestée | **Reine fourmi** puis **Roi fourmi** (ailé, très rapide) | idem |
-| 6 | Monarques | **Dragon** | Boss ultime |
+| Cuivre | Donjon de pierre | Serpent venimeux (`ronin`) | Chevalier démon (`shogun`) |
+| Fer | Temple englouti | Gardien de pierre (`iron_boss_mini`) | Idole colossale (`iron_boss_final`) |
+| Argent | Forêt gelée | Ours de givre | Géant des glaces |
+| Or | Citadelle infernale | Molosse à trois têtes | Seigneur démon |
+| Obsidienne | Ruche souterraine | Mante géante | Reine de la ruche |
+| Astral | Antre du dragon | Wyverne | Dragon ancien |
 
-La reine araignée est abandonnée (absente de la progression de référence) ; les araignées restent pour le `spawner` (nid).
+Temple englouti (Fer) : sol grès (teinte chaude), murs ocre, portails cyan ; monstres : soldat squelette, chauve-souris, gargouille, gardien de bronze, chevalier squelette, crâne maudit, sarcophage.
 
 Élites : même sprite, contour or (`"elite": true` dans `sprites.json`) + taille ×1,15 ; aucun redessin.
 
