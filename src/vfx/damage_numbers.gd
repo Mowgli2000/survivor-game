@@ -7,8 +7,8 @@ const CAPACITY := 160
 const LIFE := 0.8
 ## Numbers rise fast then slow down: total rise distance over LIFE.
 const RISE_DISTANCE := 56.0
-const NORMAL_SIZE := 30
-const CRIT_SIZE := 48
+const NORMAL_SIZE := 27
+const CRIT_SIZE := 42
 ## Big hits get up to this much extra size (log scale from SIZE_REF_LOW to SIZE_REF_HIGH damage).
 const BIG_HIT_BONUS := 0.3
 const SIZE_REF_LOW := 10.0
@@ -20,9 +20,10 @@ const POP_CRIT := 2.0
 const CRIT_SHAKE := 4.0
 const FADE_TIME := 0.25
 const NORMAL_COLOR := Color(1.0, 1.0, 1.0)
-const CRIT_COLOR := Color(1.0, 0.75, 0.1)
+## Bright yellow (dev's request: not a pale yellow).
+const CRIT_COLOR := Color("ffe600")
 const OUTLINE_SIZE := 7
-const EMBOLDEN := 0.9
+const EMBOLDEN := 0.35
 const BOX_WIDTH := 200.0
 ## Readability cap: at most this many new numbers per frame (crits have their own budget).
 const MAX_NEW_PER_FRAME := 6
@@ -47,7 +48,9 @@ func _init() -> void:
 	_value.resize(CAPACITY)
 	_crit.resize(CAPACITY)
 	_life.resize(CAPACITY)
-	_font = UiTheme.font(700, true).duplicate() as FontVariation
+	# Angular comic font (Bangers, like the titles): squarer than the rounded UI font.
+	_font = FontVariation.new()
+	_font.base_font = UiTheme.BANGERS
 	_font.variation_embolden = EMBOLDEN
 
 

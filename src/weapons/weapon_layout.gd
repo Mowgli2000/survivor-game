@@ -5,9 +5,9 @@ class_name WeaponLayout
 
 ## Center of the mount circle relative to the owner's origin (its feet area):
 ## around the chest of the character sprite.
-const BODY_CENTER := Vector2(0.0, -24.0)
+const BODY_CENTER := Vector2(0.0, -36.0)
 ## Distance from the circle center to a weapon mount.
-const MOUNT_RADIUS := 72.0
+const MOUNT_RADIUS := 84.0
 ## Distance from a mount to the weapon's muzzle (where shots start).
 const BARREL := 28.0
 

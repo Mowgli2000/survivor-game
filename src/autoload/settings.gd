@@ -71,8 +71,18 @@ func _apply_window() -> void:
 	var mode := DisplayServer.window_get_mode()
 	var is_fullscreen := mode == DisplayServer.WINDOW_MODE_FULLSCREEN \
 		or mode == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN
-	if data.fullscreen != is_fullscreen:
-		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if data.fullscreen
+	# Debug tools (captures, stress test, galleries) always run in a window.
+	var fullscreen: bool = data.fullscreen and not is_debug_run()
+	if fullscreen != is_fullscreen:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN if fullscreen
 			else DisplayServer.WINDOW_MODE_WINDOWED)
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if data.vsync
 		else DisplayServer.VSYNC_DISABLED)
+
+
+## True when the game was started on a debug scene or tool script (src/debug/, tools/).
+static func is_debug_run() -> bool:
+	for arg in OS.get_cmdline_args():
+		if arg.begins_with("res://src/debug/") or arg.begins_with("res://tools/"):
+			return true
+	return false

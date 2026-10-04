@@ -3,11 +3,9 @@
 [ext_resource type="Script" path="res://src/player/character_data.gd" id="1_char"]
 [ext_resource type="Script" path="res://src/core/stat_modifier.gd" id="2_mod"]
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_weapon_script"]
-[ext_resource type="Resource" path="res://data/weapons/katana.tres" id="w0"]
-[ext_resource type="Resource" path="res://data/weapons/spear.tres" id="w1"]
-[ext_resource type="Resource" path="res://data/weapons/heavy_axe.tres" id="w2"]
-[ext_resource type="Resource" path="res://data/weapons/steel_katana.tres" id="wnew"]
 [ext_resource type="Texture2D" path="res://assets/characters/cards/ronin_card.png" id="card"]
+[ext_resource type="Resource" path="res://data/weapons/steel_katana.tres" id="w0"]
+[ext_resource type="Resource" path="res://data/weapons/katana.tres" id="w1"]
 
 [sub_resource type="Resource" id="Mod_1"]
 script = ExtResource("2_mod")
@@ -36,7 +34,7 @@ name_key = "CHARACTER_RONIN"
 locked = true
 description_key = "CHARACTER_RONIN_RULE"
 starting_weapon = ExtResource("w0")
-starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1"), ExtResource("w2"), ExtResource("wnew")])
+starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1")])
 modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2"), SubResource("Mod_3"), SubResource("Mod_4")])
 weapon_kind = 1
 stat_overrides = {

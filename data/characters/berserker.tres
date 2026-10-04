@@ -5,10 +5,9 @@
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_weapon_script"]
 [ext_resource type="Script" path="res://src/items/effects/item_effect.gd" id="5_effect"]
 [ext_resource type="Script" path="res://src/items/effects/missing_hp_stat_effect.gd" id="6_rage"]
-[ext_resource type="Resource" path="res://data/weapons/heavy_axe.tres" id="w0"]
-[ext_resource type="Resource" path="res://data/weapons/katana.tres" id="w1"]
-[ext_resource type="Resource" path="res://data/weapons/warhammer.tres" id="wnew"]
 [ext_resource type="Texture2D" path="res://assets/characters/cards/berserker_card.png" id="card"]
+[ext_resource type="Resource" path="res://data/weapons/heavy_axe.tres" id="w0"]
+[ext_resource type="Resource" path="res://data/weapons/warhammer.tres" id="w1"]
 
 [sub_resource type="Resource" id="Mod_1"]
 script = ExtResource("2_mod")
@@ -42,7 +41,7 @@ name_key = "CHARACTER_BERSERKER"
 locked = true
 description_key = "CHARACTER_BERSERKER_RULE"
 starting_weapon = ExtResource("w0")
-starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1"), ExtResource("wnew")])
+starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1")])
 modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2"), SubResource("Mod_3"), SubResource("Mod_4")])
 effects = Array[ExtResource("5_effect")]([SubResource("Rage")])
 stat_overrides = {

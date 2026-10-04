@@ -5,10 +5,9 @@
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_weapon_script"]
 [ext_resource type="Script" path="res://src/items/effects/item_effect.gd" id="5_effect"]
 [ext_resource type="Script" path="res://src/items/effects/interest_effect.gd" id="4_interest"]
-[ext_resource type="Resource" path="res://data/weapons/pulse.tres" id="w0"]
-[ext_resource type="Resource" path="res://data/weapons/bazooka.tres" id="w1"]
-[ext_resource type="Resource" path="res://data/weapons/bomb.tres" id="wnew"]
 [ext_resource type="Texture2D" path="res://assets/characters/cards/merchant_card.png" id="card"]
+[ext_resource type="Resource" path="res://data/weapons/bazooka.tres" id="w0"]
+[ext_resource type="Resource" path="res://data/weapons/bomb.tres" id="w1"]
 
 [sub_resource type="Resource" id="Mod_1"]
 script = ExtResource("2_mod")
@@ -32,7 +31,7 @@ name_key = "CHARACTER_MERCHANT"
 locked = true
 description_key = "CHARACTER_MERCHANT_RULE"
 starting_weapon = ExtResource("w0")
-starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1"), ExtResource("wnew")])
+starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1")])
 modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2")])
 effects = Array[ExtResource("5_effect")]([SubResource("Interest")])
 shop_price_multiplier = 0.8

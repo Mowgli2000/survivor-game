@@ -266,3 +266,11 @@ func test_every_class_and_family_has_enough_weapons() -> void:
 	for family: StringName in [&"blade", &"gun", &"energy", &"explosive"]:
 		var count := weapons.filter(func(w: WeaponData) -> bool: return w.families.has(family)).size()
 		assert_gte(count, 7, "%s: %d weapons" % [family, count])
+
+
+## Each class offers exactly two starting weapons (dev's rule, session 8).
+func test_every_class_has_two_starting_weapons() -> void:
+	for character: CharacterData in ContentDB.get_all(&"characters"):
+		assert_eq(character.starting_weapons.size(), 2, String(character.id))
+		for weapon in character.starting_weapons:
+			assert_true(character.allows_weapon(weapon), "%s can use %s" % [character.id, weapon.id])

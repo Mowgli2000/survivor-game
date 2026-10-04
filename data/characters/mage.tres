@@ -5,11 +5,9 @@
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_weapon_script"]
 [ext_resource type="Script" path="res://src/items/effects/item_effect.gd" id="5_effect"]
 [ext_resource type="Script" path="res://src/items/effects/family_count_stat_effect.gd" id="6_family"]
+[ext_resource type="Texture2D" path="res://assets/characters/cards/mage_card.png" id="card"]
 [ext_resource type="Resource" path="res://data/weapons/fire_staff.tres" id="w0"]
 [ext_resource type="Resource" path="res://data/weapons/frost_scepter.tres" id="w1"]
-[ext_resource type="Resource" path="res://data/weapons/pulse.tres" id="w2"]
-[ext_resource type="Resource" path="res://data/weapons/lightning_staff.tres" id="wnew"]
-[ext_resource type="Texture2D" path="res://assets/characters/cards/mage_card.png" id="card"]
 
 [sub_resource type="Resource" id="Mod_1"]
 script = ExtResource("2_mod")
@@ -38,7 +36,7 @@ name_key = "CHARACTER_MAGE"
 locked = true
 description_key = "CHARACTER_MAGE_RULE"
 starting_weapon = ExtResource("w0")
-starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1"), ExtResource("w2"), ExtResource("wnew")])
+starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1")])
 modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2")])
 effects = Array[ExtResource("5_effect")]([SubResource("Affinity")])
 favored_family = &"energy"

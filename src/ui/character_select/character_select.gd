@@ -204,6 +204,10 @@ func _build_cards() -> void:
 		name_label.theme_type_variation = &"SubtitleLabel"
 		name_label.add_theme_color_override("font_color", character.color if unlocked else UiTheme.MUTED)
 		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		# Long names and bonus lines wrap: otherwise they widen the text box past
+		# the card and push the description off center (dev's playtest).
+		name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		name_label.add_theme_font_size_override("font_size", 26)
 		text.add_child(name_label)
 		var rule := Label.new()
 		rule.text = character.description_key if unlocked else _unlock_hint(character)
@@ -219,6 +223,7 @@ func _build_cards() -> void:
 			mods.theme_type_variation = &"SmallLabel"
 			mods.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			mods.add_theme_color_override("font_color", character.color)
+			mods.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			text.add_child(mods)
 		button.pressed.connect(_choose_character.bind(character))
 		UiFx.hover_lift(button)
