@@ -344,3 +344,4 @@ WEAPON_FROST_FLASK,Frost flask,Fiole de givre
 WEAPON_FROST_FLASK_DESC,Icy explosion that slows enemies.,Explosion glacée qui ralentit les ennemis.
 WEAPON_FRAG_GRENADE,Frag grenades,Grenades à fragments
 WEAPON_FRAG_GRENADE_DESC,"Three grenades thrown in a fan, small explosions.","Trois grenades lancées en éventail, petites explosions."
+UI_WEAPON_PREVIEW_TITLE,"Weapons, ornate style (preview, not in game yet) · small frame = current icon","Armes, style orné (aperçu, pas encore en jeu) · petit cadre = icône actuelle"
