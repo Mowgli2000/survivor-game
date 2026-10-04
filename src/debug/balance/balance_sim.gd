@@ -120,29 +120,13 @@ func _record_wave() -> void:
 		"materials": _run.players[0].wallet.amount,
 		"weapons": _weapon_list(player.weapons),
 		"items": _run.inventory.get_items().size(),
-		"sheet_dps": sheet_dps(player.weapons, player.stats),
+		"sheet_dps": BalanceSimTools.sheet_dps(player.weapons, player.stats),
 		"max_hp": max_hp,
 		"stats": _stats(player.stats),
 	})
 	_policy.last_wave_damage_ratio = _damage_taken / maxf(max_hp, 1.0)
 	_damage_taken = 0.0
 	_min_hp_ratio = 1.0
-
-
-## Damage per second written on the weapons (no positioning, no overkill):
-## a trend indicator of build power, not a combat result.
-static func sheet_dps(weapons: WeaponHolder, stats: StatBlock) -> float:
-	var total := 0.0
-	var crit := stats.get_value(StatIds.CRIT_CHANCE)
-	var crit_mult := stats.get_value(StatIds.CRIT_DAMAGE)
-	var count_bonus := stats.get_value(StatIds.PROJECTILE_COUNT)
-	for slot in weapons.get_slots():
-		var s := slot.stats
-		var hits_per_second := stats.get_value(StatIds.ATTACK_SPEED) / maxf(s.cooldown, 0.05)
-		var crit_factor := 1.0 + clampf(s.crit_chance + crit, 0.0, 1.0) * (crit_mult - 1.0)
-		total += s.damage * stats.get_value(StatIds.DAMAGE) * crit_factor * hits_per_second \
-			* maxf(s.projectile_count + count_bonus, 1.0)
-	return total
 
 
 static func _weapon_list(weapons: WeaponHolder) -> Array:

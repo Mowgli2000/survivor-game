@@ -1,0 +1,6 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://src/debug/balance/balance_fast.gd" id="1_fast"]
+
+[node name="BalanceFast" type="Node"]
+script = ExtResource("1_fast")

@@ -73,15 +73,15 @@ func test_sheet_dps_grows_with_tier_and_damage_stat() -> void:
 	autofree(holder)
 	var stats := StatBlock.from_defaults()
 	holder.add_weapon(ContentDB.get_def(&"weapons", &"pulse"), 1)
-	var low := preload("res://src/debug/balance/balance_sim.gd").sheet_dps(holder, stats)
+	var low := BalanceSimTools.sheet_dps(holder, stats)
 	holder.upgrade_slot(0)
-	var tier_2 := preload("res://src/debug/balance/balance_sim.gd").sheet_dps(holder, stats)
+	var tier_2 := BalanceSimTools.sheet_dps(holder, stats)
 	assert_gt(low, 0.0)
 	assert_gt(tier_2, low)
 
 
 func test_model_counts_more_targets_for_area_weapons() -> void:
-	var model := preload("res://src/debug/balance/balance_model.gd")
+	var model := BalanceSimTools
 	var axe: WeaponData = ContentDB.get_def(&"weapons", &"heavy_axe")
 	var sling: WeaponData = ContentDB.get_def(&"weapons", &"sling")
 	assert_gt(model.targets_hit(axe, WeaponStats.compute(axe, 1)), model.targets_hit(sling, WeaponStats.compute(sling, 1)))

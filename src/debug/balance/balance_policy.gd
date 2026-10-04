@@ -59,19 +59,22 @@ func choose_upgrade(offers: Array[UpgradeOffer], _rp: RunPlayer) -> UpgradeOffer
 
 ## Buys, merges and rerolls until nothing worth it is left (or the action cap).
 func shop_turn(rp: RunPlayer, wave: int) -> void:
-	var shop := rp.shop
-	var weapons := rp.player.weapons
+	play_shop(rp.shop, rp.wallet, rp.player.weapons, wave)
+
+
+## Same, from the parts (the fast wave simulator has no Player).
+func play_shop(shop: Shop, wallet: Wallet, weapons: WeaponHolder, wave: int) -> void:
 	if _focus == &"" and weapons.slot_count() > 0 and not weapons.get_slots()[0].data.families.is_empty():
 		_focus = weapons.get_slots()[0].data.families[0]
 	var rerolls := 0
 	for action in MAX_ACTIONS:
 		_merge_all(shop, weapons)
-		var pick := _best_offer(rp, wave)
+		var pick := _best_offer(shop, weapons, wave)
 		if pick >= 0:
 			shop.buy(pick)
 			continue
 		var reserve := 0 if wave >= 19 else shop.reroll_cost() * 2
-		if kind != "random" and rerolls < MAX_REROLLS and rp.wallet.amount >= shop.reroll_cost() + reserve:
+		if kind != "random" and rerolls < MAX_REROLLS and wallet.amount >= shop.reroll_cost() + reserve:
 			if shop.reroll():
 				rerolls += 1
 				continue
@@ -95,8 +98,7 @@ func score_modifiers(modifiers: Array[StatModifier], wave: int) -> float:
 	return score
 
 
-func _best_offer(rp: RunPlayer, wave: int) -> int:
-	var shop := rp.shop
+func _best_offer(shop: Shop, weapons: WeaponHolder, wave: int) -> int:
 	var candidates: Array[int] = []
 	var best := -1
 	var best_value := 0.0
@@ -105,7 +107,7 @@ func _best_offer(rp: RunPlayer, wave: int) -> int:
 			continue
 		var offer := shop.offers[i]
 		candidates.append(i)
-		var points := _weapon_points(offer, rp) if offer.is_weapon() else _item_points(offer.item, wave)
+		var points := _weapon_points(offer, weapons) if offer.is_weapon() else _item_points(offer.item, wave)
 		# Value for money; worth buying only above a small threshold.
 		var value := points / maxf(offer.price, 1.0) * 10.0
 		if points > 0.6 and value > best_value:
@@ -116,8 +118,7 @@ func _best_offer(rp: RunPlayer, wave: int) -> int:
 	return best
 
 
-func _weapon_points(offer: ShopOffer, rp: RunPlayer) -> float:
-	var weapons := rp.player.weapons
+func _weapon_points(offer: ShopOffer, weapons: WeaponHolder) -> float:
 	var data := offer.weapon
 	var points := WEAPON_BASE + WEAPON_PER_TIER * offer.tier
 	var same := 0

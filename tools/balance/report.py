@@ -25,6 +25,14 @@ DECENT = {"dps", "family", "tank", "economy"}
 
 def load(folder):
     runs = []
+    jsonl = os.path.join(folder, "runs.jsonl")
+    if os.path.exists(jsonl):
+        # Fast simulator: one run per line.
+        for line in open(jsonl, encoding="utf-8"):
+            d = json.loads(line)
+            if d.get("outcome") in ("won", "died"):
+                runs.append(d)
+        return runs
     for f in sorted(os.listdir(os.path.join(folder, "runs"))):
         if f.endswith(".json"):
             try:
