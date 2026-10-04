@@ -1,0 +1,54 @@
+[gd_resource type="Resource" script_class="CharacterData" format=3]
+
+[ext_resource type="Script" path="res://src/player/character_data.gd" id="1_char"]
+[ext_resource type="Script" path="res://src/core/stat_modifier.gd" id="2_mod"]
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_weapon_script"]
+[ext_resource type="Script" path="res://src/items/effects/item_effect.gd" id="5_effect"]
+[ext_resource type="Script" path="res://src/items/effects/family_count_stat_effect.gd" id="6_family"]
+[ext_resource type="Resource" path="res://data/weapons/fire_staff.tres" id="w0"]
+[ext_resource type="Resource" path="res://data/weapons/frost_scepter.tres" id="w1"]
+[ext_resource type="Resource" path="res://data/weapons/pulse.tres" id="w2"]
+[ext_resource type="Texture2D" path="res://assets/characters/cards/mage_card.png" id="card"]
+
+[sub_resource type="Resource" id="Mod_1"]
+script = ExtResource("2_mod")
+stat = &"area"
+percent = 0.15
+
+[sub_resource type="Resource" id="Mod_2"]
+script = ExtResource("2_mod")
+stat = &"armor"
+flat = -2.0
+
+[sub_resource type="Resource" id="Mod_per_weapon"]
+script = ExtResource("2_mod")
+stat = &"damage"
+percent = 0.08
+
+[sub_resource type="Resource" id="Affinity"]
+script = ExtResource("6_family")
+family = &"energy"
+modifier = SubResource("Mod_per_weapon")
+
+[resource]
+script = ExtResource("1_char")
+id = &"mage"
+name_key = "CHARACTER_MAGE"
+locked = true
+description_key = "CHARACTER_MAGE_RULE"
+starting_weapon = ExtResource("w0")
+starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1"), ExtResource("w2")])
+modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2")])
+effects = Array[ExtResource("5_effect")]([SubResource("Affinity")])
+favored_family = &"energy"
+off_family_damage_scale = 0.75
+stat_overrides = {
+"max_hp": 100.0,
+"move_speed": 300.0
+}
+invulnerability_time = 0.5
+radius = 16.0
+color = Color(1, 0.31, 0.85, 1)
+sprite_id = &"mage"
+sprite_scale = 1.35
+card_art = ExtResource("card")

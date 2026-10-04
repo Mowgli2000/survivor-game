@@ -1,0 +1,55 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="1_weapon"]
+[ext_resource type="Script" path="res://src/weapons/behaviors/beam_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
+[ext_resource type="Script" path="res://src/weapons/status_data.gd" id="4_status"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapon_laser.ogg" id="9_sound"]
+[ext_resource type="Texture2D" path="res://assets/icons/weapons/frost_scepter.png" id="icon_tex"]
+
+[sub_resource type="Resource" id="Resource_behavior"]
+script = ExtResource("2_behavior")
+
+[sub_resource type="Resource" id="Resource_shock"]
+script = ExtResource("4_status")
+type = 1
+power = 0.4
+duration = 1.5
+
+[sub_resource type="Resource" id="Resource_l2"]
+script = ExtResource("3_level")
+damage_percent = 0.2
+
+[sub_resource type="Resource" id="Resource_l3"]
+script = ExtResource("3_level")
+projectile_count = 1
+fire_rate_percent = 0.25
+
+[sub_resource type="Resource" id="Resource_l4"]
+script = ExtResource("3_level")
+damage_percent = 0.3
+area_percent = 0.4
+
+[resource]
+script = ExtResource("1_weapon")
+id = &"frost_scepter"
+name_key = "WEAPON_FROST_SCEPTER"
+description_key = "WEAPON_FROST_SCEPTER_DESC"
+behavior = SubResource("Resource_behavior")
+levels = Array[ExtResource("3_level")]([SubResource("Resource_l2"), SubResource("Resource_l3"), SubResource("Resource_l4")])
+base_price = 18
+base_damage = 7.0
+cooldown = 0.8
+attack_range = 560.0
+crit_chance = 0.05
+knockback = 60.0
+projectile_count = 1
+spread_deg = 12.0
+area = 10.0
+status = SubResource("Resource_shock")
+status_chance = 0.6
+fire_sound = ExtResource("9_sound")
+fire_volume_db = -6.0
+color = Color(0.7, 0.92, 1, 1)
+icon = ExtResource("icon_tex")
+families = Array[StringName]([&"energy"])

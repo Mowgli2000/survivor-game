@@ -247,3 +247,34 @@ func test_dodge_buff_lasts_its_duration_and_does_not_stack() -> void:
 	for i in 130:
 		_effects._physics_process(1.0 / 60.0)
 	assert_almost_eq(_player.stats.get_value(StatIds.CRIT_CHANCE), base, 0.0001, "gone after 2 s")
+
+
+func test_family_count_effect_follows_owned_weapons() -> void:
+	var mod := StatModifier.new()
+	mod.stat = StatIds.DAMAGE
+	mod.percent = 0.08
+	var effect := FamilyCountStatEffect.new()
+	effect.family = &"energy"
+	effect.modifier = mod
+	var effects: Array[ItemEffect] = [effect]
+	_effects.add_effects(effects)
+	var base := _player.stats.get_value(StatIds.DAMAGE)
+	_player.weapons.add_weapon(ContentDB.get_def(&"weapons", &"pulse"))
+	_player.weapons.add_weapon(ContentDB.get_def(&"weapons", &"fire_staff"))
+	_player.weapons.add_weapon(ContentDB.get_def(&"weapons", &"katana"))
+	assert_almost_eq(_player.stats.get_value(StatIds.DAMAGE), base * 1.16 / 1.0, 0.0001, "two Magic weapons: +16 %")
+	_player.weapons.remove_weapon(0)
+	assert_almost_eq(_player.stats.get_value(StatIds.DAMAGE), base * 1.08, 0.0001, "one left: +8 %")
+
+
+func test_missing_hp_effect_grows_with_damage_taken() -> void:
+	var effect := MissingHpStatEffect.new()
+	effect.percent_per_point = 0.01
+	var effects: Array[ItemEffect] = [effect]
+	_effects.add_effects(effects)
+	var base := _player.stats.get_value(StatIds.DAMAGE)
+	var max_hp := _player.stats.get_value(StatIds.MAX_HP)
+	_player.take_damage(max_hp * 0.4)
+	assert_almost_eq(_player.stats.get_value(StatIds.DAMAGE), base * 1.4, 0.0001, "40 % HP missing: +40 %")
+	_player.heal(max_hp)
+	assert_almost_eq(_player.stats.get_value(StatIds.DAMAGE), base, 0.0001, "full HP: no bonus")

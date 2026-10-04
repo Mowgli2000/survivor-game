@@ -158,6 +158,14 @@ func _unlock_card(def: Resource) -> Control:
 	if not def is CharacterData:
 		name_label.add_theme_color_override("font_color", Tiers.color(int(def.get(&"tier")) if def is ItemData else 1))
 	box.add_child(name_label)
+	# What was unlocked (character, weapon or item) and what it does, on hover too.
+	var kind := Label.new()
+	kind.text = unlock_kind_key(def)
+	kind.theme_type_variation = &"SmallLabel"
+	kind.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(kind)
+	card.tooltip_text = unlock_tooltip(def)
+	card.mouse_filter = Control.MOUSE_FILTER_STOP
 	var tag := Label.new()
 	tag.text = "UI_UNLOCKED_TAG"
 	tag.theme_type_variation = &"SmallLabel"
@@ -165,6 +173,26 @@ func _unlock_card(def: Resource) -> Control:
 	tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(tag)
 	return card
+
+
+## "New character" / "New weapon" / "New item" (translation key).
+static func unlock_kind_key(def: Resource) -> String:
+	if def is CharacterData:
+		return "UI_UNLOCK_CHARACTER"
+	if def is WeaponData:
+		return "UI_UNLOCK_WEAPON"
+	return "UI_UNLOCK_ITEM"
+
+
+## Hover text of an unlock card: the character's rule, the weapon or item effect.
+static func unlock_tooltip(def: Resource) -> String:
+	if def is CharacterData:
+		return TranslationServer.translate(def.name_key) + "\n" + TranslationServer.translate(def.description_key)
+	if def is WeaponData:
+		return TranslationServer.translate(def.name_key) + "\n" + TranslationServer.translate(def.description_key)
+	if def is ItemData:
+		return ShopScreen.item_tooltip(def, 1)
+	return ""
 
 
 func close() -> void:

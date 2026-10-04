@@ -30,6 +30,10 @@ enum WeaponKind { ANY, MELEE, RANGED }
 @export var shop_price_multiplier: float = 1.0
 ## Multiplies the reroll costs (shop and level-up cards).
 @export var reroll_cost_multiplier: float = 1.0
+## Family the class is built around (Mage: &"energy"); weapons of other families
+## deal `off_family_damage_scale` times their damage.
+@export var favored_family: StringName = &""
+@export var off_family_damage_scale: float = 1.0
 @export_group("")
 ## Seconds of invulnerability after taking a hit.
 @export var invulnerability_time: float = 0.5

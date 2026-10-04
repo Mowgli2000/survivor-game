@@ -10,6 +10,10 @@ signal weapon_fired(index: int)
 
 ## Slot limit read by is_full(); the shop enforces it, debug tools may go above.
 var max_slots: int = 6
+## Class rule (CharacterData): weapons outside `favored_family` deal
+## `off_family_scale` times their damage. Empty family: no rule.
+var favored_family: StringName = &""
+var off_family_scale: float = 1.0
 
 var _ctx: WeaponContext
 var _slots: Array[WeaponSlot] = []
@@ -23,6 +27,9 @@ func setup(ctx: WeaponContext, p_max_slots: int = 6) -> void:
 ## Always adds a new slot, even if the same weapon is already owned.
 func add_weapon(data: WeaponData, level: int = 1) -> WeaponSlot:
 	var slot := WeaponSlot.new(data, level)
+	if favored_family != &"" and not favored_family in data.families:
+		slot.damage_scale = off_family_scale
+		slot.set_level(level)
 	_slots.append(slot)
 	_refresh_mounts()
 	weapons_changed.emit()

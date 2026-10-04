@@ -156,3 +156,17 @@ func test_rank_e_hunter_cards_are_stronger() -> void:
 	var offer := UpgradeOffer.for_stat(ContentDB.get_def(&"upgrades", &"vitality"), 1)
 	offer.bonus_scale = hunter.upgrade_scale
 	assert_eq(offer.scaled_modifiers()[0].flat, 15.0, "+10 HP card gives +15")
+
+
+func test_mage_other_families_deal_less_damage() -> void:
+	var holder := WeaponHolder.new()
+	autofree(holder)
+	holder.favored_family = &"energy"
+	holder.off_family_scale = 0.75
+	var staff: WeaponData = ContentDB.get_def(&"weapons", &"fire_staff")
+	var sword: WeaponData = ContentDB.get_def(&"weapons", &"katana")
+	assert_eq(holder.add_weapon(staff).stats.damage, WeaponStats.compute(staff, 1).damage)
+	var slot := holder.add_weapon(sword)
+	assert_almost_eq(slot.stats.damage, WeaponStats.compute(sword, 1).damage * 0.75, 0.001)
+	slot.set_level(2)
+	assert_almost_eq(slot.stats.damage, WeaponStats.compute(sword, 2).damage * 0.75, 0.001, "kept after a level up")

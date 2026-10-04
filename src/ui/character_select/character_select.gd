@@ -9,10 +9,11 @@ extends Control
 signal started(setup: RunSetup)
 signal closed
 
-const CARD_SIZE := Vector2(300, 560)
+## Seven characters must fit a 1920 px row.
+const CARD_SIZE := Vector2(250, 560)
 const PREVIEW_HEIGHT := 170.0
 ## Height of a card illustration (CharacterData.card_art, 2:3 portrait).
-const ART_HEIGHT := 220.0
+const ART_HEIGHT := 200.0
 
 var _character_buttons: Dictionary[StringName, Button] = {}
 var _cards: HBoxContainer
@@ -61,7 +62,7 @@ func _init() -> void:
 	box.add_child(_devices)
 	_cards = HBoxContainer.new()
 	_cards.alignment = BoxContainer.ALIGNMENT_CENTER
-	_cards.add_theme_constant_override("separation", 20)
+	_cards.add_theme_constant_override("separation", 14)
 	box.add_child(_cards)
 	_weapon_title = Label.new()
 	_weapon_title.text = "UI_CHOOSE_WEAPON"
@@ -306,9 +307,13 @@ func _choose_weapon(weapon: WeaponData) -> void:
 	levels.sort_custom(func(a: DifficultyData, b: DifficultyData) -> bool: return a.level < b.level)
 	for difficulty in levels:
 		var button := Button.new()
-		button.text = difficulty.name_key
+		# Seal name and where its gate leads.
+		var place := TranslationServer.translate(difficulty.biome.name_key) if difficulty.biome != null else TranslationServer.translate("BIOME_DUNGEON")
+		button.text = "%s\n%s" % [TranslationServer.translate(difficulty.name_key), place]
 		button.tooltip_text = difficulty.description_key
-		button.custom_minimum_size = Vector2(170, 64)
+		button.add_theme_color_override("font_color", difficulty.color)
+		button.add_theme_font_size_override("font_size", 20)
+		button.custom_minimum_size = Vector2(200, 84)
 		button.disabled = difficulty.level > allowed
 		button.pressed.connect(_start.bind(difficulty))
 		_dangers.add_child(button)

@@ -164,6 +164,9 @@ func _with_glow(cell: Image, glow: Color) -> Image:
 	var h := cell.get_height() + PAD * 2
 	var padded := Image.create(w, h, false, Image.FORMAT_RGBA8)
 	padded.blit_rect(cell, Rect2i(Vector2i.ZERO, cell.get_size()), Vector2i(PAD, PAD))
+	# Fully transparent glow ("#00000000", AI sprites): the art has its own clean outline.
+	if glow.a <= 0.0:
+		return padded
 	# Blur by shrinking and growing back (native, fast).
 	var blur := padded.duplicate() as Image
 	blur.resize(maxi(1, w / GLOW_SHRINK), maxi(1, h / GLOW_SHRINK), Image.INTERPOLATE_BILINEAR)
@@ -172,7 +175,7 @@ func _with_glow(cell: Image, glow: Color) -> Image:
 	for y in h:
 		for x in w:
 			var a := clampf(blur.get_pixel(x, y).a * GLOW_GAIN, 0.0, 1.0)
-			out.set_pixel(x, y, Color(glow, a * 0.9))
+			out.set_pixel(x, y, Color(glow, a * 0.9 * glow.a))
 	out.blend_rect(padded, Rect2i(0, 0, w, h), Vector2i.ZERO)
 	return out
 

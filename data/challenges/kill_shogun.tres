@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ChallengeData" format=3]
+
+[ext_resource type="Script" path="res://src/meta/challenge_data.gd" id="1_challenge"]
+
+[resource]
+script = ExtResource("1_challenge")
+id = &"kill_shogun"
+name_key = "CHALLENGE_KILL_SHOGUN"
+description_key = "CHALLENGE_KILL_SHOGUN_DESC"
+kind = 5
+enemy_id = &"shogun"
+unlock_category = &"characters"
+unlock_id = &"berserker"

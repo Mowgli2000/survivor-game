@@ -1,0 +1,56 @@
+[gd_resource type="Resource" script_class="CharacterData" format=3]
+
+[ext_resource type="Script" path="res://src/player/character_data.gd" id="1_char"]
+[ext_resource type="Script" path="res://src/core/stat_modifier.gd" id="2_mod"]
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_weapon_script"]
+[ext_resource type="Script" path="res://src/items/effects/item_effect.gd" id="5_effect"]
+[ext_resource type="Script" path="res://src/items/effects/missing_hp_stat_effect.gd" id="6_rage"]
+[ext_resource type="Resource" path="res://data/weapons/heavy_axe.tres" id="w0"]
+[ext_resource type="Resource" path="res://data/weapons/katana.tres" id="w1"]
+[ext_resource type="Texture2D" path="res://assets/characters/cards/berserker_card.png" id="card"]
+
+[sub_resource type="Resource" id="Mod_1"]
+script = ExtResource("2_mod")
+stat = &"max_hp"
+flat = 30.0
+
+[sub_resource type="Resource" id="Mod_2"]
+script = ExtResource("2_mod")
+stat = &"lifesteal"
+flat = 0.05
+
+[sub_resource type="Resource" id="Mod_3"]
+script = ExtResource("2_mod")
+stat = &"armor"
+flat = -3.0
+
+[sub_resource type="Resource" id="Mod_4"]
+script = ExtResource("2_mod")
+stat = &"dodge"
+flat = -1.0
+
+[sub_resource type="Resource" id="Rage"]
+script = ExtResource("6_rage")
+target_stat = &"damage"
+percent_per_point = 0.01
+
+[resource]
+script = ExtResource("1_char")
+id = &"berserker"
+name_key = "CHARACTER_BERSERKER"
+locked = true
+description_key = "CHARACTER_BERSERKER_RULE"
+starting_weapon = ExtResource("w0")
+starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1")])
+modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2"), SubResource("Mod_3"), SubResource("Mod_4")])
+effects = Array[ExtResource("5_effect")]([SubResource("Rage")])
+stat_overrides = {
+"max_hp": 100.0,
+"move_speed": 300.0
+}
+invulnerability_time = 0.5
+radius = 16.0
+color = Color(0.88, 0.16, 0.23, 1)
+sprite_id = &"berserker"
+sprite_scale = 1.35
+card_art = ExtResource("card")

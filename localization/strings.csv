@@ -41,7 +41,7 @@ UPGRADE_PLATING,Plating,Blindage
 WEAPON_PULSE,Arcane orb,Orbe arcanique
 ENEMY_GRUNT,Orc,Orc
 ENEMY_RUNNER,Dungeon wolf,Loup du donjon
-CHARACTER_DRIFTER,Rank-E Hunter,Chasseur de rang E
+CHARACTER_DRIFTER,Novice Hunter,Chasseur novice
 UI_LEVEL_LABEL,Level:,Niveau :
 UI_NEW_WEAPON,New weapon,Nouvelle arme
 UI_STAT_UPGRADE,Upgrade,Amélioration
@@ -66,6 +66,12 @@ WEAPON_HEAVY_AXE,War axe,Hache de guerre
 WEAPON_HEAVY_AXE_DESC,Slow but huge sweeping blow that knocks enemies back.,Coup lent mais très large qui repousse les ennemis.
 WEAPON_SPEAR,Spear,Lance
 WEAPON_SPEAR_DESC,Fast long-reach thrust in a narrow line.,Estoc rapide et long sur une ligne étroite.
+WEAPON_FIRE_STAFF,Fire staff,Bâton de feu
+WEAPON_FIRE_STAFF_DESC,Slow fireballs that often set enemies on fire.,Boules de feu lentes qui enflamment souvent les ennemis.
+WEAPON_LONGBOW,Longbow,Arc long
+WEAPON_LONGBOW_DESC,Very long range arrows that pierce two enemies.,Flèches de très longue portée qui transpercent deux ennemis.
+WEAPON_FROST_SCEPTER,Frost scepter,Sceptre de givre
+WEAPON_FROST_SCEPTER_DESC,Icy beam that pierces everything and slows enemies.,Rayon glacé qui transperce tout et ralentit les ennemis.
 ENEMY_SHOOTER,Goblin shaman,Chaman gobelin
 ENEMY_TANK,Stone golem,Golem de pierre
 ENEMY_SHOGUN,Demon Knight,Chevalier démon
@@ -73,6 +79,15 @@ ENEMY_RONIN,Venom Serpent,Serpent venimeux
 ENEMY_CHARGER,War boar,Sanglier de guerre
 ENEMY_KAMIKAZE,Blast beetle,Scarabée explosif
 ENEMY_SPAWNER,Spider nest,Nid d'araignées
+ENEMY_IRON_GRUNT,Skeleton soldier,Soldat squelette
+ENEMY_IRON_RUNNER,Cave bat,Chauve-souris des cavernes
+ENEMY_IRON_SHOOTER,Stone gargoyle,Gargouille de pierre
+ENEMY_IRON_TANK,Bronze guardian,Gardien de bronze
+ENEMY_IRON_CHARGER,Skeleton knight,Chevalier squelette
+ENEMY_IRON_KAMIKAZE,Cursed skull,Crâne maudit
+ENEMY_IRON_SPAWNER,Cursed sarcophagus,Sarcophage maudit
+ENEMY_IRON_BOSS_MINI,Stone Guardian,Gardien de pierre
+ENEMY_IRON_BOSS_FINAL,Colossal Idol,Idole colossale
 UI_BOSS_REWARD,Reward: %s,Récompense : %s
 WEAPON_STRESS,Stress test gun,Arme de test
 UI_WAVE,Wave,Vague
@@ -138,6 +153,31 @@ ITEM_SOUL_HARVESTER_EFFECT,+1 Max HP every 20 kills (max +60),+1 PV max tous les
 ITEM_SOUL_HARVESTER,Soul lantern,Lanterne des âmes
 ITEM_MED_DRONE_EFFECT,Heals 3 HP every 5 s,Soigne 3 PV toutes les 5 s
 ITEM_MED_DRONE,Healing fairy,Fée guérisseuse
+ITEM_SHADOW_CHARM,Shadow charm,Amulette d'ombre
+ITEM_SMOKE_BOMB,Smoke bomb,Bombe fumigène
+ITEM_SMOKE_BOMB_EFFECT,After a dodge: +20% move speed for 2 s,Après une esquive : +20 % de vitesse de déplacement pendant 2 s
+ITEM_WAR_DRUM,War drum,Tambour de guerre
+ITEM_IRON_BRACERS,Iron bracers,Brassards de fer
+ITEM_RAGE_POTION,Rage potion,Potion de rage
+ITEM_RAGE_POTION_EFFECT,+0.5% damage per % of HP missing,"+0,5 % de dégâts par % de PV manquants"
+ITEM_GIANT_BELT,Giant's belt,Ceinture de géant
+ITEM_EAGLE_FEATHER,Eagle feather,Plume d'aigle
+ITEM_BARBED_ARROWS,Barbed arrows,Flèches barbelées
+ITEM_HUNTER_MARK,Hunter's mark,Marque du chasseur
+ITEM_ARCANE_TOME,Arcane tome,Grimoire arcanique
+ITEM_ARCANE_TOME_EFFECT,+5% damage per Magic weapon,+5 % de dégâts par arme de Magie
+ITEM_MANA_PENDANT,Mana pendant,Pendentif de mana
+ITEM_SWIFT_RUNE,Swift rune,Rune de célérité
+ITEM_MERCHANT_SCALE,Merchant's scale,Balance du marchand
+ITEM_MERCHANT_SCALE_EFFECT,End of wave: +5% of your materials (max 15),Fin de vague : +5 % de tes matériaux (max 15)
+ITEM_GOLDEN_TOOTH,Golden tooth,Dent en or
+ITEM_GOLDEN_TOOTH_EFFECT,5% chance: killed enemies give 1 material,5 % de chance : les ennemis tués donnent 1 matériau
+ITEM_LUCKY_COIN,Lucky coin,Pièce porte-bonheur
+ITEM_TROLL_BLOOD,Troll blood,Sang de troll
+ITEM_VAMPIRE_RING,Vampire ring,Anneau vampirique
+ITEM_BLADE_OIL,Blade oil,Huile de lame
+ITEM_BLADE_OIL_EFFECT,+4% damage per Blade weapon,+4 % de dégâts par arme de Lame
+ITEM_BLACK_POWDER,Black powder,Poudre noire
 UI_SETTINGS,Settings,Paramètres
 UI_BACK,Back,Retour
 UI_MAIN_MENU,Main menu,Menu principal
@@ -173,38 +213,51 @@ CHARACTER_GUNSLINGER,Archer,Archer
 CHARACTER_GUNSLINGER_RULE,Ranged weapons only. +3% damage per 10% bonus range.,Armes à distance uniquement. +3 % de dégâts par 10 % de portée bonus.
 CHARACTER_MERCHANT,Gate Smuggler,Contrebandier
 CHARACTER_MERCHANT_RULE,"Black market: shop prices -20%, rerolls +50%. End of wave: +10% of your materials (max 25).","Marché noir : prix de la boutique -20 %, relances +50 %. Fin de vague : +10 % de tes matériaux (max 25)."
-CHALLENGE_WIN_DRIFTER,Drifter's road,La route du Vagabond
-CHALLENGE_WIN_DRIFTER_DESC,Win a run with the Drifter,Gagner une partie avec le Vagabond
-CHALLENGE_KILLS_2000,Trigger happy,Gâchette facile
+CHALLENGE_WIN_DRIFTER,Novice's road,La route du novice
+CHALLENGE_WIN_DRIFTER_DESC,Win a run with the Novice Hunter,Gagner une partie avec le Chasseur novice
+CHALLENGE_KILLS_2000,Sharpshooter,Tireur d'élite
 CHALLENGE_KILLS_2000_DESC,Kill 2000 enemies (all runs),Tuer 2 000 ennemis (toutes parties)
 CHALLENGE_MATERIALS_300,Hoarder,Thésauriseur
 CHALLENGE_MATERIALS_300_DESC,Hold 300 materials at once,Détenir 300 matériaux en même temps
 CHALLENGE_REACH_WAVE_10,Halfway there,À mi-chemin
 CHALLENGE_REACH_WAVE_10_DESC,Reach wave 10,Atteindre la vague 10
-CHALLENGE_KILL_RONIN,Ronin slayer,Tueur de rōnin
-CHALLENGE_KILL_RONIN_DESC,Defeat the Ronin (wave 10),Vaincre le Rōnin (vague 10)
+CHALLENGE_KILL_RONIN,Serpent slayer,Tueur de serpent
+CHALLENGE_KILL_RONIN_DESC,Defeat the Venom Serpent (wave 10),Vaincre le Serpent venimeux (vague 10)
 CHALLENGE_WIN_ANY,Survivor,Survivant
 CHALLENGE_WIN_ANY_DESC,Win a run,Gagner une partie
 CHALLENGE_KILLS_5000,Exterminator,Exterminateur
 CHALLENGE_KILLS_5000_DESC,Kill 5000 enemies (all runs),Tuer 5 000 ennemis (toutes parties)
 CHALLENGE_WIN_RONIN,Way of the blade,La voie de la lame
-CHALLENGE_WIN_RONIN_DESC,Win a run with the Rōnin,Gagner une partie avec le Rōnin
-UI_CHOOSE_DANGER,Danger level,Niveau de danger
+CHALLENGE_WIN_RONIN_DESC,Win a run with the Swordswoman,Gagner une partie avec l'Épéiste
+CHALLENGE_WIN_GUNSLINGER,Eagle eye,Œil de faucon
+CHALLENGE_WIN_GUNSLINGER_DESC,Win a run with the Archer,Gagner une partie avec l'Archer
+CHALLENGE_KILL_SHOGUN,Knight breaker,Briseur de chevalier
+CHALLENGE_KILL_SHOGUN_DESC,Defeat the Demon Knight (wave 20),Vaincre le Chevalier démon (vague 20)
+CHARACTER_MAGE,Mage,Mage
+CHARACTER_MAGE_RULE,Arcane affinity: +8% damage per Magic weapon. Other weapons: -25% damage.,Affinité arcanique : +8 % de dégâts par arme de Magie. Autres armes : -25 % de dégâts.
+CHARACTER_BERSERKER,Berserker,Berserker
+CHARACTER_BERSERKER_RULE,Rage: +1% damage per % of HP missing. Cannot dodge.,Rage : +1 % de dégâts par % de PV manquants. Ne peut pas esquiver.
+UI_CHOOSE_DANGER,Choose your seal,Choisis ton sceau
 UI_CONTINUE_ENDLESS,Continue (endless),Continuer en infini
 UI_WAVE_ENDLESS,Wave %d (∞),Vague %d (∞)
-DANGER_0,Danger 0,Danger 0
-DANGER_1,Danger 1,Danger 1
-DANGER_2,Danger 2,Danger 2
-DANGER_3,Danger 3,Danger 3
-DANGER_4,Danger 4,Danger 4
-DANGER_5,Danger 5,Danger 5
+DANGER_0,Copper seal,Sceau de Cuivre
+DANGER_1,Iron seal,Sceau de Fer
+DANGER_2,Silver seal,Sceau d'Argent
+DANGER_3,Gold seal,Sceau d'Or
+DANGER_4,Obsidian seal,Sceau d'Obsidienne
+DANGER_5,Astral seal,Sceau Astral
 DANGER_0_DESC,The normal run.,La partie normale.
 DANGER_1_DESC,Some normal enemies are elites.,Quelques ennemis normaux sont des élites.
 DANGER_2_DESC,Enemies: +15% HP and damage.,Ennemis : +15 % de PV et de dégâts.
 DANGER_3_DESC,"More enemies, bigger groups.","Plus d'ennemis, groupes plus grands."
 DANGER_4_DESC,"Enemies: +30% HP and damage, more elites.","Ennemis : +30 % de PV et de dégâts, plus d'élites."
 DANGER_5_DESC,Two bosses on the final wave.,Deux boss à la dernière vague.
+BIOME_DUNGEON,Stone dungeon,Donjon de pierre
+BIOME_TEMPLE,Sunken temple,Temple englouti
 UI_UNLOCKED_TAG,Unlocked!,Débloqué !
+UI_UNLOCK_CHARACTER,New character,Nouveau personnage
+UI_UNLOCK_WEAPON,New weapon,Nouvelle arme
+UI_UNLOCK_ITEM,New item,Nouvel objet
 UI_PLAYER_N,Player %d,Joueur %d
 UI_PLAYER_DOWN,Down: back next wave,À terre : retour à la vague suivante
 UI_COOP,Local co-op,Coop locale
