@@ -1,6 +1,17 @@
-J'ai fait un playtest avec l'épéiste en danger 0, il me semble.  Et à la vague 14, j'avais déjà mes six armes en légendaires et je ne devais plus bouger pour vaincre les ennemis. Y a-t-il une explication à cela ? Est-ce que c'est parce que je suis en danger 0 ou alors la RNG des pulls dans la boutique fait en sorte que je sois déjà quasi maxé à cet endroit-là ? Ce qui veut dire que si, à partir de la manche de la vague 14 ou 15, je les roule dessus, je vais accumuler encore plus de pièces pour la boutique. Je ne te demande pas de rééquilibrer ça maintenant, mais juste de savoir si il y a un raisonnement. Est-ce qu'il y a un raisonnement s'il y a de la classe, au pool d'objets et à la boutique, ou en règle générale ? Peut-être que le nombre d'objets n'est pas assez élevé, donc je tombe trop de fois sur les bonnes cartes pour rendre mon perso trop puissant. 
-J'ai arrêté mon playtest à la vague 31 en mode infini. Je n'ai pas fait d'achat dans la boutique depuis longtemps et il me reste 15000 matériaux. Mon personnage n'est pas mort mais j'en avais juste marre de continuer. 
+La baguette de feu envoie des boules orange mais il n'y a pas de visuel qui fait que ça ressemble vraiment à du feu. Je veux dire, le sprite est simple, mais il faudrait quand même un visuel qui fait que ça ressemble vraiment à du feu. Pareil pour les autres projectiles des autres personnages.
 
-Autour des personnages jouables, pendant une partie, il y a une sorte de contour noir qui ressemble à de la fumée. Elle n'est pas très épaisse, mais elle est quand même dérangeante visuellement parlant.  Est-ce qu'il y a une solution pour que le personnage aie un contour noir fin et lisse sans effet de débordement ?
+Je trouve également les animations d'attaque d'armes avec les armes de mêlée trop simplistes. C'est que des arcs de cercle de différentes couleurs, très difficiles à distinguer les uns des autres et pas très beaux visuellement. Il faudrait vraiment améliorer ça. Je pense que tu peux y arriver sans problème. Je n'aime pas du tout le rendu actuel.
 
-![alt text](image-1.png) Ici sur l'écran de victoire, on voit que j'ai débloqué « Volonté de faire » mais quand je mets la souris dessus, il ne précise pas à quoi ça correspond. Est-ce un défi, un personnage, un skin ? 
+J'aimerais également que les projectiles des ennemis soient plus travaillés, pas de boule rouge toute simple. Surtout que certains ennemis lancent des projectiles assez rapidement, donc les visuels des projectiles sont assez écrasés, donc on ne voit pas très bien ce que c'est.
+
+Comme nous sommes maintenant sur un jeu de thème fantaisie, les bruits sonores des armes et des projectiles doivent être en accord avec l'arme. Les bruits actuels sont très génériques.
+
+Concernant les cartes dans la sélection des personnages, le chasseur novice ne rentre pas très bien dans la carte et pareil pour l'assassin. La description n'est pas centrée et les +10 % de vitesse de déplacement dépassent même la carte.
+
+Je veux que chaque personnage ait le choix entre deux armes de départ et pourtant l'épéiste a le choix entre trois armes.
+
+L'affichage des dégâts : je n'aime pas trop la typologie. C'est un peu trop rond à mon goût. Peux-tu la faire un peu plus carrée et retricire un tout petit peu la dimension ? La couleur jaune, du coup, critique : j'aimerais plus une couleur jaune vive que jaune pâle.
+
+![alt text](image-2.png)  Le cercle d'armes autour du personnage n'est pas bien centré et cache un peu la tête du personnage. Je propose d'élargir un tout petit peu le cercle et de le remonter un tout petit peu. 
+
+Lorsque tu fais tes tests de débogage, peux-tu éviter de le faire en plein écran, mais en fenêtre réduite comme avant s'il te plaît ? 
