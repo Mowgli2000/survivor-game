@@ -12,5 +12,5 @@ description_key = "DANGER_1_DESC"
 steady_elite_chance = 0.01
 color = Color(0.68, 0.72, 0.78, 1)
 biome = ExtResource("biome")
-hp_multiplier = 1.35
-damage_multiplier = 1.35
+hp_multiplier = 1.15
+damage_multiplier = 1.15
