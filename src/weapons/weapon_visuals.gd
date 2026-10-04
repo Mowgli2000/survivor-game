@@ -10,7 +10,7 @@ const OUTLINE_SHADER := preload("res://src/weapons/weapon_outline.gdshader")
 ## Turning speed toward the aimed direction (1/s, used as a lerp factor).
 const AIM_SPEED := 18.0
 ## Drawn length of a weapon (the icon's width), in px.
-const SIZE := 58.0
+const SIZE := 70.0
 const RECOIL := 7.0
 const KICK_TIME := 0.12
 const SWING_TIME := 0.18
