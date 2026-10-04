@@ -44,3 +44,12 @@ assets_src/
 
 # Git Bash crash dumps
 *.stackdump
+
+# Art showcase: third-party references (not ours to redistribute) and generated SVGs (node art_showcase/tools/export_assets.js)
+art_showcase/references/
+art_showcase/assets/
+
+# Raw art inputs (often third-party or not yet cleared) and the AI sprite placeholder
+art_source/incoming/*
+!art_source/incoming/.gitkeep
+assets_src/ai/ai_test/

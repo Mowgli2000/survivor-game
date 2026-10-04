@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Character Art Direction</title>
+<link rel="stylesheet" href="css/showcase.css">
+</head>
+<body>
+<nav class="toolbar" aria-label="Outils de comparaison">
+  <div class="brand">KAGE <span>· art direction</span></div>
+  <label>Style A <select id="selA"></select></label>
+  <label>Style B <select id="selB"></select></label>
+  <label>Palette <select id="selPalette"></select></label>
+  <label>Fond <select id="selBg">
+    <option value="dark">Sombre</option>
+    <option value="game">Sol du jeu</option>
+    <option value="light">Clair</option>
+  </select></label>
+  <label class="chk"><input type="checkbox" id="chkGrid"> Grille</label>
+  <label class="chk"><input type="checkbox" id="chkSil"> Silhouette</label>
+  <label class="zoom">Zoom <input type="range" id="rngZoom" min="0.6" max="2.4" step="0.1" value="1"></label>
+  <button id="btnFull" type="button" title="Plein écran">⛶</button>
+</nav>
+
+<header class="hero">
+  <div class="hero-text">
+    <p class="eyebrow">Survivor Game — cyber-samouraï / ninja néon</p>
+    <h1>CHARACTER ART DIRECTION</h1>
+    <p class="subtitle">Visual exploration — Main Character</p>
+    <p class="lead">Un seul personnage, <strong>Kage</strong>, rendu par onze directions artistiques. Le squelette (proportions, orientations, poses) est commun : seuls les « moteurs de style » changent (contour, ombrage, lumière, matière). On compare donc des styles, pas des dessins différents.</p>
+    <div class="honest">
+      <strong>Prototype honnête.</strong> Tout est dessiné en vectoriel par code (SVG), aucune image n'est générée par IA ni peinte. Les styles « peint main », « cinématique » ou « 3D » sont des <em>maquettes</em> qui donnent la direction : leur version finale demanderait un illustrateur ou un pipeline 3D. Les styles B, G, I, J et K sont, eux, quasiment atteignables tels quels dans le jeu.
+    </div>
+  </div>
+  <div class="hero-figure" id="heroFigure" aria-label="Kage, style recommandé"></div>
+</header>
+
+<main>
+<section id="refs">
+  <h2><span>00</span> Références & identité du personnage</h2>
+  <div class="two-col">
+    <div>
+      <h3>Ce qui revient volontairement dans les 23 références</h3>
+      <ul class="facts">
+        <li><b>Ninja / samouraï</b> : katana (souvent dans le dos), masque bas du visage, bandages aux avant-bras, hakama large, tabi ou bottes.</li>
+        <li><b>Queue de cheval haute</b> et cheveux en pointes : la forme la plus reconnaissable des silhouettes.</li>
+        <li><b>Base noire / anthracite + une seule couleur forte</b> (rouge, violet, cyan électrique, vert spectral, or). Correspond à la règle du jeu « une couleur néon par arme ».</li>
+        <li><b>Écharpe ou bandeau rouge à pans flottants</b> : donne le mouvement et la direction.</li>
+        <li><b>Énergie autour du perso</b> (éclairs, flammes, fumée spectrale) : aura néon = signature VFX.</li>
+        <li><b>Deux familles de proportions</b> : héroïques (≈ 7 têtes, sheets anime) et chibi (2,5 à 3 têtes, MapleStory). Pour une caméra 3/4 éloignée, le chibi lit beaucoup mieux.</li>
+        <li><b>Planches multi-vues</b> (face / profil / dos) : le perso doit être pensé en 360°.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Identité retenue : Kage</h3>
+      <ul class="facts">
+        <li>Silhouette en <b>triangle</b> : tête + queue de cheval en haut, hakama évasé en bas.</li>
+        <li>Trois formes signature lisibles à 48 px : <b>queue de cheval</b>, <b>écharpe à deux pans</b>, <b>katana en diagonale</b>.</li>
+        <li>Visage : masque + <b>yeux néon</b> (la couleur d'accent, aussi celle du joueur dans le HUD).</li>
+        <li>Palette : 70 % sombre, 20 % peau / bandages, 10 % accent (écharpe rouge + néon cyan).</li>
+      </ul>
+      <div class="ref-strip" id="refStrip"></div>
+      <p class="note">Images de référence dans <code>art_showcase/references/</code> (non versionnées : images tierces).</p>
+    </div>
+  </div>
+</section>
+
+<section id="overview">
+  <h2><span>01</span> Style overview</h2>
+  <p class="section-lead">Onze directions. Notes de 1 à 5 (difficulté de production : 5 = le plus coûteux). Cliquer « A » ou « B » envoie le style dans la comparaison.</p>
+  <div class="cards" id="cards"></div>
+</section>
+
+<section id="compare">
+  <h2><span>02</span> Character comparison</h2>
+  <div class="dir-bar" id="dirBar"></div>
+  <div class="compare-grid">
+    <div class="compare-col" id="colA"></div>
+    <div class="compare-col" id="colB"></div>
+  </div>
+  <h3>Comparaison A/B au curseur</h3>
+  <div class="wipe" id="wipe">
+    <div class="wipe-layer" id="wipeA"></div>
+    <div class="wipe-layer wipe-top" id="wipeB"></div>
+    <div class="wipe-handle" id="wipeHandle"></div>
+    <input type="range" id="rngWipe" min="0" max="100" value="50" aria-label="Curseur A/B">
+  </div>
+</section>
+
+<section id="anim">
+  <h2><span>02b</span> Animation readability</h2>
+  <p class="section-lead">Même squelette pour toutes les poses : taille, longueur des membres, tête et équipement ne changent jamais. La pelure d'oignon superpose les images pour le vérifier.</p>
+  <div class="anim-controls">
+    <div class="seg" id="animKind"></div>
+    <label>Direction <select id="animDir"></select></label>
+    <label class="chk"><input type="checkbox" id="chkOnion"> Pelure d'oignon</label>
+  </div>
+  <div class="anim-row">
+    <div class="anim-live" id="animLive"></div>
+    <div class="anim-strip" id="animStrip"></div>
+  </div>
+</section>
+
+<section id="scale">
+  <h2><span>03</span> Scale test</h2>
+  <p class="section-lead">Hauteur à l'écran en pixels. « Jeu » = taille réelle actuelle du joueur en 1080p (≈ 102 px). Le perso doit rester identifiable à 32-48 px (caméra éloignée, coop).</p>
+  <div class="scale-table" id="scaleTable"></div>
+</section>
+
+<section id="silhouette">
+  <h2><span>04</span> Silhouette test</h2>
+  <p class="section-lead">Couleur, noir pur, fond clair, fond sombre. Une bonne silhouette se reconnaît en noir pur.</p>
+  <div class="sil-grid" id="silGrid"></div>
+</section>
+
+<section id="colors">
+  <h2><span>05</span> Color test</h2>
+  <p class="section-lead">Les trois meilleures directions, six palettes. La structure ne change pas : seules les couleurs bougent (utile pour les persos alternatifs, la coop ou les skins).</p>
+  <div id="colorGrid"></div>
+</section>
+
+<section id="lab">
+  <h2><span>05b</span> Variations — laboratoire</h2>
+  <p class="section-lead">Proportions, tête, cheveux, vêtements, accessoires, détail, contour, contraste : on cherche la combinaison la plus forte. Le style de base est le style A de la barre d'outils.</p>
+  <div class="lab">
+    <form class="lab-controls" id="labForm"></form>
+    <div class="lab-preview">
+      <div class="lab-main" id="labMain"></div>
+      <div class="lab-dirs" id="labDirs"></div>
+      <div class="lab-small" id="labSmall"></div>
+    </div>
+  </div>
+  <h3>Variantes retenues (2 par direction finaliste)</h3>
+  <div class="variants" id="variants"></div>
+</section>
+
+<section id="mockup">
+  <h2><span>06</span> Gameplay mockup</h2>
+  <p class="section-lead">Maquette visuelle à l'échelle réelle du jeu (1920×1080, joueur ≈ 102 px) : sol du jeu, ennemis, projectiles, VFX. Les ennemis sont rendus avec le même moteur de style pour juger la cohérence d'un casting complet.</p>
+  <div class="mock-controls">
+    <label>Style <select id="mockStyle"></select></label>
+    <div class="seg" id="mockDensity"></div>
+    <label class="chk"><input type="checkbox" id="chkMockZoom"> Caméra coop (×0,8)</label>
+  </div>
+  <div class="mock" id="mock"></div>
+</section>
+
+<section id="reco" class="reco">
+  <h2><span>07</span> Art director recommendation</h2>
+  <div id="recoBody"></div>
+</section>
+</main>
+
+<footer>
+  <p>Fichiers : <code>art_showcase/js/kage.js</code> (squelette + 11 moteurs de style), <code>js/app.js</code> (cette page), <code>assets/style_xx/</code> (SVG exportés : <code>node art_showcase/tools/export_assets.js</code>). Voir <code>README.md</code>.</p>
+</footer>
+
+<script src="js/kage.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
