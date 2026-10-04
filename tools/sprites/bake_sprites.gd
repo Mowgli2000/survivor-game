@@ -45,7 +45,8 @@ func _bake_images(recipe: Dictionary) -> bool:
 		var frames := _load_svg_frames(ProjectSettings.globalize_path("res://" + String(def.svg)), def.anims) 			if def.has("svg") else _load_frames(pack.path_join(def.src), def.anims)
 		if frames.is_empty():
 			return false
-		var cells := _crop_and_scale(frames, int(recipe.height))
+		# Per-sprite "height" override: bigger on screen = baked bigger (stays sharp).
+		var cells := _crop_and_scale(frames, int(def.get("height", recipe.height)))
 		strips[id] = _make_strip(cells, Color(def.glow))
 		cell_widths[id] = cells[0].get_width() + PAD * 2
 		if def.get("elite", false):

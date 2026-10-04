@@ -5,6 +5,7 @@
     "ronin_pc":   { "svg": "assets_src/drawn/ronin_pc",   "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#ff40c8" },
     "gunslinger": { "svg": "assets_src/drawn/gunslinger", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#4dff73" },
     "merchant":   { "svg": "assets_src/drawn/merchant",   "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#ffd24d" },
+    "hayate":     { "svg": "assets_src/drawn/hayate",     "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#ff4d5e", "height": 192 },
     "grunt":      { "svg": "assets_src/drawn/grunt",      "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#d94d59", "elite": true },
     "runner":     { "svg": "assets_src/drawn/runner",     "anims": { "walk": "walk:6:14" }, "glow": "#f2a633", "elite": true },
     "shooter":    { "svg": "assets_src/drawn/shooter",    "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#bf59ff", "elite": true },

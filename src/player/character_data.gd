@@ -26,3 +26,5 @@ extends Resource
 @export var color: Color = Color(0.85, 0.95, 1.0)
 ## Sprite sheet id in assets/sprites/ (empty: placeholder circle).
 @export var sprite_id: StringName
+## On-screen size of the sprite (1 = the standard character height). Gameplay radius unchanged.
+@export var sprite_scale: float = 1.0

@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource("1_660uq")
 texture = ExtResource("2_ln6it")
-origin = Vector2i(0, 1008)
+origin = Vector2i(0, 1216)
 cell_size = Vector2i(145, 144)
 animations = Dictionary[StringName, Vector3i]({
 &"walk": Vector3i(0, 6, 14)

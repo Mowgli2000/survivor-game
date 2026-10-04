@@ -167,7 +167,8 @@ func _draw() -> void:
 		draw_arc(Vector2.ZERO, radius * 1.5, 0.0, TAU, 32, tag_color, 5.0, true)
 		draw_set_transform(Vector2.ZERO)
 	if animator.sheet != null:
-		animator.sheet.draw(self, animator.frame, radius * SPRITE_HEIGHT_PER_RADIUS, radius * SPRITE_FOOT,
+		var scale_k := _data.sprite_scale if _data != null else 1.0
+		animator.sheet.draw(self, animator.frame, radius * SPRITE_HEIGHT_PER_RADIUS * scale_k, radius * SPRITE_FOOT,
 			animator.facing, Color.WHITE)
 		return
 	var color := _data.color if _data != null else Color.WHITE

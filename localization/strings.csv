@@ -206,3 +206,5 @@ UI_COOP_PICK,Player %d: choose your character,Joueur %d : choisis ton personnage
 UI_COOP_PADS,"Player 1: keyboard + gamepad 1, Player 2: gamepad 2","Joueur 1 : clavier + manette 1, Joueur 2 : manette 2"
 UI_COOP_ONE_PAD,"Player 1: keyboard, Player 2: gamepad","Joueur 1 : clavier, Joueur 2 : manette"
 UI_COOP_NO_PAD,Connect a gamepad for player 2.,Branche une manette pour le joueur 2.
+CHARACTER_HERO,Hayate,Hayate
+CHARACTER_HERO_RULE,Manga ninja (test of the new art direction).,Ninja manga (test de la nouvelle direction artistique).

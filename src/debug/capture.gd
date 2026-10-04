@@ -1,7 +1,7 @@
 extends Node
 ## Plays a run with a bot and saves a screenshot, so visuals can be checked
 ## without a human at the keyboard (used by Claude Code).
-## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--boss=shogun|ronin] [--coop]
+## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--boss=shogun|ronin] [--coop] [--character=<id>]
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
 const MENU_SCENE := preload("res://src/ui/main_menu/main_menu.tscn")
@@ -21,6 +21,7 @@ func _ready() -> void:
 	var stress := false
 	var all_weapons := false
 	var coop := false
+	var character_id := ""
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--time="):
 			_capture_at = arg.trim_prefix("--time=").to_float()
@@ -32,6 +33,8 @@ func _ready() -> void:
 			_mode = arg
 		elif arg == "--coop":
 			coop = true
+		elif arg.begins_with("--character="):
+			character_id = arg.trim_prefix("--character=")
 		elif arg.begins_with("--boss="):
 			_boss_id = StringName(arg.trim_prefix("--boss="))
 		elif arg == "--allweapons":
@@ -47,6 +50,12 @@ func _ready() -> void:
 	_run = RUN_SCENE.instantiate()
 	if stress:
 		_run.config = STRESS_CONFIG
+	if character_id != "":
+		# A config copy, not a RunSetup: setup runs are recorded in the profile.
+		var base: RunConfig = _run.config if _run.config != null else ContentDB.get_def(&"runs", Run.DEFAULT_CONFIG_ID)
+		var config := base.duplicate() as RunConfig
+		config.character = ContentDB.get_def(&"characters", StringName(character_id))
+		_run.config = config
 	_run.seed_override = 7
 	_run.player_invincible = true
 	_run.auto_choose_upgrades = _mode not in ["--levelup", "--waveend", "--shop", "--pause", "--settings"]
