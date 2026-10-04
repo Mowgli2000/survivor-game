@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://src/weapons/behaviors/projectile_shooter_behavior.gd" id="2_behavior"]
 [ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
 [ext_resource type="Script" path="res://src/weapons/status_data.gd" id="4_status"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapon_laser.ogg" id="9_sound"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/lightning_staff.ogg" id="9_sound"]
 [ext_resource type="Texture2D" path="res://assets/icons/weapons/lightning_staff.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_behavior"]

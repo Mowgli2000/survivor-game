@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="1_weapon"]
 [ext_resource type="Script" path="res://src/weapons/behaviors/projectile_shooter_behavior.gd" id="2_behavior"]
 [ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapon_shuriken.ogg" id="9_sound"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/javelins.wav" id="9_sound"]
 [ext_resource type="Texture2D" path="res://assets/icons/weapons/javelins.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
