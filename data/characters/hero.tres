@@ -19,5 +19,5 @@ stat_overrides = {
 invulnerability_time = 0.5
 radius = 16.0
 color = Color(1, 0.35, 0.4, 1)
-sprite_id = &"hayate"
+sprite_id = &"assassin"
 sprite_scale = 1.35

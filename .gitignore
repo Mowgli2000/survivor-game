@@ -53,3 +53,7 @@ art_showcase/assets/
 art_source/incoming/*
 !art_source/incoming/.gitkeep
 assets_src/ai/ai_test/
+
+# AI art test images (local only)
+art_tests/
+__pycache__/

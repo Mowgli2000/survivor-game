@@ -6,8 +6,8 @@
 [resource]
 script = ExtResource("1_3v4ik")
 texture = ExtResource("2_xgsed")
-origin = Vector2i(0, 784)
-cell_size = Vector2i(87, 144)
+origin = Vector2i(0, 992)
+cell_size = Vector2i(123, 144)
 animations = Dictionary[StringName, Vector3i]({
 &"idle": Vector3i(0, 6, 8),
 &"walk": Vector3i(6, 8, 12)
