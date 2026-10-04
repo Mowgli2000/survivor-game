@@ -183,3 +183,83 @@ func test_reward_is_an_item_of_the_minimum_tier_that_can_be_owned() -> void:
 	for i in 10:
 		assert_eq(Run.pick_reward(pool, inventory, 2, _rng), good)
 	assert_null(Run.pick_reward([low] as Array[ItemData], inventory, 2, _rng))
+
+
+func test_cone_breath_sweeps_from_one_edge_to_the_other() -> void:
+	var cone := ConeBreathPattern.new()
+	cone.repeats = 3
+	cone.sweep_degrees = 90.0
+	var from := Vector2(400, 0)
+	assert_almost_eq(cone.volley_angle(from, Vector2.ZERO, 0), PI - PI / 4.0, 0.001)
+	assert_almost_eq(cone.volley_angle(from, Vector2.ZERO, 1), PI, 0.001, "middle volley aims at the player")
+	assert_almost_eq(cone.volley_angle(from, Vector2.ZERO, 2), PI + PI / 4.0, 0.001)
+
+
+func test_cone_breath_fires_its_count_per_volley() -> void:
+	var cone := ConeBreathPattern.new()
+	cone.windup = 0.0
+	cone.count = 4
+	cone.repeats = 2
+	cone.repeat_interval = 0.2
+	_enemies.spawn(_boss([cone]), Vector2(400, 0))
+	_director.update(0.01)
+	assert_eq(_shots.active_count(), 4)
+	_director.update(0.2)
+	assert_eq(_shots.active_count(), 8)
+
+
+func test_impact_zones_land_on_the_player_then_wider_rings() -> void:
+	var zones := ImpactZonesPattern.new()
+	zones.count = 5
+	zones.scatter = 100.0
+	var first := zones.zones(Vector2(400, 0), Vector2.ZERO, 0)
+	assert_eq(first.size(), 5)
+	assert_eq(first[0], Vector2.ZERO, "volley 0 lands on the player")
+	assert_almost_eq(first[1].length(), 100.0, 0.01)
+	var second := zones.zones(Vector2(400, 0), Vector2.ZERO, 1)
+	assert_eq(second.size(), 5)
+	assert_almost_eq(second[0].length(), 200.0, 0.01)
+
+
+func test_impact_zones_hurt_a_player_inside_only() -> void:
+	_player.invincible = false
+	var before := _player.hp
+	var zones := ImpactZonesPattern.new()
+	zones.windup = 0.0
+	zones.projectile_damage = 10.0
+	var boss := _enemies.spawn(_boss([zones]), Vector2(400, 0))
+	zones.fire(_director._ctx, boss, Vector2.ZERO, 0)
+	assert_lt(_player.hp, before, "zone on the player")
+	_player.hp = before
+	_player._invulnerable = 0.0
+	zones.fire(_director._ctx, boss, Vector2(-600, 0), 0)
+	assert_eq(_player.hp, before, "zones far away")
+
+
+func test_wall_leaves_a_gap_and_moves_towards_the_player() -> void:
+	var wall := WallPattern.new()
+	wall.windup = 0.0
+	wall.count = 10
+	wall.gap = 3
+	_enemies.spawn(_boss([wall]), Vector2(400, 0))
+	_director.update(0.01)
+	assert_eq(_shots.active_count(), 7)
+	var velocity: Vector2 = _shots._active[0].velocity
+	assert_almost_eq(velocity.normalized().x, -1.0, 0.01)
+
+
+func test_summon_around_target_rings_the_player() -> void:
+	var summon := SummonPattern.new()
+	summon.windup = 0.0
+	summon.count = 4
+	summon.distance = 150.0
+	summon.around_target = true
+	summon.enemy = EnemyData.new()
+	summon.enemy.max_hp = 5.0
+	_enemies.spawn(_boss([summon]), Vector2(600, 0))
+	_director.update(0.01)
+	var near := 0
+	for enemy in _enemies._active:
+		if enemy.position.distance_to(Vector2.ZERO) < 160.0:
+			near += 1
+	assert_eq(near, 4, "minions around the player, not the boss")
