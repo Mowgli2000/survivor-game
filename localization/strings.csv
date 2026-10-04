@@ -294,3 +294,23 @@ ENEMY_GOLD_SPAWNER,Infernal cauldron,Chaudron infernal
 ENEMY_GOLD_BOSS_MINI,Three-headed Hound,Molosse à trois têtes
 ENEMY_GOLD_BOSS_FINAL,Demon Lord,Seigneur démon
 BIOME_CITADEL,Infernal citadel,Citadelle infernale
+ENEMY_OBSIDIAN_GRUNT,Soldier ant,Fourmi soldat
+ENEMY_OBSIDIAN_RUNNER,Scuttling scarab,Scarabée coureur
+ENEMY_OBSIDIAN_SHOOTER,Acid spitter,Fourmi cracheuse
+ENEMY_OBSIDIAN_TANK,Armored beetle,Coléoptère blindé
+ENEMY_OBSIDIAN_CHARGER,Stag beetle,Lucane
+ENEMY_OBSIDIAN_KAMIKAZE,Bloated larva,Larve gonflée
+ENEMY_OBSIDIAN_SPAWNER,Egg clutch,Couvée d'œufs
+ENEMY_OBSIDIAN_BOSS_MINI,Giant Mantis,Mante géante
+ENEMY_OBSIDIAN_BOSS_FINAL,Hive Queen,Reine de la ruche
+BIOME_HIVE,Underground hive,Ruche souterraine
+ENEMY_ASTRAL_GRUNT,Kobold,Kobold
+ENEMY_ASTRAL_RUNNER,Raptor,Raptor
+ENEMY_ASTRAL_SHOOTER,Fire drakeling,Dragonnet cracheur
+ENEMY_ASTRAL_TANK,Dragonkin guard,Drakéide en armure
+ENEMY_ASTRAL_CHARGER,Charging drake,Drake de charge
+ENEMY_ASTRAL_KAMIKAZE,Magma salamander,Salamandre de magma
+ENEMY_ASTRAL_SPAWNER,Dragon clutch,Couvée de dragon
+ENEMY_ASTRAL_BOSS_MINI,Wyvern,Wyverne
+ENEMY_ASTRAL_BOSS_FINAL,Ancient Dragon,Dragon ancien
+BIOME_LAIR,Dragon's lair,Antre du dragon

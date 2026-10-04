@@ -6,6 +6,118 @@
 		208,
 		"res://assets/sprites/atlas.png"
 	],
+	"astral_boss_final": [
+		0,
+		0,
+		284,
+		304,
+		"res://assets/sprites/atlas_astral.png"
+	],
+	"astral_boss_mini": [
+		0,
+		304,
+		290,
+		304,
+		"res://assets/sprites/atlas_astral.png"
+	],
+	"astral_charger": [
+		0,
+		1344,
+		143,
+		144,
+		"res://assets/sprites/atlas_astral.png"
+	],
+	"astral_charger_elite": [
+		2002,
+		1344,
+		143,
+		144,
+		"res://assets/sprites/atlas_astral.png"
+	],
+	"astral_grunt": [
+		0,
+		1488,
+		134,
+		144,
+		"res://assets/sprites/atlas_astral.png"
+	],
+	"astral_grunt_elite": [
+		1876,
+		1488,
+		134,
+		144,
+		"res://assets/sprites/atlas_astral.png"
+	],
+	"astral_kamikaze": [
+		0,
+		1632,
+		131,
+		144,
+		"res://assets/sprites/atlas_astral.png"
+	],
+	"astral_kamikaze_elite": [
+		1834,
+		1632,
+		131,
+		144,
+		"res://assets/sprites/atlas_astral.png"
+	],
+	"astral_runner": [
+		0,
+		1776,
+		142,
+		144,
+		"res://assets/sprites/atlas_astral.png"
+	],
+	"astral_runner_elite": [
+		1988,
+		1776,
+		142,
+		144,
+		"res://assets/sprites/atlas_astral.png"
+	],
+	"astral_shooter": [
+		0,
+		1920,
+		131,
+		144,
+		"res://assets/sprites/atlas_astral.png"
+	],
+	"astral_shooter_elite": [
+		1834,
+		1920,
+		131,
+		144,
+		"res://assets/sprites/atlas_astral.png"
+	],
+	"astral_spawner": [
+		0,
+		608,
+		184,
+		184,
+		"res://assets/sprites/atlas_astral.png"
+	],
+	"astral_spawner_elite": [
+		0,
+		792,
+		184,
+		184,
+		"res://assets/sprites/atlas_astral.png"
+	],
+	"astral_tank": [
+		0,
+		976,
+		171,
+		184,
+		"res://assets/sprites/atlas_astral.png"
+	],
+	"astral_tank_elite": [
+		0,
+		1160,
+		171,
+		184,
+		"res://assets/sprites/atlas_astral.png"
+	],
 	"berserker": [
 		1526,
 		608,
@@ -313,6 +425,118 @@
 		135,
 		208,
 		"res://assets/sprites/atlas.png"
+	],
+	"obsidian_boss_final": [
+		0,
+		0,
+		265,
+		304,
+		"res://assets/sprites/atlas_obsidian.png"
+	],
+	"obsidian_boss_mini": [
+		0,
+		304,
+		259,
+		304,
+		"res://assets/sprites/atlas_obsidian.png"
+	],
+	"obsidian_charger": [
+		0,
+		1344,
+		133,
+		144,
+		"res://assets/sprites/atlas_obsidian.png"
+	],
+	"obsidian_charger_elite": [
+		1862,
+		1344,
+		133,
+		144,
+		"res://assets/sprites/atlas_obsidian.png"
+	],
+	"obsidian_grunt": [
+		0,
+		1488,
+		120,
+		144,
+		"res://assets/sprites/atlas_obsidian.png"
+	],
+	"obsidian_grunt_elite": [
+		1680,
+		1488,
+		120,
+		144,
+		"res://assets/sprites/atlas_obsidian.png"
+	],
+	"obsidian_kamikaze": [
+		0,
+		1632,
+		137,
+		144,
+		"res://assets/sprites/atlas_obsidian.png"
+	],
+	"obsidian_kamikaze_elite": [
+		1918,
+		1632,
+		137,
+		144,
+		"res://assets/sprites/atlas_obsidian.png"
+	],
+	"obsidian_runner": [
+		0,
+		1776,
+		137,
+		144,
+		"res://assets/sprites/atlas_obsidian.png"
+	],
+	"obsidian_runner_elite": [
+		1918,
+		1776,
+		137,
+		144,
+		"res://assets/sprites/atlas_obsidian.png"
+	],
+	"obsidian_shooter": [
+		0,
+		1920,
+		125,
+		144,
+		"res://assets/sprites/atlas_obsidian.png"
+	],
+	"obsidian_shooter_elite": [
+		1750,
+		1920,
+		125,
+		144,
+		"res://assets/sprites/atlas_obsidian.png"
+	],
+	"obsidian_spawner": [
+		0,
+		608,
+		169,
+		184,
+		"res://assets/sprites/atlas_obsidian.png"
+	],
+	"obsidian_spawner_elite": [
+		0,
+		792,
+		169,
+		184,
+		"res://assets/sprites/atlas_obsidian.png"
+	],
+	"obsidian_tank": [
+		0,
+		976,
+		206,
+		184,
+		"res://assets/sprites/atlas_obsidian.png"
+	],
+	"obsidian_tank_elite": [
+		0,
+		1160,
+		206,
+		184,
+		"res://assets/sprites/atlas_obsidian.png"
 	],
 	"ronin_boss": [
 		0,

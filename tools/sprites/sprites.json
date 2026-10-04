@@ -44,6 +44,24 @@
     "gold_kamikaze": { "src": "assets_src/ai/ai_gold_kamikaze", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "gold", "glow": "#00000000", "elite": true },
     "gold_spawner": { "src": "assets_src/ai/ai_gold_spawner", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "gold", "glow": "#00000000", "elite": true, "height": 168 },
     "gold_boss_mini": { "src": "assets_src/ai/ai_gold_boss_mini", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "gold", "glow": "#00000000", "height": 288 },
-    "gold_boss_final": { "src": "assets_src/ai/ai_gold_boss_final", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "gold", "glow": "#00000000", "height": 288 }
+    "gold_boss_final": { "src": "assets_src/ai/ai_gold_boss_final", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "gold", "glow": "#00000000", "height": 288 },
+    "obsidian_grunt": { "src": "assets_src/ai/ai_obsidian_grunt", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "obsidian", "glow": "#00000000", "elite": true },
+    "obsidian_runner": { "src": "assets_src/ai/ai_obsidian_runner", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "obsidian", "glow": "#00000000", "elite": true },
+    "obsidian_shooter": { "src": "assets_src/ai/ai_obsidian_shooter", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "obsidian", "glow": "#00000000", "elite": true },
+    "obsidian_tank": { "src": "assets_src/ai/ai_obsidian_tank", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "obsidian", "glow": "#00000000", "elite": true, "height": 168 },
+    "obsidian_charger": { "src": "assets_src/ai/ai_obsidian_charger", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "obsidian", "glow": "#00000000", "elite": true },
+    "obsidian_kamikaze": { "src": "assets_src/ai/ai_obsidian_kamikaze", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "obsidian", "glow": "#00000000", "elite": true },
+    "obsidian_spawner": { "src": "assets_src/ai/ai_obsidian_spawner", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "obsidian", "glow": "#00000000", "elite": true, "height": 168 },
+    "obsidian_boss_mini": { "src": "assets_src/ai/ai_obsidian_boss_mini", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "obsidian", "glow": "#00000000", "height": 288 },
+    "obsidian_boss_final": { "src": "assets_src/ai/ai_obsidian_boss_final", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "obsidian", "glow": "#00000000", "height": 288 },
+    "astral_grunt": { "src": "assets_src/ai/ai_astral_grunt", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "astral", "glow": "#00000000", "elite": true },
+    "astral_runner": { "src": "assets_src/ai/ai_astral_runner", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "astral", "glow": "#00000000", "elite": true },
+    "astral_shooter": { "src": "assets_src/ai/ai_astral_shooter", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "astral", "glow": "#00000000", "elite": true },
+    "astral_tank": { "src": "assets_src/ai/ai_astral_tank", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "astral", "glow": "#00000000", "elite": true, "height": 168 },
+    "astral_charger": { "src": "assets_src/ai/ai_astral_charger", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "astral", "glow": "#00000000", "elite": true },
+    "astral_kamikaze": { "src": "assets_src/ai/ai_astral_kamikaze", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "astral", "glow": "#00000000", "elite": true },
+    "astral_spawner": { "src": "assets_src/ai/ai_astral_spawner", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "astral", "glow": "#00000000", "elite": true, "height": 168 },
+    "astral_boss_mini": { "src": "assets_src/ai/ai_astral_boss_mini", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "astral", "glow": "#00000000", "height": 288 },
+    "astral_boss_final": { "src": "assets_src/ai/ai_astral_boss_final", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "page": "astral", "glow": "#00000000", "height": 288 }
   }
 }

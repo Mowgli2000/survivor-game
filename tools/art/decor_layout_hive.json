@@ -1,0 +1,50 @@
+{
+	"decal_acid_pool": [
+		0,
+		0,
+		114,
+		110
+	],
+	"decal_resin": [
+		118,
+		0,
+		96,
+		110
+	],
+	"prop_amber_crystal": [
+		218,
+		0,
+		118,
+		180
+	],
+	"prop_cocoons": [
+		340,
+		0,
+		112,
+		130
+	],
+	"prop_egg_pod": [
+		456,
+		0,
+		108,
+		130
+	],
+	"prop_glow_mushrooms": [
+		568,
+		0,
+		93,
+		130
+	],
+	"prop_hive_mound": [
+		665,
+		0,
+		165,
+		240
+	],
+	"prop_root_pillar": [
+		834,
+		0,
+		158,
+		240
+	]
+}

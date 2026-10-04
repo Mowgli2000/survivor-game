@@ -1,0 +1,87 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://src/enemies/enemy_data.gd" id="1_enemy"]
+[ext_resource type="Script" path="res://src/enemies/boss/boss_phase.gd" id="2_phase"]
+[ext_resource type="Script" path="res://src/enemies/boss/boss_pattern.gd" id="3_pattern"]
+[ext_resource type="Script" path="res://src/enemies/boss/dash_pattern.gd" id="s_dash"]
+[ext_resource type="Script" path="res://src/enemies/boss/aimed_fan_pattern.gd" id="s_fan"]
+[ext_resource type="Script" path="res://src/enemies/boss/radial_burst_pattern.gd" id="s_radial"]
+
+[sub_resource type="Resource" id="P1_1_dash"]
+script = ExtResource("s_dash")
+windup = 0.7
+recovery = 1.2
+dash_speed = 900.0
+dash_duration = 0.45
+
+[sub_resource type="Resource" id="P1_2_fan"]
+script = ExtResource("s_fan")
+windup = 0.7
+repeats = 2
+repeat_interval = 0.4
+recovery = 1.4
+projectile_damage = 10.0
+count = 3
+spread_degrees = 30.0
+
+[sub_resource type="Resource" id="Phase_1"]
+script = ExtResource("2_phase")
+hp_ratio = 1.0
+patterns = Array[ExtResource("3_pattern")]([SubResource("P1_1_dash"), SubResource("P1_2_fan")])
+speed_multiplier = 1.0
+
+[sub_resource type="Resource" id="P2_1_dash"]
+script = ExtResource("s_dash")
+windup = 0.5
+repeats = 1
+recovery = 0.6
+dash_speed = 1000.0
+dash_duration = 0.4
+
+[sub_resource type="Resource" id="P2_2_dash"]
+script = ExtResource("s_dash")
+windup = 0.4
+recovery = 1.0
+dash_speed = 1000.0
+dash_duration = 0.4
+
+[sub_resource type="Resource" id="P2_3_fan"]
+script = ExtResource("s_fan")
+windup = 0.6
+repeats = 2
+repeat_interval = 0.3
+recovery = 1.0
+projectile_damage = 10.0
+count = 7
+spread_degrees = 60.0
+
+[sub_resource type="Resource" id="P2_4_radial"]
+script = ExtResource("s_radial")
+windup = 0.8
+recovery = 1.2
+projectile_damage = 10.0
+count = 10
+
+[sub_resource type="Resource" id="Phase_2"]
+script = ExtResource("2_phase")
+hp_ratio = 0.5
+patterns = Array[ExtResource("3_pattern")]([SubResource("P2_1_dash"), SubResource("P2_2_dash"), SubResource("P2_3_fan"), SubResource("P2_4_radial")])
+speed_multiplier = 1.3
+
+[resource]
+script = ExtResource("1_enemy")
+id = &"obsidian_boss_mini"
+name_key = "ENEMY_OBSIDIAN_BOSS_MINI"
+max_hp = 350.0
+speed = 95.0
+contact_damage = 18.0
+armor = 4.0
+radius = 40.0
+knockback_taken = 0.0
+xp_value = 30
+reward_item_tier = 2
+color = Color(0.4, 0.95, 0.45, 1)
+shape_sides = 6
+sprite_id = &"obsidian_boss_mini"
+sprite_scale = 1.0
+phases = Array[ExtResource("2_phase")]([SubResource("Phase_1"), SubResource("Phase_2")])

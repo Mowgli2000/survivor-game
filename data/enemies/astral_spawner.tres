@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://src/enemies/enemy_data.gd" id="1_enemy"]
+[ext_resource type="Resource" path="res://data/enemies/astral_runner.tres" id="2_runner"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = &"astral_spawner"
+name_key = "ENEMY_ASTRAL_SPAWNER"
+movement = 4
+max_hp = 45.0
+speed = 55.0
+contact_damage = 6.0
+armor = 2.0
+radius = 26.0
+knockback_taken = 0.4
+spawn_enemy = ExtResource("2_runner")
+spawn_count = 3
+spawn_cooldown = 4.0
+xp_value = 4
+color = Color(0.7, 0.45, 0.9, 1)
+shape_sides = 6
+sprite_id = &"astral_spawner"
+sprite_scale = 0.8

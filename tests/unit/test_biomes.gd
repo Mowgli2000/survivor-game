@@ -64,3 +64,10 @@ func test_boss_summons_come_from_their_own_place() -> void:
 					assert_eq(pattern.validate(), "", "%s pattern" % enemy.id)
 					if pattern is SummonPattern:
 						assert_true(place.has((pattern as SummonPattern).enemy), "%s summons from its place" % enemy.id)
+
+
+func test_every_seal_leads_to_its_own_place() -> void:
+	var seen: Dictionary = {}
+	for difficulty: DifficultyData in ContentDB.get_all(&"difficulties"):
+		assert_false(seen.has(difficulty.biome), "%s shares a place" % difficulty.id)
+		seen[difficulty.biome] = true

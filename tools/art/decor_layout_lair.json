@@ -1,0 +1,50 @@
+{
+	"decal_coins": [
+		0,
+		0,
+		92,
+		110
+	],
+	"decal_scorch_claw": [
+		96,
+		0,
+		97,
+		110
+	],
+	"prop_broken_pillar": [
+		197,
+		0,
+		141,
+		240
+	],
+	"prop_dragon_skull": [
+		342,
+		0,
+		133,
+		130
+	],
+	"prop_dragon_statue": [
+		479,
+		0,
+		151,
+		240
+	],
+	"prop_gold_hoard": [
+		634,
+		0,
+		135,
+		130
+	],
+	"prop_lava_rock": [
+		773,
+		0,
+		115,
+		130
+	],
+	"prop_red_crystals": [
+		0,
+		244,
+		163,
+		180
+	]
+}

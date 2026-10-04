@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="DecorAtlas" format=3]
+
+[ext_resource type="Script" path="res://src/run/decor_atlas.gd" id="1_lr2be"]
+[ext_resource type="Texture2D" path="res://assets/map/decor_atlas_lair.png" id="2_mcosd"]
+
+[resource]
+script = ExtResource("1_lr2be")
+texture = ExtResource("2_mcosd")
+regions = Dictionary[StringName, Rect2]({
+&"decal_coins": Rect2(0, 0, 92, 110),
+&"decal_scorch_claw": Rect2(96, 0, 97, 110),
+&"prop_broken_pillar": Rect2(197, 0, 141, 240),
+&"prop_dragon_skull": Rect2(342, 0, 133, 130),
+&"prop_dragon_statue": Rect2(479, 0, 151, 240),
+&"prop_gold_hoard": Rect2(634, 0, 135, 130),
+&"prop_lava_rock": Rect2(773, 0, 115, 130),
+&"prop_red_crystals": Rect2(0, 244, 163, 180)
+})

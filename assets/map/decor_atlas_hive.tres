@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="DecorAtlas" format=3]
+
+[ext_resource type="Script" path="res://src/run/decor_atlas.gd" id="1_harf5"]
+[ext_resource type="Texture2D" path="res://assets/map/decor_atlas_hive.png" id="2_0kqwa"]
+
+[resource]
+script = ExtResource("1_harf5")
+texture = ExtResource("2_0kqwa")
+regions = Dictionary[StringName, Rect2]({
+&"decal_acid_pool": Rect2(0, 0, 114, 110),
+&"decal_resin": Rect2(118, 0, 96, 110),
+&"prop_amber_crystal": Rect2(218, 0, 118, 180),
+&"prop_cocoons": Rect2(340, 0, 112, 130),
+&"prop_egg_pod": Rect2(456, 0, 108, 130),
+&"prop_glow_mushrooms": Rect2(568, 0, 93, 130),
+&"prop_hive_mound": Rect2(665, 0, 165, 240),
+&"prop_root_pillar": Rect2(834, 0, 158, 240)
+})
