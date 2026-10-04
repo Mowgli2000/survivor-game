@@ -314,3 +314,33 @@ ENEMY_ASTRAL_SPAWNER,Dragon clutch,Couvée de dragon
 ENEMY_ASTRAL_BOSS_MINI,Wyvern,Wyverne
 ENEMY_ASTRAL_BOSS_FINAL,Ancient Dragon,Dragon ancien
 BIOME_LAIR,Dragon's lair,Antre du dragon
+WEAPON_STEEL_KATANA,Katana,Katana
+WEAPON_STEEL_KATANA_DESC,Fast curved slash with frequent critical hits.,Coup de taille rapide aux critiques fréquents.
+WEAPON_SCYTHE,War scythe,Faux de guerre
+WEAPON_SCYTHE_DESC,Slow reaping sweep almost all around you.,Fauchage lent presque tout autour de toi.
+WEAPON_RAPIER,Rapier,Rapière
+WEAPON_RAPIER_DESC,"Very fast narrow thrust, deadly critical hits.","Estoc étroit très rapide, critiques redoutables."
+WEAPON_WARHAMMER,War hammer,Marteau de guerre
+WEAPON_WARHAMMER_DESC,Very slow crushing blow that sends enemies flying.,Coup écrasant très lent qui projette les ennemis.
+WEAPON_RUNIC_BLADE,Runic blade,Lame runique
+WEAPON_RUNIC_BLADE_DESC,Rune-carved sword whose slashes can electrocute.,Épée gravée de runes dont les coups peuvent électrocuter.
+WEAPON_HEAVY_CROSSBOW,Heavy crossbow,Arbalète lourde
+WEAPON_HEAVY_CROSSBOW_DESC,"Slow, heavy bolt that pierces three enemies.",Gros carreau lent qui transperce trois ennemis.
+WEAPON_SLING,Sling,Fronde
+WEAPON_SLING_DESC,"Cheap, quick stones that push enemies back.",Pierres rapides et bon marché qui repoussent les ennemis.
+WEAPON_JAVELINS,Javelins,Javelots
+WEAPON_JAVELINS_DESC,Two heavy javelins that pierce an enemy.,Deux javelots lourds qui transpercent un ennemi.
+WEAPON_ALCHEMY_CANNON,Alchemical cannon,Canon alchimique
+WEAPON_ALCHEMY_CANNON_DESC,Long-range cannonball that explodes on impact.,Boulet de longue portée qui explose à l'impact.
+WEAPON_LIGHTNING_STAFF,Lightning staff,Bâton de foudre
+WEAPON_LIGHTNING_STAFF_DESC,Bolts that jump between enemies and can electrocute.,Éclairs qui sautent d'ennemi en ennemi et peuvent électrocuter.
+WEAPON_METEOR_GRIMOIRE,Meteor grimoire,Grimoire des météores
+WEAPON_METEOR_GRIMOIRE_DESC,Meteors fall on enemies around you and can set them on fire.,Des météores tombent sur les ennemis autour de toi et peuvent les enflammer.
+WEAPON_BOMB,Bomb,Bombe
+WEAPON_BOMB_DESC,Slow bomb with a huge explosion.,Bombe lente à très grosse explosion.
+WEAPON_FIRE_FLASK,Fire flask,Fiole de feu
+WEAPON_FIRE_FLASK_DESC,Small explosion that sets enemies on fire.,Petite explosion qui enflamme les ennemis.
+WEAPON_FROST_FLASK,Frost flask,Fiole de givre
+WEAPON_FROST_FLASK_DESC,Icy explosion that slows enemies.,Explosion glacée qui ralentit les ennemis.
+WEAPON_FRAG_GRENADE,Frag grenades,Grenades à fragments
+WEAPON_FRAG_GRENADE_DESC,"Three grenades thrown in a fan, small explosions.","Trois grenades lancées en éventail, petites explosions."

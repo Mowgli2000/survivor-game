@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="1_weapon"]
+[ext_resource type="Script" path="res://src/weapons/behaviors/melee_arc_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapon_katana.ogg" id="9_sound"]
+[ext_resource type="Texture2D" path="res://assets/icons/weapons/warhammer.png" id="icon_tex"]
+
+[sub_resource type="Resource" id="Resource_behavior"]
+script = ExtResource("2_behavior")
+
+[sub_resource type="Resource" id="Resource_l2"]
+script = ExtResource("3_level")
+damage_percent = 0.25
+
+[sub_resource type="Resource" id="Resource_l3"]
+script = ExtResource("3_level")
+area_percent = 0.25
+
+[sub_resource type="Resource" id="Resource_l4"]
+script = ExtResource("3_level")
+damage_percent = 0.3
+fire_rate_percent = 0.2
+
+[resource]
+script = ExtResource("1_weapon")
+id = &"warhammer"
+name_key = "WEAPON_WARHAMMER"
+description_key = "WEAPON_WARHAMMER_DESC"
+behavior = SubResource("Resource_behavior")
+levels = Array[ExtResource("3_level")]([SubResource("Resource_l2"), SubResource("Resource_l3"), SubResource("Resource_l4")])
+base_price = 25
+base_damage = 34.0
+cooldown = 2.2
+attack_range = 200.0
+crit_chance = 0.05
+knockback = 600.0
+area = 160.0
+arc_degrees = 160.0
+fire_sound = ExtResource("9_sound")
+fire_volume_db = -4.0
+color = Color(1.0, 0.8, 0.4, 1)
+icon = ExtResource("icon_tex")
+families = Array[StringName]([&"blade"])

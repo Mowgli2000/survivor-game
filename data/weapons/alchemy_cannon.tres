@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="1_weapon"]
+[ext_resource type="Script" path="res://src/weapons/behaviors/projectile_shooter_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapon_bazooka.ogg" id="9_sound"]
+[ext_resource type="Texture2D" path="res://assets/icons/weapons/alchemy_cannon.png" id="icon_tex"]
+
+[sub_resource type="Resource" id="Resource_behavior"]
+script = ExtResource("2_behavior")
+
+[sub_resource type="Resource" id="Resource_l2"]
+script = ExtResource("3_level")
+damage_percent = 0.25
+
+[sub_resource type="Resource" id="Resource_l3"]
+script = ExtResource("3_level")
+area_percent = 0.25
+
+[sub_resource type="Resource" id="Resource_l4"]
+script = ExtResource("3_level")
+damage_percent = 0.3
+fire_rate_percent = 0.2
+
+[resource]
+script = ExtResource("1_weapon")
+id = &"alchemy_cannon"
+name_key = "WEAPON_ALCHEMY_CANNON"
+description_key = "WEAPON_ALCHEMY_CANNON_DESC"
+behavior = SubResource("Resource_behavior")
+levels = Array[ExtResource("3_level")]([SubResource("Resource_l2"), SubResource("Resource_l3"), SubResource("Resource_l4")])
+projectile_style = 4
+base_price = 26
+base_damage = 20.0
+cooldown = 1.9
+attack_range = 640.0
+crit_chance = 0.05
+knockback = 300.0
+projectile_speed = 700.0
+projectile_count = 1
+projectile_radius = 9.0
+projectile_lifetime = 1.0
+explosion_radius = 90.0
+fire_sound = ExtResource("9_sound")
+fire_volume_db = -8.0
+color = Color(1.0, 0.54, 0.17, 1)
+icon = ExtResource("icon_tex")
+families = Array[StringName]([&"gun", &"explosive"])

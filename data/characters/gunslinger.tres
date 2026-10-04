@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://src/items/effects/conditional_stat_effect.gd" id="6_cond"]
 [ext_resource type="Resource" path="res://data/weapons/smg.tres" id="w0"]
 [ext_resource type="Resource" path="res://data/weapons/laser_pistol.tres" id="w1"]
+[ext_resource type="Resource" path="res://data/weapons/sling.tres" id="wnew"]
 [ext_resource type="Texture2D" path="res://assets/characters/cards/gunslinger_card.png" id="card"]
 
 [sub_resource type="Resource" id="Mod_1"]
@@ -43,7 +44,7 @@ name_key = "CHARACTER_GUNSLINGER"
 locked = true
 description_key = "CHARACTER_GUNSLINGER_RULE"
 starting_weapon = ExtResource("w0")
-starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1")])
+starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1"), ExtResource("wnew")])
 modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2"), SubResource("Mod_3"), SubResource("Mod_4")])
 effects = Array[ExtResource("5_effect")]([SubResource("Eagle")])
 weapon_kind = 2

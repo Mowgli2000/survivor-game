@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="1_weapon"]
+[ext_resource type="Script" path="res://src/weapons/behaviors/projectile_shooter_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapon_smg.ogg" id="9_sound"]
+[ext_resource type="Texture2D" path="res://assets/icons/weapons/heavy_crossbow.png" id="icon_tex"]
+
+[sub_resource type="Resource" id="Resource_behavior"]
+script = ExtResource("2_behavior")
+
+[sub_resource type="Resource" id="Resource_l2"]
+script = ExtResource("3_level")
+damage_percent = 0.25
+
+[sub_resource type="Resource" id="Resource_l3"]
+script = ExtResource("3_level")
+pierce = 2
+
+[sub_resource type="Resource" id="Resource_l4"]
+script = ExtResource("3_level")
+damage_percent = 0.3
+fire_rate_percent = 0.2
+
+[resource]
+script = ExtResource("1_weapon")
+id = &"heavy_crossbow"
+name_key = "WEAPON_HEAVY_CROSSBOW"
+description_key = "WEAPON_HEAVY_CROSSBOW_DESC"
+behavior = SubResource("Resource_behavior")
+levels = Array[ExtResource("3_level")]([SubResource("Resource_l2"), SubResource("Resource_l3"), SubResource("Resource_l4")])
+projectile_style = 3
+base_price = 24
+base_damage = 28.0
+cooldown = 1.8
+attack_range = 650.0
+crit_chance = 0.1
+knockback = 300.0
+projectile_speed = 1100.0
+projectile_count = 1
+pierce = 3
+projectile_radius = 6.0
+projectile_lifetime = 0.8
+fire_sound = ExtResource("9_sound")
+fire_volume_db = -8.0
+color = Color(0.4, 0.88, 0.4, 1)
+icon = ExtResource("icon_tex")
+families = Array[StringName]([&"gun"])
