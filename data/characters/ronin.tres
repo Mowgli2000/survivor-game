@@ -5,6 +5,7 @@
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_weapon_script"]
 [ext_resource type="Resource" path="res://data/weapons/katana.tres" id="w0"]
 [ext_resource type="Resource" path="res://data/weapons/shuriken.tres" id="w1"]
+[ext_resource type="Texture2D" path="res://assets/characters/cards/ronin_card.png" id="card"]
 
 [sub_resource type="Resource" id="Mod_1"]
 script = ExtResource("2_mod")
@@ -36,5 +37,7 @@ stat_overrides = {
 }
 invulnerability_time = 0.5
 radius = 16.0
-color = Color(1, 0.3, 0.8, 1)
+color = Color(1, 0.478, 0.169, 1)
 sprite_id = &"ronin_pc"
+sprite_scale = 1.35
+card_art = ExtResource("card")

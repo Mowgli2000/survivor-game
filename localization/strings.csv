@@ -41,7 +41,7 @@ UPGRADE_PLATING,Plating,Blindage
 WEAPON_PULSE,Pulse,Pulsar
 ENEMY_GRUNT,Grunt,Rôdeur
 ENEMY_RUNNER,Runner,Coureur
-CHARACTER_DRIFTER,Drifter,Vagabond
+CHARACTER_DRIFTER,Rank-E Hunter,Chasseur de rang E
 UI_LEVEL_LABEL,Level:,Niveau :
 UI_NEW_WEAPON,New weapon,Nouvelle arme
 UI_STAT_UPGRADE,Upgrade,Amélioration
@@ -161,11 +161,11 @@ UI_PROGRESSION,Progression,Progression
 UI_UNLOCKED,Unlocked: %s,Débloqué : %s
 UI_PROFILE_STATS,Runs %d · Wins %d · Best wave %d · Enemies killed %d,Parties %d · Victoires %d · Meilleure vague %d · Ennemis tués %d
 CHARACTER_DRIFTER_RULE,Balanced. No weakness.,Équilibré. Aucun point faible.
-CHARACTER_RONIN,Rōnin,Rōnin
+CHARACTER_RONIN,Swordswoman,Épéiste
 CHARACTER_RONIN_RULE,Starts with a blade.,Commence avec une lame.
-CHARACTER_GUNSLINGER,Gunslinger,Flingueur
-CHARACTER_GUNSLINGER_RULE,Starts with a gun.,Commence avec une arme à feu.
-CHARACTER_MERCHANT,Merchant,Marchand
+CHARACTER_GUNSLINGER,Archer,Archer
+CHARACTER_GUNSLINGER_RULE,Starts with a ranged weapon.,Commence avec une arme à distance.
+CHARACTER_MERCHANT,Gate Smuggler,Contrebandier
 CHARACTER_MERCHANT_RULE,End of wave: +10% of your materials (max 25).,Fin de vague : +10 % de tes matériaux (max 25).
 CHALLENGE_WIN_DRIFTER,Drifter's road,La route du Vagabond
 CHALLENGE_WIN_DRIFTER_DESC,Win a run with the Drifter,Gagner une partie avec le Vagabond

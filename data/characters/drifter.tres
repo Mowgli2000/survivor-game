@@ -5,6 +5,7 @@
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="3_weapon_script"]
 [ext_resource type="Resource" path="res://data/weapons/pulse.tres" id="w0"]
 [ext_resource type="Resource" path="res://data/weapons/laser_pistol.tres" id="w1"]
+[ext_resource type="Texture2D" path="res://assets/characters/cards/drifter_card.png" id="card"]
 
 [resource]
 script = ExtResource("1_char")
@@ -19,5 +20,7 @@ stat_overrides = {
 }
 invulnerability_time = 0.5
 radius = 16.0
-color = Color(0.85, 0.95, 1, 1)
+color = Color(0.302, 0.784, 1, 1)
 sprite_id = &"drifter"
+sprite_scale = 1.35
+card_art = ExtResource("card")

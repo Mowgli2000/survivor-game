@@ -13,6 +13,7 @@ import base64
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.request
 import uuid
@@ -84,12 +85,19 @@ def main() -> int:
         url = API_URL
     request = urllib.request.Request(
         url, data=data, headers={"Authorization": "Bearer " + key, "Content-Type": content_type})
-    try:
-        with urllib.request.urlopen(request, timeout=300) as response:
-            result = json.load(response)
-    except urllib.error.HTTPError as error:
-        print("HTTP %d: %s" % (error.code, error.read().decode("utf-8", "replace")), file=sys.stderr)
-        return 1
+    # Rate limits (HTTP 429, e.g. 5 input images per minute): wait and retry.
+    for attempt in range(6):
+        try:
+            with urllib.request.urlopen(request, timeout=300) as response:
+                result = json.load(response)
+            break
+        except urllib.error.HTTPError as error:
+            if error.code == 429 and attempt < 5:
+                print("rate limited, retrying in 20 s", file=sys.stderr)
+                time.sleep(20)
+                continue
+            print("HTTP %d: %s" % (error.code, error.read().decode("utf-8", "replace")), file=sys.stderr)
+            return 1
 
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
     base, ext = os.path.splitext(args.out)

@@ -89,15 +89,38 @@ func test_progression_screen_lists_every_challenge() -> void:
 	assert_eq(screen._rows.get_child_count(), SaveService.all_challenges().size())
 
 
-func test_character_cards_show_the_animated_character() -> void:
+func test_character_cards_show_the_card_illustration() -> void:
 	var screen := CharacterSelect.new()
 	add_child_autofree(screen)
 	screen.open()
-	var previews := _find_previews(screen._character_buttons[&"drifter"])
+	var arts := _find_arts(screen._character_buttons[&"drifter"])
+	assert_eq(arts.size(), 1)
+	assert_not_null(arts[0].texture, "drifter card art loaded")
+	assert_eq(arts[0].modulate, Color.WHITE)
+	assert_eq(_find_arts(screen._character_buttons[&"ronin"])[0].modulate, SpritePreview.SILHOUETTE,
+		"locked = silhouette")
+
+
+func test_character_without_card_art_shows_the_animated_sprite() -> void:
+	var screen := CharacterSelect.new()
+	add_child_autofree(screen)
+	var character := CharacterData.new()
+	character.sprite_id = &"drifter"
+	var portrait := screen._portrait(character, true)
+	autofree(portrait)
+	var previews := _find_previews(portrait)
 	assert_eq(previews.size(), 1)
 	assert_true(previews[0].has_sheet(), "drifter sprite loaded")
 	assert_false(previews[0].silhouette)
-	assert_true(_find_previews(screen._character_buttons[&"ronin"])[0].silhouette, "locked = silhouette")
+
+
+func _find_arts(node: Node) -> Array[TextureRect]:
+	var found: Array[TextureRect] = []
+	for child in node.get_children():
+		if child is TextureRect:
+			found.append(child)
+		found.append_array(_find_arts(child))
+	return found
 
 
 func _find_previews(node: Node) -> Array[SpritePreview]:

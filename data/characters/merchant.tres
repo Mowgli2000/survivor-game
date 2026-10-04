@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://src/items/effects/item_effect.gd" id="5_effect"]
 [ext_resource type="Resource" path="res://data/weapons/pulse.tres" id="w0"]
 [ext_resource type="Resource" path="res://data/weapons/bazooka.tres" id="w1"]
+[ext_resource type="Texture2D" path="res://assets/characters/cards/merchant_card.png" id="card"]
 
 [sub_resource type="Resource" id="Mod_1"]
 script = ExtResource("2_mod")
@@ -39,5 +40,7 @@ stat_overrides = {
 }
 invulnerability_time = 0.5
 radius = 16.0
-color = Color(1, 0.85, 0.3, 1)
+color = Color(1, 0.69, 0.188, 1)
 sprite_id = &"merchant"
+sprite_scale = 1.35
+card_art = ExtResource("card")
