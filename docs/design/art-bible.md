@@ -251,6 +251,8 @@ Checklist de génération :
 - [ ] Test en jeu avec foule : `& "C:\Program Files\Godot\Godot.exe" --path . res://src/debug/capture.tscn -- --time=20 --stress --out=<png>` ; le nouvel élément se repère en < 1 s.
 - [ ] Aperçu rapide de la planche : `tools/art/preview_sheet.gd -- --out=<png> --id=<id>`.
 
+Outils : icônes `tools/art/make_icon.gd --in --out` (128 px, armes horizontales pointe à droite) ; décor `make_icon.gd --height=N` vers `assets_src/drawn/map/decor/`, puis `tools/bake_sprites.ps1`.
+
 Leçons IA (règles) :
 - Références : la carte de l'assassin (`art_source/ai/assassin_card.png`) est la référence de style des cartes ; son sprite (`art_source/ai/assassin.png`) celle des sprites. Nouveau perso = sa carte (1re image) + la référence de style (2e image).
 - L'IA rate souvent l'orientation des lames et les prises → toujours vérifier mains et armes.
