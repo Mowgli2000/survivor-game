@@ -195,6 +195,29 @@ static func describe(offer: ShopOffer) -> PackedStringArray:
 	return PackedStringArray([tag, TranslationServer.translate(offer.item.name_key), effects])
 
 
+## Hover text of an item owned `count` times: name, effect of one copy and,
+## from two copies, the total bonus of all of them.
+static func item_tooltip(item: ItemData, count: int) -> String:
+	var lines: PackedStringArray = [TranslationServer.translate(item.name_key)]
+	var one := LevelUpScreen.describe_modifiers(item.modifiers)
+	if one != "":
+		lines.append(one)
+	if item.effect_key != "":
+		lines.append(TranslationServer.translate(item.effect_key))
+	if count > 1 and not item.modifiers.is_empty():
+		var total: Array[StatModifier] = []
+		for mod in item.modifiers:
+			var scaled := StatModifier.new()
+			scaled.stat = mod.stat
+			scaled.flat = mod.flat * count
+			scaled.percent = mod.percent * count
+			total.append(scaled)
+		lines.append("")
+		lines.append(TranslationServer.translate("UI_SHOP_ITEM_TOTAL") % count)
+		lines.append(LevelUpScreen.describe_modifiers(total))
+	return "\n".join(lines)
+
+
 func _rebuild() -> void:
 	if not visible or _shop == null:
 		return
@@ -295,6 +318,9 @@ func _make_card(index: int, offer: ShopOffer) -> Control:
 	var icon := IconTile.create(offer.weapon.icon if offer.is_weapon() else offer.item.icon,
 		offer.tier, CARD_ICON)
 	icon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	if not offer.is_weapon():
+		# Hover: total bonus with this copy added to the ones already owned.
+		panel.tooltip_text = item_tooltip(offer.item, _inventory.count(offer.item) + 1)
 	box.add_child(icon)
 	var tag := _label(17, accent, &"SmallLabel")
 	tag.text = texts[0].to_upper()
@@ -368,7 +394,7 @@ func _rebuild_items() -> void:
 	for item in _inventory.get_items():
 		var count := _inventory.count(item)
 		var tile := IconTile.create(item.icon, item.tier, ITEM_ICON, "×%d" % count if count > 1 else "")
-		tile.tooltip_text = tr(item.name_key)
+		tile.tooltip_text = item_tooltip(item, count)
 		_items_row.add_child(tile)
 	if _inventory.get_items().is_empty():
 		var none := _label(22, UiTheme.MUTED)

@@ -45,6 +45,8 @@ CHARACTER_DRIFTER,Rank-E Hunter,Chasseur de rang E
 UI_LEVEL_LABEL,Level:,Niveau :
 UI_NEW_WEAPON,New weapon,Nouvelle arme
 UI_STAT_UPGRADE,Upgrade,Amélioration
+UI_STAT_PREVIEW,%s: %s → %s,%s : %s → %s
+UI_SHOP_ITEM_TOTAL,Total with ×%d:,Total avec ×%d :
 STAT_AREA,Area,Zone
 WSTAT_FIRE_RATE,Fire rate,Cadence
 WSTAT_BOUNCES,Bounces,Rebonds

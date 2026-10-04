@@ -46,3 +46,13 @@ func test_changed_signal_and_cache_invalidation() -> void:
 	block.add_modifier(_mod(StatIds.ARMOR, 5.0, 0.0))
 	assert_signal_emitted_with_parameters(block, "changed", [StatIds.ARMOR])
 	assert_eq(block.get_value(StatIds.ARMOR), 5.0)
+
+
+func test_value_with_previews_without_changing_the_block() -> void:
+	var block := StatBlock.from_defaults({"max_hp": 100.0})
+	var mod := StatModifier.new()
+	mod.stat = StatIds.MAX_HP
+	mod.flat = 16.0
+	var extra: Array[StatModifier] = [mod]
+	assert_eq(block.value_with(StatIds.MAX_HP, extra), 116.0)
+	assert_eq(block.get_value(StatIds.MAX_HP), 100.0, "block unchanged")

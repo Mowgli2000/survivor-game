@@ -268,8 +268,9 @@ func _choose_character(character: CharacterData) -> void:
 		var button := Button.new()
 		button.text = weapon.name_key
 		button.icon = weapon.icon
-		button.expand_icon = true
-		button.custom_minimum_size = Vector2(280, 72)
+		# Fixed icon size: with expand_icon a long name squeezed the icon to nothing.
+		button.add_theme_constant_override("icon_max_width", 64)
+		button.custom_minimum_size = Vector2(300, 80)
 		button.add_theme_color_override("font_color", Tiers.color(1))
 		button.pressed.connect(_choose_weapon.bind(weapon))
 		_weapons.add_child(button)

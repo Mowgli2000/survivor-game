@@ -53,6 +53,21 @@ func get_value(stat: StringName) -> float:
 	return value
 
 
+## Value `stat` would have with `extra` modifiers added (preview, no change).
+func value_with(stat: StringName, extra: Array[StatModifier]) -> float:
+	var flat: float = _flat.get(stat, 0.0)
+	var percent: float = _percent.get(stat, 0.0)
+	for mod in extra:
+		if mod.stat == stat:
+			flat += mod.flat
+			percent += mod.percent
+	var value: float = (_base.get(stat, 0.0) + flat) * (1.0 + percent)
+	if StatIds.BOUNDS.has(stat):
+		var bounds: Vector2 = StatIds.BOUNDS[stat]
+		value = clampf(value, bounds.x, bounds.y)
+	return value
+
+
 func _invalidate(stat: StringName) -> void:
 	_cache.erase(stat)
 	changed.emit(stat)

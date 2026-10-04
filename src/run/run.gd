@@ -505,7 +505,7 @@ func _resolve_level_ups() -> void:
 		_apply_offer(offers[0])
 		return
 	var cost := _level_up_reroll_cost()
-	level_up_screen.open(offers, cost, rp.wallet.can_afford(cost))
+	level_up_screen.open(offers, cost, rp.wallet.can_afford(cost), rp.player.stats)
 
 
 func _apply_offer(offer: UpgradeOffer) -> void:

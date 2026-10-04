@@ -25,6 +25,14 @@ func test_weapon_card_text() -> void:
 	assert_eq(texts[1], "Flame sword")
 
 
+
+func test_item_tooltip_shows_the_total_of_owned_copies() -> void:
+	var item: ItemData = ContentDB.get_def(&"items", &"sharpened_edge")
+	assert_eq(ShopScreen.item_tooltip(item, 1), "Whetstone\n+8% Damage\n-3% Attack speed")
+	assert_eq(ShopScreen.item_tooltip(item, 3),
+		"Whetstone\n+8% Damage\n-3% Attack speed\n\nTotal with ×3:\n+24% Damage\n-9% Attack speed")
+
+
 # --- Focus (keyboard/gamepad): a confirm press must never land on "Next wave" by accident ---
 
 var _wallet: Wallet

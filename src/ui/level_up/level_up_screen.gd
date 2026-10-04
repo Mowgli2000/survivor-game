@@ -10,7 +10,7 @@ signal reroll_requested
 
 ## Short delay before cards accept input, to avoid accidental picks.
 const INPUT_DELAY := 0.35
-const CARD_SIZE := Vector2(360, 340)
+const CARD_SIZE := Vector2(360, 400)
 ## Delay between two cards appearing.
 const CARD_STAGGER := 0.04
 
@@ -20,6 +20,8 @@ var _offers: Array[UpgradeOffer] = []
 var _title: Label
 ## Coop: whose level-up it is ("Player 2"), hidden in solo.
 var _player_tag: Label
+## Player's stats for the current -> new preview of each card (null: none).
+var _stats: StatBlock
 
 
 func _init() -> void:
@@ -83,8 +85,11 @@ func set_player_tag(text: String, color: Color) -> void:
 	_player_tag.add_theme_color_override("font_color", color)
 
 
-## `reroll_cost` < 0 hides the reroll button.
-func open(offers: Array[UpgradeOffer], reroll_cost: int = -1, can_reroll: bool = false) -> void:
+## `reroll_cost` < 0 hides the reroll button. `stats`: the player's stats, to show
+## each card's current -> new values (null: no preview).
+func open(offers: Array[UpgradeOffer], reroll_cost: int = -1, can_reroll: bool = false,
+		stats: StatBlock = null) -> void:
+	_stats = stats
 	_reroll.visible = reroll_cost >= 0
 	_reroll.text = tr("UI_SHOP_REROLL") % maxi(reroll_cost, 0)
 	_reroll.disabled = true
@@ -124,6 +129,25 @@ static func describe_offer(offer: UpgradeOffer) -> PackedStringArray:
 
 static func describe(upgrade: UpgradeData) -> String:
 	return describe_modifiers(upgrade.modifiers)
+
+
+## Current -> new value of each stat the offer changes: [text, improves] pairs,
+## e.g. ["Max HP: 100 → 116", true].
+static func preview_lines(offer: UpgradeOffer, stats: StatBlock) -> Array[Array]:
+	var mods := offer.scaled_modifiers()
+	var lines: Array[Array] = []
+	var seen: Array[StringName] = []
+	for mod in mods:
+		if mod.stat in seen:
+			continue
+		seen.append(mod.stat)
+		var before := stats.get_value(mod.stat)
+		var after := stats.value_with(mod.stat, mods)
+		var text := TranslationServer.translate("UI_STAT_PREVIEW") % [
+			TranslationServer.translate(StatIds.localization_key(mod.stat)),
+			StatsPanel.format_value(mod.stat, before), StatsPanel.format_value(mod.stat, after)]
+		lines.append([text, after >= before])
+	return lines
 
 
 ## One line per non-zero part of each modifier ("+8% Damage", "-2 Armor").
@@ -196,6 +220,9 @@ func _make_card(offer: UpgradeOffer) -> Button:
 	box.add_child(_card_label(texts[0].to_upper(), &"SmallLabel", 18, accent))
 	box.add_child(_card_label(texts[1], &"SubtitleLabel", 36, UiTheme.TEXT))
 	box.add_child(_card_label(texts[2], &"", 24, UiTheme.TEXT))
+	if _stats != null:
+		for line in preview_lines(offer, _stats):
+			box.add_child(_card_label(line[0], &"SmallLabel", 20, UiTheme.GOOD if line[1] else UiTheme.BAD))
 	return button
 
 

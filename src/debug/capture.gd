@@ -44,6 +44,9 @@ func _ready() -> void:
 		add_child(menu)
 		if _mode in ["--characters", "--coopselect"]:
 			menu._open_character_select(_mode == "--coopselect")
+			# With --character=<id>: open that character's starting weapon choice.
+			if character_id != "":
+				menu._character_select._choose_character(ContentDB.get_def(&"characters", StringName(character_id)))
 		elif _mode == "--progression":
 			menu._open_progression()
 		return
