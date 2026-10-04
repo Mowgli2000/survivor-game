@@ -274,3 +274,13 @@ SEAL_FX_HP_DAMAGE,Enemies +%d%% HP and damage,Ennemis : +%d %% de PV et de dég�
 SEAL_FX_SPAWN,"+%d%% enemies, bigger groups","+%d %% d'ennemis, groupes plus grands"
 SEAL_FX_DOUBLE_BOSS,Two bosses on the final wave,Deux boss à la dernière vague
 SEAL_LOCKED_HINT,Win the previous seal with this hunter to unlock it,Gagne le sceau précédent avec ce chasseur pour le débloquer
+ENEMY_SILVER_GRUNT,Ice goblin,Gobelin des glaces
+ENEMY_SILVER_RUNNER,Frost fox,Renard de givre
+ENEMY_SILVER_SHOOTER,Blizzard spirit,Esprit du blizzard
+ENEMY_SILVER_TANK,Ice troll,Troll des glaces
+ENEMY_SILVER_CHARGER,Armored elk,Élan cuirassé
+ENEMY_SILVER_KAMIKAZE,Unstable crystal,Cristal instable
+ENEMY_SILVER_SPAWNER,Frost totem,Totem de givre
+ENEMY_SILVER_BOSS_MINI,Frost Bear,Ours de givre
+ENEMY_SILVER_BOSS_FINAL,Ice Giant,Géant des glaces
+BIOME_FOREST,Frozen forest,Forêt gelée

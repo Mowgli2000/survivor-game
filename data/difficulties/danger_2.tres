@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="DifficultyData" format=3]
 
 [ext_resource type="Script" path="res://src/meta/difficulty_data.gd" id="1_difficulty"]
-[ext_resource type="Resource" path="res://data/biomes/dungeon.tres" id="biome"]
+[ext_resource type="Resource" path="res://data/biomes/forest.tres" id="biome"]
 
 [resource]
 script = ExtResource("1_difficulty")

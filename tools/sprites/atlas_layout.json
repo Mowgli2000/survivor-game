@@ -251,6 +251,118 @@
 		144,
 		"res://assets/sprites/atlas.png"
 	],
+	"silver_boss_final": [
+		0,
+		0,
+		280,
+		304,
+		"res://assets/sprites/atlas_silver.png"
+	],
+	"silver_boss_mini": [
+		0,
+		304,
+		288,
+		304,
+		"res://assets/sprites/atlas_silver.png"
+	],
+	"silver_charger": [
+		0,
+		1160,
+		140,
+		144,
+		"res://assets/sprites/atlas_silver.png"
+	],
+	"silver_charger_elite": [
+		1960,
+		1160,
+		140,
+		144,
+		"res://assets/sprites/atlas_silver.png"
+	],
+	"silver_grunt": [
+		0,
+		1304,
+		146,
+		144,
+		"res://assets/sprites/atlas_silver.png"
+	],
+	"silver_grunt_elite": [
+		2044,
+		1304,
+		146,
+		144,
+		"res://assets/sprites/atlas_silver.png"
+	],
+	"silver_kamikaze": [
+		0,
+		1448,
+		119,
+		144,
+		"res://assets/sprites/atlas_silver.png"
+	],
+	"silver_kamikaze_elite": [
+		1666,
+		1448,
+		119,
+		144,
+		"res://assets/sprites/atlas_silver.png"
+	],
+	"silver_runner": [
+		0,
+		1592,
+		139,
+		144,
+		"res://assets/sprites/atlas_silver.png"
+	],
+	"silver_runner_elite": [
+		1946,
+		1592,
+		139,
+		144,
+		"res://assets/sprites/atlas_silver.png"
+	],
+	"silver_shooter": [
+		0,
+		1736,
+		143,
+		144,
+		"res://assets/sprites/atlas_silver.png"
+	],
+	"silver_shooter_elite": [
+		2002,
+		1736,
+		143,
+		144,
+		"res://assets/sprites/atlas_silver.png"
+	],
+	"silver_spawner": [
+		0,
+		608,
+		121,
+		184,
+		"res://assets/sprites/atlas_silver.png"
+	],
+	"silver_spawner_elite": [
+		1694,
+		608,
+		121,
+		184,
+		"res://assets/sprites/atlas_silver.png"
+	],
+	"silver_tank": [
+		0,
+		792,
+		181,
+		184,
+		"res://assets/sprites/atlas_silver.png"
+	],
+	"silver_tank_elite": [
+		0,
+		976,
+		181,
+		184,
+		"res://assets/sprites/atlas_silver.png"
+	],
 	"spawner": [
 		0,
 		1440,

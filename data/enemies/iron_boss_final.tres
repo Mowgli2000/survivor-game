@@ -7,7 +7,7 @@
 [ext_resource type="Script" path="res://src/enemies/boss/dash_pattern.gd" id="5_dash"]
 [ext_resource type="Script" path="res://src/enemies/boss/summon_pattern.gd" id="6_summon"]
 [ext_resource type="Script" path="res://src/enemies/boss/boss_pattern.gd" id="7_pattern"]
-[ext_resource type="Resource" path="res://data/enemies/runner.tres" id="8_runner"]
+[ext_resource type="Resource" path="res://data/enemies/iron_runner.tres" id="8_runner"]
 
 [sub_resource type="Resource" id="P1_fan"]
 script = ExtResource("4_fan")

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="SpriteSheet" format=3]
+
+[ext_resource type="Script" path="res://src/core/sprite_sheet.gd" id="1_uuobh"]
+[ext_resource type="Texture2D" path="res://assets/sprites/atlas_silver.png" id="2_e3c82"]
+
+[resource]
+script = ExtResource("1_uuobh")
+texture = ExtResource("2_e3c82")
+origin = Vector2i(2002, 1736)
+cell_size = Vector2i(143, 144)
+animations = Dictionary[StringName, Vector3i]({
+&"idle": Vector3i(0, 6, 8),
+&"walk": Vector3i(6, 8, 12)
+})

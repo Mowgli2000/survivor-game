@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="DecorAtlas" format=3]
+
+[ext_resource type="Script" path="res://src/run/decor_atlas.gd" id="1_yk10m"]
+[ext_resource type="Texture2D" path="res://assets/map/decor_atlas_forest.png" id="2_64khi"]
+
+[resource]
+script = ExtResource("1_yk10m")
+texture = ExtResource("2_64khi")
+regions = Dictionary[StringName, Rect2]({
+&"decal_ice": Rect2(0, 0, 116, 110),
+&"decal_snow": Rect2(120, 0, 101, 110),
+&"prop_dead_tree": Rect2(225, 0, 182, 240),
+&"prop_frozen_brazier": Rect2(411, 0, 160, 180),
+&"prop_frozen_pillar": Rect2(575, 0, 195, 240),
+&"prop_ice_crystals": Rect2(774, 0, 172, 180),
+&"prop_ice_rock": Rect2(0, 244, 122, 130),
+&"prop_pine_snow": Rect2(126, 244, 194, 240)
+})

@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3]
+
+[ext_resource type="Script" path="res://src/enemies/enemy_data.gd" id="1_enemy"]
+
+[resource]
+script = ExtResource("1_enemy")
+id = &"silver_charger"
+name_key = "ENEMY_SILVER_CHARGER"
+movement = 2
+max_hp = 22.0
+speed = 90.0
+contact_damage = 10.0
+armor = 1.0
+radius = 20.0
+knockback_taken = 0.6
+charge_range = 380.0
+charge_windup = 0.6
+charge_speed = 700.0
+charge_duration = 0.45
+charge_cooldown = 2.5
+xp_value = 2
+color = Color(0.6, 0.5, 0.4, 1)
+shape_sides = 4
+sprite_id = &"silver_charger"
+sprite_scale = 0.75
