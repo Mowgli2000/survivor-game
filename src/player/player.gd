@@ -15,6 +15,7 @@ const SPRITE_HEIGHT_PER_RADIUS := 6.4
 const SPRITE_FOOT := 0.8
 ## Opacity of a dead player waiting for the next wave (coop).
 const GHOST_ALPHA := 0.3
+const SPRITE_SHADER := preload("res://src/player/player_sprite.gdshader")
 
 var stats: StatBlock
 var hp: float = 1.0
@@ -39,6 +40,8 @@ var weapon_visuals: WeaponVisuals
 ## Gameplay rolls (dodge). Run replaces it with the run RNG (replays).
 var rng := RandomNumberGenerator.new()
 var animator := SpriteAnimator.new()
+## Lean, hit squash and dust drawn over the baked frames.
+var motion := PlayerMotion.new()
 
 var _data: CharacterData
 var _arena: Rect2
@@ -53,6 +56,8 @@ func setup(data: CharacterData, arena: Rect2) -> void:
 	var path := "res://assets/sprites/%s.tres" % data.sprite_id
 	var has_sprite := data.sprite_id != &"" and ResourceLoader.exists(path)
 	animator.reset(load(path) as SpriteSheet if has_sprite else null, 0.0)
+	if has_sprite:
+		_setup_sprite_material(animator.sheet)
 	stats = StatBlock.from_defaults(data.stat_overrides)
 	hp = stats.get_value(StatIds.MAX_HP)
 	_last_max_hp = hp
@@ -93,8 +98,11 @@ func _physics_process(delta: float) -> void:
 	if party != null and party.size() > 1:
 		position = party.clamp_spread(self, position)
 	var anim := &"walk" if velocity.length_squared() > 4.0 else &"idle"
-	if animator.advance(delta, anim, velocity.x):
-		queue_redraw()
+	animator.advance(delta, anim, velocity.x)
+	motion.update(delta, global_position, velocity, stats.get_value(StatIds.MOVE_SPEED))
+	_update_sprite_material()
+	# Redrawn every frame (lean, dust): one or two players only.
+	queue_redraw()
 
 	var regen := stats.get_value(StatIds.HP_REGEN)
 	if regen > 0.0:
@@ -117,6 +125,7 @@ func take_damage(amount: float) -> void:
 	var damage := CombatMath.apply_armor(amount, stats.get_value(StatIds.ARMOR))
 	hp = maxf(hp - damage, 0.0)
 	_invulnerable = _data.invulnerability_time
+	motion.hurt()
 	damaged.emit(damage)
 	health_changed.emit(hp, stats.get_value(StatIds.MAX_HP))
 	if hp <= 0.0:
@@ -167,9 +176,7 @@ func _draw() -> void:
 		draw_arc(Vector2.ZERO, radius * 1.5, 0.0, TAU, 32, tag_color, 5.0, true)
 		draw_set_transform(Vector2.ZERO)
 	if animator.sheet != null:
-		var scale_k := _data.sprite_scale if _data != null else 1.0
-		animator.sheet.draw(self, animator.frame, radius * SPRITE_HEIGHT_PER_RADIUS * scale_k, radius * SPRITE_FOOT,
-			animator.facing, Color.WHITE)
+		_draw_sprite()
 		return
 	var color := _data.color if _data != null else Color.WHITE
 	var neon := Color(0.3, 0.9, 1.0)
@@ -177,3 +184,39 @@ func _draw() -> void:
 	draw_circle(Vector2.ZERO, radius, color)
 	draw_arc(Vector2.ZERO, radius - 1.0, 0.0, TAU, 32, neon, 3.0, true)
 	draw_circle(Vector2(radius * 0.45, 0.0), radius * 0.25, Color(0.05, 0.05, 0.08))
+
+
+func _setup_sprite_material(sheet: SpriteSheet) -> void:
+	var atlas := Vector2(sheet.texture.get_size())
+	var shader_material := ShaderMaterial.new()
+	shader_material.shader = SPRITE_SHADER
+	shader_material.set_shader_parameter(&"cell_v_top", sheet.origin.y / atlas.y)
+	shader_material.set_shader_parameter(&"cell_v_height", sheet.cell_size.y / atlas.y)
+	shader_material.set_shader_parameter(&"cell_u_width", sheet.cell_size.x / atlas.x)
+	material = shader_material
+
+
+func _update_sprite_material() -> void:
+	var shader_material := material as ShaderMaterial
+	if shader_material == null:
+		return
+	shader_material.set_shader_parameter(&"sway", motion.speed_ratio)
+	shader_material.set_shader_parameter(&"flash", motion.flash)
+
+
+## Dust, then the body leaning around its feet.
+func _draw_sprite() -> void:
+	var sheet := animator.sheet
+	var height := radius * SPRITE_HEIGHT_PER_RADIUS * (_data.sprite_scale if _data != null else 1.0)
+	var foot := radius * SPRITE_FOOT
+	var feet := Vector2(0.0, foot)
+
+	for i in motion.dust_positions.size():
+		var r := motion.dust_ages[i] / PlayerMotion.DUST_LIFE
+		var at := motion.dust_positions[i] - global_position + feet + Vector2(0.0, -r * radius * 0.3)
+		draw_circle(at, radius * (0.2 + r * 0.45), Color(0.9, 0.88, 0.95, 0.4 * (1.0 - r)))
+
+	var body := Transform2D(motion.lean, motion.body_scale(), 0.0, feet) * Transform2D(0.0, -feet)
+	draw_set_transform_matrix(body)
+	sheet.draw(self, animator.frame, height, foot, 1.0, Color.WHITE)
+	draw_set_transform_matrix(Transform2D.IDENTITY)
