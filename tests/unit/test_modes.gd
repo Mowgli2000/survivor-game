@@ -30,10 +30,12 @@ func test_copy_is_independent_and_keeps_shared_enemies() -> void:
 
 func test_difficulty_scales_the_curves() -> void:
 	var base := _stage()
-	var hard := base.with_difficulty(_danger(4))
-	assert_almost_eq(hard.hp_multiplier_at(10), base.hp_multiplier_at(10) * 1.3, 0.001)
-	assert_almost_eq(hard.damage_multiplier_at(10), base.damage_multiplier_at(10) * 1.3, 0.001)
-	assert_almost_eq(hard.spawn_rate_at(10), base.spawn_rate_at(10) * 1.15, 0.001)
+	var seal := _danger(4)
+	var hard := base.with_difficulty(seal)
+	assert_gt(seal.hp_multiplier, 1.0)
+	assert_almost_eq(hard.hp_multiplier_at(10), base.hp_multiplier_at(10) * seal.hp_multiplier, 0.001)
+	assert_almost_eq(hard.damage_multiplier_at(10), base.damage_multiplier_at(10) * seal.damage_multiplier, 0.001)
+	assert_almost_eq(hard.spawn_rate_at(10), base.spawn_rate_at(10) * seal.spawn_rate_multiplier, 0.001)
 	assert_gt(hard.steady_elite_chance, 0.0)
 	var neutral := base.with_difficulty(_danger(0))
 	assert_almost_eq(neutral.hp_multiplier_at(15), base.hp_multiplier_at(15), 0.001)
@@ -103,7 +105,7 @@ func test_run_applies_the_chosen_difficulty() -> void:
 	var run: Run = RUN.instantiate()
 	run.setup = setup
 	add_child_autofree(run)
-	assert_almost_eq(run.stage.hp_multiplier_at(10), _stage().hp_multiplier_at(10) * 1.3, 0.001)
+	assert_almost_eq(run.stage.hp_multiplier_at(10), _stage().hp_multiplier_at(10) * _danger(4).hp_multiplier, 0.001)
 	assert_ne(run.stage, _stage(), "the shared stage is never modified")
 
 
