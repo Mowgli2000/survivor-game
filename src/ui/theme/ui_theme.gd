@@ -8,6 +8,8 @@ class_name UiTheme
 
 const FREDOKA := preload("res://assets/fonts/Fredoka.ttf")
 const NUNITO := preload("res://assets/fonts/Nunito.ttf")
+## Manga title font (art bible): only for TitleLabel.
+const BANGERS := preload("res://assets/fonts/Bangers.ttf")
 
 const TEXT := Color("eef0ff")
 const MUTED := Color(0.93, 0.94, 1.0, 0.55)
@@ -117,7 +119,7 @@ static func _build() -> Theme:
 	theme.set_color("font_color", "Label", TEXT)
 	theme.set_color("font_outline_color", "Label", OUTLINE)
 	theme.set_constant("outline_size", "Label", 4)
-	_label_variation(theme, &"TitleLabel", font(700, true), 72, 10, ACCENT)
+	_label_variation(theme, &"TitleLabel", BANGERS, 80, 10, ACCENT)
 	_label_variation(theme, &"SubtitleLabel", font(600, true), 32, 6, TEXT)
 	_label_variation(theme, &"ValueLabel", font(600, true), 30, 6, TEXT)
 	_label_variation(theme, &"SmallLabel", font(800), 17, 3, MUTED)

@@ -88,6 +88,9 @@ func spawn(data: EnemyData, pos: Vector2, hp_multiplier: float = 1.0, elite: boo
 	enemy.strafe_sign = 1.0 if _rng.randf() < 0.5 else -1.0
 	max_radius = maxf(max_radius, enemy.radius)
 	_active.append(enemy)
+	# Regular monsters spawn off screen: only the boss entrance gets its gate.
+	if _vfx != null and data.boss:
+		_vfx.portal(pos, enemy.radius * 1.6, true)
 	if not data.phases.is_empty():
 		boss_spawned.emit(enemy)
 	return enemy

@@ -1,12 +1,15 @@
 class_name MainMenu
 extends Node2D
-## Main menu (ADR 0013, 0015): animated arena backdrop, neon title,
+## Main menu (ADR 0013, 0015): animated arena backdrop, hunters key art,
 ## Play (character select) / Local co-op / Progression / Settings / Quit.
 ## Buttons only ask SceneRouter to act.
 
 const ARENA_RECT := Rect2(-1200, -700, 2400, 1400)
 const CROWD_RECT := Rect2(-850, -420, 1700, 840)
 const MUSIC_DB := -8.0
+const KEY_ART := preload("res://assets/ui/keyart_heroes.png")
+## The key art fills the right part of the screen; the buttons the left part.
+const SPLIT := 0.42
 
 var _crowd: MenuCrowd
 var _buttons: VBoxContainer
@@ -44,8 +47,18 @@ func _ready() -> void:
 	veil.set_anchors_preset(Control.PRESET_FULL_RECT)
 	veil.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(veil)
+	var art := TextureRect.new()
+	art.texture = KEY_ART
+	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	art.set_anchors_preset(Control.PRESET_FULL_RECT)
+	art.anchor_left = SPLIT - 0.04
+	art.offset_top = 60.0
+	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(art)
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.anchor_right = SPLIT
 	root.add_child(center)
 	_buttons = VBoxContainer.new()
 	_buttons.add_theme_constant_override("separation", 22)

@@ -7,11 +7,13 @@ extends Node2D
 
 signal shake_requested(amount: float)
 
-enum Kind { SLASH, BEAM, EXPLOSION, HIT, LIGHTNING, WARN_CIRCLE, WARN_LINE }
+enum Kind { SLASH, BEAM, EXPLOSION, HIT, LIGHTNING, WARN_CIRCLE, WARN_LINE, PORTAL }
 
 const CAPACITY := 384
 ## Outline color of every effect (the art's black line).
 const INK := Color(0.05, 0.04, 0.1)
+## Gate color: monsters step out of violet portals (art bible).
+const PORTAL_COLOR := Color(0.64, 0.35, 1.0)
 
 var _kind := PackedInt32Array()
 var _a := PackedVector2Array()       # center / start
@@ -62,6 +64,14 @@ func hit(pos: Vector2, color: Color = Color(1, 1, 1, 0.8)) -> void:
 
 func lightning(from: Vector2, to: Vector2, color: Color) -> void:
 	_add(Kind.LIGHTNING, from, to, 3.0, _next_seed(), color, 0.18)
+
+
+## Spawn gate: a violet portal that opens and closes where a monster appears
+## (used for boss entrances, with a camera shake).
+func portal(center: Vector2, radius: float, boss: bool = false) -> void:
+	_add(Kind.PORTAL, center, Vector2.ZERO, radius, 0.0, PORTAL_COLOR, 0.9 if boss else 0.4)
+	if boss:
+		shake_requested.emit(0.5)
 
 
 ## Boss telegraph: a ring that fills up during `life` seconds.
@@ -137,6 +147,8 @@ func _draw() -> void:
 				draw_circle(_a[i], _size[i] * (1.0 - t), Color(color, 0.25))
 				draw_arc(_a[i], _size[i], 0.0, TAU, 48, Color(INK, 0.6), 6.0, true)
 				draw_arc(_a[i], _size[i], 0.0, TAU, 48, Color(color, 0.85), 3.0, true)
+			Kind.PORTAL:
+				_draw_portal(_a[i], _size[i], color, t)
 			Kind.WARN_LINE:
 				draw_line(_a[i], _b[i], Color(color, 0.15 + 0.2 * (1.0 - t)), _size[i], true)
 				draw_line(_a[i], _b[i], Color(color, 0.8), 2.0, true)
@@ -158,18 +170,17 @@ func _draw_beam(from: Vector2, to: Vector2, width: float, color: Color, t: float
 
 func _draw_explosion(center: Vector2, radius: float, color: Color, t: float) -> void:
 	var r := radius * (0.35 + 0.65 * sqrt(1.0 - t))
+	# One per enemy death: cheap draws only (no antialiasing, few segments).
 	draw_circle(center, r, Color(color, 0.3 * t))
-	draw_circle(center, r * 0.55 * t, Color(color.lerp(Color.WHITE, 0.6), 0.6 * t))
-	draw_arc(center, r, 0.0, TAU, 40, Color(INK, 0.8 * t), 4.0 + 6.0 * t, true)
-	draw_arc(center, r, 0.0, TAU, 40, Color(color, t), 2.0 + 4.0 * t, true)
+	draw_arc(center, r, 0.0, TAU, 24, Color(INK, 0.8 * t), 4.0 + 6.0 * t)
+	draw_arc(center, r, 0.0, TAU, 24, Color(color, t), 2.0 + 4.0 * t)
 
 
 func _draw_hit(pos: Vector2, size: float, noise_seed: float, color: Color, t: float) -> void:
 	var length := size * (0.4 + 0.6 * (1.0 - t))
 	for k in 4:
 		var direction := Vector2.from_angle(noise_seed + k * TAU / 4.0)
-		draw_line(pos + direction * 3.0, pos + direction * (3.0 + length), Color(INK, 0.7 * t), 4.0)
-		draw_line(pos + direction * 3.0, pos + direction * (3.0 + length), Color(color, t), 2.0)
+		draw_line(pos + direction * 3.0, pos + direction * (3.0 + length), Color(color, t), 2.5)
 
 
 func _draw_lightning(from: Vector2, to: Vector2, noise_seed: float, color: Color, t: float) -> void:
@@ -184,4 +195,10 @@ func _draw_lightning(from: Vector2, to: Vector2, noise_seed: float, color: Color
 	points.append(to)
 	draw_polyline(points, Color(INK, 0.8 * t), 7.0, true)
 	draw_polyline(points, Color(color, t), 4.0, true)
-	draw_polyline(points, Color(color.lerp(Color.WHITE, 0.7), t), 1.5, true)
+
+
+func _draw_portal(center: Vector2, radius: float, color: Color, t: float) -> void:
+	# Opens then closes (0 -> 1 -> 0 over its life).
+	var r := radius * sin(PI * (1.0 - t))
+	draw_circle(center, r, Color(INK, 0.6))
+	draw_arc(center, r, 0.0, TAU, 16, color, 4.0)

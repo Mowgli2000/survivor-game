@@ -9,3 +9,4 @@ All assets below are public domain (CC0 1.0) unless noted: no attribution requir
 | Characters, enemies, ground (`assets/sprites/`, baked by `tools/bake_sprites.ps1`) — "Free 2D Animated Vector Game Character Sprites" | RGS_Dev | https://rgsdev.itch.io/free-2d-animated-vector-game-character-sprites | CC0 1.0 |
 | Font `assets/fonts/Fredoka.ttf` — Fredoka | Milena Brandão, Hafontia | https://fonts.google.com/specimen/Fredoka | SIL OFL 1.1 (`assets/fonts/OFL-Fredoka.txt`) |
 | Font `assets/fonts/Nunito.ttf` — Nunito | Vernon Adams, Cyreal, Jacques Le Bailly | https://fonts.google.com/specimen/Nunito | SIL OFL 1.1 (`assets/fonts/OFL-Nunito.txt`) |
+| Font `assets/fonts/Bangers.ttf` — Bangers | Vernon Adams | https://fonts.google.com/specimen/Bangers | SIL OFL 1.1 (`assets/fonts/OFL-Bangers.txt`) |

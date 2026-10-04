@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://src/items/item_data.gd" id="1_item"]
 [ext_resource type="Script" path="res://src/core/stat_modifier.gd" id="2_mod"]
-[ext_resource type="Texture2D" path="res://assets/icons/items/sharpened_edge.svg" id="icon_tex"]
+[ext_resource type="Texture2D" path="res://assets/icons/items/sharpened_edge.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Mod_1"]
 script = ExtResource("2_mod")
