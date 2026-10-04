@@ -385,3 +385,36 @@ func test_straight_projectile_misses_the_same_enemy() -> void:
 	_projectiles.spawn(Vector2(0, 0), Vector2(300, 0), 3.0, false, 0, 0.0, 1.0, _weapon(func(_d: WeaponData) -> void: pass))
 	await wait_physics_frames(90)
 	assert_signal_not_emitted(_enemies, "enemy_damaged")
+
+
+func _strike(area: float, count: int) -> WeaponData:
+	var data := WeaponData.new()
+	data.behavior = StrikeBehavior.new()
+	data.base_damage = 20.0
+	data.attack_range = 500.0
+	data.area = area
+	data.projectile_count = count
+	return data
+
+
+func test_strike_hits_every_enemy_in_its_area() -> void:
+	var a := _enemies.spawn(_enemy_data(100.0, 0.0), Vector2(300, 0))
+	var b := _enemies.spawn(_enemy_data(100.0, 0.0), Vector2(330, 0))
+	var far := _enemies.spawn(_enemy_data(100.0, 0.0), Vector2(300, 600))  # out of range: never picked
+	await wait_physics_frames(1)
+	var ctx := WeaponContext.new(_player, StatBlock.from_defaults({}), _enemies, _projectiles,
+		RandomNumberGenerator.new())
+	assert_true(_strike(60.0, 1).behavior.fire(WeaponSlot.new(_strike(60.0, 1)), ctx))
+	assert_lt(a.hp, 100.0, "the nearest enemy is struck")
+	assert_lt(b.hp, 100.0, "its neighbour too")
+	assert_eq(far.hp, 100.0, "outside the area")
+
+
+func test_strike_needs_an_enemy_in_range_and_is_ranged() -> void:
+	_enemies.spawn(_enemy_data(100.0, 0.0), Vector2(900, 0))
+	await wait_physics_frames(1)
+	var data := _strike(60.0, 3)
+	var ctx := WeaponContext.new(_player, StatBlock.from_defaults({}), _enemies, _projectiles,
+		RandomNumberGenerator.new())
+	assert_false(data.behavior.fire(WeaponSlot.new(data), ctx))
+	assert_false(data.is_melee())
