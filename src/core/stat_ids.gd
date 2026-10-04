@@ -60,9 +60,9 @@ const BOUNDS: Dictionary[StringName, Vector2] = {
 	DAMAGE: Vector2(0.1, INF),
 	ATTACK_SPEED: Vector2(0.1, INF),
 	CRIT_CHANCE: Vector2(0.0, 1.0),
-	CRIT_DAMAGE: Vector2(1.0, INF),
+	CRIT_DAMAGE: Vector2(1.0, 3.0),  # late-game snowball cap (balance, session 8)
 	PROJECTILE_SPEED: Vector2(0.1, INF),
-	PROJECTILE_COUNT: Vector2(0.0, INF),
+	PROJECTILE_COUNT: Vector2(0.0, 3.0),  # +1 shot multiplies every weapon: capped
 	PIERCE: Vector2(0.0, INF),
 	KNOCKBACK: Vector2(0.0, INF),
 	RANGE: Vector2(0.1, INF),

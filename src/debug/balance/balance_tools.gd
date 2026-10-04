@@ -4,7 +4,7 @@ class_name BalanceSimTools
 
 ## Late-wave crowd: about one enemy per 70 x 70 px.
 const CROWD_DENSITY := 1.0 / (70.0 * 70.0)
-const MAX_TARGETS := 12.0
+const MAX_TARGETS := 10.0  # = EnemyManager.area_max_targets
 
 
 ## Damage per second written on the weapons (no positioning, no overkill):
