@@ -94,7 +94,12 @@ func _init() -> void:
 	# Effects and place of the hovered / focused seal.
 	_seal_info = Label.new()
 	_seal_info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_seal_info.add_theme_font_size_override("font_size", 20)
+	_seal_info.add_theme_font_size_override("font_size", 18)
+	# Two reserved lines as wide as the seal row: a long text wraps inside them
+	# instead of widening the screen and shifting the layout (dev's playtest).
+	_seal_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_seal_info.custom_minimum_size = Vector2(SEAL_SIZE.x * 6 + 12 * 5, 50)
+	_seal_info.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	box.add_child(_seal_info)
 	_back = Button.new()
 	_back.text = "UI_BACK"
@@ -382,7 +387,7 @@ static func seal_heat(level: int) -> Color:
 	return SEAL_HEAT[clampi(level, 0, SEAL_HEAT.size() - 1)]
 
 
-## One line: "<seal> · <place> — <effects>" (a seal stacks the ones below it).
+## "<seal> · <place>" then, on a second line, its effects (a seal stacks the ones below it).
 ## A seal sharing a lower seal's place has no place of its own yet.
 func _seal_info_text(difficulty: DifficultyData, levels: Array[DifficultyData], unlocked: bool) -> String:
 	var place := tr("BIOME_DUNGEON") if difficulty.biome == null else tr(difficulty.biome.name_key)
@@ -401,10 +406,12 @@ func _seal_info_text(difficulty: DifficultyData, levels: Array[DifficultyData], 
 		effects.append(tr("SEAL_FX_DOUBLE_BOSS"))
 	if effects.is_empty():
 		effects.append(tr("SEAL_FX_NONE"))
-	var text := "%s · %s — %s" % [tr(difficulty.name_key), place, " · ".join(effects)]
+	# Line 1: seal, place (and how to unlock it); line 2: its effects.
+	var text := "%s · %s" % [tr(difficulty.name_key), place]
 	if not unlocked:
 		text += " — " + tr("SEAL_LOCKED_HINT")
-	return text
+	return text + "
+" + " · ".join(effects)
 
 
 func _show_seal_info(text: String) -> void:

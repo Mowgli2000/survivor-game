@@ -56,8 +56,8 @@ WEAPON_KATANA,Flame sword,Épée flamboyante
 WEAPON_KATANA_DESC,Wide flaming slash that sets enemies on fire.,Large coup d'épée qui enflamme les ennemis.
 WEAPON_LASER_PISTOL,Crystal wand,Baguette de cristal
 WEAPON_LASER_PISTOL_DESC,Instant crystal beam that pierces everything. Can electrocute.,Rayon de cristal instantané qui transperce tout. Peut électrocuter.
-WEAPON_SHURIKEN,Throwing daggers,Dagues de lancer
-WEAPON_SHURIKEN_DESC,Bounce from enemy to enemy.,Ricochent d'ennemi en ennemi.
+WEAPON_SHURIKEN,Shuriken,Shuriken
+WEAPON_SHURIKEN_DESC,Spinning star that bounces from enemy to enemy.,Étoile tournoyante qui ricoche d'ennemi en ennemi.
 WEAPON_SMG,Repeating crossbow,Arbalète à répétition
 WEAPON_SMG_DESC,Very fast but inaccurate bolts.,Carreaux très rapides mais imprécis.
 WEAPON_BAZOOKA,Bomb flask,Fiole explosive
@@ -269,11 +269,11 @@ CHARACTER_HERO,Assassin,Assassin
 CHARACTER_HERO_RULE,"Shadow step: after a dodge, +25% crit chance for 2 s.","Pas d'ombre : après une esquive, +25 % de chance de critique pendant 2 s."
 SEAL_PLACE_COMING,Place to come (stone dungeon for now),Lieu à venir (donjon de pierre en attendant)
 SEAL_FX_NONE,The normal run,La partie normale
-SEAL_FX_ELITES,%d%% of enemies are elites,%d %% des ennemis sont des élites
-SEAL_FX_HP_DAMAGE,Enemies +%d%% HP and damage,Ennemis : +%d %% de PV et de dégâts
-SEAL_FX_SPAWN,"+%d%% enemies, bigger groups","+%d %% d'ennemis, groupes plus grands"
-SEAL_FX_DOUBLE_BOSS,Two bosses on the final wave,Deux boss à la dernière vague
-SEAL_LOCKED_HINT,Win the previous seal with this hunter to unlock it,Gagne le sceau précédent avec ce chasseur pour le débloquer
+SEAL_FX_ELITES,Elites: %d%%,Élites : %d %%
+SEAL_FX_HP_DAMAGE,Enemies +%d%% HP and damage,Ennemis +%d %% PV et dégâts
+SEAL_FX_SPAWN,"+%d%% enemies, bigger groups","+%d %% d'ennemis, groupes plus gros"
+SEAL_FX_DOUBLE_BOSS,Two final bosses,Deux boss finaux
+SEAL_LOCKED_HINT,win the previous seal with this hunter,gagne le sceau précédent avec ce chasseur
 ENEMY_SILVER_GRUNT,Ice goblin,Gobelin des glaces
 ENEMY_SILVER_RUNNER,Frost fox,Renard de givre
 ENEMY_SILVER_SHOOTER,Blizzard spirit,Esprit du blizzard

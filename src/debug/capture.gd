@@ -53,6 +53,10 @@ func _ready() -> void:
 				# With --danger=N too: pick the first weapon to show the seals row.
 				if danger >= 0:
 					(menu._character_select._weapons.get_child(0) as Button).pressed.emit()
+					# ...and hover seal N to show its effects line.
+					var seals := menu._character_select._dangers
+					if danger < seals.get_child_count():
+						seals.get_child(danger).mouse_entered.emit()
 		elif _mode == "--progression":
 			menu._open_progression()
 		return
