@@ -2,7 +2,12 @@ class_name Sounds
 ## Sound effects and music of the game (CC0, see assets/CREDITS.md).
 ## Weapon fire sounds live in WeaponData.fire_sound.
 
-const MUSIC_RUN := preload("res://assets/audio/music/synthwave_house_loop.ogg")
+# Fantasy music (CC0, OpenGameArt): menu "Dark Shrine Loop" (qubodup),
+# combat "Battle Theme A" (cynicmusic.com / pixelsphere.org), boss "Battle RPG
+# Theme" (CleytonRX).
+const MUSIC_MENU := preload("res://assets/audio/music/menu_dark_shrine.ogg")
+const MUSIC_RUN := preload("res://assets/audio/music/battle_theme_a.mp3")
+const MUSIC_BOSS := preload("res://assets/audio/music/boss_battle_rpg.mp3")
 
 const EXPLOSION := preload("res://assets/audio/sfx/explosion.ogg")
 const ENEMY_HIT := preload("res://assets/audio/sfx/enemy_hit.ogg")

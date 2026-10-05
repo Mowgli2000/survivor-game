@@ -64,6 +64,8 @@ func play_music(stream: AudioStream, volume_db: float = 0.0) -> void:
 		return
 	if stream is AudioStreamOggVorbis:
 		(stream as AudioStreamOggVorbis).loop = true
+	elif stream is AudioStreamMP3:
+		(stream as AudioStreamMP3).loop = true
 	_music.stream = stream
 	_music.volume_db = volume_db
 	_music.play()

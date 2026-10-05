@@ -237,6 +237,11 @@ func _ready() -> void:
 	waves.run_won.connect(_on_run_won)
 	waves.wave_started.connect(func(_wave: int) -> void: Audio.play(Sounds.WAVE_START, -6.0))
 	Audio.play_music(Sounds.MUSIC_RUN)
+	# Boss theme while a boss (or mini-boss) is alive.
+	bosses.boss_started.connect(func(_boss: Enemy) -> void: Audio.play_music(Sounds.MUSIC_BOSS))
+	bosses.boss_ended.connect(func(_boss: Enemy) -> void:
+		if bosses.boss_count() == 0 and not state.is_over:
+			Audio.play_music(Sounds.MUSIC_RUN))
 	waves.start_wave(1)
 
 
