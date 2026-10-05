@@ -218,12 +218,13 @@ func _draw_dust(feet: Vector2) -> void:
 
 
 ## The puppet stands on the feet, as tall as the sprite would be, leaning and
-## squashed like it (PlayerMotion), mirrored to face the movement.
+## squashed like it (PlayerMotion). body_scale().x already holds the facing
+## (mirrored when moving left): it must not be applied twice.
 func _place_rig() -> void:
 	var height := radius * SPRITE_HEIGHT_PER_RADIUS * (_data.sprite_scale if _data != null else 1.0)
 	var s := height / rig.rig.height
 	var squash := motion.body_scale()
-	rig.transform = Transform2D(motion.lean, Vector2(s * squash.x * motion.facing, s * squash.y), 0.0,
+	rig.transform = Transform2D(motion.lean, Vector2(s * squash.x, s * squash.y), 0.0,
 		Vector2(0.0, radius * SPRITE_FOOT))
 
 

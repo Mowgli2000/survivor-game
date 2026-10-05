@@ -62,7 +62,10 @@ func _initialize() -> void:
 	var atlas_h := 0
 	for p in pieces:
 		var img: Image = p.image
-		var size := Vector2i(maxi(1, roundi(img.get_width() * scale)), maxi(1, roundi(img.get_height() * scale)))
+		# 'scale' in the piece: shrink a piece drawn too big (long arms).
+		var k: float = scale * p.get("scale", 1.0)
+		p.k = k
+		var size := Vector2i(maxi(1, roundi(img.get_width() * k)), maxi(1, roundi(img.get_height() * k)))
 		img.resize(size.x, size.y, Image.INTERPOLATE_LANCZOS)
 		p.region = Rect2i(x, 0, size.x, size.y)
 		x += size.x + PADDING
@@ -88,7 +91,7 @@ func _initialize() -> void:
 		parents.append('"%s"' % p.parent)
 		var r: Rect2i = p.region
 		regions.append("Rect2(%d, %d, %d, %d)" % [r.position.x, r.position.y, r.size.x, r.size.y])
-		var pivot: Vector2 = p.pivot_local * scale
+		var pivot: Vector2 = p.pivot_local * p.k
 		pivots.append("%.2f, %.2f" % [pivot.x, pivot.y])
 		var joint: Vector2 = (_vec(p.at) - feet) * scale
 		joints.append("%.2f, %.2f" % [joint.x, joint.y])

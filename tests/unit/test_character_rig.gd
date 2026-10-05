@@ -69,3 +69,16 @@ func test_player_uses_the_puppet_instead_of_the_sprite() -> void:
 	drifter.setup(ContentDB.get_def(&"characters", &"drifter"), Rect2(-500, -500, 1000, 1000))
 	add_child_autofree(drifter)
 	assert_null(drifter.rig, "characters without a puppet keep their baked sprite")
+
+
+func test_puppet_turns_to_face_the_movement() -> void:
+	var player := Player.new()
+	player.setup(ContentDB.get_def(&"characters", &"ronin"), Rect2(-500, -500, 1000, 1000))
+	player.bot_input = func() -> Vector2: return Vector2.LEFT
+	add_child_autofree(player)
+	await wait_physics_frames(10)
+	assert_eq(player.motion.facing, -1.0)
+	assert_lt(player.rig.get_global_transform().x.x, 0.0, "mirrored when walking left")
+	player.bot_input = func() -> Vector2: return Vector2.RIGHT
+	await wait_physics_frames(10)
+	assert_gt(player.rig.get_global_transform().x.x, 0.0, "back to the right")
