@@ -15,9 +15,7 @@ func _rig() -> CharacterRig:
 	return rig
 
 
-func test_epeiste_has_a_puppet_with_every_piece() -> void:
-	var data: CharacterData = ContentDB.get_def(&"characters", &"ronin")
-	assert_eq(data.rig, _rig_data)
+func test_epeiste_puppet_has_every_piece() -> void:
 	for piece in ["head", "torso", "skirt", "arm_l", "arm_r", "hand_l", "hand_r", "leg_l", "leg_r"]:
 		assert_gt(_rig_data.index_of(StringName(piece)), -1, piece)
 	assert_eq(_rig().get_child_count(), _rig_data.names.size(), "one sprite per piece")
@@ -60,8 +58,10 @@ func test_death_lays_the_body_down_and_revive_stands_it_up() -> void:
 
 
 func test_player_uses_the_puppet_instead_of_the_sprite() -> void:
+	var with_rig := (ContentDB.get_def(&"characters", &"ronin") as CharacterData).duplicate() as CharacterData
+	with_rig.rig = _rig_data
 	var player := Player.new()
-	player.setup(ContentDB.get_def(&"characters", &"ronin"), Rect2(-500, -500, 1000, 1000))
+	player.setup(with_rig, Rect2(-500, -500, 1000, 1000))
 	add_child_autofree(player)
 	assert_not_null(player.rig)
 	var drifter := Player.new()

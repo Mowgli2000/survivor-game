@@ -6,7 +6,6 @@
 [ext_resource type="Texture2D" path="res://assets/characters/cards/ronin_card.png" id="card"]
 [ext_resource type="Resource" path="res://data/weapons/steel_katana.tres" id="w0"]
 [ext_resource type="Resource" path="res://data/weapons/katana.tres" id="w1"]
-[ext_resource type="Resource" path="res://assets/rigs/ronin.tres" id="rig"]
 
 [sub_resource type="Resource" id="Mod_1"]
 script = ExtResource("2_mod")
@@ -47,5 +46,4 @@ radius = 16.0
 color = Color(1, 0.478, 0.169, 1)
 sprite_id = &"ronin_pc"
 sprite_scale = 1.35
-rig = ExtResource("rig")
 card_art = ExtResource("card")
