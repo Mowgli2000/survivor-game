@@ -4,10 +4,10 @@ extends GutHookScript
 
 
 func run() -> void:
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.TEST_PATH))
+	SafeFile.remove(Settings.TEST_PATH)
 	Settings.path = Settings.TEST_PATH
 	Settings.load_settings()
 	TranslationServer.set_locale("en")
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(SaveService.TEST_PATH))
+	SafeFile.remove(SaveService.TEST_PATH)
 	SaveService.path = SaveService.TEST_PATH
 	SaveService.load_profile()

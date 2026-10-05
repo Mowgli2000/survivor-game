@@ -3,13 +3,13 @@ extends GutTest
 
 
 func before_each() -> void:
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.TEST_PATH))
+	SafeFile.remove(Settings.TEST_PATH)
 	Settings.path = Settings.TEST_PATH
 	Settings.load_settings()
 
 
 func after_all() -> void:
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.TEST_PATH))
+	SafeFile.remove(Settings.TEST_PATH)
 	Settings.load_settings()
 	TranslationServer.set_locale("en")
 

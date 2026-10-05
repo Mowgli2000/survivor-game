@@ -3,13 +3,13 @@ extends GutTest
 
 
 func before_each() -> void:
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(SaveService.TEST_PATH))
+	SafeFile.remove(SaveService.TEST_PATH)
 	SaveService.load_profile()
 	Settings.data.show_hints = true
 
 
 func after_each() -> void:
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(SaveService.TEST_PATH))
+	SafeFile.remove(SaveService.TEST_PATH)
 	SaveService.load_profile()
 	Settings.load_settings()
 

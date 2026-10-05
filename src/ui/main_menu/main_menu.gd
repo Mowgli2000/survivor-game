@@ -71,6 +71,17 @@ func _ready() -> void:
 	_settings_button = _button("UI_SETTINGS", _open_settings)
 	_quit = _button("UI_QUIT", SceneRouter.quit)
 
+	# Version in a corner: playtesters quote it in their bug reports.
+	var version := Label.new()
+	version.text = version_text()
+	version.theme_type_variation = &"SmallLabel"
+	version.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
+	version.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	version.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	version.offset_right = -24.0
+	version.offset_bottom = -16.0
+	root.add_child(version)
+
 	_settings = SettingsScreen.new()
 	_settings.closed.connect(_on_settings_closed)
 	root.add_child(_settings)
@@ -86,6 +97,11 @@ func _ready() -> void:
 	Audio.play_music(Sounds.MUSIC_MENU, MUSIC_DB)
 	UiFx.pop_in(title)
 	_play.grab_focus.call_deferred()
+
+
+## "v" + application/config/version (project.godot).
+static func version_text() -> String:
+	return "v" + str(ProjectSettings.get_setting("application/config/version", "0"))
 
 
 func _button(text: String, action: Callable) -> Button:

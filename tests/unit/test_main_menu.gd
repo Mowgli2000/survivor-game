@@ -36,3 +36,8 @@ func _has_joy_button(action: StringName, button: JoyButton) -> bool:
 		if event is InputEventJoypadButton and (event as InputEventJoypadButton).button_index == button:
 			return true
 	return false
+
+
+func test_main_menu_shows_the_project_version() -> void:
+	assert_eq(MainMenu.version_text(), "v" + str(ProjectSettings.get_setting("application/config/version")))
+	assert_ne(MainMenu.version_text(), "v0")

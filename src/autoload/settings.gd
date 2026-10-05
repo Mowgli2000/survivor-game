@@ -25,22 +25,19 @@ func _ready() -> void:
 func load_settings() -> void:
 	data = SettingsData.new()
 	if FileAccess.file_exists(path):
-		# JSON.parse() (not parse_string) reports errors without an engine error log.
-		var json := JSON.new()
-		if json.parse(FileAccess.get_file_as_string(path)) == OK and json.data is Dictionary:
-			data = SettingsData.from_dict(json.data)
-		else:
+		# Falls back to the backup of the last good file (SafeFile).
+		var saved := SafeFile.read_json(path)
+		if saved.is_empty():
 			push_warning("Settings: unreadable %s, using defaults" % path)
+		else:
+			data = SettingsData.from_dict(saved)
 	apply()
 	changed.emit()
 
 
 func save_settings() -> void:
-	var file := FileAccess.open(path, FileAccess.WRITE)
-	if file == null:
+	if not SafeFile.write_text(path, JSON.stringify(data.to_dict(), "\t")):
 		push_warning("Settings: cannot write %s" % path)
-		return
-	file.store_string(JSON.stringify(data.to_dict(), "\t"))
 
 
 func set_value(key: StringName, value: Variant) -> void:

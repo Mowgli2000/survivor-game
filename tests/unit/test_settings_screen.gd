@@ -3,7 +3,7 @@ extends GutTest
 
 
 func after_each() -> void:
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(Settings.TEST_PATH))
+	SafeFile.remove(Settings.TEST_PATH)
 	Settings.load_settings()
 	TranslationServer.set_locale("en")
 

@@ -4,14 +4,14 @@ extends GutTest
 
 
 func before_each() -> void:
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(SaveService.TEST_PATH))
+	SafeFile.remove(SaveService.TEST_PATH)
 	SaveService.load_profile()
 	SaveService.profile.unlock(&"characters", &"ronin")
 	SaveService.profile.best_difficulty_by_character[&"drifter"] = 0  # won Danger 0 with the Drifter
 
 
 func after_each() -> void:
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(SaveService.TEST_PATH))
+	SafeFile.remove(SaveService.TEST_PATH)
 	SaveService.load_profile()
 
 

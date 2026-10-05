@@ -21,11 +21,12 @@ func _ready() -> void:
 func load_profile() -> void:
 	profile = Profile.new()
 	if FileAccess.file_exists(path):
-		var json := JSON.new()
-		if json.parse(FileAccess.get_file_as_string(path)) == OK and json.data is Dictionary:
-			profile = Profile.from_dict(json.data)
-		else:
+		# Falls back to the backup of the last good save (SafeFile).
+		var saved := SafeFile.read_json(path)
+		if saved.is_empty():
 			push_warning("SaveService: unreadable %s, starting a new profile" % path)
+		else:
+			profile = Profile.from_dict(saved)
 	_grant_past_seal_rewards()
 	profile_changed.emit()
 
@@ -52,11 +53,9 @@ func _grant_past_seal_rewards() -> void:
 
 
 func save_profile() -> void:
-	var file := FileAccess.open(path, FileAccess.WRITE)
-	if file == null:
+	# Crash-safe: temp file, backup, then replace (SafeFile).
+	if not SafeFile.write_text(path, JSON.stringify(profile.to_dict(), "\t")):
 		push_warning("SaveService: cannot write %s" % path)
-		return
-	file.store_string(JSON.stringify(profile.to_dict(), "\t"))
 
 
 ## Content is available unless it is `locked` and not unlocked yet.

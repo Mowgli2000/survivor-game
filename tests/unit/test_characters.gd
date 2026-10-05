@@ -6,7 +6,7 @@ const RUN := preload("res://src/run/run.tscn")
 
 func after_each() -> void:
 	get_tree().paused = false
-	DirAccess.remove_absolute(ProjectSettings.globalize_path(SaveService.TEST_PATH))
+	SafeFile.remove(SaveService.TEST_PATH)
 	SaveService.load_profile()
 
 
