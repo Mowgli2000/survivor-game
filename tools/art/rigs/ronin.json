@@ -1,0 +1,15 @@
+{
+	"_doc": "Epeiste puppet. Points are in sheet pixels; the model space IS the sheet space (head, torso and skirt are already in place there). 'seed' = a point inside the piece, 'cut' = keep only rows above/below y (head and torso touch), 'pivot' = joint inside the piece, 'at' = where that joint sits on the assembled body. 'mirror': true also makes the right-side twin (sheet mirrored around 'axis'). Higher z draws on top.",
+	"sheet": "art_source/ai/rig/ronin_parts.png",
+	"axis": 767.5,
+	"height": 300,
+	"feet": [767.5, 1236],
+	"pieces": [
+		{"name": "leg", "seed": [350, 800], "pivot": [390, 590], "at": [720, 820], "z": 0, "parent": "", "mirror": true},
+		{"name": "skirt", "seed": [775, 820], "pivot": [775, 725], "at": [775, 715], "z": 1, "parent": "torso"},
+		{"name": "torso", "seed": [772, 600], "cut_above": 466, "pivot": [772, 690], "at": [772, 690], "z": 2, "parent": ""},
+		{"name": "head", "seed": [772, 300], "cut_below": 466, "pivot": [775, 462], "at": [775, 474], "z": 3, "parent": "torso"},
+		{"name": "arm", "seed": [336, 180], "pivot": [345, 140], "at": [640, 535], "z": 4, "parent": "torso", "mirror": true},
+		{"name": "hand", "seed": [290, 420], "pivot": [293, 292], "at": [628, 663], "z": 5, "parent": "arm", "mirror": true}
+	]
+}

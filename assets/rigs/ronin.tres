@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="RigData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/player/rig/rig_data.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/rigs/ronin.png" id="2_tex"]
+
+[resource]
+script = ExtResource("1_script")
+texture = ExtResource("2_tex")
+names = PackedStringArray("leg_l", "leg_r", "skirt", "torso", "head", "arm_l", "arm_r", "hand_l", "hand_r")
+parents = PackedStringArray("", "", "torso", "", "torso", "torso", "torso", "arm_l", "arm_r")
+regions = Array[Rect2]([Rect2(0, 0, 59, 108), Rect2(63, 0, 59, 108), Rect2(126, 0, 87, 58), Rect2(217, 0, 74, 59), Rect2(295, 0, 134, 112), Rect2(433, 0, 36, 44), Rect2(473, 0, 36, 44), Rect2(513, 0, 34, 65), Rect2(551, 0, 34, 65)])
+pivots = PackedVector2Array(44.35, 5.61, 14.13, 5.61, 43.87, 4.14, 37.04, 54.59, 77.25, 111.37, 19.98, 9.99, 16.08, 9.99, 18.03, 3.17, 15.35, 2.92)
+joints = PackedVector2Array(-11.58, -101.38, 11.58, -101.38, 1.83, -126.97, 1.10, -133.06, 1.83, -185.70, -31.07, -170.84, 31.07, -170.84, -34.00, -139.64, 34.00, -139.64)
+height = 300.0

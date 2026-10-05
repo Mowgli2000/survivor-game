@@ -56,6 +56,7 @@ Phases 0 (setup), 1 (prototype), 2 (combat : 6 armes, statuts, 4 ennemis, rendu 
 - Overlay debug en jeu : F3 (action `debug_toggle`).
 - Galerie d'effets et d'ennemis (direction artistique) : `... res://src/debug/vfx_gallery.tscn [-- --out=<chemin.png>]`
 - Art (ADR 0016) : dessiner `python tools/art/make_sprites.py` (persos/ennemis) et `python tools/art/make_map.py` (sol, décor, projectiles) → SVG dans `assets_src/drawn/` ; convertir tout (atlas `assets/sprites/`, `SpriteSheet` `.tres`, `assets/map/decor_atlas.tres`, `projectiles.png`) : `powershell -ExecutionPolicy Bypass -File tools/bake_sprites.ps1` ; aperçu rapide : `& "C:\Program Files\Godot\Godot.exe" --headless --path . -s res://tools/art/preview_sheet.gd -- --out=<png> [--id=drifter]`
+- Pantin d'un perso (ADR 0020) : `& "C:\Program Files\Godot\Godot.exe" --headless --path . -s res://tools/art/make_rig.gd -- --id=<id>` (réglages `tools/art/rigs/<id>.json`), puis `--import` ; planche de contrôle : `... -s res://tools/art/rig_preview.gd -- --character=<id> --out=<png>`
 - Chemin Godot surchargeable via la variable d'env `GODOT_BIN`.
 
 ## Performance

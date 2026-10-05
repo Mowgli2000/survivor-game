@@ -42,6 +42,8 @@ var rng := RandomNumberGenerator.new()
 var animator := SpriteAnimator.new()
 ## Lean, hit squash and dust drawn over the baked frames.
 var motion := PlayerMotion.new()
+## Articulated puppet (CharacterData.rig), drawn instead of the baked sprite.
+var rig: CharacterRig
 
 var _data: CharacterData
 var _arena: Rect2
@@ -58,6 +60,12 @@ func setup(data: CharacterData, arena: Rect2) -> void:
 	animator.reset(load(path) as SpriteSheet if has_sprite else null, 0.0)
 	if has_sprite:
 		_setup_sprite_material(animator.sheet)
+	if data.rig != null:
+		rig = CharacterRig.new()
+		rig.name = "Rig"
+		rig.setup(data.rig)
+		add_child(rig)
+		_place_rig()
 	stats = StatBlock.from_defaults(data.stat_overrides)
 	hp = stats.get_value(StatIds.MAX_HP)
 	_last_max_hp = hp
@@ -83,6 +91,10 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if rig != null:
+		rig.flash = motion.flash
+		rig.animate(delta, 0.0 if is_dead else motion.speed_ratio, motion.flash)
+		_place_rig()
 	if is_dead:
 		return
 	var direction: Vector2
@@ -132,6 +144,8 @@ func take_damage(amount: float) -> void:
 		is_dead = true
 		# Coop: a dead player stays as a ghost until the next wave (ADR 0017).
 		modulate.a = GHOST_ALPHA
+		if rig != null:
+			rig.die()
 		died.emit()
 
 
@@ -140,6 +154,8 @@ func revive() -> void:
 	if not is_dead:
 		return
 	is_dead = false
+	if rig != null:
+		rig.revive()
 	_invulnerable = 0.0
 	modulate.a = 1.0
 	hp = stats.get_value(StatIds.MAX_HP)
@@ -175,6 +191,14 @@ func _draw() -> void:
 		draw_set_transform(feet, 0.0, Vector2(1.0, 0.45))
 		draw_arc(Vector2.ZERO, radius * 1.5, 0.0, TAU, 32, tag_color, 5.0, true)
 		draw_set_transform(Vector2.ZERO)
+	if rig != null:
+		var feet := Vector2(0.0, radius * SPRITE_FOOT)
+		# Ground shadow (the baked sprites have it in their frames).
+		draw_set_transform(feet, 0.0, Vector2(1.0, 0.35))
+		draw_circle(Vector2.ZERO, radius * 1.7, Color(0.05, 0.03, 0.12, 0.35 if not is_dead else 0.0))
+		draw_set_transform(Vector2.ZERO)
+		_draw_dust(feet)
+		return
 	if animator.sheet != null:
 		_draw_sprite()
 		return
@@ -184,6 +208,23 @@ func _draw() -> void:
 	draw_circle(Vector2.ZERO, radius, color)
 	draw_arc(Vector2.ZERO, radius - 1.0, 0.0, TAU, 32, neon, 3.0, true)
 	draw_circle(Vector2(radius * 0.45, 0.0), radius * 0.25, Color(0.05, 0.05, 0.08))
+
+
+func _draw_dust(feet: Vector2) -> void:
+	for i in motion.dust_positions.size():
+		var r := motion.dust_ages[i] / PlayerMotion.DUST_LIFE
+		var at := motion.dust_positions[i] - global_position + feet + Vector2(0.0, -r * radius * 0.3)
+		draw_circle(at, radius * (0.2 + r * 0.45), Color(0.9, 0.88, 0.95, 0.4 * (1.0 - r)))
+
+
+## The puppet stands on the feet, as tall as the sprite would be, leaning and
+## squashed like it (PlayerMotion), mirrored to face the movement.
+func _place_rig() -> void:
+	var height := radius * SPRITE_HEIGHT_PER_RADIUS * (_data.sprite_scale if _data != null else 1.0)
+	var s := height / rig.rig.height
+	var squash := motion.body_scale()
+	rig.transform = Transform2D(motion.lean, Vector2(s * squash.x * motion.facing, s * squash.y), 0.0,
+		Vector2(0.0, radius * SPRITE_FOOT))
 
 
 func _setup_sprite_material(sheet: SpriteSheet) -> void:
@@ -210,11 +251,7 @@ func _draw_sprite() -> void:
 	var height := radius * SPRITE_HEIGHT_PER_RADIUS * (_data.sprite_scale if _data != null else 1.0)
 	var foot := radius * SPRITE_FOOT
 	var feet := Vector2(0.0, foot)
-
-	for i in motion.dust_positions.size():
-		var r := motion.dust_ages[i] / PlayerMotion.DUST_LIFE
-		var at := motion.dust_positions[i] - global_position + feet + Vector2(0.0, -r * radius * 0.3)
-		draw_circle(at, radius * (0.2 + r * 0.45), Color(0.9, 0.88, 0.95, 0.4 * (1.0 - r)))
+	_draw_dust(feet)
 
 	var body := Transform2D(motion.lean, motion.body_scale(), 0.0, feet) * Transform2D(0.0, -feet)
 	draw_set_transform_matrix(body)
