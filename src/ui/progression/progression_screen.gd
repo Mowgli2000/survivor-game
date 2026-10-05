@@ -58,7 +58,17 @@ func open() -> void:
 	for child in _rows.get_children():
 		_rows.remove_child(child)
 		child.queue_free()
-	for challenge in SaveService.all_challenges():
+	# Other challenges first, then the seal rewards from Copper to Astral.
+	var challenges := SaveService.all_challenges()
+	challenges.sort_custom(func(a: ChallengeData, b: ChallengeData) -> bool:
+		var sa := a.kind == ChallengeData.Kind.WIN_SEAL
+		var sb := b.kind == ChallengeData.Kind.WIN_SEAL
+		if sa != sb:
+			return sb
+		if sa and a.threshold != b.threshold:
+			return a.threshold < b.threshold
+		return String(a.id) < String(b.id))
+	for challenge in challenges:
 		_rows.add_child(_row(challenge, profile.completed.has(challenge.id)))
 	visible = true
 	_back.grab_focus()
