@@ -23,6 +23,8 @@ const HAIR_LIFT := 0.3
 const ARM_SWING := 0.22
 ## Extra elbow bend when the arm swings back.
 const ELBOW_SWING := 0.15
+## Elbow bend kept while walking (forearms forward), in radians.
+const RUN_ELBOW_BEND := 0.6
 ## Body bob while walking, and breathing at rest, in texture px.
 const WALK_BOB := 7.0
 const BREATH := 1.6
@@ -135,8 +137,10 @@ func _pose() -> void:
 	# The arms already hang out from the body: they swing back half as far.
 	_turn(&"arm_front", _arm_swing(stride) + breath * 0.04 - _hurt * 0.6)
 	_turn(&"arm_back", -_arm_swing(-stride) - breath * 0.04 + _hurt * 0.5)
-	_turn(&"hand_front", -maxf(-stride, 0.0) * ELBOW_SWING - _hurt * 0.3)
-	_turn(&"hand_back", -maxf(stride, 0.0) * ELBOW_SWING)
+	# Walking bends the elbows (forearms forward), more on the forward swing.
+	var run_bend := -RUN_ELBOW_BEND * _walk_blend
+	_turn(&"hand_front", run_bend - maxf(-stride, 0.0) * ELBOW_SWING - _hurt * 0.3)
+	_turn(&"hand_back", run_bend - maxf(stride, 0.0) * ELBOW_SWING)
 	_turn(&"torso", WALK_LEAN * _walk_blend + breath * 0.01 - _hurt * 0.12)
 	_turn(&"head", sin(_time * 1.3) * 0.03 * (1.0 - _walk_blend) - WALK_LEAN * 0.5 * _walk_blend + _hurt * 0.15)
 	_turn(&"skirt", -sin(_walk_phase * 2.0) * 0.05 * _walk_blend - WALK_LEAN * 0.6 * _walk_blend)
