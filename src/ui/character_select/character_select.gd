@@ -13,7 +13,7 @@ signal closed
 const CARD_SIZE := Vector2(250, 510)
 const PREVIEW_HEIGHT := 170.0
 ## Height of a card illustration (CharacterData.card_art, 2:3 portrait).
-const ART_HEIGHT := 200.0
+const ART_HEIGHT := 176.0
 ## Six seals must fit a 1920 px row.
 const SEAL_SIZE := Vector2(200, 116)
 const ROMAN: Array[String] = ["I", "II", "III", "IV", "V", "VI"]
@@ -217,7 +217,7 @@ func _build_cards() -> void:
 		var rule := Label.new()
 		rule.text = character.description_key if unlocked else _unlock_hint(character)
 		rule.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		rule.add_theme_font_size_override("font_size", 18)
+		rule.add_theme_font_size_override("font_size", 16)
 		rule.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		if not unlocked:
 			rule.add_theme_color_override("font_color", UiTheme.MUTED)
