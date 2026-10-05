@@ -123,6 +123,11 @@ func show_toast(text: String) -> void:
 	tween.tween_callback(func() -> void: _toast.visible = false)
 
 
+## First-time tip at the top of the HUD (HintBanner).
+func show_hint(key: StringName) -> void:
+	HintBanner.show_once(_root, key)
+
+
 func toast_text() -> String:
 	return _toast.text if _toast.visible else ""
 

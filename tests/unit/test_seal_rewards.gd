@@ -72,3 +72,16 @@ func test_seal_info_announces_the_reward_until_it_is_won() -> void:
 	_win(0)
 	assert_eq(screen.seal_reward_text(0), "", "nothing left to win at Copper")
 	assert_ne(screen.seal_reward_text(1), "")
+
+
+func test_seals_won_before_the_rewards_existed_grant_them_at_load() -> void:
+	SaveService.profile.best_difficulty_by_character[&"ronin"] = 1  # won Iron long ago
+	SaveService.save_profile()
+	SaveService.load_profile()
+	for level in 2:
+		for challenge in _seal_challenges(level):
+			var target := ContentDB.get_def(challenge.unlock_category, challenge.unlock_id)
+			assert_true(SaveService.is_unlocked(challenge.unlock_category, target), String(challenge.id))
+	for challenge in _seal_challenges(2):
+		var target := ContentDB.get_def(challenge.unlock_category, challenge.unlock_id)
+		assert_false(SaveService.is_unlocked(challenge.unlock_category, target))

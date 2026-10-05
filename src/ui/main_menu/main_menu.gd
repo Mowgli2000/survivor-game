@@ -83,7 +83,7 @@ func _ready() -> void:
 	_progression.closed.connect(_on_overlay_closed.bind(_progression_button))
 	root.add_child(_progression)
 
-	Audio.play_music(Sounds.MUSIC_RUN, MUSIC_DB)
+	Audio.play_music(Sounds.MUSIC_MENU, MUSIC_DB)
 	UiFx.pop_in(title)
 	_play.grab_focus.call_deferred()
 

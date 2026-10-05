@@ -19,6 +19,7 @@ const SEAL_SIZE := Vector2(200, 116)
 const ROMAN: Array[String] = ["I", "II", "III", "IV", "V", "VI"]
 const SKULL := "☠"
 const LOCK := "🔒"
+const REWARD_ICON := 30.0
 ## Copper -> Astral: sea green, lime, yellow, orange, red, blood red.
 const SEAL_HEAT: Array[Color] = [Color("4de0b8"), Color("a6e34d"), Color("ffd84d"),
 		Color("ff9a3d"), Color("ff4a3d"), Color("c8102e")]
@@ -30,6 +31,7 @@ var _weapon_title: Label
 var _dangers: HBoxContainer
 var _danger_title: Label
 var _seal_info: Label
+var _seal_effects: Label
 var _weapon: WeaponData
 var _back: Button
 var _chosen: CharacterData
@@ -98,9 +100,16 @@ func _init() -> void:
 	# Two reserved lines as wide as the seal row: a long text wraps inside them
 	# instead of widening the screen and shifting the layout (dev's playtest).
 	_seal_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_seal_info.custom_minimum_size = Vector2(SEAL_SIZE.x * 6 + 12 * 5, 50)
+	_seal_info.custom_minimum_size = Vector2(SEAL_SIZE.x * 6 + 12 * 5, 26)
 	_seal_info.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	box.add_child(_seal_info)
+	# Second line: the seal's numbers, smaller and muted (details for the curious).
+	_seal_effects = Label.new()
+	_seal_effects.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_seal_effects.add_theme_font_size_override("font_size", 15)
+	_seal_effects.add_theme_color_override("font_color", UiTheme.MUTED)
+	_seal_effects.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	box.add_child(_seal_effects)
 	_back = Button.new()
 	_back.text = "UI_BACK"
 	_back.custom_minimum_size = Vector2(260, 64)
@@ -273,6 +282,9 @@ func _unlock_hint(character: CharacterData) -> String:
 
 func _choose_character(character: CharacterData) -> void:
 	_chosen = character
+	# Feedback: the hunter's first weapon rings out.
+	if not character.starting_weapons.is_empty() and character.starting_weapons[0].fire_sound != null:
+		Audio.play(character.starting_weapons[0].fire_sound, -4.0)
 	# Another card may be picked while the previous character's weapon and
 	# Danger rows are still shown: forget them (they belong to that character).
 	_weapon = null
@@ -311,6 +323,8 @@ func _show_weapons(on: bool) -> void:
 
 func _choose_weapon(weapon: WeaponData) -> void:
 	_weapon = weapon
+	if weapon.fire_sound != null:
+		Audio.play(weapon.fire_sound, weapon.fire_volume_db)
 	if coop and _picking == 0:
 		# Player 1 is done: player 2's turn.
 		_first_character = _chosen
@@ -366,10 +380,51 @@ func _seal_button(difficulty: DifficultyData, unlocked: bool) -> Button:
 	# Locked: a padlock instead of the skulls. Copper (0 skulls) keeps an empty line.
 	var marks := LOCK if not unlocked else SKULL.repeat(difficulty.level)
 	box.add_child(_seal_label(marks if marks != "" else " ", 18, heat if unlocked else UiTheme.MUTED))
-	var name_label := _seal_label(difficulty.name_key, 16, difficulty.color if unlocked else UiTheme.MUTED)
-	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	box.add_child(name_label)
+	# The seal's rewards: silhouettes until won, in color once unlocked (the name
+	# of the seal is in the info line under the row).
+	var rewards := HBoxContainer.new()
+	rewards.alignment = BoxContainer.ALIGNMENT_CENTER
+	rewards.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rewards.add_theme_constant_override("separation", 6)
+	for target in seal_rewards(difficulty.level):
+		var icon := TextureRect.new()
+		icon.texture = target.get(&"icon")
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.custom_minimum_size = Vector2(REWARD_ICON, REWARD_ICON)
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var category: StringName = &"weapons" if target is WeaponData else &"items"
+		if not SaveService.is_unlocked(category, target):
+			icon.material = _silhouette_material()
+		rewards.add_child(icon)
+	box.add_child(rewards)
 	return button
+
+
+## Weapon and items unlocked by winning seal `level` (WIN_SEAL challenges).
+static func seal_rewards(level: int) -> Array[Resource]:
+	var list: Array[Resource] = []
+	for challenge in SaveService.all_challenges():
+		if challenge.kind == ChallengeData.Kind.WIN_SEAL and challenge.threshold == level:
+			var target := ContentDB.get_def(challenge.unlock_category, challenge.unlock_id)
+			if target != null:
+				list.append(target)
+	return list
+
+
+static var _silhouette: ShaderMaterial
+
+
+## Flat shape of an icon (a mystery reward): its alpha, one muted color.
+static func _silhouette_material() -> ShaderMaterial:
+	if _silhouette == null:
+		var shader := Shader.new()
+		shader.code = "shader_type canvas_item;
+uniform vec4 tint : source_color = vec4(0.32, 0.27, 0.45, 0.9);
+void fragment() { COLOR = vec4(tint.rgb, texture(TEXTURE, UV).a * tint.a); }"
+		_silhouette = ShaderMaterial.new()
+		_silhouette.shader = shader
+	return _silhouette
 
 
 func _seal_label(text: String, size: int, color: Color) -> Label:
@@ -408,9 +463,6 @@ func _seal_info_text(difficulty: DifficultyData, levels: Array[DifficultyData], 
 		effects.append(tr("SEAL_FX_NONE"))
 	# Line 1: seal, place, reward still to win (and how to unlock it); line 2: its effects.
 	var text := "%s · %s" % [tr(difficulty.name_key), place]
-	var reward := seal_reward_text(difficulty.level)
-	if reward != "":
-		text += " — " + reward
 	if not unlocked:
 		text += " — " + tr("SEAL_LOCKED_HINT")
 	return text + "
@@ -439,16 +491,24 @@ func seal_reward_text(level: int) -> String:
 
 
 func _show_seal_info(text: String) -> void:
-	_seal_info.text = text
+	var lines := text.split("
+", true, 1)
+	_seal_info.text = lines[0]
+	_seal_effects.text = lines[1] if lines.size() > 1 else ""
 
 
 func _show_dangers(on: bool) -> void:
 	_dangers.visible = on
 	_danger_title.visible = on
 	_seal_info.visible = on
+	_seal_effects.visible = on
+	if on:
+		# Over the title: the cards and the seals row stay visible.
+		HintBanner.show_once(self, &"seals", HintBanner.TOP_CENTER, Vector2(0.0, 4.0), 1500.0)
 
 
 func _start(difficulty: DifficultyData) -> void:
+	Audio.play(Sounds.PORTAL_OPEN, -4.0)
 	var setup := RunSetup.new()
 	setup.difficulty = difficulty
 	if coop:

@@ -9,7 +9,7 @@ const VERSION := 1
 const LOCALES: Array[String] = ["", "en", "fr"]
 const VOLUME_KEYS: Array[StringName] = [&"master_volume", &"music_volume", &"sfx_volume"]
 const BOOL_KEYS: Array[StringName] = [&"fullscreen", &"vsync", &"screen_shake",
-	&"damage_numbers", &"reduce_motion"]
+	&"damage_numbers", &"reduce_motion", &"show_hints"]
 
 var master_volume: float = 0.8
 var music_volume: float = 0.7
@@ -19,6 +19,8 @@ var vsync: bool = true
 var screen_shake: bool = true
 var damage_numbers: bool = true
 var reduce_motion: bool = false
+## First-time tips (HintBanner).
+var show_hints: bool = true
 var locale: String = ""
 
 

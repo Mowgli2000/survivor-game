@@ -8,6 +8,8 @@ extends Node
 const POOL_SIZE := 32
 const MIN_INTERVAL_MS := 35
 const MAX_VOICES := 4
+const UI_HOVER_DB := -16.0
+const UI_CLICK_DB := -9.0
 const MUSIC_BUS := &"Music"
 const SFX_BUS := &"SFX"
 
@@ -27,6 +29,23 @@ func _ready() -> void:
 		player.bus = SFX_BUS
 		add_child(player)
 		_players.append(player)
+	# Every button of every screen gets its hover / click sounds here, once.
+	get_tree().node_added.connect(_on_node_added)
+
+
+func _on_node_added(node: Node) -> void:
+	var button := node as BaseButton
+	if button == null or button.has_meta(&"ui_sounds"):
+		return
+	button.set_meta(&"ui_sounds", true)
+	button.mouse_entered.connect(_on_button_hovered.bind(button))
+	button.focus_entered.connect(_on_button_hovered.bind(button))
+	button.pressed.connect(func() -> void: play(Sounds.UI_CLICK, UI_CLICK_DB, 0.03))
+
+
+func _on_button_hovered(button: BaseButton) -> void:
+	if not button.disabled and button.is_visible_in_tree():
+		play(Sounds.UI_HOVER, UI_HOVER_DB, 0.05)
 
 
 ## Plays `stream` unless throttled. Returns true when a player was used.
@@ -64,6 +83,8 @@ func play_music(stream: AudioStream, volume_db: float = 0.0) -> void:
 		return
 	if stream is AudioStreamOggVorbis:
 		(stream as AudioStreamOggVorbis).loop = true
+	elif stream is AudioStreamMP3:
+		(stream as AudioStreamMP3).loop = true
 	_music.stream = stream
 	_music.volume_db = volume_db
 	_music.play()

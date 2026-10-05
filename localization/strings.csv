@@ -378,3 +378,9 @@ CHALLENGE_SEAL_5,Astral seal cleared,Sceau Astral vaincu
 CHALLENGE_SEAL_5_DESC,Win a run at the Astral seal or higher,Gagner une partie au sceau Astral ou plus
 SEAL_REWARD,Reward: %s,Récompense : %s
 SEAL_REWARD_MORE,%s + %d items,%s + %d objets
+SET_SHOW_HINTS,Show tips,Afficher les astuces
+HINT_MOVE,"Move with WASD or the arrow keys: your weapons attack on their own. Pick up what monsters drop: experience and materials.","Déplace-toi avec ZQSD ou les flèches : tes armes attaquent toutes seules. Ramasse ce que lâchent les monstres : expérience et matériaux."
+HINT_STATS,Hold Tab to see your stats.,Maintiens Tab pour voir tes statistiques.
+HINT_LEVEL_UP,"Level up! Pick an upgrade: it lasts for the whole run.","Niveau supérieur ! Choisis une amélioration : elle dure toute la partie."
+HINT_SHOP,"Spend your materials between waves. Click one of your weapons to sell it, or to merge it with an identical weapon of the same tier. Lock an offer to keep it for the next shop.","Dépense tes matériaux entre les vagues. Clique sur une de tes armes pour la vendre ou la fusionner avec une arme identique du même rang. Verrouille un article pour le garder à la prochaine boutique."
+HINT_SEALS,"Win a run to open the next seal. Each seal you beat unlocks a weapon and two items.","Gagne une partie pour ouvrir le sceau suivant. Chaque sceau vaincu débloque une arme et deux objets."

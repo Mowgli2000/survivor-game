@@ -26,7 +26,29 @@ func load_profile() -> void:
 			profile = Profile.from_dict(json.data)
 		else:
 			push_warning("SaveService: unreadable %s, starting a new profile" % path)
+	_grant_past_seal_rewards()
 	profile_changed.emit()
+
+
+## Seal rewards came after some seals were already won: a profile that holds a
+## win at seal N (best_difficulty_by_character) gets the rewards up to N.
+func _grant_past_seal_rewards() -> void:
+	var best := -1
+	for level in profile.best_difficulty_by_character.values():
+		best = maxi(best, int(level))
+	if best < 0:
+		return
+	var granted := false
+	for challenge in all_challenges():
+		if challenge.kind != ChallengeData.Kind.WIN_SEAL or challenge.threshold > best:
+			continue
+		if profile.completed.has(challenge.id):
+			continue
+		profile.completed.append(challenge.id)
+		profile.unlock(challenge.unlock_category, challenge.unlock_id)
+		granted = true
+	if granted:
+		save_profile()
 
 
 func save_profile() -> void:
@@ -38,6 +60,16 @@ func save_profile() -> void:
 
 
 ## Content is available unless it is `locked` and not unlocked yet.
+func has_seen_hint(key: StringName) -> bool:
+	return profile.seen_hints.has(key)
+
+
+func mark_hint_seen(key: StringName) -> void:
+	if not profile.seen_hints.has(key):
+		profile.seen_hints.append(key)
+		save_profile()
+
+
 func is_unlocked(category: StringName, def: Resource) -> bool:
 	if def == null or not def.get(&"locked"):
 		return true

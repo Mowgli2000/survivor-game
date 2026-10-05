@@ -19,6 +19,8 @@ var wins_by_character: Dictionary[StringName, int] = {}
 var best_difficulty_by_character: Dictionary[StringName, int] = {}
 ## Best wave reached in endless mode with each character.
 var best_endless_wave_by_character: Dictionary[StringName, int] = {}
+## First-time tips already shown (HintBanner keys).
+var seen_hints: Array[StringName] = []
 
 
 ## Highest difficulty level `character` may pick: one above its best win.
@@ -47,6 +49,9 @@ func to_dict() -> Dictionary:
 	var done: Array[String] = []
 	for id in completed:
 		done.append(String(id))
+	var hints: Array[String] = []
+	for key in seen_hints:
+		hints.append(String(key))
 	var wins := {}
 	for character in wins_by_character:
 		wins[String(character)] = wins_by_character[character]
@@ -61,6 +66,7 @@ func to_dict() -> Dictionary:
 		"wins_by_character": wins,
 		"best_difficulty_by_character": _id_ints(best_difficulty_by_character),
 		"best_endless_wave_by_character": _id_ints(best_endless_wave_by_character),
+		"seen_hints": hints,
 	}
 
 
@@ -79,6 +85,11 @@ static func from_dict(d: Dictionary) -> Profile:
 		for id: Variant in done:
 			if id is String:
 				profile.completed.append(StringName(id))
+	var hints: Variant = d.get("seen_hints")
+	if hints is Array:
+		for key: Variant in hints:
+			if key is String and not profile.seen_hints.has(StringName(key)):
+				profile.seen_hints.append(StringName(key))
 	profile.runs_played = _int(d, "runs_played")
 	profile.runs_won = _int(d, "runs_won")
 	profile.best_wave = _int(d, "best_wave")
