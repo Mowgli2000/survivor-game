@@ -10,7 +10,7 @@ signal started(setup: RunSetup)
 signal closed
 
 ## Seven characters must fit a 1920 px row.
-const CARD_SIZE := Vector2(250, 510)
+const CARD_SIZE := Vector2(250, 460)
 const PREVIEW_HEIGHT := 170.0
 ## Height of a card illustration (CharacterData.card_art, 2:3 portrait).
 const ART_HEIGHT := 176.0
@@ -59,11 +59,13 @@ func _init() -> void:
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 12)
+	box.add_theme_constant_override("separation", 10)
 	center.add_child(box)
 	var title := Label.new()
 	title.text = "UI_CHOOSE_CHARACTER"
 	title.theme_type_variation = &"TitleLabel"
+	# A bit smaller than other titles: cards, weapons and seals share the screen.
+	title.add_theme_font_size_override("font_size", 66)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
 	_title = title

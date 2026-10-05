@@ -18,6 +18,7 @@ const TOO_EXPENSIVE := UiTheme.BAD
 ## Delay between two cards appearing when the shop opens.
 const CARD_STAGGER := 0.04
 
+var _stats: StatBlock
 var _shop: Shop
 var _wallet: Wallet
 var _inventory: Inventory
@@ -53,6 +54,7 @@ var _player_tag: Label
 func setup(shop: Shop, wallet: Wallet, inventory: Inventory, weapons: WeaponHolder,
 		stats: StatBlock) -> void:
 	stats_panel.setup(stats)
+	_stats = stats
 	_shop = shop
 	_wallet = wallet
 	_inventory = inventory
@@ -176,8 +178,9 @@ static func name_color(offer: ShopOffer) -> Color:
 	return Tiers.color(offer.tier)
 
 
-## Card texts: [type · tier, name, effects].
-static func describe(offer: ShopOffer) -> PackedStringArray:
+## Card texts: [type · tier, name, effects]. `owned`: copies of the item already
+## owned (shown as "owned n/max" for limited items); `stats`: marks capped bonuses.
+static func describe(offer: ShopOffer, owned: int = 0, stats: StatBlock = null) -> PackedStringArray:
 	var kind := "UI_SHOP_WEAPON" if offer.is_weapon() else "UI_SHOP_ITEM"
 	var tag := "%s · %s" % [TranslationServer.translate(kind), Tiers.roman(offer.tier)]
 	if offer.is_weapon():
@@ -187,13 +190,16 @@ static func describe(offer: ShopOffer) -> PackedStringArray:
 				tag += " · " + TranslationServer.translate(family.name_key)
 		return PackedStringArray([tag, TranslationServer.translate(offer.weapon.name_key),
 			TranslationServer.translate(offer.weapon.description_key)])
-	var effects := LevelUpScreen.describe_modifiers(offer.item.modifiers)
+	var effects := LevelUpScreen.describe_modifiers(offer.item.modifiers, stats)
 	if offer.item.effect_key != "":
 		effects = "
 ".join(PackedStringArray([effects, TranslationServer.translate(offer.item.effect_key)])).strip_edges()
 	if offer.item.max_count == 1:
 		effects += "
 " + TranslationServer.translate("UI_SHOP_UNIQUE")
+	elif offer.item.max_count > 1:
+		effects += "
+" + TranslationServer.translate("UI_SHOP_OWNED_MAX") % [owned, offer.item.max_count]
 	return PackedStringArray([tag, TranslationServer.translate(offer.item.name_key), effects])
 
 
@@ -316,7 +322,7 @@ func _make_card(index: int, offer: ShopOffer) -> Control:
 		sold.text = "UI_SHOP_SOLD"
 		box.add_child(sold)
 		return panel
-	var texts := describe(offer)
+	var texts := describe(offer, 0 if offer.is_weapon() else _inventory.count(offer.item), _stats)
 	var icon := IconTile.create(offer.weapon.icon if offer.is_weapon() else offer.item.icon,
 		offer.tier, CARD_ICON)
 	icon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER

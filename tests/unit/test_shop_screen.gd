@@ -163,3 +163,23 @@ func test_names_use_the_rarity_color() -> void:
 	item.item = ContentDB.get_def(&"items", &"sharpened_edge")
 	item.tier = 2
 	assert_eq(ShopScreen.name_color(item), Tiers.color(2))
+
+
+func test_limited_item_card_shows_owned_copies() -> void:
+	var offer := ShopOffer.new()
+	offer.item = ContentDB.get_def(&"items", &"scrap_magnet")
+	offer.tier = 1
+	assert_true(ShopScreen.describe(offer, 1)[2].ends_with("Owned: 1/3"))
+
+
+func test_capped_bonus_is_marked_max() -> void:
+	var stats := StatBlock.from_defaults()
+	var cap := StatModifier.new()
+	cap.stat = StatIds.PROJECTILE_COUNT
+	cap.flat = 5.0
+	stats.add_modifier(cap)
+	var shot := StatModifier.new()
+	shot.stat = StatIds.PROJECTILE_COUNT
+	shot.flat = 1.0
+	assert_string_contains(LevelUpScreen.describe_modifiers([shot], stats), "(max)")
+	assert_false(LevelUpScreen.describe_modifiers([shot]).contains("(max)"))

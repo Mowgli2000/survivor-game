@@ -152,10 +152,13 @@ static func preview_lines(offer: UpgradeOffer, stats: StatBlock) -> Array[Array]
 
 
 ## One line per non-zero part of each modifier ("+8% Damage", "-2 Armor").
-static func describe_modifiers(mods: Array[StatModifier]) -> String:
+## With `stats`, a bonus that would change nothing (stat at its cap) says "(max)".
+static func describe_modifiers(mods: Array[StatModifier], stats: StatBlock = null) -> String:
 	var lines: PackedStringArray = []
 	for mod in mods:
 		var stat_name := TranslationServer.translate(StatIds.localization_key(mod.stat))
+		if stats != null and stats.is_wasted(mod):
+			stat_name += " " + TranslationServer.translate("UI_STAT_MAXED")
 		if mod.flat != 0.0:
 			lines.append("%s %s" % [_format_flat(mod.stat, mod.flat), stat_name])
 		if mod.percent != 0.0:
