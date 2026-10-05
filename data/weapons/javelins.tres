@@ -25,6 +25,7 @@ projectile_count = 1
 script = ExtResource("1_weapon")
 id = &"javelins"
 name_key = "WEAPON_JAVELINS"
+locked = true
 description_key = "WEAPON_JAVELINS_DESC"
 behavior = SubResource("Resource_behavior")
 levels = Array[ExtResource("3_level")]([SubResource("Resource_l2"), SubResource("Resource_l3"), SubResource("Resource_l4")])

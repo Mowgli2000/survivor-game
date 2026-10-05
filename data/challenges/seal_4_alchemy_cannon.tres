@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ChallengeData" format=3]
+
+[ext_resource type="Script" path="res://src/meta/challenge_data.gd" id="1_challenge"]
+
+[resource]
+script = ExtResource("1_challenge")
+id = &"seal_4_alchemy_cannon"
+name_key = "CHALLENGE_SEAL_4"
+description_key = "CHALLENGE_SEAL_4_DESC"
+kind = 6
+threshold = 4
+unlock_category = &"weapons"
+unlock_id = &"alchemy_cannon"

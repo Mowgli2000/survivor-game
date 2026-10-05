@@ -10,6 +10,7 @@ enum Kind {
 	REACH_WAVE,  ## Reach wave >= threshold in one run.
 	MATERIALS_HELD,  ## Hold >= threshold materials at once in one run.
 	KILL_ENEMY,  ## Kill an enemy of type `enemy_id` (bosses).
+	WIN_SEAL,  ## Win a run at seal (difficulty level) `threshold` or higher, any character.
 }
 
 @export var id: StringName
@@ -39,4 +40,6 @@ func is_met(profile: Profile, result: RunResult) -> bool:
 			return result.max_materials >= threshold
 		Kind.KILL_ENEMY:
 			return result.killed_special.has(enemy_id)
+		Kind.WIN_SEAL:
+			return result.won and result.difficulty >= threshold
 	return false

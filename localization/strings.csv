@@ -346,3 +346,35 @@ WEAPON_FRAG_GRENADE,Frag grenades,Grenades à fragments
 WEAPON_FRAG_GRENADE_DESC,"Three grenades thrown in a fan, small explosions.","Trois grenades lancées en éventail, petites explosions."
 UI_WEAPON_PREVIEW_TITLE,"Weapons, ornate style (preview, not in game yet) · small frame = current icon","Armes, style orné (aperçu, pas encore en jeu) · petit cadre = icône actuelle"
 UI_WEAPON_PREVIEW_REAL,"Real in-game size: new art · current icons · some item icons","Taille réelle en jeu : nouvelles armes · icônes actuelles · quelques objets"
+WEAPON_CELESTIAL_BOW,Celestial bow,Arc céleste
+WEAPON_CELESTIAL_BOW_DESC,"Two homing starlight arrows that pierce two enemies.","Deux flèches d'étoile à tête chercheuse qui transpercent deux ennemis."
+ITEM_COPPER_CHARM,Copper charm,Amulette de cuivre
+ITEM_TRACKER_BOOTS,Tracker boots,Bottes de traqueur
+ITEM_GUARDIAN_GAUNTLETS,Guardian gauntlets,Gantelets du gardien
+ITEM_JADE_IDOL,Jade idol,Idole de jade
+ITEM_JADE_IDOL_EFFECT,Kills have a 10% chance to give 1 extra material,10 % de chances qu'un ennemi tué donne 1 matériau de plus
+ITEM_ETERNAL_FROST,Eternal frost,Givre éternel
+ITEM_WHITE_WOLF_FANG,White wolf fang,Croc du loup blanc
+ITEM_WHITE_WOLF_FANG_EFFECT,+1% Damage every 25 kills (max +40%),+1 % de dégâts tous les 25 ennemis tués (max +40 %)
+ITEM_INFERNAL_CROWN,Infernal crown,Couronne infernale
+ITEM_INFERNAL_CROWN_EFFECT,Kills have a 25% chance to explode,25 % de chances qu'un ennemi tué explose
+ITEM_BLOOD_CHALICE,Blood chalice,Calice de sang
+ITEM_QUEEN_EYE,Queen's eye,Œil de la reine
+ITEM_OBSIDIAN_CARAPACE,Obsidian carapace,Carapace d'obsidienne
+ITEM_OBSIDIAN_CARAPACE_EFFECT,Heals 3 HP every 4 s,Soigne 3 PV toutes les 4 s
+ITEM_ANCIENT_SCALE,Ancient dragon scale,Écaille de dragon ancien
+ITEM_HUNTER_STAR,Hunter's star,Étoile du chasseur
+CHALLENGE_SEAL_0,Copper seal cleared,Sceau de Cuivre vaincu
+CHALLENGE_SEAL_0_DESC,Win a run at the Copper seal or higher,Gagner une partie au sceau de Cuivre ou plus
+CHALLENGE_SEAL_1,Iron seal cleared,Sceau de Fer vaincu
+CHALLENGE_SEAL_1_DESC,Win a run at the Iron seal or higher,Gagner une partie au sceau de Fer ou plus
+CHALLENGE_SEAL_2,Silver seal cleared,Sceau d'Argent vaincu
+CHALLENGE_SEAL_2_DESC,Win a run at the Silver seal or higher,Gagner une partie au sceau d'Argent ou plus
+CHALLENGE_SEAL_3,Gold seal cleared,Sceau d'Or vaincu
+CHALLENGE_SEAL_3_DESC,Win a run at the Gold seal or higher,Gagner une partie au sceau d'Or ou plus
+CHALLENGE_SEAL_4,Obsidian seal cleared,Sceau d'Obsidienne vaincu
+CHALLENGE_SEAL_4_DESC,Win a run at the Obsidian seal or higher,Gagner une partie au sceau d'Obsidienne ou plus
+CHALLENGE_SEAL_5,Astral seal cleared,Sceau Astral vaincu
+CHALLENGE_SEAL_5_DESC,Win a run at the Astral seal or higher,Gagner une partie au sceau Astral ou plus
+SEAL_REWARD,Reward: %s,Récompense : %s
+SEAL_REWARD_MORE,%s + %d items,%s + %d objets

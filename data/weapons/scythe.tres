@@ -26,6 +26,7 @@ fire_rate_percent = 0.2
 script = ExtResource("1_weapon")
 id = &"scythe"
 name_key = "WEAPON_SCYTHE"
+locked = true
 description_key = "WEAPON_SCYTHE_DESC"
 behavior = SubResource("Resource_behavior")
 levels = Array[ExtResource("3_level")]([SubResource("Resource_l2"), SubResource("Resource_l3"), SubResource("Resource_l4")])

@@ -406,12 +406,36 @@ func _seal_info_text(difficulty: DifficultyData, levels: Array[DifficultyData], 
 		effects.append(tr("SEAL_FX_DOUBLE_BOSS"))
 	if effects.is_empty():
 		effects.append(tr("SEAL_FX_NONE"))
-	# Line 1: seal, place (and how to unlock it); line 2: its effects.
+	# Line 1: seal, place, reward still to win (and how to unlock it); line 2: its effects.
 	var text := "%s · %s" % [tr(difficulty.name_key), place]
+	var reward := seal_reward_text(difficulty.level)
+	if reward != "":
+		text += " — " + reward
 	if not unlocked:
 		text += " — " + tr("SEAL_LOCKED_HINT")
 	return text + "
 " + " · ".join(effects)
+
+
+## "Reward: <weapon> + N items" still locked behind winning seal `level`, or "".
+func seal_reward_text(level: int) -> String:
+	var first := ""
+	var others := 0
+	for challenge in SaveService.all_challenges():
+		if challenge.kind != ChallengeData.Kind.WIN_SEAL or challenge.threshold != level:
+			continue
+		var target := ContentDB.get_def(challenge.unlock_category, challenge.unlock_id)
+		if target == null or SaveService.is_unlocked(challenge.unlock_category, target):
+			continue
+		if first == "" and challenge.unlock_category == &"weapons":
+			first = tr(target.get(&"name_key"))
+		else:
+			others += 1
+	if first == "" and others == 0:
+		return ""
+	if first == "":
+		return tr("SEAL_REWARD") % (tr("SEAL_REWARD_MORE") % ["", others]).trim_prefix(" + ")
+	return tr("SEAL_REWARD") % (tr("SEAL_REWARD_MORE") % [first, others] if others > 0 else first)
 
 
 func _show_seal_info(text: String) -> void:

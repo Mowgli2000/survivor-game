@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ChallengeData" format=3]
+
+[ext_resource type="Script" path="res://src/meta/challenge_data.gd" id="1_challenge"]
+
+[resource]
+script = ExtResource("1_challenge")
+id = &"seal_5_hunter_star"
+name_key = "CHALLENGE_SEAL_5"
+description_key = "CHALLENGE_SEAL_5_DESC"
+kind = 6
+threshold = 5
+unlock_category = &"items"
+unlock_id = &"hunter_star"
