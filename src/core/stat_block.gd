@@ -68,6 +68,25 @@ func value_with(stat: StringName, extra: Array[StatModifier]) -> float:
 	return value
 
 
+## True when `mod` is a bonus that would change nothing (stat at its cap).
+func is_wasted(mod: StatModifier) -> bool:
+	if mod.flat <= 0.0 and mod.percent <= 0.0:
+		return false
+	return is_equal_approx(value_with(mod.stat, [mod]), get_value(mod.stat))
+
+
+## True when `mods` hold at least one bonus and every bonus is wasted
+## (offers that would do nothing are not proposed).
+func all_wasted(mods: Array[StatModifier]) -> bool:
+	var bonuses := 0
+	for mod in mods:
+		if mod.flat > 0.0 or mod.percent > 0.0:
+			bonuses += 1
+			if not is_wasted(mod):
+				return false
+	return bonuses > 0
+
+
 func _invalidate(stat: StringName) -> void:
 	_cache.erase(stat)
 	changed.emit(stat)

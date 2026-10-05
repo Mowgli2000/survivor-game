@@ -345,3 +345,24 @@ func test_class_reroll_multiplier_raises_reroll_cost() -> void:
 	var normal := shop.reroll_cost()
 	shop.reroll_multiplier = 1.5
 	assert_eq(shop.reroll_cost(), roundi(normal * 1.5))
+
+
+func test_items_whose_bonuses_are_all_capped_are_not_sold() -> void:
+	var shot := StatModifier.new()
+	shot.stat = StatIds.PROJECTILE_COUNT
+	shot.flat = 1.0
+	var useless := _item(&"shot", 1, 5)
+	useless.modifiers = [shot]
+	_stats.add_modifier(_mod_flat(StatIds.PROJECTILE_COUNT, 5.0))
+	var shop := _shop([], [useless, _item_cheap])
+	shop.luck_stats = _stats
+	shop.open(1)
+	for offer in shop.offers:
+		assert_ne(offer.item, useless, "projectiles at +5: not offered")
+
+
+func _mod_flat(stat: StringName, flat: float) -> StatModifier:
+	var mod := StatModifier.new()
+	mod.stat = stat
+	mod.flat = flat
+	return mod

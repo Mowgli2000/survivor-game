@@ -418,3 +418,18 @@ func test_strike_needs_an_enemy_in_range_and_is_ranged() -> void:
 		RandomNumberGenerator.new())
 	assert_false(data.behavior.fire(WeaponSlot.new(data), ctx))
 	assert_false(data.is_melee())
+
+
+func test_area_target_cap_grows_with_the_zone_stat() -> void:
+	for i in 40:
+		_enemies.spawn(_data, Vector2(i % 8 * 10.0, i / 8 * 10.0))
+	await wait_physics_frames(1)
+	_enemies.area_max_targets = 20
+	_enemies.damage_source = 0
+	assert_eq(_enemies.damage_in_radius(Vector2.ZERO, 300.0, 0.0, false, 0.0), 20, "base cap")
+	_enemies.set_area_target_scale(0, 1.5)
+	assert_eq(_enemies.area_targets_for(0), 30, "+50 % Zone: 30 targets")
+	assert_eq(_enemies.damage_in_radius(Vector2.ZERO, 300.0, 0.0, false, 0.0), 30)
+	_enemies.set_area_target_scale(0, 0.8)
+	assert_eq(_enemies.area_targets_for(0), 20, "less Zone never lowers the cap")
+	assert_eq(_enemies.area_targets_for(1), 20, "other players keep their own cap")

@@ -56,3 +56,14 @@ func test_value_with_previews_without_changing_the_block() -> void:
 	var extra: Array[StatModifier] = [mod]
 	assert_eq(block.value_with(StatIds.MAX_HP, extra), 116.0)
 	assert_eq(block.get_value(StatIds.MAX_HP), 100.0, "block unchanged")
+
+
+func test_bonus_on_a_capped_stat_is_wasted() -> void:
+	var stats := StatBlock.from_defaults()
+	var shot := _mod(StatIds.PROJECTILE_COUNT, 1.0, 0.0)
+	assert_false(stats.all_wasted([shot]))
+	stats.add_modifier(_mod(StatIds.PROJECTILE_COUNT, 5.0, 0.0))
+	assert_true(stats.is_wasted(shot), "+5 is the cap")
+	assert_true(stats.all_wasted([shot]))
+	assert_false(stats.all_wasted([shot, _mod(StatIds.DAMAGE, 0.0, 0.1)]), "the damage bonus still works")
+	assert_false(stats.all_wasted([_mod(StatIds.ARMOR, -2.0, 0.0)]), "a malus alone is not a wasted bonus")

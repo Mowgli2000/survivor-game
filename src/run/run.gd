@@ -311,6 +311,11 @@ func _equip_player(rp: RunPlayer, weapon_pool: Array[WeaponData], item_pool: Arr
 	rp.shop.price_multiplier = rp.character.shop_price_multiplier
 	rp.shop.reroll_multiplier = rp.character.reroll_cost_multiplier
 	rp.shop.luck_stats = p.stats
+	# Area hits reach more enemies with more Zone (EnemyManager.area_targets_for).
+	p.stats.changed.connect(func(stat: StringName) -> void:
+		if stat == StatIds.AREA:
+			enemies.set_area_target_scale(p.index, p.stats.get_value(StatIds.AREA)))
+	enemies.set_area_target_scale(p.index, p.stats.get_value(StatIds.AREA))
 	rp.families = WeaponFamilies.new()
 	rp.families.setup(p.weapons, p.stats, families)
 	p.rng = state.rng
@@ -519,13 +524,22 @@ func _begin_turn(index: int) -> void:
 	_resolve_level_ups()
 
 
+## Level-up cards whose bonus still does something (capped stats drop out).
+func _useful_upgrades(rp: RunPlayer) -> Array[UpgradeData]:
+	var useful: Array[UpgradeData] = []
+	for upgrade in _upgrade_pool:
+		if not rp.player.stats.all_wasted(upgrade.modifiers):
+			useful.append(upgrade)
+	return useful
+
+
 ## Offers one level-up at a time until none is pending.
 func _resolve_level_ups() -> void:
 	var rp := current_player()
 	if rp.progression.pending_level_ups <= 0:
 		_on_level_ups_resolved()
 		return
-	var offers := rp.progression.roll_offers(_upgrade_pool, config.upgrade_choices, state.rng,
+	var offers := rp.progression.roll_offers(_useful_upgrades(rp), config.upgrade_choices, state.rng,
 		config.shop, waves.wave, rp.player.stats.get_value(StatIds.LUCK))
 	if offers.is_empty():
 		rp.progression.pending_level_ups = 0

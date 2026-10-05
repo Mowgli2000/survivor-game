@@ -160,12 +160,35 @@ func damage_enemy(index: int, amount: float, crit: bool, direction: Vector2, kno
 ## Most enemies one area hit (slash, explosion, strike) can damage; 0 = all.
 ## Balance experiment (session 8): dense late crowds made area weapons trivialize.
 var area_max_targets: int = 20
+## Per player (damage_source): the cap grows with the Zone stat (D66), so Zone
+## keeps its value in dense crowds. Missing entries count as 1.0.
+var area_target_scale: PackedFloat32Array = PackedFloat32Array()
+
+
+## Most enemies one area hit of player `source` can damage (0 = all).
+func area_targets_for(source: int) -> int:
+	if area_max_targets <= 0:
+		return 0
+	var scale := area_target_scale[source] if source >= 0 and source < area_target_scale.size() else 1.0
+	return ceili(area_max_targets * maxf(scale, 1.0) - 0.0001)
+
+
+func set_area_target_scale(source: int, scale: float) -> void:
+	if source < 0:
+		return
+	if area_target_scale.size() <= source:
+		var old := area_target_scale.size()
+		area_target_scale.resize(source + 1)
+		for i in range(old, source + 1):
+			area_target_scale[i] = 1.0
+	area_target_scale[source] = scale
 
 
 func damage_in_radius(center: Vector2, radius: float, amount: float, crit: bool, knockback_force: float,
 		status: StatusData = null, status_chance: float = 1.0,
 		arc_dir: Vector2 = Vector2.ZERO, arc_min_dot: float = -1.0) -> int:
 	var found := grid.query_radius(center, radius + max_radius, _area_hits)
+	var max_targets := area_targets_for(damage_source)
 	var hits := 0
 	for k in found:
 		var index := _area_hits[k]
@@ -182,7 +205,7 @@ func damage_in_radius(center: Vector2, radius: float, amount: float, crit: bool,
 			continue
 		damage_enemy(index, amount, crit, direction, knockback_force, status, status_chance)
 		hits += 1
-		if area_max_targets > 0 and hits >= area_max_targets:
+		if area_max_targets > 0 and hits >= max_targets:
 			break
 	return hits
 

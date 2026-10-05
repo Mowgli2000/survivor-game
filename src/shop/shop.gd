@@ -174,11 +174,16 @@ func _pick_item(tier: int, taken: Array[Resource]) -> ItemData:
 	for t in range(tier, 0, -1):
 		var candidates: Array[ItemData] = []
 		for item in _item_pool:
-			if item.tier == t and _inventory.can_add(item) and not taken.has(item):
+			if item.tier == t and _inventory.can_add(item) and not taken.has(item) 					and not _is_useless(item):
 				candidates.append(item)
 		if not candidates.is_empty():
 			return candidates[_rng.randi_range(0, candidates.size() - 1)]
 	return null
+
+
+## A plain stat item whose every bonus is capped (projectiles at +5...).
+func _is_useless(item: ItemData) -> bool:
+	return item.effects.is_empty() and luck_stats != null and luck_stats.all_wasted(item.modifiers)
 
 
 func _pick_weapon(taken: Array[Resource]) -> WeaponData:
