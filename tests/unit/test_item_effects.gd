@@ -123,6 +123,23 @@ func test_material_on_kill() -> void:
 	assert_eq(_wallet.amount, 4)
 
 
+func test_material_on_kill_follows_the_material_curve() -> void:
+	var effect := MaterialOnKillEffect.new()
+	effect.chance = 1.0
+	effect.amount = 1
+	_effects.add_item(_item(effect))
+	_effects.material_scale = 0.25
+	for i in 8:
+		_enemies.enemy_killed.emit(_enemy(1.0), Vector2.ZERO, false)
+	assert_eq(_wallet.amount, 2, "8 kills x 1 x 0.25 (late wave)")
+
+
+func test_default_stage_late_rate_cuts_kill_materials() -> void:
+	var stage: StageData = ContentDB.get_def(&"stages", &"default")
+	var late := stage.material_rate_at(15) / stage.material_rate_first
+	assert_lt(late, 0.4, "far fewer materials per kill late than in wave 1")
+
+
 func test_interest_is_capped() -> void:
 	var effect := InterestEffect.new()
 	effect.percent = 0.1

@@ -17,6 +17,7 @@ id = &"golden_tooth"
 name_key = "ITEM_GOLDEN_TOOTH"
 tier = 2
 base_price = 34
+max_count = 3
 modifiers = Array[ExtResource("2_mod")]([])
 icon = ExtResource("icon_tex")
 effects = Array[ExtResource("4_base")]([SubResource("Effect_1")])

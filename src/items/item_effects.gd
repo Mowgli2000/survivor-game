@@ -22,6 +22,9 @@ var rng: RandomNumberGenerator
 var vfx: Vfx
 ## Player number (ADR 0017): only this player's hits and kills trigger the effects.
 var source: int = 0
+## Materials from effects follow the stage's material curve (1 = wave 1 rate):
+## kills grow much faster than the economy, so per-kill gains are scaled like XP.
+var material_scale: float = 1.0
 ## True while an effect deals damage: kills it causes do not trigger more effect damage.
 var effect_damage_running: bool = false
 

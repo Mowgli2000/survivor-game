@@ -135,7 +135,7 @@ FAMILY_ENERGY,Magic,Magie
 FAMILY_EXPLOSIVE,Alchemy,Alchimie
 ITEM_CHAIN_REACTOR_EFFECT,20% chance: killed enemies explode,20 % de chance : les ennemis tués explosent
 ITEM_CHAIN_REACTOR,Unstable rune,Rune instable
-ITEM_SCRAP_MAGNET_EFFECT,8% chance: killed enemies give 1 material,8 % de chance : les ennemis tués donnent 1 matériau
+ITEM_SCRAP_MAGNET_EFFECT,"8% chance: killed enemies give 1 material (less in late waves)","8 % de chance : les ennemis tués donnent 1 matériau (moins en fin de partie)"
 ITEM_SCRAP_MAGNET,Loot sack,Sac à butin
 ITEM_NANO_LEECH,Vampire fang,Croc de vampire
 ITEM_GHOST_CLOAK,Phantom cloak,Cape fantôme
@@ -171,7 +171,7 @@ ITEM_SWIFT_RUNE,Swift rune,Rune de célérité
 ITEM_MERCHANT_SCALE,Merchant's scale,Balance du marchand
 ITEM_MERCHANT_SCALE_EFFECT,End of wave: +5% of your materials (max 15),Fin de vague : +5 % de tes matériaux (max 15)
 ITEM_GOLDEN_TOOTH,Golden tooth,Dent en or
-ITEM_GOLDEN_TOOTH_EFFECT,5% chance: killed enemies give 1 material,5 % de chance : les ennemis tués donnent 1 matériau
+ITEM_GOLDEN_TOOTH_EFFECT,"5% chance: killed enemies give 1 material (less in late waves)","5 % de chance : les ennemis tués donnent 1 matériau (moins en fin de partie)"
 ITEM_LUCKY_COIN,Lucky coin,Pièce porte-bonheur
 ITEM_TROLL_BLOOD,Troll blood,Sang de troll
 ITEM_VAMPIRE_RING,Vampire ring,Anneau vampirique
@@ -352,7 +352,7 @@ ITEM_COPPER_CHARM,Copper charm,Amulette de cuivre
 ITEM_TRACKER_BOOTS,Tracker boots,Bottes de traqueur
 ITEM_GUARDIAN_GAUNTLETS,Guardian gauntlets,Gantelets du gardien
 ITEM_JADE_IDOL,Jade idol,Idole de jade
-ITEM_JADE_IDOL_EFFECT,Kills have a 10% chance to give 1 extra material,10 % de chances qu'un ennemi tué donne 1 matériau de plus
+ITEM_JADE_IDOL_EFFECT,"Kills have a 10% chance to give 1 extra material (less in late waves)","10 % de chances qu'un ennemi tué donne 1 matériau de plus (moins en fin de partie)"
 ITEM_ETERNAL_FROST,Eternal frost,Givre éternel
 ITEM_WHITE_WOLF_FANG,White wolf fang,Croc du loup blanc
 ITEM_WHITE_WOLF_FANG_EFFECT,+1% Damage every 25 kills (max +40%),+1 % de dégâts tous les 25 ennemis tués (max +40 %)

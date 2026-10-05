@@ -101,6 +101,28 @@ func test_reroll_cost_factors_are_tunable() -> void:
 	assert_eq(config.reroll_cost(1, 1), 2, "step never below 1")
 
 
+func test_rerolls_after_the_cheap_ones_get_steep() -> void:
+	var config := ShopConfig.new()
+	config.reroll_wave_factor = 0.75
+	config.reroll_step_factor = 0.6
+	config.reroll_cheap_count = 2
+	config.reroll_steep_factor = 2.5
+	# Wave 14: base 11, step 8.
+	assert_eq(config.reroll_cost(14, 0), 11)
+	assert_eq(config.reroll_cost(14, 1), 19, "second reroll still linear")
+	assert_eq(config.reroll_cost(14, 2), 48, "third: x2.5")
+	assert_eq(config.reroll_cost(14, 3), 119)
+	assert_eq(config.reroll_cost(14, 4), 297)
+
+
+func test_default_shop_makes_five_rerolls_cost_more_than_a_late_wave_of_income() -> void:
+	var config: ShopConfig = load("res://data/shop/default.tres")
+	var total := 0
+	for i in 5:
+		total += config.reroll_cost(14, i)
+	assert_gt(total, 400)
+
+
 # --- Shop -------------------------------------------------------------------
 
 func test_open_fills_every_slot() -> void:
