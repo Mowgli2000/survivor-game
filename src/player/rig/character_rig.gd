@@ -20,9 +20,9 @@ const WALK_LEAN := 0.07
 const HAIR_STIFFNESS := 70.0
 const HAIR_DAMPING := 7.0
 const HAIR_LIFT := 0.3
-const ARM_SWING := 0.4
+const ARM_SWING := 0.22
 ## Extra elbow bend when the arm swings back.
-const ELBOW_SWING := 0.3
+const ELBOW_SWING := 0.15
 ## Body bob while walking, and breathing at rest, in texture px.
 const WALK_BOB := 7.0
 const BREATH := 1.6
@@ -120,6 +120,8 @@ func angle_of(piece: StringName) -> float:
 
 func _pose() -> void:
 	_angles.fill(0.0)
+	for i in mini(rig.rests.size(), _angles.size()):
+		_angles[i] = rig.rests[i]
 	# Three-quarter view facing right: a positive angle turns clockwise, so a
 	# negative one swings a hanging limb forward (toward +x).
 	var stride := sin(_walk_phase) * _walk_blend
@@ -165,7 +167,8 @@ func _arm_swing(stride: float) -> float:
 	return stride * ARM_SWING * (0.45 if stride > 0.0 else 1.0)
 
 
+## Adds `angle` to the piece's rest angle this frame.
 func _turn(piece: StringName, angle: float) -> void:
 	var i := rig.index_of(piece)
 	if i >= 0:
-		_angles[i] = angle
+		_angles[i] += angle

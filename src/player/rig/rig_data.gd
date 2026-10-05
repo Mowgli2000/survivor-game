@@ -15,6 +15,9 @@ extends Resource
 @export var pivots: PackedVector2Array = PackedVector2Array()
 ## Joint on the assembled body at rest, in pixels from the feet (y up is negative).
 @export var joints: PackedVector2Array = PackedVector2Array()
+## Angle of each piece at rest, in radians (a piece drawn tilted on the sheet,
+## like an arm held out, is turned back along the body).
+@export var rests: PackedFloat32Array = PackedFloat32Array()
 ## Body height at rest, in texture pixels (feet to top of the head).
 @export var height: float = 1.0
 

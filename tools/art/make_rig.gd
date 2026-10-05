@@ -86,7 +86,9 @@ func _initialize() -> void:
 	var regions := PackedStringArray()
 	var pivots := PackedStringArray()
 	var joints := PackedStringArray()
+	var rests := PackedStringArray()
 	for p in pieces:
+		rests.append("%.4f" % deg_to_rad(p.get("rest", 0.0)))
 		names.append('"%s"' % p.name)
 		parents.append('"%s"' % p.parent)
 		var r: Rect2i = p.region
@@ -104,6 +106,7 @@ func _initialize() -> void:
 	tres += "regions = Array[Rect2]([%s])\n" % ", ".join(regions)
 	tres += "pivots = PackedVector2Array(%s)\n" % ", ".join(pivots)
 	tres += "joints = PackedVector2Array(%s)\n" % ", ".join(joints)
+	tres += "rests = PackedFloat32Array(%s)\n" % ", ".join(rests)
 	tres += "height = %.1f\n" % spec.height
 	var out := FileAccess.open(ProjectSettings.globalize_path("res://assets/rigs/%s.tres" % id), FileAccess.WRITE)
 	out.store_string(tres)
