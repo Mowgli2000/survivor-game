@@ -21,11 +21,13 @@ var _damage_taken: float = 0.0
 var _min_hp_ratio: float = 1.0
 var _started_ms: int = 0
 var _done: bool = false
+## --endless=N: after the victory, keep playing endless waves up to wave N.
+var _endless_to: int = 0
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	var args := {"character": "drifter", "weapon": "", "seal": "0", "policy": "dps", "seed": "1"}
+	var args := {"character": "drifter", "weapon": "", "seal": "0", "policy": "dps", "seed": "1", "endless": "0"}
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--out="):
 			_out = arg.trim_prefix("--out=")
@@ -40,6 +42,7 @@ func _ready() -> void:
 	var weapon: WeaponData = ContentDB.get_def(&"weapons", StringName(args.weapon)) if args.weapon != "" \
 		else character.starting_weapons[0]
 	var seed := int(args.seed)
+	_endless_to = int(args.endless)
 	_policy = BalancePolicy.new(String(args.policy), seed)
 	_report = {"character": String(character.id), "weapon": String(weapon.id), "seal": difficulty.level,
 		"policy": _policy.kind, "seed": seed}
@@ -68,7 +71,7 @@ func _physics_process(_delta: float) -> void:
 		return
 	var max_hp := _run.player.stats.get_value(StatIds.MAX_HP)
 	_min_hp_ratio = minf(_min_hp_ratio, _run.player.hp / maxf(max_hp, 1.0))
-	if (Time.get_ticks_msec() - _started_ms) / 1000.0 > MAX_REAL_SECONDS:
+	if (Time.get_ticks_msec() - _started_ms) / 1000.0 > MAX_REAL_SECONDS * (2.0 if _endless_to > 20 else 1.0):
 		_record_wave()
 		_finish("timeout")
 
@@ -80,6 +83,9 @@ func choose_upgrade(offers: Array[UpgradeOffer], rp: RunPlayer) -> UpgradeOffer:
 
 
 func shop_turn(rp: RunPlayer, wave: int) -> void:
+	if _endless_to > 20 and wave >= _endless_to:
+		_finish("endless_reached")
+		return
 	_record_wave()
 	var before := rp.wallet.amount
 	_policy.shop_turn(rp, wave)
@@ -100,6 +106,10 @@ func _on_died() -> void:
 
 func _on_won() -> void:
 	_record_wave()
+	if _endless_to > 20:
+		_report["won_wave20"] = true
+		_run.call_deferred(&"_continue_endless")
+		return
 	_finish("won")
 
 
@@ -148,7 +158,7 @@ func _finish(outcome: String) -> void:
 		return
 	_done = true
 	_report["outcome"] = outcome
-	_report["won"] = outcome == "won"
+	_report["won"] = outcome == "won" or _report.get("won_wave20", false)
 	_report["wave_reached"] = _run.waves.wave
 	_report["real_seconds"] = (Time.get_ticks_msec() - _started_ms) / 1000.0
 	_report["items"] = _item_list()
