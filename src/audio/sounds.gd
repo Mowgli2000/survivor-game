@@ -29,4 +29,9 @@ const UI_LOCK := preload("res://assets/audio/sfx/ui_lock.ogg")
 const UI_SELL := preload("res://assets/audio/sfx/ui_sell.ogg")
 const UI_MERGE := preload("res://assets/audio/sfx/ui_merge.ogg")
 const UI_SELECT := preload("res://assets/audio/sfx/ui_select.ogg")
+## Every button (Audio hooks them): hover / focus tick and press click (Kenney UI Audio, CC0).
+const UI_HOVER := preload("res://assets/audio/sfx/ui_hover.ogg")
+const UI_CLICK := preload("res://assets/audio/sfx/ui_click.ogg")
+## A run starts through a seal's gate ("Magic Spell SFX", OpenGameArt, CC0).
+const PORTAL_OPEN := preload("res://assets/audio/sfx/portal_open.ogg")
 const UI_NEXT := preload("res://assets/audio/sfx/ui_next.ogg")

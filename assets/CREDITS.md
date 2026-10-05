@@ -4,7 +4,8 @@ All assets below are public domain (CC0 1.0) unless noted: no attribution requir
 
 | Asset | Author | Source | License |
 |---|---|---|---|
-| Sound effects (`assets/audio/sfx/`) — Sci-Fi Sounds, Impact Sounds, Interface Sounds, Digital Audio, Music Jingles | Kenney | https://kenney.nl/assets | CC0 1.0 (`assets/audio/LICENSE-kenney.txt`) |
+| Sound effects (`assets/audio/sfx/`) — Sci-Fi Sounds, Impact Sounds, Interface Sounds, UI Audio, Digital Audio, Music Jingles | Kenney | https://kenney.nl/assets | CC0 1.0 (`assets/audio/LICENSE-kenney.txt`) |
+| Sound `assets/audio/sfx/portal_open.ogg` — "Magic Spell SFX" (magical_4) | OpenGameArt | https://opengameart.org/content/magic-spell-sfx | CC0 1.0 |
 | Music `assets/audio/music/menu_dark_shrine.ogg` — "Dark Shrine Loop" | qubodup | https://opengameart.org/content/dark-shrine-loop | CC0 1.0 |
 | Music `assets/audio/music/battle_theme_a.mp3` — "Battle Theme A" | cynicmusic.com / pixelsphere.org | https://opengameart.org/content/battle-theme-a | CC0 1.0 |
 | Music `assets/audio/music/boss_battle_rpg.mp3` — "Battle RPG Theme" | CleytonRX | https://opengameart.org/content/boss-battle-theme | CC0 1.0 |
