@@ -67,3 +67,11 @@ func test_bonus_on_a_capped_stat_is_wasted() -> void:
 	assert_true(stats.all_wasted([shot]))
 	assert_false(stats.all_wasted([shot, _mod(StatIds.DAMAGE, 0.0, 0.1)]), "the damage bonus still works")
 	assert_false(stats.all_wasted([_mod(StatIds.ARMOR, -2.0, 0.0)]), "a malus alone is not a wasted bonus")
+
+
+func test_zone_is_capped_at_plus_100_percent() -> void:
+	var stats := StatBlock.from_defaults()
+	for i in 8:
+		stats.add_modifier(_mod(StatIds.AREA, 0.0, 0.25))
+	assert_eq(stats.get_value(StatIds.AREA), 2.0)
+	assert_true(stats.is_wasted(_mod(StatIds.AREA, 0.0, 0.2)), "more Zone is no longer offered")
