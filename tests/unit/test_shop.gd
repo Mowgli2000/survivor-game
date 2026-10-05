@@ -115,6 +115,17 @@ func test_rerolls_after_the_cheap_ones_get_steep() -> void:
 	assert_eq(config.reroll_cost(14, 4), 297)
 
 
+func test_second_reroll_costs_at_least_half_more() -> void:
+	var config := ShopConfig.new()
+	config.reroll_wave_factor = 0.75
+	config.reroll_step_factor = 0.6
+	config.reroll_cheap_count = 2
+	config.reroll_cheap_min_growth = 1.5
+	assert_eq(config.reroll_cost(3, 0), 3)
+	assert_eq(config.reroll_cost(3, 1), 5, "x1.5 beats the linear +1")
+	assert_eq(config.reroll_cost(14, 1), 19, "the linear step is already above x1.5")
+
+
 func test_default_shop_makes_five_rerolls_cost_more_than_a_late_wave_of_income() -> void:
 	var config: ShopConfig = load("res://data/shop/default.tres")
 	var total := 0
