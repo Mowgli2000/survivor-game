@@ -62,7 +62,7 @@ const BOUNDS: Dictionary[StringName, Vector2] = {
 	CRIT_CHANCE: Vector2(0.0, 1.0),
 	CRIT_DAMAGE: Vector2(1.0, INF),
 	PROJECTILE_SPEED: Vector2(0.1, INF),
-	PROJECTILE_COUNT: Vector2(0.0, INF),
+	PROJECTILE_COUNT: Vector2(0.0, 5.0),  # +1 shot multiplies every weapon: capped
 	PIERCE: Vector2(0.0, INF),
 	KNOCKBACK: Vector2(0.0, INF),
 	RANGE: Vector2(0.1, INF),

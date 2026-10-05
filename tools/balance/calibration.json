@@ -1,7 +1,7 @@
 {
-	"k_kill": 0.75,
+	"k_kill": 0.5,
 	"k_area": 0.6,
 	"f_hit": 0.5,
 	"p_exp": 2.0,
-	"note": "Manual fit (session 8) on 37 real headless runs (Berserker all seals, a few Chasseur novice): decent player 80-100 % wins (sim 100 %), random player 42 % wins, deaths around wave 7 (sim 48 %, wave 9)."
+	"note": "Fit (session 8, overnight) on 109 real headless runs: 7 classes x Copper/Silver/Astral x decent/random. Mean absolute win-rate gap per class and player type: 11 points (real cells have 6 runs: about the sampling noise)."
 }

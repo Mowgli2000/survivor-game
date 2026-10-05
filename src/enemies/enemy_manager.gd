@@ -157,6 +157,11 @@ func damage_enemy(index: int, amount: float, crit: bool, direction: Vector2, kno
 ## Hits every enemy touching the circle. With `arc_min_dot` > -1, only enemies
 ## inside the arc of direction `arc_dir` are hit (dot product test).
 ## Returns the number of enemies hit.
+## Most enemies one area hit (slash, explosion, strike) can damage; 0 = all.
+## Balance experiment (session 8): dense late crowds made area weapons trivialize.
+var area_max_targets: int = 20
+
+
 func damage_in_radius(center: Vector2, radius: float, amount: float, crit: bool, knockback_force: float,
 		status: StatusData = null, status_chance: float = 1.0,
 		arc_dir: Vector2 = Vector2.ZERO, arc_min_dot: float = -1.0) -> int:
@@ -177,6 +182,8 @@ func damage_in_radius(center: Vector2, radius: float, amount: float, crit: bool,
 			continue
 		damage_enemy(index, amount, crit, direction, knockback_force, status, status_chance)
 		hits += 1
+		if area_max_targets > 0 and hits >= area_max_targets:
+			break
 	return hits
 
 

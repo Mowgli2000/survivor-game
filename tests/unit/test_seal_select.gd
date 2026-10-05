@@ -36,7 +36,7 @@ func test_info_lists_stacked_effects_and_place() -> void:
 	assert_string_contains(iron, tr("BIOME_TEMPLE"))
 	var astral := screen._seal_info_text(levels[5], levels, false)
 	assert_string_contains(astral, tr("SEAL_FX_DOUBLE_BOSS"))
-	assert_string_contains(astral, tr("SEAL_FX_HP_DAMAGE") % 30)
+	assert_string_contains(astral, tr("SEAL_FX_HP_DAMAGE") % roundi((levels[5].hp_multiplier - 1.0) * 100.0))
 	assert_string_contains(astral, tr("SEAL_LOCKED_HINT"))
 
 
