@@ -3,12 +3,20 @@ extends Node2D
 ## Passive XP pickup. Updated by PickupManager.
 
 const SIZE := 7.0
+## Illustrated mana crystal (art bible style), drawn ~2x smaller than its texture.
+const TEXTURE := preload("res://assets/sprites/pickups/crystal.png")
+## Merged gems (big values) turn violet.
+const BIG_TINT := Color(0.85, 0.62, 1.0)
 
 var value: int = 1
 var attracted: bool = false
 var speed: float = 0.0
 ## Player number the gem flies to once attracted.
 var target: int = 0
+
+
+func _init() -> void:
+	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 
 
 func reset(pos: Vector2, p_value: int) -> void:
@@ -29,11 +37,7 @@ func add_value(amount: int) -> void:
 func _draw() -> void:
 	# Mana crystal (art bible): bigger and more violet as the value grows (merged gems).
 	var t := clampf(log(float(value)) / log(50.0), 0.0, 1.0)
-	var color := Color(0.35, 0.78, 1.0).lerp(Color(0.68, 0.45, 1.0), t)
-	var s := SIZE * (1.0 + t)
-	var points := PackedVector2Array([Vector2(0, -s), Vector2(s * 0.7, 0), Vector2(0, s), Vector2(-s * 0.7, 0)])
-	draw_colored_polygon(points, color)
-	# Lit facet, then the black outline of the art style (no antialiasing: mass pickups).
-	draw_colored_polygon(PackedVector2Array([Vector2(0, -s), Vector2(s * 0.7, 0), Vector2(0, 0)]), color.lerp(Color.WHITE, 0.55))
-	points.append(points[0])
-	draw_polyline(points, Color(0.05, 0.04, 0.1), 2.0)
+	var height := SIZE * 3.2 * (1.0 + t)
+	var width := height * TEXTURE.get_width() / TEXTURE.get_height()
+	draw_texture_rect(TEXTURE, Rect2(-width * 0.5, -height * 0.5, width, height), false,
+		Color.WHITE.lerp(BIG_TINT, t))

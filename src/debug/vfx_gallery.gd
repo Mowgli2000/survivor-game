@@ -4,6 +4,7 @@ extends Node2D
 ## Godot.exe --path . res://src/debug/vfx_gallery.tscn -- --out=<file.png>
 ## [--slashes [--steps=N]]: every melee weapon's slash side by side, captured after
 ## N steps of 0.02 s (default 3: mid-sweep).
+## [--blasts]: explosions (top) and monster deaths (bottom) at 6 ages of their life.
 
 const LOOP := 0.5
 const ENEMY_IDS: Array[StringName] = [&"grunt", &"runner", &"shooter", &"tank", &"shogun"]
@@ -13,6 +14,7 @@ var _timer: float = 0.0
 var _time: float = 0.0
 var _out: String = ""
 var _slashes: bool = false
+var _blasts: bool = false
 var _steps: int = 3
 var _gallery_enemies: Array[Enemy] = []
 
@@ -23,6 +25,8 @@ func _ready() -> void:
 			_out = arg.trim_prefix("--out=")
 		elif arg == "--slashes":
 			_slashes = true
+		elif arg == "--blasts":
+			_blasts = true
 		elif arg.begins_with("--steps="):
 			_steps = arg.trim_prefix("--steps=").to_int()
 	var arena := Arena.new()
@@ -73,6 +77,9 @@ func _trigger() -> void:
 	if _slashes:
 		_trigger_slashes()
 		return
+	if _blasts:
+		_trigger_blasts()
+		return
 	var katana: WeaponData = ContentDB.get_def(&"weapons", &"katana")
 	var laser: WeaponData = ContentDB.get_def(&"weapons", &"laser_pistol")
 	var bazooka: WeaponData = ContentDB.get_def(&"weapons", &"bazooka")
@@ -91,6 +98,23 @@ func _trigger_slashes() -> void:
 		var w: WeaponData = melee[i]
 		var center := Vector2(-660 + (i % 4) * 440, -220 + (i / 4) * 420)
 		_vfx.slash(center, -PI / 2.0, w.area, deg_to_rad(w.arc_degrees) * 0.5, w.color, w.slash_style)
+
+
+## One Vfx per column, each advanced to a later moment of the same effects.
+func _trigger_blasts() -> void:
+	for child in get_children():
+		if child is Vfx and child != _vfx:
+			child.queue_free()
+	var bazooka: WeaponData = ContentDB.get_def(&"weapons", &"bazooka")
+	var grunt: EnemyData = ContentDB.get_def(&"enemies", &"grunt")
+	for c in 6:
+		var column := Vfx.new()
+		add_child(column)
+		var x := -700.0 + c * 270.0
+		column.explosion(Vector2(x, -330), bazooka.explosion_radius, bazooka.color, false)
+		column.death(Vector2(x - 60, -40), 26.0, grunt.color)
+		column.death(Vector2(x + 60, -40), 40.0, Color(0.85, 0.3, 0.35))
+		column._process(c * 0.055)
 
 
 func _capture() -> void:

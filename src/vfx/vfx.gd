@@ -7,7 +7,7 @@ extends Node2D
 
 signal shake_requested(amount: float)
 
-enum Kind { SLASH, BEAM, EXPLOSION, HIT, LIGHTNING, WARN_CIRCLE, WARN_LINE, PORTAL }
+enum Kind { SLASH, BEAM, EXPLOSION, HIT, LIGHTNING, WARN_CIRCLE, WARN_LINE, PORTAL, DEATH }
 
 const CAPACITY := 384
 ## Outline color of every effect (the art's black line).
@@ -19,6 +19,14 @@ const SLASH_LIFE_SLOW := 0.28
 ## Share of a slash's life spent sweeping across its arc.
 const SWEEP := 0.45
 const SLASH_POINTS := 18
+## Explosion: fire lobes around the blast, debris sparks, smoke puffs.
+const BLAST_LIFE := 0.36
+const BLAST_LOBES := 7
+const BLAST_SPARKS := 6
+const BLAST_SMOKE := 4
+## Monster death "pop": flash, then chunks of the monster's color thrown out.
+const DEATH_LIFE := 0.24
+const DEATH_CHUNKS := 6
 
 var _kind := PackedInt32Array()
 var _a := PackedVector2Array()       # center / start
@@ -72,9 +80,14 @@ func beam(from: Vector2, to: Vector2, width: float, color: Color) -> void:
 
 
 func explosion(center: Vector2, radius: float, color: Color, shake: bool) -> void:
-	_add(Kind.EXPLOSION, center, Vector2.ZERO, radius, 0.0, color, 0.3)
+	_add(Kind.EXPLOSION, center, Vector2.ZERO, radius, _next_seed(), color, BLAST_LIFE)
 	if shake:
 		shake_requested.emit(clampf(radius / 400.0, 0.1, 0.4))
+
+
+## A monster dies: short flash and chunks of its color flying out (`radius` = its size).
+func death(center: Vector2, radius: float, color: Color) -> void:
+	_add(Kind.DEATH, center, Vector2.ZERO, radius, _next_seed(), color, DEATH_LIFE)
 
 
 func hit(pos: Vector2, color: Color = Color(1, 1, 1, 0.8)) -> void:
@@ -160,7 +173,9 @@ func _draw() -> void:
 			Kind.BEAM:
 				_draw_beam(_a[i], _b[i], _size[i], color, t)
 			Kind.EXPLOSION:
-				_draw_explosion(_a[i], _size[i], color, t)
+				_draw_explosion(_a[i], _size[i], _extra[i], color, t)
+			Kind.DEATH:
+				_draw_death(_a[i], _size[i], _extra[i], color, t)
 			Kind.HIT:
 				_draw_hit(_a[i], _size[i], _extra[i], color, t)
 			Kind.LIGHTNING:
@@ -336,12 +351,70 @@ func _draw_beam(from: Vector2, to: Vector2, width: float, color: Color, t: float
 	draw_line(from, to, Color(color.lerp(Color.WHITE, 0.7), t), maxf(width * 0.35, 2.0), true)
 
 
-func _draw_explosion(center: Vector2, radius: float, color: Color, t: float) -> void:
-	var r := radius * (0.35 + 0.65 * sqrt(1.0 - t))
-	# One per enemy death: cheap draws only (no antialiasing, few segments).
-	draw_circle(center, r, Color(color, 0.3 * t))
-	draw_arc(center, r, 0.0, TAU, 24, Color(INK, 0.8 * t), 4.0 + 6.0 * t)
-	draw_arc(center, r, 0.0, TAU, 24, Color(color, t), 2.0 + 4.0 * t)
+## Drawn blast (art bible: ink outline, flat colors): a white-hot core that
+## fades first, fire lobes that swell then shrink, a shock ring running out,
+## debris sparks and a few smoke puffs at the end. Many per second late in a
+## run: plain circles and lines only (no antialiasing).
+func _draw_explosion(center: Vector2, radius: float, noise_seed: float, color: Color, t: float) -> void:
+	var age := 1.0 - t  # 0 -> 1
+	var grow := sqrt(age)
+	var fire := color.lerp(Color(1.0, 0.62, 0.18), 0.45)
+	# Smoke puffs drift out late in the blast.
+	if age > 0.35:
+		var smoke := (age - 0.35) / 0.65
+		for k in BLAST_SMOKE:
+			var a := noise_seed * 2.3 + k * TAU / BLAST_SMOKE
+			var at := center + Vector2.from_angle(a) * radius * (0.45 + 0.4 * smoke)
+			draw_circle(at, radius * 0.28 * (1.0 - smoke * 0.4), Color(0.18, 0.15, 0.22, 0.5 * (1.0 - smoke)))
+	# Fire lobes: swell for the first third, then shrink away.
+	var swell := minf(age / 0.3, 1.0) * (1.0 - maxf(age - 0.3, 0.0) / 0.7)
+	if swell > 0.02:
+		for k in BLAST_LOBES:
+			var a := noise_seed + k * TAU / BLAST_LOBES
+			var at := center + Vector2.from_angle(a) * radius * 0.5 * grow
+			var r := radius * (0.32 + 0.08 * sin(noise_seed * 7.0 + k * 2.1)) * swell
+			draw_circle(at, r + 3.0, INK)
+		for k in BLAST_LOBES:
+			var a := noise_seed + k * TAU / BLAST_LOBES
+			var at := center + Vector2.from_angle(a) * radius * 0.5 * grow
+			var r := radius * (0.32 + 0.08 * sin(noise_seed * 7.0 + k * 2.1)) * swell
+			draw_circle(at, r, fire)
+		draw_circle(center, radius * 0.45 * swell, fire.lerp(Color(1.0, 0.95, 0.6), 0.6))
+	# White-hot core, gone after a quarter of the blast.
+	if age < 0.25:
+		draw_circle(center, radius * (0.55 + 0.3 * grow) * (1.0 - age / 0.25), Color(1.0, 1.0, 0.9, 0.9))
+	# Shock ring running out and thinning.
+	var ring := radius * (0.4 + 0.75 * grow)
+	draw_arc(center, ring, 0.0, TAU, 28, Color(INK, 0.7 * t), 3.0 + 7.0 * t)
+	draw_arc(center, ring, 0.0, TAU, 28, Color(color.lerp(Color.WHITE, 0.3), t), 1.5 + 4.0 * t)
+	# Debris sparks thrown past the ring.
+	for k in BLAST_SPARKS:
+		var a := noise_seed * 1.7 + k * TAU / BLAST_SPARKS + 0.4
+		var direction := Vector2.from_angle(a)
+		var from := center + direction * radius * (0.5 + 0.8 * grow)
+		draw_line(from, from + direction * radius * 0.25 * t, Color(fire.lerp(Color.WHITE, 0.4), t), 3.0)
+
+
+## Monster death "pop": a flash and a ring of its size, then chunks (ink-outlined
+## drops of its color) thrown out and falling a little. One per kill: plain
+## circles and arcs only.
+func _draw_death(center: Vector2, radius: float, noise_seed: float, color: Color, t: float) -> void:
+	var age := 1.0 - t
+	var out := 1.0 - (1.0 - age) * (1.0 - age)  # ease out
+	if age < 0.45:
+		var flash := 1.0 - age / 0.45
+		draw_circle(center, radius * (0.8 + 0.4 * age), Color(1.0, 1.0, 1.0, 0.8 * flash))
+		# Pop ring in the monster's color.
+		draw_arc(center, radius * (0.7 + 0.9 * out), 0.0, TAU, 16, Color(INK, 0.8 * flash), 5.0)
+		draw_arc(center, radius * (0.7 + 0.9 * out), 0.0, TAU, 16, Color(color, flash), 2.5)
+	var size := radius * 0.34 * (1.0 - age * 0.6)
+	for k in DEATH_CHUNKS:
+		var a := noise_seed * 1.3 + k * TAU / DEATH_CHUNKS
+		var reach := radius * (0.3 + 1.4 * out) * (0.8 + 0.4 * sin(noise_seed + k * 3.7))
+		var at := center + Vector2.from_angle(a) * reach + Vector2(0.0, radius * 0.9 * age * age)
+		var alpha := minf(t * 1.8, 1.0)  # solid most of the way, fades at the end
+		draw_circle(at, size + 2.5, Color(INK, alpha))
+		draw_circle(at, size, Color(color.lerp(Color.WHITE, 0.15), alpha))
 
 
 func _draw_hit(pos: Vector2, size: float, noise_seed: float, color: Color, t: float) -> void:

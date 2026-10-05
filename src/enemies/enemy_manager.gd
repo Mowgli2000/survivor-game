@@ -257,7 +257,7 @@ func _lose_hp(enemy: Enemy, amount: float) -> void:
 		return
 	enemy.visible = false
 	if _vfx != null:
-		_vfx.explosion(enemy.position, enemy.radius * 1.8, enemy.data.color, false)
+		_vfx.death(enemy.position, enemy.radius * 1.4, enemy.data.color)
 	if enemy.elite or enemy.data.boss:
 		Audio.play(Sounds.ELITE_DEATH, -2.0)
 	else:
