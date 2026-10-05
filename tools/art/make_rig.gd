@@ -95,7 +95,7 @@ func _initialize() -> void:
 		regions.append("Rect2(%d, %d, %d, %d)" % [r.position.x, r.position.y, r.size.x, r.size.y])
 		var pivot: Vector2 = p.pivot_local * p.k
 		pivots.append("%.2f, %.2f" % [pivot.x, pivot.y])
-		var joint: Vector2 = (_vec(p.at) - feet) * scale
+		var joint: Vector2 = (_placed_at(p, pieces) - feet) * scale
 		joints.append("%.2f, %.2f" % [joint.x, joint.y])
 	var tres := "[gd_resource type=\"Resource\" script_class=\"RigData\" load_steps=3 format=3]\n\n"
 	tres += "[ext_resource type=\"Script\" path=\"res://src/player/rig/rig_data.gd\" id=\"1_script\"]\n"
@@ -157,6 +157,16 @@ func _cut(sheet: Image, seed: Vector2, cut_above: float, cut_below: float) -> Im
 
 
 var _last_rect := Rect2i()
+
+
+## Joint of `p` on the body, sheet px. "at" is given for full-size pieces: when
+## the parent piece is shrunk ('scale'), the joint moves closer to the parent's.
+func _placed_at(p: Dictionary, pieces: Array[Dictionary]) -> Vector2:
+	for parent in pieces:
+		if parent.name == p.parent and parent.get("scale", 1.0) != 1.0:
+			var anchor := _placed_at(parent, pieces)
+			return anchor + (_vec(p.at) - _vec(parent.at)) * float(parent.scale)
+	return _vec(p.at)
 
 
 func _darken(img: Image, factor: float) -> void:
