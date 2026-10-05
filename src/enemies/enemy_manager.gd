@@ -159,7 +159,7 @@ func damage_enemy(index: int, amount: float, crit: bool, direction: Vector2, kno
 ## Returns the number of enemies hit.
 ## Most enemies one area hit (slash, explosion, strike) can damage; 0 = all.
 ## Balance experiment (session 8): dense late crowds made area weapons trivialize.
-var area_max_targets: int = 10
+var area_max_targets: int = 20
 
 
 func damage_in_radius(center: Vector2, radius: float, amount: float, crit: bool, knockback_force: float,
