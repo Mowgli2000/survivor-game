@@ -19,6 +19,13 @@ extends Resource
 ## + max(1, floor(wave x reroll_step_factor)) x rerolls already done in this shop.
 @export var reroll_wave_factor: float = 0.5
 @export var reroll_step_factor: float = 0.5
+## Rerolls that keep the linear cost above; each one after them costs
+## `reroll_steep_factor` times the previous one (anti-spam; 0 / 1.0 = linear only).
+@export var reroll_cheap_count: int = 0
+@export var reroll_steep_factor: float = 1.0
+## Each cheap reroll costs at least this times the previous one (early waves,
+## where the linear step is only 1 material).
+@export var reroll_cheap_min_growth: float = 1.0
 ## Selling a weapon gives back this fraction of its current price.
 @export var sell_ratio: float = 0.25
 
@@ -69,4 +76,11 @@ func sell_price(weapon: WeaponData, tier: int, wave: int) -> int:
 ## Cost of the next reroll after `rerolls_done` rerolls in the same shop.
 func reroll_cost(wave: int, rerolls_done: int) -> int:
 	var step := maxi(1, floori(wave * reroll_step_factor))
-	return 1 + floori(wave * reroll_wave_factor) + step * rerolls_done
+	var base := 1 + floori(wave * reroll_wave_factor)
+	var cheap := mini(rerolls_done, reroll_cheap_count - 1) if reroll_cheap_count > 0 else rerolls_done
+	var cost := base
+	for i in range(1, cheap + 1):
+		cost = maxi(base + step * i, ceili(cost * reroll_cheap_min_growth - 0.0001))
+	if reroll_cheap_count <= 0 or rerolls_done < reroll_cheap_count:
+		return cost
+	return roundi(cost * pow(reroll_steep_factor, rerolls_done - reroll_cheap_count + 1))

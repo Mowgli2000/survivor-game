@@ -233,6 +233,7 @@ func _ready() -> void:
 	Settings.changed.connect(_apply_settings)
 	_apply_settings()
 	waves.wave_started.connect(spawner.begin_wave)
+	waves.wave_started.connect(_update_material_scale)
 	waves.wave_ended.connect(_on_wave_ended)
 	waves.run_won.connect(_on_run_won)
 	waves.wave_started.connect(func(_wave: int) -> void: Audio.play(Sounds.WAVE_START, -6.0))
@@ -405,6 +406,13 @@ func _on_xp_collected(amount: int, collector: int) -> void:
 	var share := ceili(float(amount) / players.size())
 	for rp in players:
 		_give_xp(rp, share)
+
+
+## Item effects that give materials follow the same curve as the XP materials.
+func _update_material_scale(wave: int) -> void:
+	var scale := stage.material_rate_at(wave) / maxf(stage.material_rate_first, 0.001)
+	for rp in players:
+		rp.item_effects.material_scale = scale
 
 
 func _give_xp(rp: RunPlayer, amount: int) -> void:

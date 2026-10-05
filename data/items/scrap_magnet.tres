@@ -17,6 +17,7 @@ id = &"scrap_magnet"
 name_key = "ITEM_SCRAP_MAGNET"
 tier = 1
 base_price = 18
+max_count = 3
 modifiers = Array[ExtResource("2_mod")]([])
 icon = ExtResource("icon_tex")
 effects = Array[ExtResource("4_base")]([SubResource("Effect_1")])

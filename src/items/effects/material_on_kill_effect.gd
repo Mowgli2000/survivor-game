@@ -1,6 +1,7 @@
 class_name MaterialOnKillEffect
 extends ItemEffect
-## Killed enemies may give extra materials straight to the wallet.
+## Killed enemies may give extra materials straight to the wallet, scaled like
+## the XP materials (ItemEffects.material_scale): late waves have far more kills.
 
 @export_range(0.0, 1.0) var chance: float = 0.08
 @export var amount: int = 1
@@ -8,4 +9,4 @@ extends ItemEffect
 
 func on_enemy_killed(effects: ItemEffects, _data: EnemyData, _pos: Vector2, _elite: bool) -> void:
 	if effects.roll(chance):
-		effects.wallet.add(amount)
+		effects.wallet.add_scaled(amount, effects.material_scale)
