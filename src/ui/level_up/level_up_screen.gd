@@ -107,6 +107,7 @@ func open(offers: Array[UpgradeOffer], reroll_cost: int = -1, can_reroll: bool =
 	if not visible:
 		UiFx.pop_in(_title)
 	visible = true
+	HintBanner.show_once(self, &"level_up", Vector2(0.5, 1.0), Vector2(0.0, -40.0))
 	await get_tree().create_timer(INPUT_DELAY, true).timeout
 	# A newer open() may have replaced these cards during the delay.
 	if buttons.is_empty() or not is_instance_valid(buttons[0]) or buttons[0].is_queued_for_deletion():

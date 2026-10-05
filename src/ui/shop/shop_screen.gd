@@ -155,6 +155,8 @@ func open() -> void:
 	visible = true
 	_rebuild()
 	UiFx.pop_in(_title)
+	# Bottom left, under the owned items: the offers stay readable.
+	HintBanner.show_once(self, &"shop", Vector2(0.0, 1.0), Vector2(130.0, -24.0))
 
 
 func close() -> void:

@@ -242,6 +242,8 @@ func _ready() -> void:
 	bosses.boss_ended.connect(func(_boss: Enemy) -> void:
 		if bosses.boss_count() == 0 and not state.is_over:
 			Audio.play_music(Sounds.MUSIC_RUN))
+	if not auto_choose_upgrades:
+		waves.wave_started.connect(_show_wave_hint)
 	waves.start_wave(1)
 
 
@@ -528,6 +530,14 @@ func _resolve_level_ups() -> void:
 		return
 	var cost := _level_up_reroll_cost()
 	level_up_screen.open(offers, cost, rp.wallet.can_afford(cost), rp.player.stats)
+
+
+## First-time tips: controls in wave 1, the stats panel in wave 2.
+func _show_wave_hint(wave: int) -> void:
+	if wave == 1:
+		hud.show_hint(&"move")
+	elif wave == 2:
+		hud.show_hint(&"stats")
 
 
 func _apply_offer(offer: UpgradeOffer) -> void:
