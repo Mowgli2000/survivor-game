@@ -66,7 +66,7 @@ const BOUNDS: Dictionary[StringName, Vector2] = {
 	PIERCE: Vector2(0.0, INF),
 	KNOCKBACK: Vector2(0.0, INF),
 	RANGE: Vector2(0.1, INF),
-	AREA: Vector2(0.1, 2.0),  # +100 %: area x4, 40 targets per hit (D67)
+	AREA: Vector2(0.1, 3.0),  # +200 %: area x9, 60 targets per hit (D67)
 	PICKUP_RANGE: Vector2(0.0, INF),
 	DODGE: Vector2(0.0, 0.6),
 	LIFESTEAL: Vector2(0.0, 1.0),
