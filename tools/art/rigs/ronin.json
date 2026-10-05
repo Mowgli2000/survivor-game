@@ -1,12 +1,12 @@
 {
-	"_doc": "Epeiste puppet (ADR 0020), three-quarter view facing right. Points are in sheet pixels; the model space is the torso's place on the sheet. 'seed' = a point inside the piece, 'pivot' = its joint (sheet px, before any flip), 'at' = where that joint sits on the assembled body, 'flip' = mirror the piece (the far arm bends the other way), 'shade' = darken (far limbs), 'parent' = piece it follows. Pieces overlap at their round joint ends. 'scale' shrinks a piece drawn too big (the arms); 'at' stays given for full-size pieces, the tool moves the children's joints. 'rest' (degrees, clockwise) turns a piece drawn tilted into its rest pose: the arms are drawn held out, their rests bring them along the body. Drawn in 'z' order.",
+	"_doc": "Epeiste puppet (ADR 0020), three-quarter view facing right. Points are in sheet pixels; the model space is the torso's place on the sheet. 'seed' = a point inside the piece, 'pivot' = its joint (sheet px, before any flip), 'at' = where that joint sits on the assembled body, 'flip' = mirror the piece (the far arm bends the other way), 'shade' = darken (far limbs), 'parent' = piece it follows. Pieces overlap at their round joint ends. 'scale' shrinks a piece drawn too big (the arms); 'at' stays given for full-size pieces, the tool moves the children's joints. 'rest' (degrees, clockwise) turns a piece drawn tilted into its rest pose: the arms are drawn held out, their rests bring them along the body. The far arm hangs higher and is a bit smaller (seen from above, farther away). Drawn in 'z' order.",
 	"sheet": "art_source/ai/rig/v2/ronin_parts_1.png",
 	"height": 300,
 	"feet": [1035, 778],
 	"pieces": [
 		{"name": "ponytail", "seed": [250, 300], "pivot": [385, 165], "at": [941, -87], "z": 0, "parent": "head"},
-		{"name": "arm_back", "seed": [930, 540], "pivot": [990, 465], "at": [1150, 240], "z": 1, "parent": "torso", "flip": true, "shade": 0.78, "scale": 0.7, "rest": 28},
-		{"name": "hand_back", "seed": [1270, 580], "pivot": [1210, 480], "at": [1265, 400], "z": 2, "parent": "arm_back", "shade": 0.78, "scale": 0.7, "rest": 5},
+		{"name": "arm_back", "seed": [930, 540], "pivot": [990, 465], "at": [1140, 200], "z": 1, "parent": "torso", "flip": true, "shade": 0.78, "scale": 0.63, "rest": 28},
+		{"name": "hand_back", "seed": [1270, 580], "pivot": [1210, 480], "at": [1255, 360], "z": 2, "parent": "arm_back", "shade": 0.78, "scale": 0.63, "rest": 5},
 		{"name": "leg_back", "seed": [960, 850], "pivot": [940, 715], "at": [1085, 415], "z": 3, "parent": "", "shade": 0.78},
 		{"name": "shin_back", "seed": [1260, 900], "pivot": [1260, 785], "at": [1110, 540], "z": 4, "parent": "leg_back", "shade": 0.78},
 		{"name": "leg_front", "seed": [300, 850], "pivot": [285, 712], "at": [985, 420], "z": 5, "parent": ""},
