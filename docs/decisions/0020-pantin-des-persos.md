@@ -13,7 +13,15 @@ Les persos jouables n'étaient animés que par le code, par-dessus une image fix
 - `CharacterData.rig` : si une ressource est définie, le pantin remplace le sprite précalculé en jeu. Sinon on garde le sprite, donc les persos sans pantin ne changent pas. La carte de sélection garde son illustration.
 - Planche de contrôle : `tools/art/rig_preview.gd -- --character=<id> --out=<png>` (fenêtre requise).
 
+## Planche « prête pour l'animation » (retour du dev sur le pilote 1)
+Le premier pilote utilisait la planche de face (`art_source/ai/rig/ronin_parts.png`). Le dev l'a refusé : les pièces bord à bord laissaient des vides aux articulations (tête et buste), et une vue de face symétrique cache le retournement gauche/droite. Il faut donc des planches **pensées pour l'animation**, générées avec le sprite du perso comme référence (`gen_image.py --image art_source/ai/<id>.png`, invite dans `tools/art/rigs/parts_prompt.txt`) :
+- vue de **trois quarts tournée vers la droite** (comme les sprites) ;
+- **rotules arrondies qui se chevauchent** (cou, épaules, coudes, hanches, genoux) ;
+- bras et jambe arrière séparés, assombris par l'outil (`shade`) et retournés si besoin (`flip`) ;
+- cuisse et tibia séparés (le genou plie), **queue de cheval ou cheveux à part** (ressort).
+Épéiste : `art_source/ai/rig/v2/ronin_parts_1.png`, 12 pièces.
+
 ## Conséquences
 - Ajouter un perso : faire sa planche de pièces, son `rigs/<id>.json`, lancer `make_rig.gd` et l'import, puis renseigner `rig` dans `data/characters/<id>.tres`.
-- Vue de face uniquement : pas de vue de dos ni de profil. Le retournement gauche/droite reste un miroir.
+- Une seule vue (trois quarts) : pas de vue de dos. Le retournement gauche/droite reste un miroir.
 - Pas d'animation d'attaque : les armes flottent autour du perso (façon Brotato, ADR 0010).

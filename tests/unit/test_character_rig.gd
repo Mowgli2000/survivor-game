@@ -16,7 +16,8 @@ func _rig() -> CharacterRig:
 
 
 func test_epeiste_puppet_has_every_piece() -> void:
-	for piece in ["head", "torso", "skirt", "arm_l", "arm_r", "hand_l", "hand_r", "leg_l", "leg_r"]:
+	for piece in ["head", "ponytail", "torso", "skirt", "arm_front", "arm_back", "hand_front", "hand_back",
+			"leg_front", "leg_back", "shin_front", "shin_back"]:
 		assert_gt(_rig_data.index_of(StringName(piece)), -1, piece)
 	assert_eq(_rig().get_child_count(), _rig_data.names.size(), "one sprite per piece")
 
@@ -30,15 +31,15 @@ func test_walking_swings_the_limbs_and_standing_still_does_not() -> void:
 	var rig := _rig()
 	for i in 20:
 		rig.animate(1.0 / 60.0, 0.0, 0.0)
-	assert_almost_eq(rig.angle_of(&"leg_l"), 0.0, 0.001, "idle")
+	assert_almost_eq(rig.angle_of(&"leg_front"), 0.0, 0.001, "idle")
 	for i in 20:
 		rig.animate(1.0 / 60.0, 1.0, 0.0)
-	assert_ne(rig.angle_of(&"arm_l"), 0.0, "walking")
+	assert_ne(rig.angle_of(&"arm_front"), 0.0, "walking")
 
 
 func test_hand_follows_its_arm() -> void:
 	var rig := _rig()
-	var hand := rig.get_child(_rig_data.index_of(&"hand_l")) as Sprite2D
+	var hand := rig.get_child(_rig_data.index_of(&"hand_front")) as Sprite2D
 	var rest := hand.position
 	for i in 20:
 		rig.animate(1.0 / 60.0, 1.0, 0.0)

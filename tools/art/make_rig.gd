@@ -20,7 +20,7 @@ func _initialize() -> void:
 		return
 	var sheet := Image.load_from_file(ProjectSettings.globalize_path("res://" + spec.sheet))
 	sheet.convert(Image.FORMAT_RGBA8)
-	var axis: float = spec.axis
+	var axis: float = spec.get("axis", 0.0)
 	var feet := _vec(spec.feet)
 	var mirrored := {}
 	for p: Dictionary in spec.pieces:
@@ -40,7 +40,21 @@ func _initialize() -> void:
 	for p in pieces:
 		p.image = _cut(sheet, _vec(p.seed), p.get("cut_above", -1.0), p.get("cut_below", -1.0))
 		p.image_rect = _last_rect
-		top = minf(top, _last_rect.position.y)
+		if _last_rect.size.x < 8 or _last_rect.size.y < 8:
+			printerr("piece %s: seed %s is not inside a piece" % [p.name, p.seed])
+			quit(1)
+			return
+		# Joint inside the piece (sheet px), mirrored with the piece when flipped.
+		var pivot := _vec(p.pivot) - Vector2(_last_rect.position)
+		if p.get("flip", false):
+			p.image.flip_x()
+			pivot.x = _last_rect.size.x - pivot.x
+		p.pivot_local = pivot
+		var shade: float = p.get("shade", 1.0)
+		if shade < 1.0:
+			_darken(p.image, shade)
+		# Highest point of the assembled body (for the scale).
+		top = minf(top, p.at[1] - pivot.y)
 	var scale: float = spec.height / (feet.y - top)
 
 	# Scale and pack the pieces side by side.
@@ -74,7 +88,7 @@ func _initialize() -> void:
 		parents.append('"%s"' % p.parent)
 		var r: Rect2i = p.region
 		regions.append("Rect2(%d, %d, %d, %d)" % [r.position.x, r.position.y, r.size.x, r.size.y])
-		var pivot: Vector2 = (_vec(p.pivot) - Vector2(p.image_rect.position)) * scale
+		var pivot: Vector2 = p.pivot_local * scale
 		pivots.append("%.2f, %.2f" % [pivot.x, pivot.y])
 		var joint: Vector2 = (_vec(p.at) - feet) * scale
 		joints.append("%.2f, %.2f" % [joint.x, joint.y])
@@ -137,6 +151,14 @@ func _cut(sheet: Image, seed: Vector2, cut_above: float, cut_below: float) -> Im
 
 
 var _last_rect := Rect2i()
+
+
+func _darken(img: Image, factor: float) -> void:
+	for y in img.get_height():
+		for x in img.get_width():
+			var c := img.get_pixel(x, y)
+			if c.a > 0.0:
+				img.set_pixel(x, y, Color(c.r * factor, c.g * factor, c.b * factor, c.a))
 
 
 static func _vec(a: Array) -> Vector2:

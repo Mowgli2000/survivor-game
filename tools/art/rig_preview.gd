@@ -17,6 +17,10 @@ func _initialize() -> void:
 		elif arg.begins_with("--out="):
 			out = arg.trim_prefix("--out=")
 	var data: CharacterData = load("res://data/characters/%s.tres" % character_id)
+	if data.rig == null:
+		# Not enabled in game yet: preview assets/rigs/<id>.tres directly.
+		data = data.duplicate() as CharacterData
+		data.rig = load("res://assets/rigs/%s.tres" % character_id)
 	var height := 16.0 * Player.SPRITE_HEIGHT_PER_RADIUS * data.sprite_scale * SCALE
 	# Poses: [label, walk steps, hurt, death steps]
 	var poses := [["idle", 0, 0.0, 0, 0.0], ["idle", 0, 0.0, 0, 1.4]]

@@ -1,0 +1,17 @@
+Character parts sheet for 2D cut-out (puppet) animation of the SAME character as the reference image: same face, same red-orange flaming ponytail hair with a gold hair ring, same steel plate armor, same red and gold skirt, black gloves and black armored boots. Same art style as the reference: thick clean black outline of constant weight, flat colors with one hard cel-shadow tone, no gradients, no texture. Same three-quarter view facing RIGHT, camera above at about 35 degrees, same chunky proportions as the reference.
+
+The body is split into 12 separate pieces laid out on a loose grid with wide transparent gaps between them; no piece touches or overlaps another:
+1. head with face and front hair, WITHOUT the ponytail, with a short black neck stub at the bottom;
+2. the ponytail alone, with its gold ring;
+3. torso with breastplate and belt, with a rounded neck socket at the top and rounded shoulders;
+4. the skirt (red and gold tassets) alone;
+5. front upper arm with its pauldron, rounded at both ends;
+6. front forearm with gauntlet and closed fist, rounded at the elbow end;
+7. back upper arm, same shape but slightly darker (it is behind the body);
+8. back forearm with fist, slightly darker;
+9. front thigh with knee guard, rounded at both ends;
+10. front shin with armored boot, rounded at the knee end;
+11. back thigh, slightly darker;
+12. back shin with boot, slightly darker.
+
+Every joint end is extended and rounded so the pieces can overlap when assembled (no straight cuts). Each piece is drawn complete, including the parts normally hidden by other pieces. All pieces at the same scale as each other. No weapon. Transparent background, no text, no labels, no numbers, no shadows.
