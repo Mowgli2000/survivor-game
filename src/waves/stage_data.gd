@@ -62,6 +62,9 @@ extends Resource
 
 @export_group("Elites")
 @export var elite_hp_multiplier: float = 5.0
+## Final bosses (EnemyData.boss) take only this share of the wave HP multiplier:
+## at full share the wave-20 boss was out of reach of any build (simulator).
+@export_range(0.05, 1.0) var boss_hp_share: float = 1.0
 @export var elite_xp_multiplier: float = 10.0
 ## Visual size and collision radius multiplier.
 @export var elite_scale: float = 1.6

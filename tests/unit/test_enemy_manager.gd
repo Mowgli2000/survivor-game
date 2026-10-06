@@ -448,3 +448,21 @@ func test_damage_dealt_is_recorded_per_weapon_and_player() -> void:
 	assert_almost_eq(dealt[&"katana"], 4.0, 0.01)
 	assert_almost_eq(dealt[&"bomb"], 10.0, 0.01, "only the HP the enemy had (overkill not counted)")
 	assert_eq(_enemies.damage_dealt(1), {}, "player 2 dealt nothing")
+
+
+func test_capped_area_hit_still_reaches_the_boss() -> void:
+	# Simulator: bosses hidden in their horde were left out of capped area hits.
+	var boss := _enemy_data(1000.0, 0.0)
+	boss.boss = true
+	for i in 30:
+		_enemies.spawn(_data, Vector2(i % 6 * 8.0, i / 6 * 8.0))
+	_enemies.spawn(boss, Vector2(20, 20))
+	await wait_physics_frames(1)
+	_enemies.area_max_targets = 20
+	var hits := _enemies.damage_in_radius(Vector2.ZERO, 300.0, 5.0, false, 0.0)
+	assert_eq(hits, 21, "20 regular enemies + the boss")
+	var boss_index := -1
+	for i in _enemies.active_count():
+		if _enemies.get_enemy(i).data == boss:
+			boss_index = i
+	assert_lt(_enemies.get_enemy(boss_index).hp, 1000.0, "the boss was hit")

@@ -173,6 +173,7 @@ endless_damage_growth = 0.04
 endless_spawn_growth = 0.03
 endless_elite_growth = 0.015
 elite_hp_multiplier = 5.0
+boss_hp_share = 0.4
 elite_xp_multiplier = 10.0
 elite_scale = 1.6
 events = Array[ExtResource("3_event")]([SubResource("Event_w5_horde"), SubResource("Event_w8_elite"), SubResource("Event_w10_elites"), SubResource("Event_w12_horde"), SubResource("Event_w14_horde"), SubResource("Event_w15_elites"), SubResource("Event_w16_horde"), SubResource("Event_w18_horde"), SubResource("Event_w18_elites"), SubResource("Event_w19_horde"), SubResource("Event_w20_boss")])

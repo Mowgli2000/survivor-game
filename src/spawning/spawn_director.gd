@@ -86,6 +86,8 @@ func _fire_events(elapsed: float, hp_multiplier: float, damage_multiplier: float
 		var hp := hp_multiplier * (_stage.elite_hp_multiplier if event.elite else 1.0)
 		var offset := _state.rng.randf() * TAU
 		var enemy := event.pick_enemy(_state.rng)
+		if enemy.boss:
+			hp *= _stage.boss_hp_share
 		# Scripted events ignore max_enemies: elites and hordes must always appear.
 		for k in event.count:
 			var angle := offset + TAU * k / event.count
