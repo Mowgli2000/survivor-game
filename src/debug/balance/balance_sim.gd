@@ -21,6 +21,8 @@ var _damage_taken: float = 0.0
 var _min_hp_ratio: float = 1.0
 var _started_ms: int = 0
 var _done: bool = false
+## Boss fights: wave, id, start time in the wave, seconds to kill (-1 = not killed).
+var _bosses: Array = []
 ## --endless=N: after the victory, keep playing endless waves up to wave N.
 var _endless_to: int = 0
 
@@ -62,6 +64,19 @@ func _ready() -> void:
 	add_child(_run)
 	_run.player.damaged.connect(_on_damaged)
 	_run.player.died.connect(_on_died)
+	# Boss fights: when each boss appears and when (if) it dies.
+	_run.bosses.boss_started.connect(func(boss: Enemy) -> void:
+		_bosses.append({"wave": _run.waves.wave, "id": String(boss.data.id),
+			"start": _run.waves.wave_elapsed(), "killed_after": -1.0}))
+	# A boss that leaves while the wave runs was killed (the wave-end clear
+	# happens after in_wave turns false).
+	_run.bosses.boss_ended.connect(func(boss: Enemy) -> void:
+		if not _run.waves.in_wave:
+			return
+		for fight in _bosses:
+			if fight.id == String(boss.data.id) and fight.killed_after < 0.0 and fight.wave == _run.waves.wave:
+				fight.killed_after = _run.waves.wave_elapsed() - fight.start
+				break)
 	_run.waves.run_won.connect(_on_won)
 	_started_ms = Time.get_ticks_msec()
 
@@ -163,6 +178,7 @@ func _finish(outcome: String) -> void:
 	_report["real_seconds"] = (Time.get_ticks_msec() - _started_ms) / 1000.0
 	_report["items"] = _item_list()
 	_report["waves"] = _waves
+	_report["bosses"] = _bosses
 	_write()
 
 
