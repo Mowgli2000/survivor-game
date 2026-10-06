@@ -190,5 +190,8 @@ func test_next_wave_sits_beside_reroll_above_the_owned_lists() -> void:
 	# pushed below the screen.
 	var screen := ShopScreen.new()
 	add_child_autofree(screen)
-	assert_eq(screen._next.get_parent(), screen._reroll.get_parent())
-	assert_lt(screen._next.get_parent().get_index(), screen._items_row.get_parent().get_index())
+	var actions := screen._next.get_parent()
+	var items_box := screen._items_row.get_parent()
+	assert_eq(actions, screen._reroll.get_parent(), "beside Reroll")
+	assert_eq(actions.get_parent(), items_box.get_parent(), "in the same column as the items")
+	assert_lt(actions.get_index(), items_box.get_index(), "above the items")
