@@ -29,7 +29,7 @@ var _endless_to: int = 0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	var args := {"character": "drifter", "weapon": "", "seal": "0", "policy": "dps", "seed": "1", "endless": "0", "static": "0"}
+	var args := {"character": "drifter", "weapon": "", "seal": "0", "policy": "dps", "seed": "1", "endless": "0", "static": "0", "static_after": "0"}
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--out="):
 			_out = arg.trim_prefix("--out=")
@@ -60,8 +60,17 @@ func _ready() -> void:
 	_run.unlock_all = true
 	_run.bot_policy = self
 	# --static=1: a "static build" player who never moves (D71).
-	_run.bot_input = _bot.steer if args.static != "1" else func() -> Vector2: return Vector2.ZERO
-	_report["static"] = args.static == "1"
+	# --static_after=N: the bot moves up to wave N, then stands still (a build that no longer
+	# needs to dodge); with --static=1 it never moves.
+	var static_after := int(args.static_after)
+	if args.static == "1":
+		_run.bot_input = func() -> Vector2: return Vector2.ZERO
+	elif static_after > 0:
+		_run.bot_input = func() -> Vector2: return _bot.steer() if _run.waves.wave <= static_after else Vector2.ZERO
+	else:
+		_run.bot_input = _bot.steer
+	_report["static"] = args.static == "1" or static_after > 0
+	_report["static_after"] = static_after
 	_bot.setup(_run)
 	add_child(_run)
 	_run.player.damaged.connect(_on_damaged)
