@@ -40,6 +40,14 @@ var spawn_cap: int = 100000
 ## Player number of whoever deals the current damage (ADR 0017): set by the
 ## attacker before calling the damage API, read by kill / hit listeners.
 var damage_source: int = 0
+## What deals the current damage, for the end-of-run summary: a weapon id,
+## ITEMS_TAG or BURN_TAG. Set with damage_source by the attacker.
+var damage_weapon: StringName = &""
+
+## Damage actually dealt (HP removed) per player, per damage_weapon.
+var _dealt: Array[Dictionary] = []
+## Biggest single hit per player.
+var _best_hit := PackedFloat32Array()
 
 var _party: Party
 var _arena: Rect2
@@ -140,6 +148,29 @@ func find_nearest_excluding(from: Vector2, max_distance: float, exclude_ids: Arr
 # --- Damage API -------------------------------------------------------------
 
 ## Hits one enemy. `status` is applied with probability `status_chance`.
+const ITEMS_TAG := &"items"
+const BURN_TAG := &"burn"
+
+
+## Damage dealt by player `source`, by weapon id / ITEMS_TAG / BURN_TAG.
+func damage_dealt(source: int) -> Dictionary:
+	return _dealt[source] if source >= 0 and source < _dealt.size() else {}
+
+
+func best_hit(source: int) -> float:
+	return _best_hit[source] if source >= 0 and source < _best_hit.size() else 0.0
+
+
+func _record_damage(amount: float) -> void:
+	var source := maxi(damage_source, 0)
+	while _dealt.size() <= source:
+		_dealt.append({})
+		_best_hit.append(0.0)
+	_dealt[source][damage_weapon] = _dealt[source].get(damage_weapon, 0.0) + amount
+	if damage_weapon != BURN_TAG:
+		_best_hit[source] = maxf(_best_hit[source], amount)
+
+
 func damage_enemy(index: int, amount: float, crit: bool, direction: Vector2, knockback_force: float,
 		status: StatusData = null, status_chance: float = 1.0) -> void:
 	var enemy := _active[index]
@@ -248,6 +279,7 @@ func clear_all() -> void:
 
 
 func _lose_hp(enemy: Enemy, amount: float) -> void:
+	_record_damage(minf(amount, maxf(enemy.hp, 0.0)))
 	enemy.hp -= amount
 	if enemy.is_alive():
 		var frame := Engine.get_physics_frames()
@@ -500,6 +532,7 @@ func _update_spawner(enemy: Enemy, delta: float) -> void:
 
 func _tick_burn(enemy: Enemy, delta: float) -> void:
 	damage_source = enemy.burn_source
+	damage_weapon = BURN_TAG
 	var step := minf(delta, enemy.burn_time)
 	var damage := enemy.burn_dps * step
 	enemy.burn_time -= delta

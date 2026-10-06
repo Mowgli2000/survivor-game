@@ -433,3 +433,19 @@ func test_area_target_cap_grows_with_the_zone_stat() -> void:
 	_enemies.set_area_target_scale(0, 0.8)
 	assert_eq(_enemies.area_targets_for(0), 20, "less Zone never lowers the cap")
 	assert_eq(_enemies.area_targets_for(1), 20, "other players keep their own cap")
+
+
+func test_damage_dealt_is_recorded_per_weapon_and_player() -> void:
+	_enemies.spawn(_data, Vector2(100, 0))
+	_enemies.spawn(_data, Vector2(-100, 0))
+	await wait_physics_frames(1)
+	_enemies.damage_source = 0
+	_enemies.damage_weapon = &"katana"
+	_enemies.damage_enemy(0, 4.0, false, Vector2.ZERO, 0.0)
+	_enemies.damage_weapon = &"bomb"
+	_enemies.damage_enemy(1, 25.0, false, Vector2.ZERO, 0.0)
+	var dealt := _enemies.damage_dealt(0)
+	assert_almost_eq(dealt[&"katana"], 4.0, 0.01)
+	assert_almost_eq(dealt[&"bomb"], 10.0, 0.01, "only the HP the enemy had (overkill not counted)")
+	assert_almost_eq(_enemies.best_hit(0), 10.0, 0.01)
+	assert_eq(_enemies.damage_dealt(1), {}, "player 2 dealt nothing")

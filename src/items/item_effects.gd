@@ -110,6 +110,7 @@ func _resolve_explosions() -> void:
 		return
 	effect_damage_running = true
 	enemies.damage_source = source
+	enemies.damage_weapon = EnemyManager.ITEMS_TAG
 	for i in count:
 		var pos := Vector2(_explosions[i * 4], _explosions[i * 4 + 1])
 		var radius := _explosions[i * 4 + 2]

@@ -631,6 +631,7 @@ func _on_run_won() -> void:
 	Audio.play(Sounds.VICTORY)
 	get_tree().paused = true
 	game_over_screen.open(state.elapsed, progression.level, state.kills, waves.wave, true)
+	_show_recap()
 	_record_run(true)
 
 
@@ -644,6 +645,7 @@ func _on_player_died() -> void:
 	Audio.play(Sounds.DEFEAT)
 	get_tree().paused = true
 	game_over_screen.open(state.elapsed, progression.level, state.kills, waves.wave)
+	_show_recap()
 	if stage.endless:
 		# The run was recorded at the victory: only the endless record remains.
 		if setup != null:
@@ -651,6 +653,11 @@ func _on_player_died() -> void:
 				SaveService.record_endless(rp.character.id, waves.wave)
 	else:
 		_record_run(false)
+
+
+## Damage by weapon of player 1 on the end screen (coop: the first player).
+func _show_recap() -> void:
+	game_over_screen.show_recap(GameOverScreen.recap_rows(enemies.damage_dealt(0)), enemies.best_hit(0))
 
 
 ## After a victory: the waves go on (level-ups, shop, wave 21...) until death.

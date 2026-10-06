@@ -8,6 +8,10 @@ signal endless_requested
 
 ## Defeat veil: the night violet of the UI, pushed toward red.
 const DEFEAT_DIM := Color(0.16, 0.03, 0.08, 0.8)
+## Rows shown in the damage summary (the biggest dealers).
+const RECAP_ROWS := 6
+const RECAP_ICON := 44.0
+const RECAP_BAR_WIDTH := 220.0
 
 ## True when the last open() was a victory.
 var is_victory: bool = false
@@ -15,6 +19,8 @@ var is_victory: bool = false
 var _title: Label
 var _dim: ColorRect
 var _summary: Label
+## Damage by weapon, next to the summary (show_recap).
+var _recap: VBoxContainer
 var _unlocks: HBoxContainer
 var _retry: Button
 var _main_menu: Button
@@ -52,11 +58,20 @@ func _init() -> void:
 	_title.add_theme_font_size_override("font_size", 88)
 	box.add_child(_title)
 
+	var middle := HBoxContainer.new()
+	middle.alignment = BoxContainer.ALIGNMENT_CENTER
+	middle.add_theme_constant_override("separation", 64)
+	box.add_child(middle)
 	_summary = Label.new()
 	_summary.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_summary.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	_summary.theme_type_variation = &"ValueLabel"
 	_summary.add_theme_font_size_override("font_size", 32)
-	box.add_child(_summary)
+	middle.add_child(_summary)
+	_recap = VBoxContainer.new()
+	_recap.add_theme_constant_override("separation", 8)
+	_recap.visible = false
+	middle.add_child(_recap)
 
 	_unlocks = HBoxContainer.new()
 	_unlocks.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -99,6 +114,7 @@ func open(time_survived: float, level: int, kills: int, wave: int, victory: bool
 		tr("UI_KILLS"), kills,
 	]
 	_unlocks.visible = false
+	_recap.visible = false
 	_endless.visible = victory
 	visible = true
 	UiFx.pop_in(_title)
@@ -106,6 +122,99 @@ func open(time_survived: float, level: int, kills: int, wave: int, victory: bool
 	UiFx.pop_in(_retry, 0.16)
 	UiFx.pop_in(_main_menu, 0.24)
 	_retry.grab_focus()
+
+
+## Damage summary: who dealt what (rows from recap_rows()), and the best hit
+## added under the run summary.
+func show_recap(rows: Array[Dictionary], best: float) -> void:
+	for child in _recap.get_children():
+		_recap.remove_child(child)
+		child.queue_free()
+	if best > 0.0:
+		_summary.text += "
+%s %s" % [tr("UI_BEST_HIT"), compact(best)]
+	if rows.is_empty():
+		return
+	var title := Label.new()
+	title.text = "UI_RECAP_DAMAGE"
+	title.theme_type_variation = &"SubtitleLabel"
+	_recap.add_child(title)
+	var top: float = rows[0].damage
+	var total := 0.0
+	for row in rows:
+		total += row.damage
+	for i in mini(rows.size(), RECAP_ROWS):
+		_recap.add_child(_recap_row(rows[i], top, total))
+	_recap.visible = true
+	UiFx.pop_in(_recap, 0.12)
+
+
+## Rows of the damage summary, biggest first: weapons with their icon and
+## name, then item effects and burning. `dealt` = EnemyManager.damage_dealt().
+static func recap_rows(dealt: Dictionary) -> Array[Dictionary]:
+	var rows: Array[Dictionary] = []
+	for key: StringName in dealt:
+		var damage: float = dealt[key]
+		if damage <= 0.0:
+			continue
+		var row := {"damage": damage, "icon": null, "name": "", "tier": 1}
+		if key == EnemyManager.ITEMS_TAG:
+			row.name = "UI_RECAP_ITEMS"
+		elif key == EnemyManager.BURN_TAG:
+			row.name = "UI_RECAP_BURN"
+		else:
+			var weapon := ContentDB.get_def(&"weapons", key) as WeaponData
+			if weapon == null:
+				continue
+			row.name = weapon.name_key
+			row.icon = weapon.icon
+		rows.append(row)
+	rows.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.damage > b.damage)
+	return rows
+
+
+## 950, 12.3k, 4.5M: big late-game numbers stay short.
+static func compact(value: float) -> String:
+	if value >= 1e6:
+		return "%.1fM" % (value / 1e6)
+	if value >= 1e4:
+		return "%.1fk" % (value / 1e3)
+	return str(roundi(value))
+
+
+func _recap_row(row: Dictionary, top: float, total: float) -> Control:
+	var line := HBoxContainer.new()
+	line.add_theme_constant_override("separation", 12)
+	var icon: Control
+	if row.icon != null:
+		icon = IconTile.create(row.icon, row.tier, RECAP_ICON)
+	else:
+		icon = Control.new()
+		icon.custom_minimum_size = Vector2(RECAP_ICON, RECAP_ICON)
+	line.add_child(icon)
+	var info := VBoxContainer.new()
+	info.add_theme_constant_override("separation", 2)
+	line.add_child(info)
+	var name_label := Label.new()
+	name_label.text = row.name
+	name_label.add_theme_font_size_override("font_size", 20)
+	info.add_child(name_label)
+	var bar := ProgressBar.new()
+	bar.show_percentage = false
+	bar.custom_minimum_size = Vector2(RECAP_BAR_WIDTH, 14)
+	bar.max_value = top
+	bar.value = row.damage
+	var styles := UiTheme.bar_styles(UiTheme.BAD)
+	bar.add_theme_stylebox_override("background", styles[0])
+	bar.add_theme_stylebox_override("fill", styles[1])
+	info.add_child(bar)
+	var value := Label.new()
+	value.text = "%s  (%d%%)" % [compact(row.damage), roundi(100.0 * row.damage / maxf(total, 1.0))]
+	value.theme_type_variation = &"ValueLabel"
+	value.add_theme_font_size_override("font_size", 22)
+	value.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	line.add_child(value)
+	return line
 
 
 ## New unlocks from this run (challenges completed), one card each: the

@@ -37,6 +37,7 @@ func spawn(pos: Vector2, velocity: Vector2, damage: float, crit: bool, pierce: i
 		range_multiplier)
 	# The weapon holder that fires set the damage source just before.
 	projectile.source = _enemies.damage_source if _enemies != null else 0
+	projectile.weapon = _enemies.damage_weapon if _enemies != null else &""
 	_active.append(projectile)
 
 
@@ -86,6 +87,7 @@ func _steer(p: Projectile, delta: float) -> void:
 
 func _resolve_hits(p: Projectile) -> bool:
 	_enemies.damage_source = p.source
+	_enemies.damage_weapon = p.weapon
 	var found := _enemies.grid.query_radius(p.position, p.radius + _enemies.max_radius, _candidates)
 	for k in found:
 		var index := _candidates[k]
@@ -126,6 +128,7 @@ func _bounce(p: Projectile) -> bool:
 
 func _explode(p: Projectile) -> void:
 	_enemies.damage_source = p.source
+	_enemies.damage_weapon = p.weapon
 	_enemies.damage_in_radius(p.position, p.explosion_radius, p.damage, p.crit, p.knockback,
 		p.status, p.status_chance)
 	if _vfx != null:

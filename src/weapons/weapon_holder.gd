@@ -115,6 +115,8 @@ func _physics_process(delta: float) -> void:
 		slot.cooldown -= delta * attack_speed
 		if slot.cooldown > 0.0:
 			continue
+		if _ctx.enemies != null:
+			_ctx.enemies.damage_weapon = slot.data.id
 		if slot.data.behavior.fire(slot, _ctx):
 			slot.attacks += 1
 			weapon_fired.emit(i)
