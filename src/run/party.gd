@@ -2,10 +2,7 @@ class_name Party
 extends RefCounted
 ## The players of a run (1 or 2, ADR 0017) and the group queries every system
 ## uses instead of "the player": nearest living player, group center.
-## Players call clamp_spread() after moving: never more than MAX_SPREAD apart.
-
-## Max distance between two players, in px (both stay on the shared screen).
-const MAX_SPREAD := 900.0
+## The players walk anywhere on their own; the camera zooms out to keep both in view.
 
 var members: Array[Player] = []
 
@@ -71,16 +68,3 @@ func spread() -> float:
 				continue
 			result = maxf(result, members[i].global_position.distance_to(members[j].global_position))
 	return result
-
-
-## Position `player` may take: within MAX_SPREAD of every other living player.
-func clamp_spread(player: Player, pos: Vector2) -> Vector2:
-	if player.is_dead:
-		return pos
-	for other in members:
-		if other == player or other.is_dead:
-			continue
-		var offset := pos - other.global_position
-		if offset.length_squared() > MAX_SPREAD * MAX_SPREAD:
-			pos = other.global_position + offset.normalized() * MAX_SPREAD
-	return pos

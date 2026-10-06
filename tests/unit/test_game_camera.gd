@@ -56,16 +56,33 @@ func test_follows_the_center_of_the_party() -> void:
 	assert_eq(camera.global_position, Vector2(100, 100))
 
 
-func test_zooms_out_when_two_players_spread_apart() -> void:
+func test_zooms_out_to_fit_two_distant_players() -> void:
 	var party := Party.new()
-	party.add(_player_at(Vector2.ZERO))
-	var far := _player_at(Vector2(Party.MAX_SPREAD, 0))
-	party.add(far)
+	party.add(_player_at(Vector2(-1100, 0)))
+	party.add(_player_at(Vector2(1100, 0)))
+	var view := Vector2(1920, 1080)
+	var zoom := GameCamera.fit_zoom(party, view, 1.3)
+	assert_lt(zoom, 1.3)
+	assert_almost_eq(zoom, view.x / (2200.0 + GameCamera.FIT_MARGIN), 0.001)
 	var camera := _camera()
-	camera.follow(party, 1.0)
-	for i in 120:
+	camera.follow(party, 1.3)
+	for i in 240:
 		camera._physics_process(1.0 / 60.0)
-	assert_almost_eq(camera.zoom.x, GameCamera.MIN_ZOOM_FACTOR, 0.001)
+	assert_lt(camera.zoom.x, 1.3)
+
+
+func test_close_players_keep_the_base_zoom() -> void:
+	var party := Party.new()
+	party.add(_player_at(Vector2(-100, 0)))
+	party.add(_player_at(Vector2(100, 0)))
+	assert_eq(GameCamera.fit_zoom(party, Vector2(1920, 1080), 1.3), 1.3)
+
+
+func test_zoom_never_goes_below_the_minimum() -> void:
+	var party := Party.new()
+	party.add(_player_at(Vector2(-9000, 0)))
+	party.add(_player_at(Vector2(9000, 0)))
+	assert_eq(GameCamera.fit_zoom(party, Vector2(1920, 1080), 1.3), GameCamera.MIN_ZOOM)
 
 
 func test_solo_keeps_the_configured_zoom() -> void:

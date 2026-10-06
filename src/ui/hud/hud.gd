@@ -22,6 +22,8 @@ var _materials_label: Label
 var _materials: int = 0
 var _shown_materials: int = -1
 var _stats_panel: StatsPanel
+var _stats_panel_2: StatsPanel
+var _stats_row: HBoxContainer
 var _timer_label: Label
 var _wave_label: Label
 var _waves: WaveDirector
@@ -55,6 +57,11 @@ func setup(player: Player, progression: Progression, waves: WaveDirector, wallet
 
 ## Coop (ADR 0017): compact block for player 2 (top right) and a tag on player 1's.
 func setup_second_player(player: Player, progression: Progression, wallet: Wallet, color: Color) -> void:
+	_stats_panel_2 = StatsPanel.new()
+	_stats_panel_2.setup(player.stats)
+	_stats_panel_2.set_tag(tr("UI_PLAYER_N") % 2, color)
+	_stats_row.add_child(_stats_panel_2)
+	_stats_panel.set_tag(tr("UI_PLAYER_N") % 1, RunPlayer.COLORS[0])
 	var tag_1 := _make_label(&"SubtitleLabel", 24)
 	tag_1.text = tr("UI_PLAYER_N") % 1
 	tag_1.add_theme_color_override("font_color", RunPlayer.COLORS[0])
@@ -130,6 +137,11 @@ func show_hint(key: StringName) -> void:
 
 func toast_text() -> String:
 	return _toast.text if _toast.visible else ""
+
+
+## Coop: weapon family lines of player 2 in the Tab stats panel.
+func setup_second_families(families: WeaponFamilies) -> void:
+	_stats_panel_2.setup_families(families)
 
 
 ## Weapon family lines in the Tab stats panel.
@@ -230,13 +242,18 @@ func _init() -> void:
 	_weapons_box.add_theme_constant_override("separation", 8)
 	root.add_child(_weapons_box)
 
+	# Hold Tab / Select: the stats (coop: one panel per player, side by side).
+	_stats_row = HBoxContainer.new()
+	_stats_row.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
+	_stats_row.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	_stats_row.grow_vertical = Control.GROW_DIRECTION_BOTH
+	_stats_row.offset_right = -32
+	_stats_row.add_theme_constant_override("separation", 16)
+	_stats_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_stats_row.visible = false
+	root.add_child(_stats_row)
 	_stats_panel = StatsPanel.new()
-	_stats_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
-	_stats_panel.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	_stats_panel.grow_vertical = Control.GROW_DIRECTION_BOTH
-	_stats_panel.offset_right = -32
-	_stats_panel.visible = false
-	root.add_child(_stats_panel)
+	_stats_row.add_child(_stats_panel)
 
 	var hint := _make_label(&"SmallLabel", 18)
 	hint.text = "UI_STATS_HINT"
@@ -249,7 +266,7 @@ func _init() -> void:
 
 
 func _process(_delta: float) -> void:
-	_stats_panel.visible = Input.is_action_pressed("show_stats")
+	_stats_row.visible = Input.is_action_pressed("show_stats")
 	if _materials != _shown_materials:
 		var from := maxi(_shown_materials, 0)
 		_shown_materials = _materials

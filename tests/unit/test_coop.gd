@@ -53,9 +53,9 @@ func test_party_center_of_the_living() -> void:
 	assert_eq(party.center(), Vector2(0, 0), "a ghost does not pull the camera")
 
 
-func test_players_cannot_walk_away_from_each_other() -> void:
+func test_players_walk_anywhere_on_their_own() -> void:
 	var a := _player_at(Vector2.ZERO)
-	var b := _player_at(Vector2(Party.MAX_SPREAD - 10.0, 0), 1)
+	var b := _player_at(Vector2(1500.0, 0), 1)
 	var party := Party.new()
 	party.add(a)
 	party.add(b)
@@ -64,7 +64,7 @@ func test_players_cannot_walk_away_from_each_other() -> void:
 	b.stats.set_base(StatIds.MOVE_SPEED, 600.0)
 	b.bot_input = func() -> Vector2: return Vector2.RIGHT
 	await wait_physics_frames(10)
-	assert_almost_eq(b.global_position.distance_to(a.global_position), Party.MAX_SPREAD, 0.5)
+	assert_gt(b.global_position.distance_to(a.global_position), 1500.0, "no tether between the players")
 
 
 # --- PlayerInput ------------------------------------------------------------

@@ -11,6 +11,8 @@ signal reroll_requested
 ## Short delay before cards accept input, to avoid accidental picks.
 const INPUT_DELAY := 0.35
 const CARD_SIZE := Vector2(360, 400)
+## Coop: half-screen layout.
+const COMPACT_CARD_SIZE := Vector2(218, 400)
 ## Delay between two cards appearing.
 const CARD_STAGGER := 0.04
 
@@ -22,12 +24,17 @@ var _title: Label
 var _player_tag: Label
 ## Player's stats for the current -> new preview of each card (null: none).
 var _stats: StatBlock
+var _card_size := CARD_SIZE
+var _compact: bool = false
 
 
-func _init() -> void:
+func _init(p_compact: bool = false) -> void:
 	layer = 20
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	visible = false
+	_compact = p_compact
+	if _compact:
+		_card_size = COMPACT_CARD_SIZE
 
 	var root := Control.new()
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -58,6 +65,8 @@ func _init() -> void:
 	title.text = "UI_LEVEL_UP"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.theme_type_variation = &"TitleLabel"
+	if _compact:
+		title.add_theme_font_size_override("font_size", 52)
 	box.add_child(title)
 	_title = title
 
@@ -68,7 +77,7 @@ func _init() -> void:
 	box.add_child(subtitle)
 
 	_cards = HBoxContainer.new()
-	_cards.add_theme_constant_override("separation", 32)
+	_cards.add_theme_constant_override("separation", 10 if _compact else 32)
 	_cards.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.add_child(_cards)
 
@@ -76,6 +85,8 @@ func _init() -> void:
 	_reroll.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_reroll.pressed.connect(func() -> void: reroll_requested.emit())
 	box.add_child(_reroll)
+	if not _compact:
+		root.add_child(ButtonHints.create([[&"A", "UI_HINT_CHOOSE"], [&"Y", "UI_HINT_REROLL"]]))
 
 
 ## Coop: shows whose turn it is; an empty text hides the tag (solo).
@@ -201,7 +212,7 @@ func _make_card(offer: UpgradeOffer) -> Button:
 	var texts := describe_offer(offer)
 
 	var button := Button.new()
-	button.custom_minimum_size = CARD_SIZE
+	button.custom_minimum_size = _card_size
 	button.add_theme_stylebox_override("normal", UiTheme.card_style(accent, 0.6))
 	button.add_theme_stylebox_override("hover", UiTheme.card_style(accent, 1.0))
 	button.add_theme_stylebox_override("pressed", UiTheme.card_style(accent, 1.0))
@@ -238,7 +249,7 @@ func _card_label(text: String, variation: StringName, size: int, color: Color) -
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.custom_minimum_size.x = CARD_SIZE.x - 40.0
+	label.custom_minimum_size.x = _card_size.x - 40.0
 	label.add_theme_font_size_override("font_size", size)
 	label.add_theme_color_override("font_color", color)
 	return label

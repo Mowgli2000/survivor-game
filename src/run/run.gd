@@ -64,6 +64,8 @@ var item_effects: ItemEffects
 var weapon_families: WeaponFamilies
 var hud: Hud
 var level_up_screen: LevelUpScreen
+## Coop: the two halves of the screen between waves (null in solo).
+var coop_screens: CoopScreens
 var wave_end_screen: WaveEndScreen
 var shop: Shop
 var shop_screen: ShopScreen
@@ -74,7 +76,6 @@ var _upgrade_pool: Array[UpgradeData] = []
 var _character: CharacterData
 var _killed_special: Array[StringName] = []
 ## Player whose level-ups and shop are open between waves (coop: one after the other).
-var _turn: int = 0
 
 
 func _ready() -> void:
@@ -105,6 +106,8 @@ func _ready() -> void:
 
 	vfx = Vfx.new()
 	vfx.name = "Vfx"
+	# Coop: two players' effects share the screen, drawn a little smaller.
+	vfx.coop_scale = 0.8 if is_coop() else 1.0
 	damage_numbers = DamageNumbers.new()
 	damage_numbers.name = "DamageNumbers"
 
@@ -183,17 +186,36 @@ func _ready() -> void:
 	if players.size() > 1:
 		var second := players[1]
 		hud.setup_second_player(second.player, second.progression, second.wallet, second.color())
+		hud.setup_second_families(second.families)
 
-	level_up_screen = LevelUpScreen.new()
-	add_child(level_up_screen)
 	wave_end_screen = WaveEndScreen.new()
 	add_child(wave_end_screen)
+	# Coop (ADR 0021): each player's level-up and shop live in his half of the screen.
+	var halves: CoopScreens = null
+	if is_coop():
+		halves = CoopScreens.new()
+		halves.name = "CoopScreens"
+		var inputs: Array[PlayerInput] = []
+		for rp in players:
+			inputs.append(rp.input)
+		halves.setup(inputs)
+		add_child(halves)
+		coop_screens = halves
 	for rp in players:
-		rp.shop_screen = ShopScreen.new()
-		add_child(rp.shop_screen)
+		rp.level_up_screen = LevelUpScreen.new(is_coop())
+		rp.shop_screen = ShopScreen.new(is_coop())
+		if halves != null:
+			halves.add_screen(rp.index, rp.level_up_screen)
+			halves.add_screen(rp.index, rp.shop_screen)
+		else:
+			add_child(rp.level_up_screen)
+			add_child(rp.shop_screen)
 		rp.shop_screen.setup(rp.shop, rp.wallet, rp.inventory, rp.player.weapons, rp.player.stats)
 		rp.shop_screen.stats_panel.setup_families(rp.families)
-		rp.shop_screen.next_wave_requested.connect(_on_shop_done)
+		rp.shop_screen.next_wave_requested.connect(_on_shop_done.bind(rp))
+		rp.level_up_screen.offer_chosen.connect(_apply_offer.bind(rp))
+		rp.level_up_screen.reroll_requested.connect(_on_level_up_reroll.bind(rp))
+	level_up_screen = players[0].level_up_screen
 	shop_screen = players[0].shop_screen
 	game_over_screen = GameOverScreen.new()
 	add_child(game_over_screen)
@@ -201,10 +223,8 @@ func _ready() -> void:
 	add_child(pause_menu)
 	pause_menu.stats_panel.setup(player.stats)
 	pause_menu.stats_panel.setup_families(weapon_families)
-	if is_coop():
-		var gate := CoopInputGate.new()
-		gate.setup(_input_owner)
-		add_child(gate)
+	if players.size() > 1:
+		pause_menu.add_second_stats(players[1].player.stats, players[1].families, players[1].color())
 
 	var overlay := DebugOverlay.new()
 	overlay.setup(enemies, projectiles, pickups, enemy_projectiles, vfx)
@@ -220,9 +240,9 @@ func _ready() -> void:
 	for rp in players:
 		rp.player.damaged.connect(_on_player_damaged)
 		rp.player.died.connect(_on_player_died)
+		rp.player.died.connect(func() -> void: rp.deaths += 1)
 	pickups.xp_collected.connect(_on_xp_collected)
-	level_up_screen.offer_chosen.connect(_apply_offer)
-	level_up_screen.reroll_requested.connect(_on_level_up_reroll)
+	pickups.material_collected.connect(_on_material_collected)
 	game_over_screen.retry_requested.connect(_on_retry_requested)
 	game_over_screen.endless_requested.connect(_continue_endless)
 	game_over_screen.main_menu_requested.connect(SceneRouter.goto_main_menu)
@@ -253,11 +273,6 @@ func is_coop() -> bool:
 	return player_count > 1 or (setup != null and setup.character_2 != null)
 
 
-## Player whose between-waves screens are open.
-func current_player() -> RunPlayer:
-	return players[_turn]
-
-
 ## Players with their input, progression and wallet (systems come in _equip_player).
 func _create_players(arena_rect: Rect2) -> void:
 	var count := 2 if is_coop() else 1
@@ -267,11 +282,12 @@ func _create_players(arena_rect: Rect2) -> void:
 		var rp := RunPlayer.new()
 		rp.index = i
 		rp.character = _character if i == 0 else _second_character()
+		rp.variant = _variant_of(i)
 		rp.input = inputs[i]
 		var p := Player.new()
 		p.name = "Player" if i == 0 else "Player%d" % (i + 1)
 		p.index = i
-		p.setup(rp.character, arena_rect)
+		p.setup(rp.character, arena_rect, rp.variant)
 		p.invincible = player_invincible
 		p.bot_input = bot_input
 		p.input = rp.input
@@ -287,6 +303,13 @@ func _create_players(arena_rect: Rect2) -> void:
 		players.append(rp)
 	player = players[0].player
 	inventory = players[0].inventory
+
+
+## Look chosen in the menu for player `index` (0 without a setup).
+func _variant_of(index: int) -> int:
+	if setup == null:
+		return 0
+	return setup.variant if index == 0 else setup.variant_2
 
 
 func _second_character() -> CharacterData:
@@ -368,14 +391,6 @@ func _resume_from_pause() -> void:
 	get_tree().paused = false
 
 
-## Coop: between waves, only the devices of the player whose turn it is drive the screens.
-## Null = every device (during waves, pause, game over).
-func _input_owner() -> PlayerInput:
-	if level_up_screen.visible or current_player().shop_screen.visible:
-		return current_player().input
-	return null
-
-
 ## Player settings that affect the run's feedback (damage numbers, screen shake).
 func _apply_settings() -> void:
 	damage_numbers.enabled = Settings.data.damage_numbers
@@ -390,10 +405,15 @@ func _on_player_damaged(_amount: float) -> void:
 func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
 	state.kills += 1
 	state.wave_kills += 1
+	# The attacker is set before every damage call (burns carry their source).
+	players[clampi(enemies.damage_source, 0, players.size() - 1)].kills += 1
 	var xp := data.xp_value
 	if elite:
 		xp = roundi(xp * stage.elite_xp_multiplier)
 	pickups.spawn_xp(pos, xp)
+	# The materials of the kill drop as a gold coin next to the XP crystal.
+	pickups.spawn_material(pos + Vector2(randf_range(-14.0, 14.0), randf_range(-10.0, 10.0)),
+		xp * stage.material_rate_at(waves.wave))
 	if data.boss or not data.phases.is_empty():
 		_killed_special.append(data.id)
 	if data.reward_item_tier > 0:
@@ -402,15 +422,23 @@ func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
 		waves.finish_wave()
 
 
-## XP gems are also materials, fewer per gem as the run goes on. The end-of-wave
-## sweep (SHARED) is split evenly between the players.
+## XP crystals give XP, material coins give materials (fewer per kill as the run goes
+## on). The end-of-wave sweep (SHARED) is split evenly between the players.
 func _on_xp_collected(amount: int, collector: int) -> void:
 	if collector != PickupManager.SHARED:
-		_give_xp(players[collector], amount)
+		players[collector].progression.add_xp(amount)
 		return
 	var share := ceili(float(amount) / players.size())
 	for rp in players:
-		_give_xp(rp, share)
+		rp.progression.add_xp(share)
+
+
+func _on_material_collected(amount: float, collector: int) -> void:
+	if collector != PickupManager.SHARED:
+		players[collector].wallet.add_scaled(amount, 1.0)
+		return
+	for rp in players:
+		rp.wallet.add_scaled(amount / players.size(), 1.0)
 
 
 ## Item effects that give materials follow the same curve as the XP materials.
@@ -418,11 +446,6 @@ func _update_material_scale(wave: int) -> void:
 	var scale := stage.material_rate_at(wave) / maxf(stage.material_rate_first, 0.001)
 	for rp in players:
 		rp.item_effects.material_scale = scale
-
-
-func _give_xp(rp: RunPlayer, amount: int) -> void:
-	rp.progression.add_xp(amount)
-	rp.wallet.add_scaled(amount, stage.material_rate_at(waves.wave))
 
 
 ## Content of `category` the profile allows (locked content stays out).
@@ -501,7 +524,7 @@ func _on_wave_ended(wave: int) -> void:
 	if not auto_choose_upgrades:
 		get_tree().paused = true
 		wave_end_screen.open(waves.wave)
-	_begin_turn(0)
+	_begin_between_waves()
 
 
 ## Balancing aid (debug builds): one line per wave in the output console.
@@ -514,14 +537,17 @@ func _log_wave_stats(wave: int) -> void:
 		roundi(100.0 * state.wave_kills / spawned), enemies.active_count(), progression.level])
 
 
-## Between waves: level-ups then shop of player `index`.
-func _begin_turn(index: int) -> void:
-	_turn = index
-	current_player().level_up_rerolls = 0
-	var tag := tr("UI_PLAYER_N") % (index + 1) if players.size() > 1 else ""
-	level_up_screen.set_player_tag(tag, current_player().color())
-	current_player().shop_screen.set_player_tag(tag, current_player().color())
-	_resolve_level_ups()
+## Between waves: every player's level-ups then shop, all at once (ADR 0021). The next wave
+## starts when every player is done.
+func _begin_between_waves() -> void:
+	for rp in players:
+		rp.level_up_rerolls = 0
+		rp.between_done = false
+		var tag := tr("UI_PLAYER_N") % (rp.index + 1) if players.size() > 1 else ""
+		rp.level_up_screen.set_player_tag(tag, rp.color())
+		rp.shop_screen.set_player_tag(tag, rp.color())
+	for rp in players:
+		_resolve_level_ups(rp)
 
 
 ## Level-up cards whose bonus still does something (capped stats drop out).
@@ -533,25 +559,26 @@ func _useful_upgrades(rp: RunPlayer) -> Array[UpgradeData]:
 	return useful
 
 
-## Offers one level-up at a time until none is pending.
-func _resolve_level_ups() -> void:
-	var rp := current_player()
+## Offers one level-up at a time until none is pending (`rp` null: player 1, debug tools).
+func _resolve_level_ups(rp: RunPlayer = null) -> void:
+	if rp == null:
+		rp = players[0]
 	if rp.progression.pending_level_ups <= 0:
-		_on_level_ups_resolved()
+		_on_level_ups_resolved(rp)
 		return
 	var offers := rp.progression.roll_offers(_useful_upgrades(rp), config.upgrade_choices, state.rng,
 		config.shop, waves.wave, rp.player.stats.get_value(StatIds.LUCK))
 	if offers.is_empty():
 		rp.progression.pending_level_ups = 0
-		_on_level_ups_resolved()
+		_on_level_ups_resolved(rp)
 		return
 	for offer in offers:
 		offer.bonus_scale = rp.character.upgrade_scale
 	if auto_choose_upgrades:
-		_apply_offer(bot_policy.choose_upgrade(offers, rp) if bot_policy != null else offers[0])
+		_apply_offer(bot_policy.choose_upgrade(offers, rp) if bot_policy != null else offers[0], rp)
 		return
-	var cost := _level_up_reroll_cost()
-	level_up_screen.open(offers, cost, rp.wallet.can_afford(cost), rp.player.stats)
+	var cost := _level_up_reroll_cost(rp)
+	rp.level_up_screen.open(offers, cost, rp.wallet.can_afford(cost), rp.player.stats)
 
 
 ## First-time tips: controls in wave 1, the stats panel in wave 2.
@@ -562,37 +589,35 @@ func _show_wave_hint(wave: int) -> void:
 		hud.show_hint(&"stats")
 
 
-func _apply_offer(offer: UpgradeOffer) -> void:
+func _apply_offer(offer: UpgradeOffer, rp: RunPlayer) -> void:
 	Audio.play(Sounds.LEVEL_UP, -6.0)
-	current_player().progression.apply_offer(offer, current_player().player.stats)
-	_resolve_level_ups()
+	rp.progression.apply_offer(offer, rp.player.stats)
+	_resolve_level_ups(rp)
 
 
-func _level_up_reroll_cost() -> int:
-	return current_player().shop.scaled_reroll_cost(
-		config.shop.reroll_cost(waves.wave, current_player().level_up_rerolls))
+func _level_up_reroll_cost(rp: RunPlayer) -> int:
+	return rp.shop.scaled_reroll_cost(config.shop.reroll_cost(waves.wave, rp.level_up_rerolls))
 
 
-## Paid reroll of the current level-up cards (same cost rule as the shop).
-func _on_level_up_reroll() -> void:
-	if not current_player().wallet.spend(_level_up_reroll_cost()):
+## Paid reroll of a player's level-up cards (same cost rule as the shop).
+func _on_level_up_reroll(rp: RunPlayer) -> void:
+	if not rp.wallet.spend(_level_up_reroll_cost(rp)):
 		Audio.play(Sounds.UI_ERROR, -8.0)
 		return
 	Audio.play(Sounds.UI_REROLL, -6.0)
-	current_player().level_up_rerolls += 1
-	_resolve_level_ups()
+	rp.level_up_rerolls += 1
+	_resolve_level_ups(rp)
 
 
-func _on_level_ups_resolved() -> void:
-	level_up_screen.close()
-	var rp := current_player()
+func _on_level_ups_resolved(rp: RunPlayer) -> void:
+	rp.level_up_screen.close()
 	rp.shop.open(waves.wave)
 	if auto_choose_upgrades:
 		if bot_policy != null:
 			bot_policy.shop_turn(rp, waves.wave)
 		else:
 			_auto_buy(rp)
-		_on_shop_done()
+		_on_shop_done(rp)
 		return
 	wave_end_screen.close()
 	rp.shop_screen.open()
@@ -605,12 +630,13 @@ func _auto_buy(rp: RunPlayer) -> void:
 			return
 
 
-## "Next wave" in a shop: the next player's turn, or the next wave.
-func _on_shop_done() -> void:
-	current_player().shop_screen.close()
-	if _turn + 1 < players.size():
-		_begin_turn(_turn + 1)
-		return
+## "Next wave" in a player's shop: the wave starts once every player is done.
+func _on_shop_done(rp: RunPlayer) -> void:
+	rp.shop_screen.close()
+	rp.between_done = true
+	for other in players:
+		if not other.between_done:
+			return
 	_start_next_wave()
 
 
@@ -663,6 +689,8 @@ func _show_recap() -> void:
 			"title": tr("UI_PLAYER_N") % (rp.index + 1) if players.size() > 1 else "",
 			"color": rp.color(),
 			"rows": GameOverScreen.recap_rows(enemies.damage_dealt(rp.index)),
+			"kills": rp.kills,
+			"deaths": rp.deaths,
 		})
 	game_over_screen.show_recap(columns)
 
@@ -673,7 +701,7 @@ func _continue_endless() -> void:
 	state.is_over = false
 	game_over_screen.close()
 	Audio.play_music(Sounds.MUSIC_RUN)
-	_begin_turn(0)
+	_begin_between_waves()
 
 
 func _on_retry_requested() -> void:

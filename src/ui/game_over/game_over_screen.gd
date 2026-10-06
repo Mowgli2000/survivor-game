@@ -125,14 +125,14 @@ func open(time_survived: float, level: int, kills: int, wave: int, victory: bool
 
 
 ## Damage summary, one column per player: {"title": "" (solo) or "Player 2",
-## "color": player color, "rows": recap_rows()}.
+## "color": player color, "rows": recap_rows(), coop: "kills", "deaths"}.
 func show_recap(columns: Array[Dictionary]) -> void:
 	for child in _recap.get_children():
 		_recap.remove_child(child)
 		child.queue_free()
 	for column in columns:
 		var rows: Array[Dictionary] = column.rows
-		if rows.is_empty():
+		if rows.is_empty() and column.title == "":
 			continue
 		var box := VBoxContainer.new()
 		box.add_theme_constant_override("separation", 8)
@@ -145,6 +145,15 @@ func show_recap(columns: Array[Dictionary]) -> void:
 			title.text = "%s · %s" % [column.title, tr("UI_RECAP_DAMAGE")]
 			title.add_theme_color_override("font_color", column.color)
 		box.add_child(title)
+		# Coop: each player's own kills and deaths.
+		if column.title != "":
+			var tally := Label.new()
+			tally.text = "%s %d   ·   %s %d" % [tr("UI_KILLS"), column.get("kills", 0),
+				tr("UI_DEATHS"), column.get("deaths", 0)]
+			tally.add_theme_color_override("font_color", column.color)
+			box.add_child(tally)
+		if rows.is_empty():
+			continue
 		var top: float = rows[0].damage
 		var total := 0.0
 		for row in rows:

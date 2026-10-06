@@ -93,27 +93,36 @@ func test_run_is_lost_when_both_players_are_dead() -> void:
 	assert_true(run.game_over_screen.visible)
 
 
-func test_between_waves_each_player_has_a_turn() -> void:
+func test_between_waves_both_players_act_at_the_same_time() -> void:
 	var run := _start(false)
 	await wait_physics_frames(2)
 	run.players[1].progression.add_xp(20)
 	await _end_wave()
 	assert_true(get_tree().paused)
-	assert_true(run.players[0].shop_screen.visible, "player 1 has no level-up: shop first")
-	assert_eq(run.current_player().index, 0)
+	assert_true(run.players[0].shop_screen.visible, "player 1 has no level-up: his shop is open at once")
+	assert_true(run.players[1].level_up_screen.visible, "player 2 picks his level-up meanwhile")
+	assert_false(run.players[1].shop_screen.visible)
+	# Player 1 leaves his shop first: the wave waits for player 2.
 	run.players[0].shop_screen.next_wave_requested.emit()
 	await wait_process_frames(1)
-	assert_eq(run.current_player().index, 1)
-	assert_true(run.level_up_screen.visible, "player 2's level-ups")
-	while run.level_up_screen.visible:
-		run.level_up_screen.offer_chosen.emit(run.level_up_screen._offers[0])
+	assert_true(get_tree().paused, "player 2 is not done")
+	var second := run.players[1].level_up_screen
+	while second.visible:
+		second.offer_chosen.emit(second._offers[0])
 		await wait_process_frames(1)
 	assert_true(run.players[1].shop_screen.visible)
-	assert_false(run.players[0].shop_screen.visible)
 	run.players[1].shop_screen.next_wave_requested.emit()
 	await wait_physics_frames(2)
 	assert_false(get_tree().paused)
 	assert_eq(run.waves.wave, 2)
+
+
+func test_each_players_screens_live_in_his_half() -> void:
+	var run := _start(true)
+	await wait_physics_frames(2)
+	assert_not_null(run.coop_screens)
+	assert_eq(run.players[0].shop_screen.get_viewport(), run.coop_screens.viewport_of(0))
+	assert_eq(run.players[1].level_up_screen.get_viewport(), run.coop_screens.viewport_of(1))
 
 
 func test_gems_credit_the_player_who_collects_them() -> void:

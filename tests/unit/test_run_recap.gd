@@ -29,3 +29,13 @@ func test_end_screen_shows_one_column_per_player() -> void:
 	screen.show_recap(columns)
 	assert_true(screen._recap.visible)
 	assert_eq(screen._recap.get_child_count(), 2)
+
+
+func test_coop_columns_show_each_players_kills_and_deaths() -> void:
+	var screen := GameOverScreen.new()
+	add_child_autofree(screen)
+	var rows: Array[Dictionary] = []
+	screen.show_recap([
+		{"title": "Player 1", "color": Color.WHITE, "rows": rows, "kills": 120, "deaths": 2},
+		{"title": "Player 2", "color": Color.WHITE, "rows": rows, "kills": 80, "deaths": 0}])
+	assert_eq(screen._recap.get_child_count(), 2, "a column per player even without damage rows")

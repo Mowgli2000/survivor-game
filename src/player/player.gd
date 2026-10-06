@@ -46,21 +46,25 @@ var motion := PlayerMotion.new()
 var rig: CharacterRig
 
 var _data: CharacterData
+## 0 = the character's own look, 1 = its second look (CharacterData.alt_*).
+var _variant: int = 0
 var _arena: Rect2
 var _invulnerable: float = 0.0
 var _last_max_hp: float = 0.0
 
 
-func setup(data: CharacterData, arena: Rect2) -> void:
+func setup(data: CharacterData, arena: Rect2, variant: int = 0) -> void:
 	_data = data
+	_variant = variant
 	_arena = arena
 	radius = data.radius
-	var path := "res://assets/sprites/%s.tres" % data.sprite_id
-	var has_sprite := data.sprite_id != &"" and ResourceLoader.exists(path)
+	var sprite_id := data.sprite_id_for(variant)
+	var path := "res://assets/sprites/%s.tres" % sprite_id
+	var has_sprite := sprite_id != &"" and ResourceLoader.exists(path)
 	animator.reset(load(path) as SpriteSheet if has_sprite else null, 0.0)
 	if has_sprite:
 		_setup_sprite_material(animator.sheet)
-	if data.rig != null:
+	if data.rig != null and variant == 0:
 		rig = CharacterRig.new()
 		rig.name = "Rig"
 		rig.setup(data.rig)
@@ -107,8 +111,6 @@ func _physics_process(delta: float) -> void:
 	velocity = direction * stats.get_value(StatIds.MOVE_SPEED)
 	move_and_slide()
 	position = position.clamp(_arena.position, _arena.end)
-	if party != null and party.size() > 1:
-		position = party.clamp_spread(self, position)
 	var anim := &"walk" if velocity.length_squared() > 4.0 else &"idle"
 	animator.advance(delta, anim, velocity.x)
 	motion.update(delta, global_position, velocity, stats.get_value(StatIds.MOVE_SPEED))
@@ -221,7 +223,7 @@ func _draw_dust(feet: Vector2) -> void:
 ## squashed like it (PlayerMotion). body_scale().x already holds the facing
 ## (mirrored when moving left): it must not be applied twice.
 func _place_rig() -> void:
-	var height := radius * SPRITE_HEIGHT_PER_RADIUS * (_data.sprite_scale if _data != null else 1.0)
+	var height := radius * SPRITE_HEIGHT_PER_RADIUS * (_data.sprite_scale_for(_variant) if _data != null else 1.0)
 	var s := height / rig.rig.height
 	var squash := motion.body_scale()
 	rig.transform = Transform2D(motion.lean, Vector2(s * squash.x, s * squash.y), 0.0,
@@ -249,7 +251,7 @@ func _update_sprite_material() -> void:
 ## Dust, then the body leaning around its feet.
 func _draw_sprite() -> void:
 	var sheet := animator.sheet
-	var height := radius * SPRITE_HEIGHT_PER_RADIUS * (_data.sprite_scale if _data != null else 1.0)
+	var height := radius * SPRITE_HEIGHT_PER_RADIUS * (_data.sprite_scale_for(_variant) if _data != null else 1.0)
 	var foot := radius * SPRITE_FOOT
 	var feet := Vector2(0.0, foot)
 	_draw_dust(feet)

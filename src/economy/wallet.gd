@@ -31,7 +31,7 @@ func spend(cost: int) -> bool:
 
 ## Adds `value * rate`, keeping the fractional part for the next call
 ## (materials per pickup that drop below 1 over the run).
-func add_scaled(value: int, rate: float) -> void:
+func add_scaled(value: float, rate: float) -> void:
 	_fraction += value * rate
 	# Epsilon: 0.6 added ten times must give 6, not 5.999...
 	var whole := floori(_fraction + 0.0001)
