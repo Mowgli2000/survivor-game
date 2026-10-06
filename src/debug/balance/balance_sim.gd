@@ -68,15 +68,15 @@ func _ready() -> void:
 	_run.bosses.boss_started.connect(func(boss: Enemy) -> void:
 		_bosses.append({"wave": _run.waves.wave, "id": String(boss.data.id),
 			"start": _run.waves.wave_elapsed(), "killed_after": -1.0}))
-	# A boss that leaves while the wave runs was killed (the wave-end clear
-	# happens after in_wave turns false).
+	# Final bosses (boss = true) end the wave when they die: record on the kill.
+	# Mini-bosses: one that leaves while the wave runs was killed (the wave-end
+	# clear happens after in_wave turns false).
+	_run.enemies.enemy_killed.connect(func(data: EnemyData, _pos: Vector2, _elite: bool) -> void:
+		if data.boss:
+			_mark_boss_killed(data))
 	_run.bosses.boss_ended.connect(func(boss: Enemy) -> void:
-		if not _run.waves.in_wave:
-			return
-		for fight in _bosses:
-			if fight.id == String(boss.data.id) and fight.killed_after < 0.0 and fight.wave == _run.waves.wave:
-				fight.killed_after = _run.waves.wave_elapsed() - fight.start
-				break)
+		if _run.waves.in_wave and not boss.data.boss:
+			_mark_boss_killed(boss.data))
 	_run.waves.run_won.connect(_on_won)
 	_started_ms = Time.get_ticks_msec()
 
@@ -112,6 +112,13 @@ func shop_turn(rp: RunPlayer, wave: int) -> void:
 
 func _on_damaged(amount: float) -> void:
 	_damage_taken += amount
+
+
+func _mark_boss_killed(data: EnemyData) -> void:
+	for fight in _bosses:
+		if fight.id == String(data.id) and fight.killed_after < 0.0 and fight.wave == _run.waves.wave:
+			fight.killed_after = _run.waves.wave_elapsed() - fight.start
+			return
 
 
 func _on_died() -> void:
