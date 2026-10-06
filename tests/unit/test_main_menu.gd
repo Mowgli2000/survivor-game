@@ -12,6 +12,7 @@ func test_menu_builds_with_a_crowd_and_focus_on_play() -> void:
 	await wait_process_frames(2)
 	assert_true(menu._play.has_focus())
 	assert_gt(menu._crowd.count(), 0)
+	assert_true(menu._boss.is_ready(), "the demon knight stands in front of the gate")
 
 
 func test_settings_open_and_close() -> void:

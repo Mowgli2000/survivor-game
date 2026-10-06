@@ -35,13 +35,15 @@ func _init() -> void:
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
 	_panel = PanelContainer.new()
+	_panel.add_theme_stylebox_override("panel", UiTheme.window_style())
 	center.add_child(_panel)
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 18)
 	_panel.add_child(box)
 	var title := Label.new()
 	title.text = "UI_SETTINGS"
-	title.theme_type_variation = &"SubtitleLabel"
+	title.theme_type_variation = &"TitleLabel"
+	title.add_theme_font_size_override("font_size", 72)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
 	_grid = GridContainer.new()
@@ -73,6 +75,7 @@ func _init() -> void:
 	_back.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_back.pressed.connect(close)
 	box.add_child(_back)
+	add_child(ButtonHints.create([[&"A", "UI_HINT_ADJUST"], [&"B", "UI_HINT_BACK"]]))
 
 
 func open() -> void:
@@ -104,6 +107,8 @@ func _section(key: String) -> void:
 	var label := Label.new()
 	label.text = key
 	label.theme_type_variation = &"SmallLabel"
+	label.add_theme_color_override("font_color", UiTheme.VIOLET)
+	label.add_theme_font_size_override("font_size", 20)
 	_grid.add_child(label)
 	_grid.add_child(Control.new())
 

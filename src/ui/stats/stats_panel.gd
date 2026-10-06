@@ -12,6 +12,10 @@ const WORSE := UiTheme.BAD
 const NEUTRAL := UiTheme.TEXT
 
 var _stats: StatBlock
+var _title: Label
+## Font size of the rows (the shop shows a denser panel: it must fit under the cards).
+var _font_size: int = 19
+var _detail_size: int = 15
 var _grid: GridContainer
 var _values: Dictionary[StringName, Label] = {}
 var _families: WeaponFamilies
@@ -28,13 +32,13 @@ func _init() -> void:
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 10)
 	add_child(box)
-	var title := Label.new()
-	title.text = "UI_STATS"
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.theme_type_variation = &"SubtitleLabel"
-	title.add_theme_font_size_override("font_size", 28)
-	title.add_theme_color_override("font_color", UiTheme.ACCENT)
-	box.add_child(title)
+	_title = Label.new()
+	_title.text = "UI_STATS"
+	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_title.theme_type_variation = &"SubtitleLabel"
+	_title.add_theme_font_size_override("font_size", 28)
+	_title.add_theme_color_override("font_color", UiTheme.ACCENT)
+	box.add_child(_title)
 	_grid = GridContainer.new()
 	_grid.columns = 2
 	_grid.add_theme_constant_override("h_separation", 24)
@@ -43,6 +47,21 @@ func _init() -> void:
 	_family_box = VBoxContainer.new()
 	_family_box.add_theme_constant_override("separation", 2)
 	box.add_child(_family_box)
+
+
+## Smaller rows and details, for screens with little room (call before setup()).
+func set_dense() -> void:
+	_font_size = 16
+	_detail_size = 13
+	_grid.add_theme_constant_override("v_separation", 0)
+	_title.add_theme_font_size_override("font_size", 24)
+	custom_minimum_size.x = 290.0
+
+
+## Coop: whose stats these are ("Player 2", in the player's color).
+func set_tag(text: String, color: Color) -> void:
+	_title.text = text
+	_title.add_theme_color_override("font_color", color)
 
 
 func setup(stats: StatBlock) -> void:
@@ -175,7 +194,7 @@ func _refresh(stat: StringName) -> void:
 ## Detail line under a family; wraps so it never widens the panel.
 func _detail_label(color: Color) -> Label:
 	var label := _label(color)
-	label.add_theme_font_size_override("font_size", 15)
+	label.add_theme_font_size_override("font_size", _detail_size)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_family_box.add_child(label)
 	return label
@@ -188,6 +207,6 @@ func _set_detail(label: Label, text: String) -> void:
 
 func _label(color: Color) -> Label:
 	var label := Label.new()
-	label.add_theme_font_size_override("font_size", 19)
+	label.add_theme_font_size_override("font_size", _font_size)
 	label.add_theme_color_override("font_color", color)
 	return label

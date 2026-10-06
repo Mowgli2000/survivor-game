@@ -140,6 +140,7 @@ func test_character_select_offers_unlocked_dangers_only() -> void:
 	assert_true((screen._dangers.get_child(1) as Button).disabled, "Danger 1 needs a win at Danger 0")
 	watch_signals(screen)
 	(screen._dangers.get_child(0) as Button).pressed.emit()
+	screen._launch.pressed.emit()
 	var setup: RunSetup = get_signal_parameters(screen, "started")[0]
 	assert_eq(setup.difficulty.level, 0)
 

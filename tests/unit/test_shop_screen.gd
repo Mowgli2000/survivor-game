@@ -142,7 +142,7 @@ func test_cards_and_buttons_use_the_theme() -> void:
 	var style := card.get_theme_stylebox("panel") as StyleBoxFlat
 	assert_eq(style.border_color, UiTheme.OUTLINE, "black outline")
 	assert_eq(Color(style.shadow_color, 1.0), Tiers.color(1), "tier glow")
-	assert_eq(_screen._next.theme_type_variation, &"BigButton")
+	assert_eq(_screen._next.theme_type_variation, &"CtaButton")
 	assert_eq(_screen._title.theme_type_variation, &"TitleLabel")
 
 

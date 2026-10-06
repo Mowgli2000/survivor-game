@@ -9,13 +9,17 @@ extends Control
 signal started(setup: RunSetup)
 signal closed
 
-## Seven characters must fit a 1920 px row.
-const CARD_SIZE := Vector2(250, 460)
+## "Portal" layout (dev's mockup): the hero in full on the left with his rule,
+## bonuses and stats; on the right the heads of the seven classes, then the
+## starting weapons and the seals once a hero is picked.
+const HEAD_SIZE := 142.0
+## Head and shoulders of a card illustration (512x768): the square shown in a head tile.
+const HEAD_REGION := Rect2(72.0, 8.0, 368.0, 368.0)
+const HERO_COLUMN := 700.0
+const HERO_ART_HEIGHT := 420.0
 const PREVIEW_HEIGHT := 170.0
-## Height of a card illustration (CharacterData.card_art, 2:3 portrait).
-const ART_HEIGHT := 176.0
-## Six seals must fit a 1920 px row.
-const SEAL_SIZE := Vector2(200, 116)
+## Six seals must fit the right column.
+const SEAL_SIZE := Vector2(168, 116)
 const ROMAN: Array[String] = ["I", "II", "III", "IV", "V", "VI"]
 const SKULL := "☠"
 const LOCK := "🔒"
@@ -23,12 +27,37 @@ const REWARD_ICON := 30.0
 ## Copper -> Astral: sea green, lime, yellow, orange, red, blood red.
 const SEAL_HEAT: Array[Color] = [Color("4de0b8"), Color("a6e34d"), Color("ffd84d"),
 		Color("ff9a3d"), Color("ff4a3d"), Color("c8102e")]
+const FEMALE_COLOR := Color("ff7ab8")
+const MALE_COLOR := Color("5fb4ff")
+## Bar fill = stat / these values (a full bar is a strong class, not a maximum).
+const BAR_HP := 150.0
+const BAR_DAMAGE := 1.5
+const BAR_SPEED := 400.0
+const BAR_RANGE := 1.6
+## Fill color of each stat bar.
+const STAT_COLORS: Dictionary[StringName, Color] = {
+	StatIds.MAX_HP: Color("ff6673"), StatIds.DAMAGE: Color("ffb347"),
+	StatIds.MOVE_SPEED: Color("66f2ff"), StatIds.RANGE: Color("b86bff")}
 
 var _character_buttons: Dictionary[StringName, Button] = {}
 var _cards: HBoxContainer
+## Hero panel (left): illustration, switch, name, rule, bonuses, stat bars.
+var _hero_art: TextureRect
+var _look_switch: Button
+var _hero_name: Label
+var _hero_rule: Label
+var _hero_chips: HFlowContainer
+var _hero_bars: Dictionary[StringName, ProgressBar] = {}
+var _hero_values: Dictionary[StringName, Label] = {}
+var _hero_plate: PanelContainer
+## Hero shown in the panel: the focused head, else the chosen one.
+var _shown: CharacterData
 var _weapons: HBoxContainer
 var _weapon_title: Label
 var _dangers: HBoxContainer
+## Starts the run with the chosen seal (a seal press only selects it).
+var _launch: Button
+var _difficulty: DifficultyData
 var _danger_title: Label
 var _seal_info: Label
 var _seal_effects: Label
@@ -45,79 +74,192 @@ var _picking: int = 0
 ## Coop: player 1's choice, kept while player 2 picks.
 var _first_character: CharacterData
 var _first_weapon: WeaponData
+var _first_variant: int = 0
+## Look picked on each card (0 = the character itself, 1 = its second look).
+var _variants: Dictionary[StringName, int] = {}
 
 
 func _init() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	theme = UiTheme.get_theme()
 	visible = false
-	var dim := ColorRect.new()
-	dim.color = UiTheme.DIM
-	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(dim)
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(center)
-	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 10)
-	center.add_child(box)
-	var title := Label.new()
-	title.text = "UI_CHOOSE_CHARACTER"
-	title.theme_type_variation = &"TitleLabel"
-	# A bit smaller than other titles: cards, weapons and seals share the screen.
-	title.add_theme_font_size_override("font_size", 66)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.add_child(title)
-	_title = title
-	_devices = Label.new()
-	_devices.theme_type_variation = &"SmallLabel"
-	_devices.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.add_child(_devices)
-	_cards = HBoxContainer.new()
-	_cards.alignment = BoxContainer.ALIGNMENT_CENTER
-	_cards.add_theme_constant_override("separation", 14)
-	box.add_child(_cards)
-	_weapon_title = Label.new()
-	_weapon_title.text = "UI_CHOOSE_WEAPON"
-	_weapon_title.theme_type_variation = &"SubtitleLabel"
-	_weapon_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.add_child(_weapon_title)
-	_weapons = HBoxContainer.new()
-	_weapons.alignment = BoxContainer.ALIGNMENT_CENTER
-	_weapons.add_theme_constant_override("separation", 16)
-	box.add_child(_weapons)
-	_danger_title = Label.new()
-	_danger_title.text = "UI_CHOOSE_DANGER"
-	_danger_title.theme_type_variation = &"SubtitleLabel"
-	_danger_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.add_child(_danger_title)
-	_dangers = HBoxContainer.new()
-	_dangers.alignment = BoxContainer.ALIGNMENT_CENTER
-	_dangers.add_theme_constant_override("separation", 12)
-	box.add_child(_dangers)
-	# Effects and place of the hovered / focused seal.
-	_seal_info = Label.new()
-	_seal_info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_seal_info.add_theme_font_size_override("font_size", 18)
-	# Two reserved lines as wide as the seal row: a long text wraps inside them
-	# instead of widening the screen and shifting the layout (dev's playtest).
-	_seal_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_seal_info.custom_minimum_size = Vector2(SEAL_SIZE.x * 6 + 12 * 5, 26)
-	_seal_info.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	box.add_child(_seal_info)
-	# Second line: the seal's numbers, smaller and muted (details for the curious).
-	_seal_effects = Label.new()
-	_seal_effects.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_seal_effects.add_theme_font_size_override("font_size", 15)
-	_seal_effects.add_theme_color_override("font_color", UiTheme.MUTED)
-	_seal_effects.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	box.add_child(_seal_effects)
+	var backdrop := ColorRect.new()
+	backdrop.color = Color(0.08, 0.05, 0.17, 1.0)
+	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(backdrop)
+	var margin := MarginContainer.new()
+	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	for side in ["left", "right"]:
+		margin.add_theme_constant_override("margin_" + side, 48)
+	margin.add_theme_constant_override("margin_top", 28)
+	margin.add_theme_constant_override("margin_bottom", 96)
+	add_child(margin)
+	var page := VBoxContainer.new()
+	page.add_theme_constant_override("separation", 10)
+	margin.add_child(page)
+	# Top bar: back pill, title (the co-op line next to it).
+	var top := HBoxContainer.new()
+	top.add_theme_constant_override("separation", 28)
+	page.add_child(top)
 	_back = Button.new()
 	_back.text = "UI_BACK"
-	_back.custom_minimum_size = Vector2(260, 64)
-	_back.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_back.custom_minimum_size = Vector2(190, 64)
 	_back.pressed.connect(_go_back)
-	box.add_child(_back)
+	top.add_child(_back)
+	_title = Label.new()
+	_title.text = "UI_CHOOSE_CHARACTER"
+	_title.theme_type_variation = &"TitleLabel"
+	_title.add_theme_font_size_override("font_size", 64)
+	top.add_child(_title)
+	_devices = Label.new()
+	_devices.theme_type_variation = &"SmallLabel"
+	_devices.size_flags_vertical = Control.SIZE_SHRINK_END
+	top.add_child(_devices)
+	var body := HBoxContainer.new()
+	body.add_theme_constant_override("separation", 40)
+	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	page.add_child(body)
+	body.add_child(_build_hero_panel())
+	var right := VBoxContainer.new()
+	right.add_theme_constant_override("separation", 10)
+	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	body.add_child(right)
+	_cards = HBoxContainer.new()
+	_cards.add_theme_constant_override("separation", 12)
+	right.add_child(_cards)
+	_weapon_title = _section_label("UI_CHOOSE_WEAPON")
+	right.add_child(_weapon_title)
+	_weapons = HBoxContainer.new()
+	_weapons.add_theme_constant_override("separation", 16)
+	right.add_child(_weapons)
+	_danger_title = _section_label("UI_CHOOSE_DANGER")
+	right.add_child(_danger_title)
+	_dangers = HBoxContainer.new()
+	_dangers.add_theme_constant_override("separation", 12)
+	right.add_child(_dangers)
+	# Effects and place of the hovered / focused seal. Two reserved lines as wide
+	# as the seal row: a long text wraps inside them instead of shifting the layout.
+	_seal_info = Label.new()
+	_seal_info.add_theme_font_size_override("font_size", 20)
+	_seal_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_seal_info.custom_minimum_size = Vector2(SEAL_SIZE.x * 6 + 12 * 5, 28)
+	right.add_child(_seal_info)
+	_seal_effects = Label.new()
+	_seal_effects.add_theme_font_size_override("font_size", 16)
+	_seal_effects.add_theme_color_override("font_color", UiTheme.MUTED)
+	_seal_effects.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_seal_effects.custom_minimum_size = Vector2(SEAL_SIZE.x * 6 + 12 * 5, 24)
+	right.add_child(_seal_effects)
+	_launch = Button.new()
+	_launch.text = "UI_PLAY"
+	_launch.theme_type_variation = &"CtaButton"
+	_launch.custom_minimum_size = Vector2(340, 84)
+	_launch.size_flags_horizontal = Control.SIZE_SHRINK_END
+	_launch.visible = false
+	_launch.pressed.connect(_start)
+	right.add_child(_launch)
+	add_child(ButtonHints.create([[&"A", "UI_HINT_CHOOSE"], [&"B", "UI_HINT_BACK"], [&"Y", "UI_HINT_SWITCH_LOOK"]]))
+
+
+func _section_label(key: String) -> Label:
+	var label := Label.new()
+	label.text = key
+	label.theme_type_variation = &"SubtitleLabel"
+	label.add_theme_font_size_override("font_size", 28)
+	label.add_theme_color_override("font_color", UiTheme.MUTED)
+	return label
+
+
+## Left column: the illustration of the shown hero (switch top-right), then a plate
+## with his name, rule, bonus / malus chips and four stat bars.
+func _build_hero_panel() -> Control:
+	var column := VBoxContainer.new()
+	column.custom_minimum_size.x = HERO_COLUMN
+	column.add_theme_constant_override("separation", 8)
+	var art_box := Control.new()
+	art_box.custom_minimum_size = Vector2(HERO_COLUMN, HERO_ART_HEIGHT)
+	column.add_child(art_box)
+	_hero_art = TextureRect.new()
+	_hero_art.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_hero_art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_hero_art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_hero_art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	art_box.add_child(_hero_art)
+	_look_switch = Button.new()
+	_look_switch.focus_mode = Control.FOCUS_NONE
+	_look_switch.flat = true
+	var empty := StyleBoxEmpty.new()
+	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
+		_look_switch.add_theme_stylebox_override(state, empty)
+	_look_switch.add_theme_font_size_override("font_size", 46)
+	_look_switch.tooltip_text = "UI_SWITCH_LOOK"
+	_look_switch.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	_look_switch.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	_look_switch.offset_left = -64.0
+	_look_switch.offset_right = -8.0
+	_look_switch.offset_top = 4.0
+	_look_switch.offset_bottom = 60.0
+	_look_switch.pressed.connect(func() -> void:
+		if _shown != null:
+			_toggle_variant(_shown))
+	art_box.add_child(_look_switch)
+	_hero_plate = PanelContainer.new()
+	_hero_plate.add_theme_stylebox_override("panel", UiTheme.plate_style())
+	column.add_child(_hero_plate)
+	var info := VBoxContainer.new()
+	info.add_theme_constant_override("separation", 10)
+	_hero_plate.add_child(info)
+	_hero_name = Label.new()
+	_hero_name.theme_type_variation = &"TitleLabel"
+	_hero_name.add_theme_font_size_override("font_size", 60)
+	info.add_child(_hero_name)
+	_hero_rule = Label.new()
+	_hero_rule.add_theme_font_size_override("font_size", 21)
+	_hero_rule.add_theme_color_override("font_color", UiTheme.MUTED)
+	_hero_rule.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_hero_rule.custom_minimum_size = Vector2(HERO_COLUMN - 64.0, 56.0)
+	info.add_child(_hero_rule)
+	# Bonuses (green) and maluses (red): two columns of plain text, no frames.
+	_hero_chips = HFlowContainer.new()
+	_hero_chips.add_theme_constant_override("h_separation", 26)
+	_hero_chips.add_theme_constant_override("v_separation", 2)
+	_hero_chips.custom_minimum_size = Vector2(HERO_COLUMN - 64.0, 56.0)
+	info.add_child(_hero_chips)
+	# Stats: label, thin bar, value on one line each.
+	var grid := GridContainer.new()
+	grid.columns = 3
+	grid.add_theme_constant_override("h_separation", 16)
+	grid.add_theme_constant_override("v_separation", 8)
+	info.add_child(grid)
+	for entry in [[StatIds.MAX_HP, "STAT_MAX_HP"], [StatIds.DAMAGE, "STAT_DAMAGE"],
+			[StatIds.MOVE_SPEED, "STAT_MOVE_SPEED"], [StatIds.RANGE, "STAT_RANGE"]]:
+		var stat: StringName = entry[0]
+		var name_label := Label.new()
+		name_label.text = entry[1]
+		name_label.add_theme_font_size_override("font_size", 21)
+		name_label.add_theme_color_override("font_color", UiTheme.MUTED)
+		name_label.add_theme_constant_override("outline_size", 0)
+		name_label.custom_minimum_size.x = 230.0
+		grid.add_child(name_label)
+		var bar := ProgressBar.new()
+		bar.max_value = 1.0
+		bar.show_percentage = false
+		bar.custom_minimum_size = Vector2(250, 12)
+		bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		var styles := UiTheme.flat_bar_styles(STAT_COLORS[stat])
+		bar.add_theme_stylebox_override("background", styles[0])
+		bar.add_theme_stylebox_override("fill", styles[1])
+		grid.add_child(bar)
+		var value_label := Label.new()
+		value_label.add_theme_font_size_override("font_size", 23)
+		value_label.add_theme_color_override("font_color", STAT_COLORS[stat])
+		value_label.add_theme_constant_override("outline_size", 0)
+		value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		value_label.custom_minimum_size.x = 80.0
+		grid.add_child(value_label)
+		_hero_bars[stat] = bar
+		_hero_values[stat] = value_label
+	return column
 
 
 func open(p_coop: bool = false) -> void:
@@ -125,6 +267,7 @@ func open(p_coop: bool = false) -> void:
 	_picking = 0
 	_first_character = null
 	_first_weapon = null
+	_first_variant = 0
 	_devices.visible = coop
 	_devices.text = _devices_hint()
 	_begin_pick()
@@ -137,6 +280,7 @@ func _begin_pick() -> void:
 		_title.add_theme_color_override("font_color", RunPlayer.COLORS[_picking])
 	else:
 		_title.remove_theme_color_override("font_color")
+	_chosen = null
 	_build_cards()
 	_show_weapons(false)
 	_show_dangers(false)
@@ -162,6 +306,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	if visible and (event.is_action_pressed("cancel") or event.is_action_pressed("pause")):
 		get_viewport().set_input_as_handled()
 		_go_back()
+	elif visible and event.is_action_pressed("switch_variant"):
+		# The card under the focus changes look (gamepad Y / keyboard V).
+		var focused := get_viewport().gui_get_focus_owner()
+		for id in _character_buttons:
+			if _character_buttons[id] == focused:
+				get_viewport().set_input_as_handled()
+				_toggle_variant(ContentDB.get_def(&"characters", id) as CharacterData)
+				return
 
 
 func _go_back() -> void:
@@ -200,68 +352,152 @@ func _build_cards() -> void:
 		return a.locked != b.locked and not a.locked or a.locked == b.locked and String(a.id) < String(b.id))
 	for character in characters:
 		var unlocked := SaveService.is_unlocked(&"characters", character)
+		var look := variant_of(character)
 		var button := Button.new()
-		button.custom_minimum_size = CARD_SIZE
+		button.custom_minimum_size = Vector2(HEAD_SIZE, HEAD_SIZE)
 		button.disabled = not unlocked
+		button.tooltip_text = character.name_key_for(look)
 		button.add_theme_stylebox_override("normal", UiTheme.card_style(character.color, 0.6 if unlocked else 0.15))
-		button.add_theme_stylebox_override("hover", UiTheme.card_style(character.color, 1.0))
+		button.add_theme_stylebox_override("hover", UiTheme.card_style(UiTheme.ACCENT, 1.0))
+		button.add_theme_stylebox_override("focus", UiTheme.card_style(UiTheme.ACCENT, 1.0))
+		button.add_theme_stylebox_override("pressed", UiTheme.card_style(UiTheme.ACCENT, 1.0))
 		button.add_theme_stylebox_override("disabled", UiTheme.card_style(character.color, 0.1))
-		var text := VBoxContainer.new()
-		text.set_anchors_preset(Control.PRESET_FULL_RECT)
-		text.offset_left = 16
-		text.offset_right = -16
-		text.offset_top = 16
-		text.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		text.add_theme_constant_override("separation", 6)
-		button.add_child(text)
-		text.add_child(_portrait(character, unlocked))
-		var name_label := Label.new()
-		name_label.text = character.name_key
-		name_label.theme_type_variation = &"SubtitleLabel"
-		name_label.add_theme_color_override("font_color", character.color if unlocked else UiTheme.MUTED)
-		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		# Long names and bonus lines wrap: otherwise they widen the text box past
-		# the card and push the description off center (dev's playtest).
-		name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		name_label.add_theme_font_size_override("font_size", 26)
-		text.add_child(name_label)
-		var rule := Label.new()
-		rule.text = character.description_key if unlocked else _unlock_hint(character)
-		rule.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		rule.add_theme_font_size_override("font_size", 16)
-		rule.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		button.add_child(_head(character, unlocked, look))
 		if not unlocked:
-			rule.add_theme_color_override("font_color", UiTheme.MUTED)
-		text.add_child(rule)
-		if unlocked and not character.modifiers.is_empty():
-			var mods := Label.new()
-			mods.text = LevelUpScreen.describe_modifiers(character.modifiers)
-			mods.theme_type_variation = &"SmallLabel"
-			mods.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			mods.add_theme_color_override("font_color", character.color)
-			mods.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-			text.add_child(mods)
+			var lock := Label.new()
+			lock.text = LOCK
+			lock.set_anchors_preset(Control.PRESET_FULL_RECT)
+			lock.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			lock.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			lock.add_theme_font_size_override("font_size", 44)
+			lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			button.add_child(lock)
 		button.pressed.connect(_choose_character.bind(character))
 		UiFx.hover_lift(button)
 		_cards.add_child(button)
 		_character_buttons[character.id] = button
+	_show_hero(_chosen)
+
+
+## Head and shoulders of a hero (his card illustration cropped), as a tile content.
+## Locked heroes are shown as a dark silhouette.
+func _head(character: CharacterData, unlocked: bool, look: int) -> Control:
+	var card_art := character.card_art_for(look)
+	if card_art == null:
+		var frame := CenterContainer.new()
+		frame.set_anchors_preset(Control.PRESET_FULL_RECT)
+		frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		frame.add_child(SpritePreview.create(character_sheet(character, look), HEAD_SIZE - 24.0, not unlocked))
+		return frame
+	var atlas := AtlasTexture.new()
+	atlas.atlas = card_art
+	var scale := card_art.get_width() / 512.0
+	atlas.region = Rect2(HEAD_REGION.position * scale, HEAD_REGION.size * scale)
+	var art := TextureRect.new()
+	art.texture = atlas
+	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	art.set_anchors_preset(Control.PRESET_FULL_RECT)
+	art.offset_left = 8.0
+	art.offset_top = 8.0
+	art.offset_right = -8.0
+	art.offset_bottom = -8.0
+	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if not unlocked:
+		art.modulate = SpritePreview.SILHOUETTE
+	return art
+
+
+## Fills the hero panel with `character` (focused head, else the chosen one).
+func _show_hero(character: CharacterData) -> void:
+	_shown = character
+	_hero_plate.visible = character != null
+	_look_switch.visible = false
+	if character == null:
+		_hero_art.texture = null
+		return
+	var unlocked := SaveService.is_unlocked(&"characters", character)
+	var look := variant_of(character)
+	_hero_art.texture = character.card_art_for(look)
+	_hero_art.modulate = Color.WHITE if unlocked else SpritePreview.SILHOUETTE
+	_hero_name.text = character.name_key_for(look)
+	_hero_name.add_theme_color_override("font_color", character.color if unlocked else UiTheme.MUTED)
+	_hero_rule.text = character.description_key if unlocked else _unlock_hint(character)
+	_hero_rule.add_theme_color_override("font_color", UiTheme.TEXT if unlocked else UiTheme.MUTED)
+	_look_switch.visible = unlocked and character.has_alt_look()
+	# The sign shown is the look it switches to: blue male sign while the female look shows.
+	var male_next := look == 0
+	_look_switch.text = "♂" if male_next else "♀"
+	var sign_color := MALE_COLOR if male_next else FEMALE_COLOR
+	_look_switch.add_theme_color_override("font_color", sign_color)
+	_look_switch.add_theme_color_override("font_hover_color", sign_color.lightened(0.35))
+	for chip in _hero_chips.get_children():
+		_hero_chips.remove_child(chip)
+		chip.queue_free()
+	if unlocked:
+		for line in LevelUpScreen.describe_modifiers(character.modifiers).split("\n", false):
+			_hero_chips.add_child(_chip(line))
+	var stats := stat_preview(character)
+	var values := stat_values(character)
+	for stat in _hero_bars:
+		_hero_bars[stat].value = stats[stat] if unlocked else 0.0
+		_hero_values[stat].text = values[stat] if unlocked else ""
+
+
+## A bonus (green, up arrow) or malus (red, down arrow) as plain colored text.
+func _chip(text: String) -> Label:
+	var bad := text.begins_with("-")
+	var label := Label.new()
+	label.text = ("▼ " if bad else "▲ ") + text
+	label.add_theme_font_size_override("font_size", 21)
+	label.add_theme_color_override("font_color", UiTheme.BAD if bad else UiTheme.GOOD)
+	label.add_theme_constant_override("outline_size", 0)
+	return label
+
+
+## Text next to each bar: the class's starting HP and speed, damage and range as percents.
+static func stat_values(character: CharacterData) -> Dictionary:
+	var block := StatBlock.from_defaults(character.stat_overrides)
+	for mod in character.modifiers:
+		block.add_modifier(mod)
+	return {
+		StatIds.MAX_HP: "%d" % roundi(block.get_value(StatIds.MAX_HP)),
+		StatIds.DAMAGE: "%d%%" % roundi(block.get_value(StatIds.DAMAGE) * 100.0),
+		StatIds.MOVE_SPEED: "%d" % roundi(block.get_value(StatIds.MOVE_SPEED)),
+		StatIds.RANGE: "%d%%" % roundi(block.get_value(StatIds.RANGE) * 100.0),
+	}
+
+
+## Bar fill (0..1) of the four stats shown for a class: its base stats and its
+## own modifiers (what the player starts with).
+static func stat_preview(character: CharacterData) -> Dictionary:
+	var block := StatBlock.from_defaults(character.stat_overrides)
+	for mod in character.modifiers:
+		block.add_modifier(mod)
+	return {
+		StatIds.MAX_HP: clampf(block.get_value(StatIds.MAX_HP) / BAR_HP, 0.0, 1.0),
+		StatIds.DAMAGE: clampf(block.get_value(StatIds.DAMAGE) / BAR_DAMAGE, 0.0, 1.0),
+		StatIds.MOVE_SPEED: clampf(block.get_value(StatIds.MOVE_SPEED) / BAR_SPEED, 0.0, 1.0),
+		StatIds.RANGE: clampf(block.get_value(StatIds.RANGE) / BAR_RANGE, 0.0, 1.0),
+	}
 
 
 ## Card illustration when the character has one, else its animated sprite.
 ## Locked characters are shown as a dark silhouette.
-func _portrait(character: CharacterData, unlocked: bool) -> Control:
-	if character.card_art == null:
+func _portrait(character: CharacterData, unlocked: bool, look: int = 0) -> Control:
+	var card_art := character.card_art_for(look)
+	if card_art == null:
 		# Same height as an illustration so the names line up across cards.
 		var frame := CenterContainer.new()
-		frame.custom_minimum_size = Vector2(0.0, ART_HEIGHT)
+		frame.custom_minimum_size = Vector2(0.0, PREVIEW_HEIGHT)
 		frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		frame.add_child(SpritePreview.create(character_sheet(character), PREVIEW_HEIGHT, not unlocked))
+		frame.add_child(SpritePreview.create(character_sheet(character, look), PREVIEW_HEIGHT, not unlocked))
 		return frame
 	var art := TextureRect.new()
-	art.texture = character.card_art
+	art.texture = card_art
 	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	art.custom_minimum_size = Vector2(0.0, ART_HEIGHT)
+	art.custom_minimum_size = Vector2(0.0, PREVIEW_HEIGHT)
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if not unlocked:
 		art.modulate = SpritePreview.SILHOUETTE
@@ -269,9 +505,26 @@ func _portrait(character: CharacterData, unlocked: bool) -> Control:
 
 
 ## Sprite sheet of a character (same path rule as Player), or null.
-static func character_sheet(character: CharacterData) -> SpriteSheet:
-	var path := "res://assets/sprites/%s.tres" % character.sprite_id
-	return load(path) as SpriteSheet if character.sprite_id != &"" and ResourceLoader.exists(path) else null
+static func character_sheet(character: CharacterData, look: int = 0) -> SpriteSheet:
+	var sprite_id := character.sprite_id_for(look)
+	var path := "res://assets/sprites/%s.tres" % sprite_id
+	return load(path) as SpriteSheet if sprite_id != &"" and ResourceLoader.exists(path) else null
+
+
+## Look picked on `character`'s card (0 = the character itself).
+func variant_of(character: CharacterData) -> int:
+	return _variants.get(character.id, 0) if character.has_alt_look() else 0
+
+
+func _toggle_variant(character: CharacterData) -> void:
+	_variants[character.id] = 1 - variant_of(character)
+	Audio.play(Sounds.UI_SELECT, -6.0)
+	_build_cards()
+	_show_hero(character)
+	var focused := get_viewport().gui_get_focus_owner()
+	if _character_buttons.has(character.id) and not _character_buttons[character.id].disabled \
+			and (focused == null or focused == _look_switch):
+		_character_buttons[character.id].grab_focus()
 
 
 ## "Locked: <challenge description>" for the challenge that unlocks `character`.
@@ -284,6 +537,7 @@ func _unlock_hint(character: CharacterData) -> String:
 
 func _choose_character(character: CharacterData) -> void:
 	_chosen = character
+	_show_hero(character)
 	# Feedback: the hunter's first weapon rings out.
 	if not character.starting_weapons.is_empty() and character.starting_weapons[0].fire_sound != null:
 		Audio.play(character.starting_weapons[0].fire_sound, -4.0)
@@ -331,6 +585,7 @@ func _choose_weapon(weapon: WeaponData) -> void:
 		# Player 1 is done: player 2's turn.
 		_first_character = _chosen
 		_first_weapon = weapon
+		_first_variant = variant_of(_chosen)
 		_picking = 1
 		_show_weapons(false)
 		_begin_pick()
@@ -347,14 +602,16 @@ func _choose_weapon(weapon: WeaponData) -> void:
 	levels.sort_custom(func(a: DifficultyData, b: DifficultyData) -> bool: return a.level < b.level)
 	for difficulty in levels:
 		var button := _seal_button(difficulty, difficulty.level <= allowed)
-		button.pressed.connect(_start.bind(difficulty))
+		button.pressed.connect(_select_seal.bind(difficulty))
 		var info := _seal_info_text(difficulty, levels, difficulty.level <= allowed)
 		button.focus_entered.connect(_show_seal_info.bind(info))
 		button.mouse_entered.connect(_show_seal_info.bind(info))
 		_dangers.add_child(button)
 	_show_dangers(true)
+	# The hardest seal the player may take is selected; "Play" starts the run.
 	var last := mini(allowed, _dangers.get_child_count() - 1)
 	if last >= 0:
+		_select_seal(levels[last], false)
 		(_dangers.get_child(last) as Button).grab_focus()
 		_show_seal_info(_seal_info_text(levels[last], levels, true))
 
@@ -499,7 +756,24 @@ func _show_seal_info(text: String) -> void:
 	_seal_effects.text = lines[1] if lines.size() > 1 else ""
 
 
+## Marks `difficulty` as the seal to play (bright frame) and moves the focus to "Play".
+func _select_seal(difficulty: DifficultyData, focus_launch: bool = true) -> void:
+	_difficulty = difficulty
+	for i in _dangers.get_child_count():
+		var button := _dangers.get_child(i) as Button
+		var chosen := i == difficulty.level
+		var style := UiTheme.card_style(seal_heat(i), 1.0 if chosen else 0.6)
+		if chosen:
+			style.border_color = Color.WHITE
+			style.set_border_width_all(6)
+		button.add_theme_stylebox_override("normal", style)
+	if focus_launch:
+		Audio.play(Sounds.UI_SELECT, -6.0)
+		_launch.grab_focus()
+
+
 func _show_dangers(on: bool) -> void:
+	_launch.visible = on
 	_dangers.visible = on
 	_danger_title.visible = on
 	_seal_info.visible = on
@@ -509,16 +783,21 @@ func _show_dangers(on: bool) -> void:
 		HintBanner.show_once(self, &"seals", HintBanner.TOP_CENTER, Vector2(0.0, 4.0), 1500.0)
 
 
-func _start(difficulty: DifficultyData) -> void:
+func _start() -> void:
+	if _difficulty == null:
+		return
 	Audio.play(Sounds.PORTAL_OPEN, -4.0)
 	var setup := RunSetup.new()
-	setup.difficulty = difficulty
+	setup.difficulty = _difficulty
 	if coop:
 		setup.character = _first_character
 		setup.weapon = _first_weapon
+		setup.variant = _first_variant
 		setup.character_2 = _chosen
 		setup.weapon_2 = _weapon
+		setup.variant_2 = variant_of(_chosen)
 	else:
 		setup.character = _chosen
 		setup.weapon = _weapon
+		setup.variant = variant_of(_chosen)
 	started.emit(setup)

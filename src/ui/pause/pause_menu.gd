@@ -10,8 +10,12 @@ signal main_menu_requested
 signal quit_requested
 
 var stats_panel: StatsPanel
+var stats_panel_2: StatsPanel
+
+var _hints: ButtonHints
 
 var _panel: PanelContainer
+var _row: HBoxContainer
 var _buttons: VBoxContainer
 var _confirm: VBoxContainer
 var _resume: Button
@@ -46,8 +50,10 @@ func _init() -> void:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 48)
 	center.add_child(row)
+	_row = row
 	_panel = PanelContainer.new()
 	_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_panel.add_theme_stylebox_override("panel", UiTheme.window_style())
 	row.add_child(_panel)
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 16)
@@ -86,6 +92,20 @@ func _init() -> void:
 	_settings = SettingsScreen.new()
 	_settings.closed.connect(_on_settings_closed)
 	root.add_child(_settings)
+	_hints = ButtonHints.create([[&"A", "UI_HINT_CONFIRM"], [&"B", "UI_HINT_RESUME"]])
+	root.add_child(_hints)
+
+
+## Coop: a second panel with player 2's stats (the pause button of either player opens
+## the menu, so both players' stats are shown).
+func add_second_stats(stats: StatBlock, families: WeaponFamilies, color: Color) -> void:
+	stats_panel.set_tag(tr("UI_PLAYER_N") % 1, RunPlayer.COLORS[0])
+	stats_panel_2 = StatsPanel.new()
+	stats_panel_2.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	stats_panel_2.setup(stats)
+	stats_panel_2.setup_families(families)
+	stats_panel_2.set_tag(tr("UI_PLAYER_N") % 2, color)
+	_row.add_child(stats_panel_2)
 
 
 func open() -> void:
@@ -139,10 +159,16 @@ func _show_buttons() -> void:
 func _open_settings() -> void:
 	_panel.visible = false
 	stats_panel.visible = false
+	if stats_panel_2 != null:
+		stats_panel_2.visible = false
+	_hints.visible = false
 	_settings.open()
 
 
 func _on_settings_closed() -> void:
 	_panel.visible = true
 	stats_panel.visible = true
+	if stats_panel_2 != null:
+		stats_panel_2.visible = true
+	_hints.visible = ButtonHints.show_always or not Input.get_connected_joypads().is_empty()
 	_settings_button.grab_focus()

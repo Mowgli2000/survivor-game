@@ -27,6 +27,7 @@ func test_type_variations_exist() -> void:
 	for variation in [&"TitleLabel", &"SubtitleLabel", &"SmallLabel"]:
 		assert_eq(theme.get_type_variation_base(variation), &"Label", "%s is a Label variation" % variation)
 	assert_eq(theme.get_type_variation_base(&"BigButton"), &"Button")
+	assert_eq(theme.get_type_variation_base(&"CtaButton"), &"Button")
 
 
 func test_panel_style_has_black_outline_and_accent_glow() -> void:

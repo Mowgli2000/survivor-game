@@ -18,11 +18,14 @@ var _boss_id: StringName = &""
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	ButtonHints.show_always = true  # the gamepad hint bars appear on captures too
 	var stress := false
 	var all_weapons := false
 	var coop := false
 	var character_id := ""
 	var danger := -1
+	var variant := 0
+	var show_pickups := false
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--time="):
 			_capture_at = arg.trim_prefix("--time=").to_float()
@@ -40,6 +43,10 @@ func _ready() -> void:
 			_boss_id = StringName(arg.trim_prefix("--boss="))
 		elif arg.begins_with("--danger="):
 			danger = arg.trim_prefix("--danger=").to_int()
+		elif arg.begins_with("--variant="):
+			variant = arg.trim_prefix("--variant=").to_int()
+		elif arg == "--pickups":
+			show_pickups = true
 		elif arg == "--allweapons":
 			all_weapons = true
 	if _mode in ["--menu", "--characters", "--coopselect", "--progression"]:
@@ -48,6 +55,11 @@ func _ready() -> void:
 		if _mode in ["--characters", "--coopselect"]:
 			menu._open_character_select(_mode == "--coopselect")
 			# With --character=<id>: open that character's starting weapon choice.
+			# --variant=1: the cards show the second look.
+			if variant > 0:
+				for def in ContentDB.get_all(&"characters"):
+					menu._character_select._variants[(def as CharacterData).id] = variant
+				menu._character_select._build_cards()
 			if character_id != "":
 				menu._character_select._choose_character(ContentDB.get_def(&"characters", StringName(character_id)))
 				# With --danger=N too: pick the first weapon to show the seals row.
@@ -76,6 +88,11 @@ func _ready() -> void:
 		_run.setup.difficulty = ContentDB.get_def(&"difficulties", StringName("danger_%d" % danger))
 		if character_id != "":
 			_run.setup.character = ContentDB.get_def(&"characters", StringName(character_id))
+	if variant > 0 and character_id != "":
+		if _run.setup == null:
+			_run.setup = RunSetup.new()
+			_run.setup.character = ContentDB.get_def(&"characters", StringName(character_id))
+		_run.setup.variant = variant
 	_run.seed_override = 7
 	_run.player_invincible = true
 	_run.auto_choose_upgrades = _mode not in ["--levelup", "--waveend", "--shop", "--pause", "--settings"]
@@ -86,6 +103,12 @@ func _ready() -> void:
 	if coop:
 		# Player 2 walks the other way: the camera zooms out as they spread.
 		_run.players[1].player.bot_input = func() -> Vector2: return -Vector2.from_angle(_time * 0.5)
+	if show_pickups:
+		# A row of crystals and a row of coins, from small to merged, out of the magnet's reach.
+		_run.player.bot_input = func() -> Vector2: return Vector2.ZERO
+		for i in 8:
+			_run.pickups.spawn_xp(Vector2(-420 + i * 120, -330), 1 + i * 7)
+			_run.pickups.spawn_material(Vector2(-420 + i * 120, -230), 0.5 + i * 3.0)
 	if all_weapons:
 		for def in ContentDB.get_all(&"weapons"):
 			var weapon := def as WeaponData

@@ -75,6 +75,7 @@ func test_picking_another_character_directly_resets_weapon_and_dangers() -> void
 	assert_false(ronin[1], "Ronin: Danger 1 still locked")
 	watch_signals(screen)
 	(screen._dangers.get_child(0) as Button).pressed.emit()
+	screen._launch.pressed.emit()
 	var setup: RunSetup = get_signal_parameters(screen, "started")[0]
 	assert_eq(setup.character.id, &"ronin")
 	assert_true(setup.character.starting_weapons.has(setup.weapon), "a Ronin weapon, not the Drifter's")
