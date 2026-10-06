@@ -185,13 +185,16 @@ func test_capped_bonus_is_marked_max() -> void:
 	assert_false(LevelUpScreen.describe_modifiers([shot]).contains("(max)"))
 
 
-func test_next_wave_sits_beside_reroll_above_the_owned_lists() -> void:
+func test_next_wave_stays_under_the_items_and_the_list_never_grows_past_two_rows() -> void:
 	# Regression (playtest, wave 19): with three rows of items the button was
-	# pushed below the screen.
+	# pushed below the screen. The dev wants it under the items, away from Reroll.
 	var screen := ShopScreen.new()
 	add_child_autofree(screen)
-	var actions := screen._next.get_parent()
-	var items_box := screen._items_row.get_parent()
-	assert_eq(actions, screen._reroll.get_parent(), "beside Reroll")
-	assert_eq(actions.get_parent(), items_box.get_parent(), "in the same column as the items")
-	assert_lt(actions.get_index(), items_box.get_index(), "above the items")
+	var column := screen._next.get_parent()
+	var items_box := screen._items_scroll.get_parent()
+	assert_eq(items_box.get_parent(), column, "same column as the items")
+	assert_gt(screen._next.get_index(), items_box.get_index(), "under the items")
+	assert_ne(screen._reroll.get_parent(), items_box, "away from Reroll")
+	var two_rows := 2 * ShopScreen.ITEM_ICON_SMALL + ShopScreen.ITEM_GAP
+	assert_almost_eq(ShopScreen.items_height(59), two_rows, 0.01, "every item owned: still two rows")
+	assert_almost_eq(ShopScreen.items_height(3), ShopScreen.ITEM_ICON, 0.01, "few items: one row")

@@ -15,6 +15,10 @@ const ITEM_ICON := 60.0
 ## With many different items, the tiles shrink so the list stays on 3 rows.
 const ITEM_ICON_SMALL := 46.0
 const ITEMS_BEFORE_SMALL := 32
+const ITEMS_WIDTH := 1100.0
+const ITEM_GAP := 8
+## Rows of item icons shown before the list scrolls.
+const ITEM_ROWS := 2
 const WEAPON_ICON := 40
 const TEXT_COLOR := UiTheme.TEXT
 const TOO_EXPENSIVE := UiTheme.BAD
@@ -35,6 +39,7 @@ var _weapon_row: HBoxContainer
 var _weapon_actions: HBoxContainer
 var _items_label: Label
 var _items_row: HFlowContainer
+var _items_scroll: ScrollContainer
 var _next: Button
 var _selected_weapon: int = -1
 ## Identifies the focused control across rebuilds ("buy:2", "weapon:1", "next"...).
@@ -112,16 +117,10 @@ func _init() -> void:
 	_cards.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.add_child(_cards)
 
-	# Reroll and "Next wave" side by side, above the owned lists: the button
-	# stays on screen however many items the player owns (playtest bug, wave 19).
-	var actions := HBoxContainer.new()
-	actions.add_theme_constant_override("separation", 40)
-	actions.alignment = BoxContainer.ALIGNMENT_CENTER
-	box.add_child(actions)
 	_reroll = _button("", 28)
-	_reroll.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_reroll.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_reroll.pressed.connect(_on_reroll)
-	actions.add_child(_reroll)
+	box.add_child(_reroll)
 
 	var weapons_title := _label(28, TEXT_COLOR, &"SubtitleLabel")
 	weapons_title.text = "UI_SHOP_WEAPONS"
@@ -142,17 +141,25 @@ func _init() -> void:
 	_items_label = _label(28, TEXT_COLOR, &"SubtitleLabel")
 	_items_label.text = "UI_SHOP_ITEMS"
 	items_box.add_child(_items_label)
+	# At most ITEM_ROWS rows of icons, then a scroll bar: the list never pushes
+	# "Next wave" below the screen (playtest bug, wave 19, 33 items).
+	_items_scroll = ScrollContainer.new()
+	_items_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_items_scroll.custom_minimum_size = Vector2(ITEMS_WIDTH + 16.0, items_height(0))
+	items_box.add_child(_items_scroll)
 	_items_row = HFlowContainer.new()
-	_items_row.custom_minimum_size.x = 1100
-	_items_row.add_theme_constant_override("h_separation", 8)
-	_items_row.add_theme_constant_override("v_separation", 8)
-	items_box.add_child(_items_row)
+	_items_row.custom_minimum_size.x = ITEMS_WIDTH
+	_items_row.add_theme_constant_override("h_separation", ITEM_GAP)
+	_items_row.add_theme_constant_override("v_separation", ITEM_GAP)
+	_items_scroll.add_child(_items_row)
 
+	# Bottom right, under the items, far from Reroll (no misclick).
 	_next = _button("UI_NEXT_WAVE", 0)
 	_next.theme_type_variation = &"BigButton"
 	_next.custom_minimum_size = Vector2(380, 84)
+	_next.size_flags_horizontal = Control.SIZE_SHRINK_END
 	_next.pressed.connect(_on_next)
-	actions.add_child(_next)
+	box.add_child(_next)
 
 
 func open() -> void:
@@ -407,7 +414,9 @@ func _rebuild_items() -> void:
 	for child in _items_row.get_children():
 		_items_row.remove_child(child)
 		child.queue_free()
-	var icon_size := ITEM_ICON if _inventory.get_items().size() <= ITEMS_BEFORE_SMALL else ITEM_ICON_SMALL
+	var count_items := _inventory.get_items().size()
+	var icon_size := item_icon_size(count_items)
+	_items_scroll.custom_minimum_size.y = items_height(count_items)
 	for item in _inventory.get_items():
 		var count := _inventory.count(item)
 		var tile := IconTile.create(item.icon, item.tier, icon_size, "×%d" % count if count > 1 else "")
@@ -417,6 +426,19 @@ func _rebuild_items() -> void:
 		var none := _label(22, UiTheme.MUTED)
 		none.text = "—"
 		_items_row.add_child(none)
+
+
+static func item_icon_size(count: int) -> float:
+	return ITEM_ICON if count <= ITEMS_BEFORE_SMALL else ITEM_ICON_SMALL
+
+
+## Height of the item list for `count` different items: as many rows as
+## needed, at most ITEM_ROWS (then it scrolls).
+static func items_height(count: int) -> float:
+	var size := item_icon_size(count)
+	var per_row := maxi(1, floori((ITEMS_WIDTH + ITEM_GAP) / (size + ITEM_GAP)))
+	var rows := clampi(ceili(float(count) / per_row), 1, ITEM_ROWS)
+	return rows * size + (rows - 1) * ITEM_GAP
 
 
 func _accepting() -> bool:
