@@ -13,5 +13,5 @@ percent = 0.0
 script = ExtResource("1_upgrade")
 id = &"leech"
 name_key = "UPGRADE_LEECH"
-weight = 0.5
+weight = 0.3
 modifiers = Array[ExtResource("2_mod")]([SubResource("Resource_mod")])

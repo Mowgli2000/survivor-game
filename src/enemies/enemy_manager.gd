@@ -182,6 +182,9 @@ func damage_enemy(index: int, amount: float, crit: bool, direction: Vector2, kno
 ## Most enemies one area hit (slash, explosion, strike) can damage; 0 = all.
 ## Balance experiment (session 8): dense late crowds made area weapons trivialize.
 var area_max_targets: int = 20
+## True while a boss or mini-boss (phases) is alive: capped area hits still
+## reach it (it must not hide in its own horde). Updated every physics frame.
+var _priority_alive: bool = false
 ## Per player (damage_source): the cap grows with the Zone stat (D66), so Zone
 ## keeps its value in dense crowds. Missing entries count as 1.0.
 var area_target_scale: PackedFloat32Array = PackedFloat32Array()
@@ -212,10 +215,15 @@ func damage_in_radius(center: Vector2, radius: float, amount: float, crit: bool,
 	var found := grid.query_radius(center, radius + max_radius, _area_hits)
 	var max_targets := area_targets_for(damage_source)
 	var hits := 0
+	var counted := 0
+	var capped := false
 	for k in found:
 		var index := _area_hits[k]
 		var enemy := _active[index]
 		if not enemy.is_alive():
+			continue
+		var priority := is_priority(enemy.data)
+		if capped and not priority:
 			continue
 		var offset := enemy.position - center
 		var reach := radius + enemy.radius
@@ -227,9 +235,19 @@ func damage_in_radius(center: Vector2, radius: float, amount: float, crit: bool,
 			continue
 		damage_enemy(index, amount, crit, direction, knockback_force, status, status_chance)
 		hits += 1
-		if area_max_targets > 0 and hits >= max_targets:
-			break
+		if priority:
+			continue
+		counted += 1
+		if area_max_targets > 0 and counted >= max_targets and not capped:
+			if not _priority_alive:
+				break
+			capped = true  # keep looking, for the boss only
 	return hits
+
+
+## Bosses and mini-bosses (with phases): never left out of a capped area hit.
+static func is_priority(data: EnemyData) -> bool:
+	return data.boss or not data.phases.is_empty()
 
 
 ## Hits every enemy touching the segment [from, to] widened by `half_width`.
@@ -343,10 +361,13 @@ func _physics_process(delta: float) -> void:
 	if _positions.size() < count:
 		_positions.resize(count)
 		_radii.resize(count)
+	_priority_alive = false
 	for i in count:
 		var other := _active[i]
 		_positions[i] = other.position
 		_radii[i] = other.radius
+		if other.is_alive() and is_priority(other.data):
+			_priority_alive = true
 	grid.rebuild(_positions, count)
 
 	# Solo: one target for everyone. Coop: each enemy chases the nearest living

@@ -21,13 +21,15 @@ var _damage_taken: float = 0.0
 var _min_hp_ratio: float = 1.0
 var _started_ms: int = 0
 var _done: bool = false
+## Boss fights: wave, id, start time in the wave, seconds to kill (-1 = not killed).
+var _bosses: Array = []
 ## --endless=N: after the victory, keep playing endless waves up to wave N.
 var _endless_to: int = 0
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	var args := {"character": "drifter", "weapon": "", "seal": "0", "policy": "dps", "seed": "1", "endless": "0"}
+	var args := {"character": "drifter", "weapon": "", "seal": "0", "policy": "dps", "seed": "1", "endless": "0", "static": "0"}
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--out="):
 			_out = arg.trim_prefix("--out=")
@@ -57,11 +59,26 @@ func _ready() -> void:
 	_run.record_profile = false
 	_run.unlock_all = true
 	_run.bot_policy = self
-	_run.bot_input = _bot.steer
+	# --static=1: a "static build" player who never moves (D71).
+	_run.bot_input = _bot.steer if args.static != "1" else func() -> Vector2: return Vector2.ZERO
+	_report["static"] = args.static == "1"
 	_bot.setup(_run)
 	add_child(_run)
 	_run.player.damaged.connect(_on_damaged)
 	_run.player.died.connect(_on_died)
+	# Boss fights: when each boss appears and when (if) it dies.
+	_run.bosses.boss_started.connect(func(boss: Enemy) -> void:
+		_bosses.append({"wave": _run.waves.wave, "id": String(boss.data.id),
+			"start": _run.waves.wave_elapsed(), "killed_after": -1.0}))
+	# Final bosses (boss = true) end the wave when they die: record on the kill.
+	# Mini-bosses: one that leaves while the wave runs was killed (the wave-end
+	# clear happens after in_wave turns false).
+	_run.enemies.enemy_killed.connect(func(data: EnemyData, _pos: Vector2, _elite: bool) -> void:
+		if data.boss:
+			_mark_boss_killed(data))
+	_run.bosses.boss_ended.connect(func(boss: Enemy) -> void:
+		if _run.waves.in_wave and not boss.data.boss:
+			_mark_boss_killed(boss.data))
 	_run.waves.run_won.connect(_on_won)
 	_started_ms = Time.get_ticks_msec()
 
@@ -97,6 +114,13 @@ func shop_turn(rp: RunPlayer, wave: int) -> void:
 
 func _on_damaged(amount: float) -> void:
 	_damage_taken += amount
+
+
+func _mark_boss_killed(data: EnemyData) -> void:
+	for fight in _bosses:
+		if fight.id == String(data.id) and fight.killed_after < 0.0 and fight.wave == _run.waves.wave:
+			fight.killed_after = _run.waves.wave_elapsed() - fight.start
+			return
 
 
 func _on_died() -> void:
@@ -163,6 +187,7 @@ func _finish(outcome: String) -> void:
 	_report["real_seconds"] = (Time.get_ticks_msec() - _started_ms) / 1000.0
 	_report["items"] = _item_list()
 	_report["waves"] = _waves
+	_report["bosses"] = _bosses
 	_write()
 
 

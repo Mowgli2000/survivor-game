@@ -33,9 +33,13 @@ func test_difficulty_scales_the_curves() -> void:
 	var seal := _danger(4)
 	var hard := base.with_difficulty(seal)
 	assert_gt(seal.hp_multiplier, 1.0)
-	assert_almost_eq(hard.hp_multiplier_at(10), base.hp_multiplier_at(10) * seal.hp_multiplier, 0.001)
-	assert_almost_eq(hard.damage_multiplier_at(10), base.damage_multiplier_at(10) * seal.damage_multiplier, 0.001)
-	assert_almost_eq(hard.spawn_rate_at(10), base.spawn_rate_at(10) * seal.spawn_rate_multiplier, 0.001)
+	var last := base.wave_count
+	assert_almost_eq(hard.hp_multiplier_at(last), base.hp_multiplier_at(last) * seal.hp_multiplier, 0.001, "full bonus at the end")
+	assert_almost_eq(hard.damage_multiplier_at(last), base.damage_multiplier_at(last) * seal.damage_multiplier, 0.001)
+	assert_almost_eq(hard.spawn_rate_at(last), base.spawn_rate_at(last) * seal.spawn_rate_multiplier, 0.001)
+	var early := 1.0 + (seal.hp_multiplier - 1.0) * StageData.SEAL_EARLY_SHARE
+	assert_almost_eq(hard.hp_multiplier_at(1), base.hp_multiplier_at(1) * early, 0.001, "part of it at wave 1")
+	assert_gt(hard.hp_multiplier_at(10) / base.hp_multiplier_at(10), early, "growing in between")
 	assert_gt(hard.steady_elite_chance, 0.0)
 	var neutral := base.with_difficulty(_danger(0))
 	assert_almost_eq(neutral.hp_multiplier_at(15), base.hp_multiplier_at(15), 0.001)
@@ -105,7 +109,8 @@ func test_run_applies_the_chosen_difficulty() -> void:
 	var run: Run = RUN.instantiate()
 	run.setup = setup
 	add_child_autofree(run)
-	assert_almost_eq(run.stage.hp_multiplier_at(10), _stage().hp_multiplier_at(10) * _danger(4).hp_multiplier, 0.001)
+	var last := _stage().wave_count
+	assert_almost_eq(run.stage.hp_multiplier_at(last), _stage().hp_multiplier_at(last) * _danger(4).hp_multiplier, 0.001)
 	assert_ne(run.stage, _stage(), "the shared stage is never modified")
 
 
