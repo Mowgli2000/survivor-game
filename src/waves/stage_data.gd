@@ -152,15 +152,21 @@ func copy() -> StageData:
 
 
 ## Copy with a difficulty level applied (curves scaled, elites, double boss).
+## Share of a seal's HP, damage and spawn bonuses already felt at wave 1; the
+## full bonus is reached at the last wave. A high seal then grows harder as the
+## run goes, instead of killing in the first waves before any build exists.
+const SEAL_EARLY_SHARE := 0.4
+
+
 func with_difficulty(difficulty: DifficultyData) -> StageData:
 	var dup := copy()
 	if difficulty == null:
 		return dup
-	dup.hp_multiplier_first *= difficulty.hp_multiplier
+	dup.hp_multiplier_first *= _early(difficulty.hp_multiplier)
 	dup.hp_multiplier_last *= difficulty.hp_multiplier
-	dup.damage_multiplier_first *= difficulty.damage_multiplier
+	dup.damage_multiplier_first *= _early(difficulty.damage_multiplier)
 	dup.damage_multiplier_last *= difficulty.damage_multiplier
-	dup.spawn_rate_first *= difficulty.spawn_rate_multiplier
+	dup.spawn_rate_first *= _early(difficulty.spawn_rate_multiplier)
 	dup.spawn_rate_last *= difficulty.spawn_rate_multiplier
 	dup.group_size_first += difficulty.group_size_bonus
 	dup.group_size_last += difficulty.group_size_bonus
@@ -172,6 +178,11 @@ func with_difficulty(difficulty: DifficultyData) -> StageData:
 	if difficulty.biome != null:
 		dup.apply_biome(difficulty.biome)
 	return dup
+
+
+## Part of a seal multiplier applied at wave 1 (see SEAL_EARLY_SHARE).
+static func _early(multiplier: float) -> float:
+	return 1.0 + (multiplier - 1.0) * SEAL_EARLY_SHARE
 
 
 ## Swaps every monster and boss for the biome's one in the same role. Call on a copy.
