@@ -183,3 +183,12 @@ func test_capped_bonus_is_marked_max() -> void:
 	shot.flat = 1.0
 	assert_string_contains(LevelUpScreen.describe_modifiers([shot], stats), "(max)")
 	assert_false(LevelUpScreen.describe_modifiers([shot]).contains("(max)"))
+
+
+func test_next_wave_sits_beside_reroll_above_the_owned_lists() -> void:
+	# Regression (playtest, wave 19): with three rows of items the button was
+	# pushed below the screen.
+	var screen := ShopScreen.new()
+	add_child_autofree(screen)
+	assert_eq(screen._next.get_parent(), screen._reroll.get_parent())
+	assert_lt(screen._next.get_parent().get_index(), screen._items_row.get_parent().get_index())

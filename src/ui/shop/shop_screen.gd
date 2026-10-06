@@ -12,6 +12,9 @@ const INPUT_DELAY_MS := 350
 const CARD_SIZE := Vector2(300, 400)
 const CARD_ICON := 96.0
 const ITEM_ICON := 60.0
+## With many different items, the tiles shrink so the list stays on 3 rows.
+const ITEM_ICON_SMALL := 46.0
+const ITEMS_BEFORE_SMALL := 32
 const WEAPON_ICON := 40
 const TEXT_COLOR := UiTheme.TEXT
 const TOO_EXPENSIVE := UiTheme.BAD
@@ -109,10 +112,16 @@ func _init() -> void:
 	_cards.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.add_child(_cards)
 
+	# Reroll and "Next wave" side by side, above the owned lists: the button
+	# stays on screen however many items the player owns (playtest bug, wave 19).
+	var actions := HBoxContainer.new()
+	actions.add_theme_constant_override("separation", 40)
+	actions.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_child(actions)
 	_reroll = _button("", 28)
-	_reroll.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_reroll.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_reroll.pressed.connect(_on_reroll)
-	box.add_child(_reroll)
+	actions.add_child(_reroll)
 
 	var weapons_title := _label(28, TEXT_COLOR, &"SubtitleLabel")
 	weapons_title.text = "UI_SHOP_WEAPONS"
@@ -142,9 +151,8 @@ func _init() -> void:
 	_next = _button("UI_NEXT_WAVE", 0)
 	_next.theme_type_variation = &"BigButton"
 	_next.custom_minimum_size = Vector2(380, 84)
-	_next.size_flags_horizontal = Control.SIZE_SHRINK_END
 	_next.pressed.connect(_on_next)
-	box.add_child(_next)
+	actions.add_child(_next)
 
 
 func open() -> void:
@@ -399,9 +407,10 @@ func _rebuild_items() -> void:
 	for child in _items_row.get_children():
 		_items_row.remove_child(child)
 		child.queue_free()
+	var icon_size := ITEM_ICON if _inventory.get_items().size() <= ITEMS_BEFORE_SMALL else ITEM_ICON_SMALL
 	for item in _inventory.get_items():
 		var count := _inventory.count(item)
-		var tile := IconTile.create(item.icon, item.tier, ITEM_ICON, "×%d" % count if count > 1 else "")
+		var tile := IconTile.create(item.icon, item.tier, icon_size, "×%d" % count if count > 1 else "")
 		tile.tooltip_text = item_tooltip(item, count)
 		_items_row.add_child(tile)
 	if _inventory.get_items().is_empty():
