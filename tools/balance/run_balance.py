@@ -51,6 +51,7 @@ def main():
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 4) - 2))
     parser.add_argument("--out", default="")
     parser.add_argument("--endless", type=int, default=0, help="keep playing endless waves up to this wave")
+    parser.add_argument("--static", action="store_true", help="the bot never moves (static build)")
     args = parser.parse_args()
 
     characters = _ids("characters") if args.characters == "all" else args.characters.split(",")
@@ -77,7 +78,7 @@ def main():
             return name, "cached"
         cmd = [GODOT, "--headless", "--path", ROOT, "--fixed-fps", "60", "res://src/debug/balance/balance_sim.tscn",
                "--", "--character=" + character, "--weapon=" + weapon, "--seal=%d" % seal,
-               "--policy=" + policy, "--seed=%d" % seed, "--endless=%d" % args.endless, "--out=" + path]
+               "--policy=" + policy, "--seed=%d" % seed, "--endless=%d" % args.endless, "--static=%d" % int(args.static), "--out=" + path]
         subprocess.run(cmd, capture_output=True, text=True, timeout=2400 if args.endless else 1200)
         if not os.path.exists(path):
             return name, "no output"

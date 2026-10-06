@@ -29,7 +29,7 @@ var _endless_to: int = 0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	var args := {"character": "drifter", "weapon": "", "seal": "0", "policy": "dps", "seed": "1", "endless": "0"}
+	var args := {"character": "drifter", "weapon": "", "seal": "0", "policy": "dps", "seed": "1", "endless": "0", "static": "0"}
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--out="):
 			_out = arg.trim_prefix("--out=")
@@ -59,7 +59,9 @@ func _ready() -> void:
 	_run.record_profile = false
 	_run.unlock_all = true
 	_run.bot_policy = self
-	_run.bot_input = _bot.steer
+	# --static=1: a "static build" player who never moves (D71).
+	_run.bot_input = _bot.steer if args.static != "1" else func() -> Vector2: return Vector2.ZERO
+	_report["static"] = args.static == "1"
 	_bot.setup(_run)
 	add_child(_run)
 	_run.player.damaged.connect(_on_damaged)
