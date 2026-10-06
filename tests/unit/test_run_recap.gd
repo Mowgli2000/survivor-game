@@ -18,10 +18,14 @@ func test_compact_numbers() -> void:
 	assert_eq(GameOverScreen.compact(4500000.0), "4.5M")
 
 
-func test_end_screen_shows_the_recap() -> void:
+func test_end_screen_shows_one_column_per_player() -> void:
 	var screen := GameOverScreen.new()
 	add_child_autofree(screen)
 	screen.open(60.0, 5, 100, 4)
-	screen.show_recap(GameOverScreen.recap_rows({&"katana": 120.0}), 30.0)
+	var columns: Array[Dictionary] = [
+		{"title": "Player 1", "color": Color.CYAN, "rows": GameOverScreen.recap_rows({&"katana": 120.0})},
+		{"title": "Player 2", "color": Color.ORANGE, "rows": GameOverScreen.recap_rows({&"bomb": 80.0})},
+	]
+	screen.show_recap(columns)
 	assert_true(screen._recap.visible)
-	assert_string_contains(screen._summary.text, "30")
+	assert_eq(screen._recap.get_child_count(), 2)

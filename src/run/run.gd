@@ -655,9 +655,16 @@ func _on_player_died() -> void:
 		_record_run(false)
 
 
-## Damage by weapon of player 1 on the end screen (coop: the first player).
+## Damage by weapon on the end screen, one column per player.
 func _show_recap() -> void:
-	game_over_screen.show_recap(GameOverScreen.recap_rows(enemies.damage_dealt(0)), enemies.best_hit(0))
+	var columns: Array[Dictionary] = []
+	for rp in players:
+		columns.append({
+			"title": tr("UI_PLAYER_N") % (rp.index + 1) if players.size() > 1 else "",
+			"color": rp.color(),
+			"rows": GameOverScreen.recap_rows(enemies.damage_dealt(rp.index)),
+		})
+	game_over_screen.show_recap(columns)
 
 
 ## After a victory: the waves go on (level-ups, shop, wave 21...) until death.

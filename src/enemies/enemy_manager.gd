@@ -46,8 +46,6 @@ var damage_weapon: StringName = &""
 
 ## Damage actually dealt (HP removed) per player, per damage_weapon.
 var _dealt: Array[Dictionary] = []
-## Biggest single hit per player.
-var _best_hit := PackedFloat32Array()
 
 var _party: Party
 var _arena: Rect2
@@ -157,18 +155,11 @@ func damage_dealt(source: int) -> Dictionary:
 	return _dealt[source] if source >= 0 and source < _dealt.size() else {}
 
 
-func best_hit(source: int) -> float:
-	return _best_hit[source] if source >= 0 and source < _best_hit.size() else 0.0
-
-
 func _record_damage(amount: float) -> void:
 	var source := maxi(damage_source, 0)
 	while _dealt.size() <= source:
 		_dealt.append({})
-		_best_hit.append(0.0)
 	_dealt[source][damage_weapon] = _dealt[source].get(damage_weapon, 0.0) + amount
-	if damage_weapon != BURN_TAG:
-		_best_hit[source] = maxf(_best_hit[source], amount)
 
 
 func damage_enemy(index: int, amount: float, crit: bool, direction: Vector2, knockback_force: float,

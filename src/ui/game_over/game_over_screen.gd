@@ -19,8 +19,8 @@ var is_victory: bool = false
 var _title: Label
 var _dim: ColorRect
 var _summary: Label
-## Damage by weapon, next to the summary (show_recap).
-var _recap: VBoxContainer
+## Damage by weapon, next to the summary: one column per player (show_recap).
+var _recap: HBoxContainer
 var _unlocks: HBoxContainer
 var _retry: Button
 var _main_menu: Button
@@ -68,8 +68,8 @@ func _init() -> void:
 	_summary.theme_type_variation = &"ValueLabel"
 	_summary.add_theme_font_size_override("font_size", 32)
 	middle.add_child(_summary)
-	_recap = VBoxContainer.new()
-	_recap.add_theme_constant_override("separation", 8)
+	_recap = HBoxContainer.new()
+	_recap.add_theme_constant_override("separation", 48)
 	_recap.visible = false
 	middle.add_child(_recap)
 
@@ -124,29 +124,36 @@ func open(time_survived: float, level: int, kills: int, wave: int, victory: bool
 	_retry.grab_focus()
 
 
-## Damage summary: who dealt what (rows from recap_rows()), and the best hit
-## added under the run summary.
-func show_recap(rows: Array[Dictionary], best: float) -> void:
+## Damage summary, one column per player: {"title": "" (solo) or "Player 2",
+## "color": player color, "rows": recap_rows()}.
+func show_recap(columns: Array[Dictionary]) -> void:
 	for child in _recap.get_children():
 		_recap.remove_child(child)
 		child.queue_free()
-	if best > 0.0:
-		_summary.text += "
-%s %s" % [tr("UI_BEST_HIT"), compact(best)]
-	if rows.is_empty():
-		return
-	var title := Label.new()
-	title.text = "UI_RECAP_DAMAGE"
-	title.theme_type_variation = &"SubtitleLabel"
-	_recap.add_child(title)
-	var top: float = rows[0].damage
-	var total := 0.0
-	for row in rows:
-		total += row.damage
-	for i in mini(rows.size(), RECAP_ROWS):
-		_recap.add_child(_recap_row(rows[i], top, total))
-	_recap.visible = true
-	UiFx.pop_in(_recap, 0.12)
+	for column in columns:
+		var rows: Array[Dictionary] = column.rows
+		if rows.is_empty():
+			continue
+		var box := VBoxContainer.new()
+		box.add_theme_constant_override("separation", 8)
+		_recap.add_child(box)
+		var title := Label.new()
+		title.theme_type_variation = &"SubtitleLabel"
+		if column.title == "":
+			title.text = "UI_RECAP_DAMAGE"
+		else:
+			title.text = "%s · %s" % [column.title, tr("UI_RECAP_DAMAGE")]
+			title.add_theme_color_override("font_color", column.color)
+		box.add_child(title)
+		var top: float = rows[0].damage
+		var total := 0.0
+		for row in rows:
+			total += row.damage
+		for i in mini(rows.size(), RECAP_ROWS):
+			box.add_child(_recap_row(rows[i], top, total))
+	_recap.visible = _recap.get_child_count() > 0
+	if _recap.visible:
+		UiFx.pop_in(_recap, 0.12)
 
 
 ## Rows of the damage summary, biggest first: weapons with their icon and

@@ -447,5 +447,4 @@ func test_damage_dealt_is_recorded_per_weapon_and_player() -> void:
 	var dealt := _enemies.damage_dealt(0)
 	assert_almost_eq(dealt[&"katana"], 4.0, 0.01)
 	assert_almost_eq(dealt[&"bomb"], 10.0, 0.01, "only the HP the enemy had (overkill not counted)")
-	assert_almost_eq(_enemies.best_hit(0), 10.0, 0.01)
 	assert_eq(_enemies.damage_dealt(1), {}, "player 2 dealt nothing")
