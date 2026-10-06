@@ -1,15 +1,26 @@
 class_name PickupManager
 extends Node2D
-## Owns XP gems: magnet attraction toward the nearest living player and collection.
-## Above `max_gems`, new XP is merged into existing gems to cap the entity count.
+## Owns the pickups: XP crystals and material coins. Magnet attraction toward the nearest
+## living player and collection. Above `max_gems`, new pickups are merged into existing
+## ones of the same kind to cap the entity count. Collecting makes a chime / a coin ting
+## whose pitch climbs while pickups chain (an arpeggio, the "addictive" feedback).
 
 ## `collector`: player number, or SHARED for the end-of-wave sweep (split by Run).
 signal xp_collected(amount: int, collector: int)
+## Materials of the coins picked up (fractions kept).
+signal material_collected(amount: float, collector: int)
 
 const SHARED := -1
 
 const ATTRACT_START_SPEED := 150.0
 const ATTRACT_ACCELERATION := 1500.0
+const CRYSTAL_SOUND := preload("res://assets/audio/sfx/pickup_crystal.wav")
+const COIN_SOUND := preload("res://assets/audio/sfx/pickup_coin.wav")
+## A pickup within this delay of the previous one continues the chain.
+const CHAIN_WINDOW_MS := 320
+const CHAIN_MAX := 14
+## Pitch gained per link, in semitones (a major scale feel: 2 then 2 then 1...).
+const SEMITONES: Array[int] = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23, 24]
 
 var _party: Party
 var _max_gems: int = 300
@@ -18,12 +29,16 @@ var _pool: ObjectPool
 var _merge_cursor: int = 0
 ## Physics frame of the last pickup sound request.
 var _sound_frame: int = -1
+var _chain: int = 0
+var _last_pickup_ms: int = -10000
+var _drawn: bool = false
 
 
 func setup(party: Party, max_gems: int) -> void:
 	_party = party
 	_max_gems = max_gems
 	_pool = ObjectPool.new(_create_gem)
+	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 
 
 func _ready() -> void:
@@ -33,24 +48,52 @@ func _ready() -> void:
 
 func spawn_xp(pos: Vector2, value: int) -> void:
 	if _active.size() >= _max_gems:
-		_merge_cursor = (_merge_cursor + 1) % _active.size()
-		_active[_merge_cursor].add_value(value)
-		return
+		var target := _merge_target(false)
+		if target != null:
+			target.add_value(value)
+			return
 	var gem: XpGem = _pool.acquire()
 	gem.reset(pos, value)
 	_active.append(gem)
 
 
+## A coin worth `amount` materials (Run converts the XP of a kill into materials).
+func spawn_material(pos: Vector2, amount: float) -> void:
+	if amount <= 0.0:
+		return
+	if _active.size() >= _max_gems:
+		var target := _merge_target(true)
+		if target != null:
+			target.add_coins(amount)
+			return
+	var gem: XpGem = _pool.acquire()
+	gem.reset_material(pos, amount)
+	_active.append(gem)
+
+
+## Next pickup of the wanted kind to merge into (round robin), or null if there is none.
+func _merge_target(material: bool) -> XpGem:
+	for step in _active.size():
+		_merge_cursor = (_merge_cursor + 1) % _active.size()
+		if _active[_merge_cursor].is_material == material:
+			return _active[_merge_cursor]
+	return null
+
+
 ## Collects every gem at once (end of wave): a single xp_collected with the total.
 func collect_all() -> void:
 	var total := 0
+	var coins := 0.0
 	for gem in _active:
 		total += gem.value
-		gem.visible = false
+		coins += gem.coins
 		_pool.release(gem)
 	_active.clear()
+	queue_redraw()
 	if total > 0:
 		xp_collected.emit(total, SHARED)
+	if coins > 0.0:
+		material_collected.emit(coins, SHARED)
 
 
 func active_count() -> int:
@@ -63,6 +106,15 @@ func _physics_process(delta: float) -> void:
 	for player in _party.members:
 		if not player.is_dead:
 			_update_for(player, delta)
+	if not _active.is_empty() or _drawn:
+		_drawn = not _active.is_empty()
+		queue_redraw()
+
+
+## One draw for every pickup: the textures batch into a few draw calls.
+func _draw() -> void:
+	for gem in _active:
+		gem.draw(self)
 
 
 ## Gems in range of `player` fly to it; the ones it touches are its own.
@@ -92,18 +144,29 @@ func _update_for(player: Player, delta: float) -> void:
 			d2 = gem.position.distance_squared_to(player_pos)
 		if d2 <= collect_r2:
 			var value := gem.value
-			gem.visible = false
+			var coins := gem.coins
+			var material := gem.is_material
 			_active[i] = _active[_active.size() - 1]
 			_active.pop_back()
 			_pool.release(gem)
-			xp_collected.emit(value, player.index)
-			if Engine.get_physics_frames() != _sound_frame:
-				_sound_frame = Engine.get_physics_frames()
-				Audio.play(Sounds.PICKUP, -16.0, 0.15)
+			if material:
+				material_collected.emit(coins, player.index)
+			else:
+				xp_collected.emit(value, player.index)
+			_play_pickup(material)
+
+
+## One sound per kind and physics frame; the pitch climbs one step per chained pickup.
+func _play_pickup(material: bool) -> void:
+	if Engine.get_physics_frames() == _sound_frame:
+		return
+	_sound_frame = Engine.get_physics_frames()
+	var now := Time.get_ticks_msec()
+	_chain = mini(_chain + 1, CHAIN_MAX) if now - _last_pickup_ms <= CHAIN_WINDOW_MS else 0
+	_last_pickup_ms = now
+	var pitch := pow(2.0, SEMITONES[_chain] / 12.0)
+	Audio.play(COIN_SOUND if material else CRYSTAL_SOUND, -11.0 if material else -13.0, 0.0, pitch)
 
 
 func _create_gem() -> XpGem:
-	var gem := XpGem.new()
-	gem.visible = false
-	add_child(gem)
-	return gem
+	return XpGem.new()

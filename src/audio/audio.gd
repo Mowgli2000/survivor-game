@@ -49,7 +49,7 @@ func _on_button_hovered(button: BaseButton) -> void:
 
 
 ## Plays `stream` unless throttled. Returns true when a player was used.
-func play(stream: AudioStream, volume_db: float = 0.0, pitch_variation: float = 0.06) -> bool:
+func play(stream: AudioStream, volume_db: float = 0.0, pitch_variation: float = 0.06, pitch: float = 1.0) -> bool:
 	if stream == null:
 		return false
 	var now := Time.get_ticks_msec()
@@ -63,7 +63,7 @@ func play(stream: AudioStream, volume_db: float = 0.0, pitch_variation: float = 
 	_last_played[stream] = now
 	player.stream = stream
 	player.volume_db = volume_db
-	player.pitch_scale = 1.0 + randf_range(-pitch_variation, pitch_variation)
+	player.pitch_scale = pitch + randf_range(-pitch_variation, pitch_variation)
 	player.play()
 	return true
 
