@@ -195,7 +195,7 @@ SET_FULLSCREEN,Fullscreen,Plein écran
 SET_VSYNC,VSync,Synchronisation verticale
 SET_SCREEN_SHAKE,Screen shake,Tremblement de l'écran
 SET_DAMAGE_NUMBERS,Damage numbers,Chiffres de dégâts
-SET_REDUCE_MOTION,Reduce animations,Réduire les animations
+SET_REDUCE_MOTION,Reduce menu animations,Réduire les animations des menus
 SET_LANGUAGE,Language,Langue
 LANG_SYSTEM,System,Système
 LANG_EN,English,English
@@ -396,3 +396,4 @@ UPGRADE_HARVEST,Harvest,Moisson
 UI_RECAP_DAMAGE,Damage by weapon,Dégâts par arme
 UI_RECAP_ITEMS,Item effects,Effets d'objets
 UI_RECAP_BURN,Burning,Brûlure
+WSTAT_BLAST,Blast,Explosion

@@ -198,3 +198,14 @@ func test_next_wave_stays_under_the_items_and_the_list_never_grows_past_two_rows
 	var two_rows := 2 * ShopScreen.ITEM_ICON_SMALL + ShopScreen.ITEM_GAP
 	assert_almost_eq(ShopScreen.items_height(59), two_rows, 0.01, "every item owned: still two rows")
 	assert_almost_eq(ShopScreen.items_height(3), ShopScreen.ITEM_ICON, 0.01, "few items: one row")
+
+
+func test_owned_weapon_details_show_description_and_tier_stats() -> void:
+	var data: WeaponData = ContentDB.get_def(&"weapons", &"bomb")
+	var low := ShopScreen.weapon_details(WeaponSlot.new(data, 1))
+	var high := ShopScreen.weapon_details(WeaponSlot.new(data, 4))
+	assert_string_contains(low, "Bomb")
+	assert_string_contains(low, String(TranslationServer.translate(data.description_key)))
+	assert_string_contains(low, "Damage")
+	assert_string_contains(low, "Blast")
+	assert_ne(low, high, "the numbers follow the tier")
