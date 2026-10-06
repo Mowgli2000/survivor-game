@@ -155,7 +155,7 @@ func copy() -> StageData:
 ## Share of a seal's HP, damage and spawn bonuses already felt at wave 1; the
 ## full bonus is reached at the last wave. A high seal then grows harder as the
 ## run goes, instead of killing in the first waves before any build exists.
-const SEAL_EARLY_SHARE := 0.4
+const SEAL_EARLY_SHARE := 0.25
 
 
 func with_difficulty(difficulty: DifficultyData) -> StageData:
