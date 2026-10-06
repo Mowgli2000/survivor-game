@@ -37,8 +37,6 @@ var _cards: HBoxContainer
 var _reroll: Button
 var _weapon_row: HBoxContainer
 var _weapon_actions: HBoxContainer
-## Details (description and stats at its tier) of the weapon under the cursor or focus.
-var _weapon_info: Label
 var _items_label: Label
 var _items_row: HFlowContainer
 var _items_scroll: ScrollContainer
@@ -131,20 +129,11 @@ func _init() -> void:
 	_weapon_row.add_theme_constant_override("separation", 12)
 	_weapon_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.add_child(_weapon_row)
-	# Sell / merge buttons of the selected weapon, then the details of the
-	# hovered / focused / selected weapon (mouse and gamepad alike).
-	var weapon_bar := HBoxContainer.new()
-	weapon_bar.add_theme_constant_override("separation", 24)
-	weapon_bar.alignment = BoxContainer.ALIGNMENT_CENTER
-	box.add_child(weapon_bar)
+	# Sell / merge buttons of the selected weapon (details are in the hover tooltip).
 	_weapon_actions = HBoxContainer.new()
 	_weapon_actions.add_theme_constant_override("separation", 12)
-	weapon_bar.add_child(_weapon_actions)
-	_weapon_info = _label(18, TEXT_COLOR)
-	_weapon_info.custom_minimum_size.x = 760
-	_weapon_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_weapon_info.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	weapon_bar.add_child(_weapon_info)
+	_weapon_actions.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_child(_weapon_actions)
 
 	var items_box := HBoxContainer.new()
 	items_box.add_theme_constant_override("separation", 16)
@@ -396,7 +385,10 @@ func _rebuild_weapons() -> void:
 		var slot := slots[i]
 		var button := _button("%s %s" % [tr(slot.data.name_key), Tiers.roman(slot.level)], 22)
 		var tier_color := Tiers.color(slot.level)
-		var normal := UiTheme.card_style(tier_color, 1.0 if i == _selected_weapon else 0.45)
+		var mergeable := _shop.can_merge(i)
+		# A mergeable pair gets a gold frame.
+		var normal := UiTheme.card_style(UiTheme.GOLD if mergeable else tier_color,
+			1.0 if mergeable or i == _selected_weapon else 0.45)
 		normal.set_content_margin_all(10)
 		button.add_theme_stylebox_override("normal", normal)
 		button.add_theme_color_override("font_color", tier_color)
@@ -404,14 +396,11 @@ func _rebuild_weapons() -> void:
 		button.add_theme_constant_override("icon_max_width", WEAPON_ICON)
 		button.pressed.connect(_on_weapon_selected.bind(i))
 		button.tooltip_text = weapon_details(slot)
-		button.focus_entered.connect(_show_weapon_info.bind(slot))
-		button.mouse_entered.connect(_show_weapon_info.bind(slot))
 		_weapon_row.add_child(button)
 		_controls["weapon:%d" % i] = button
 	var free := _label(22, UiTheme.MUTED, &"ValueLabel")
 	free.text = "%d / %d" % [slots.size(), _weapons.max_slots]
 	_weapon_row.add_child(free)
-	_weapon_info.text = weapon_summary(slots[_selected_weapon]) if _selected_weapon >= 0 else ""
 	if _selected_weapon < 0:
 		return
 	var sell := _button(tr("UI_SHOP_SELL") % _shop.sell_price(_selected_weapon), 22)
@@ -426,10 +415,6 @@ func _rebuild_weapons() -> void:
 	_controls["merge"] = merge
 
 
-func _show_weapon_info(slot: WeaponSlot) -> void:
-	_weapon_info.text = weapon_summary(slot)
-
-
 ## Hover text of an owned weapon: name and tier, description, stats at its tier.
 static func weapon_details(slot: WeaponSlot) -> String:
 	var lines: PackedStringArray = ["%s %s" % [TranslationServer.translate(slot.data.name_key), Tiers.roman(slot.level)],
@@ -437,13 +422,6 @@ static func weapon_details(slot: WeaponSlot) -> String:
 	lines.append_array(weapon_stat_lines(slot.stats))
 	return "
 ".join(lines)
-
-
-## Two lines for the shop bar: description, then the stats on one line.
-static func weapon_summary(slot: WeaponSlot) -> String:
-	return "%s
-%s" % [TranslationServer.translate(slot.data.description_key),
-		"  ·  ".join(weapon_stat_lines(slot.stats))]
 
 
 ## The weapon's own numbers at its tier (before the player's stats).

@@ -108,6 +108,9 @@ func _process(delta: float) -> void:
 		# Own a few items so the inventory row shows, then end the wave.
 		for id in [&"oni_mask", &"magnet_glove", &"magnet_glove", &"plasma_ring"]:
 			_run.inventory.add(ContentDB.get_def(&"items", id))
+		# A mergeable pair (same weapon, same tier) to check the highlight.
+		var owned := _run.player.weapons.get_slots()[0]
+		_run.player.weapons.add_weapon(owned.data, owned.level)
 		_run.waves.time_left = 0.05
 		_capture_at = _time + 0.8
 		return
