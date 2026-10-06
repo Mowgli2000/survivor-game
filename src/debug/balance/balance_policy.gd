@@ -6,10 +6,13 @@ extends RefCounted
 ##   "tank"    survival first;
 ##   "family"  one weapon family (the starting weapon's), offense items;
 ##   "economy" harvest and luck early (waves 1-8), then "dps";
-##   "random"  any affordable offer, random cards (a weak, unfocused player).
+##   "random"  any affordable offer, random cards (a weak, unfocused player);
+##   "zone"    like "family", and Zone is worth 4 times more (area builds, D67).
 ## Scores are "points": a typical common item or card is worth about 1.
 
-const KINDS: Array[String] = ["dps", "tank", "family", "economy", "random"]
+const KINDS: Array[String] = ["dps", "tank", "family", "economy", "random", "zone"]
+## "zone" policy: Zone value multiplier.
+const ZONE_FOCUS := 4.0
 ## Points per unit of flat value, per stat.
 const FLAT: Dictionary[StringName, float] = {
 	StatIds.MAX_HP: 0.2, StatIds.HP_REGEN: 1.0, StatIds.ARMOR: 1.0, StatIds.MOVE_SPEED: 0.04,
@@ -94,6 +97,8 @@ func score_modifiers(modifiers: Array[StatModifier], wave: int) -> float:
 			value *= 6.0 if kind == "economy" and wave <= 8 else 1.0
 		elif kind == "tank":
 			value *= 0.6
+		if kind == "zone" and m.stat == StatIds.AREA:
+			value *= ZONE_FOCUS
 		score += value
 	return score
 
@@ -134,7 +139,7 @@ func _weapon_points(offer: ShopOffer, weapons: WeaponHolder) -> float:
 		# Full: only a copy that merges into an owned weapon is useful.
 		return points * 1.5 if weapons.find_slot(data, offer.tier) >= 0 else 0.0
 	points += same * 2.0 + family * 1.0
-	if kind == "family" and _focus != &"" and not data.families.has(_focus):
+	if kind in ["family", "zone"] and _focus != &"" and not data.families.has(_focus):
 		return 0.0
 	if kind == "tank":
 		points *= 0.7
