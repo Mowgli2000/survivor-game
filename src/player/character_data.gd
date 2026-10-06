@@ -49,6 +49,36 @@ enum WeaponKind { ANY, MELEE, RANGED }
 @export var rig: RigData
 ## Detailed illustration shown on the character select card (null: the animated sprite).
 @export var card_art: Texture2D
+@export_group("Second look (other sex)")
+## Same class, rules and stats, another hero to pick at the start (variant 1).
+## Empty `alt_sprite_id` = no second look.
+@export var alt_name_key: String
+@export var alt_sprite_id: StringName
+@export var alt_sprite_scale: float = 1.0
+@export var alt_card_art: Texture2D
+@export_group("")
+
+
+## True when the class has a second look (variant 1).
+func has_alt_look() -> bool:
+	return alt_sprite_id != &""
+
+
+## `variant` 0 = the character itself, 1 = its second look (when it has one).
+func name_key_for(variant: int) -> String:
+	return alt_name_key if variant == 1 and has_alt_look() and alt_name_key != "" else name_key
+
+
+func sprite_id_for(variant: int) -> StringName:
+	return alt_sprite_id if variant == 1 and has_alt_look() else sprite_id
+
+
+func sprite_scale_for(variant: int) -> float:
+	return alt_sprite_scale if variant == 1 and has_alt_look() else sprite_scale
+
+
+func card_art_for(variant: int) -> Texture2D:
+	return alt_card_art if variant == 1 and has_alt_look() and alt_card_art != null else card_art
 
 
 ## True if the class rules let this character use `weapon`.

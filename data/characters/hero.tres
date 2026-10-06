@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://src/items/effects/item_effect.gd" id="5_effect"]
 [ext_resource type="Script" path="res://src/items/effects/dodge_buff_effect.gd" id="6_dodge"]
 [ext_resource type="Texture2D" path="res://assets/characters/cards/assassin_card.png" id="card"]
+[ext_resource type="Texture2D" path="res://assets/characters/cards/assassin_f_card.png" id="card_alt"]
 [ext_resource type="Resource" path="res://data/weapons/shuriken.tres" id="w0"]
 [ext_resource type="Resource" path="res://data/weapons/rapier.tres" id="w1"]
 
@@ -58,3 +59,7 @@ color = Color(0.635, 0.349, 1, 1)
 sprite_id = &"assassin"
 sprite_scale = 1.35
 card_art = ExtResource("card")
+alt_name_key = "CHARACTER_HERO_ALT"
+alt_sprite_id = &"assassin_f"
+alt_sprite_scale = 1.35
+alt_card_art = ExtResource("card_alt")

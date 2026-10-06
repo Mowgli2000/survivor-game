@@ -4,6 +4,8 @@ extends RefCounted
 ## SceneRouter.next_run and kept for "Restart" (ADR 0015).
 
 var character: CharacterData
+## 0 = the character's own look, 1 = its second look (CharacterData.alt_*).
+var variant: int = 0
 ## Starting weapon; null = the character's default.
 var weapon: WeaponData
 ## Null = Danger 0.
@@ -12,3 +14,4 @@ var difficulty: DifficultyData
 var character_2: CharacterData
 ## Player 2's starting weapon; null = the character's default.
 var weapon_2: WeaponData
+var variant_2: int = 0

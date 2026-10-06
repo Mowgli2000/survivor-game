@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://src/items/effects/item_effect.gd" id="5_effect"]
 [ext_resource type="Script" path="res://src/items/effects/missing_hp_stat_effect.gd" id="6_rage"]
 [ext_resource type="Texture2D" path="res://assets/characters/cards/berserker_card.png" id="card"]
+[ext_resource type="Texture2D" path="res://assets/characters/cards/berserker_m_card.png" id="card_alt"]
 [ext_resource type="Resource" path="res://data/weapons/heavy_axe.tres" id="w0"]
 [ext_resource type="Resource" path="res://data/weapons/warhammer.tres" id="w1"]
 
@@ -54,3 +55,7 @@ color = Color(0.88, 0.16, 0.23, 1)
 sprite_id = &"berserker"
 sprite_scale = 1.35
 card_art = ExtResource("card")
+alt_name_key = "CHARACTER_BERSERKER_ALT"
+alt_sprite_id = &"berserker_m"
+alt_sprite_scale = 1.35
+alt_card_art = ExtResource("card_alt")

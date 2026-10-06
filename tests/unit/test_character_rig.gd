@@ -72,8 +72,11 @@ func test_player_uses_the_puppet_instead_of_the_sprite() -> void:
 
 
 func test_puppet_turns_to_face_the_movement() -> void:
+	# The Swordswoman's puppet is off while her new design has none (ADR 0020).
+	var with_rig := (ContentDB.get_def(&"characters", &"ronin") as CharacterData).duplicate() as CharacterData
+	with_rig.rig = _rig_data
 	var player := Player.new()
-	player.setup(ContentDB.get_def(&"characters", &"ronin"), Rect2(-500, -500, 1000, 1000))
+	player.setup(with_rig, Rect2(-500, -500, 1000, 1000))
 	player.bot_input = func() -> Vector2: return Vector2.LEFT
 	add_child_autofree(player)
 	await wait_physics_frames(10)

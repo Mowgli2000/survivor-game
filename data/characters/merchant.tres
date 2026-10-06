@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://src/items/effects/item_effect.gd" id="5_effect"]
 [ext_resource type="Script" path="res://src/items/effects/interest_effect.gd" id="4_interest"]
 [ext_resource type="Texture2D" path="res://assets/characters/cards/merchant_card.png" id="card"]
+[ext_resource type="Texture2D" path="res://assets/characters/cards/merchant_m_card.png" id="card_alt"]
 [ext_resource type="Resource" path="res://data/weapons/bazooka.tres" id="w0"]
 [ext_resource type="Resource" path="res://data/weapons/bomb.tres" id="w1"]
 
@@ -46,3 +47,7 @@ color = Color(1, 0.69, 0.188, 1)
 sprite_id = &"merchant"
 sprite_scale = 1.35
 card_art = ExtResource("card")
+alt_name_key = "CHARACTER_MERCHANT_ALT"
+alt_sprite_id = &"merchant_m"
+alt_sprite_scale = 1.35
+alt_card_art = ExtResource("card_alt")
