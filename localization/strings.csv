@@ -386,3 +386,10 @@ HINT_SHOP,"Spend your materials between waves. Click one of your weapons to sell
 HINT_SEALS,"Win a run to open the next seal. Each seal you beat unlocks a weapon and two items.","Gagne une partie pour ouvrir le sceau suivant. Chaque sceau vaincu débloque une arme et deux objets."
 UI_SHOP_OWNED_MAX,Owned: %d/%d,Possédés : %d/%d
 UI_STAT_MAXED,(max),(max)
+UPGRADE_REGENERATION,Regeneration,Régénération
+UPGRADE_LEECH,Bloodthirst,Soif de sang
+UPGRADE_EVASION,Evasion,Esquive
+UPGRADE_REACH,Reach,Allonge
+UPGRADE_FEROCITY,Ferocity,Férocité
+UPGRADE_FORTUNE,Fortune,Fortune
+UPGRADE_HARVEST,Harvest,Moisson
