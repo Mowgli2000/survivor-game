@@ -20,6 +20,8 @@ const SLASH_LIFE_SLOW := 0.28
 const SWEEP := 0.45
 const SLASH_POINTS := 18
 ## Explosion: fire lobes around the blast, debris sparks, smoke puffs.
+## See-through so the monsters stay readable under the blast (playtest).
+const BLAST_ALPHA := 0.4
 const BLAST_LIFE := 0.36
 const BLAST_LOBES := 7
 const BLAST_SPARKS := 6
@@ -351,7 +353,7 @@ func _draw_beam(from: Vector2, to: Vector2, width: float, color: Color, t: float
 	draw_line(from, to, Color(color.lerp(Color.WHITE, 0.7), t), maxf(width * 0.35, 2.0), true)
 
 
-## Drawn blast (art bible: ink outline, flat colors): a white-hot core that
+## Drawn blast (art bible: flat colors, ink shock ring): a white-hot core that
 ## fades first, fire lobes that swell then shrink, a shock ring running out,
 ## debris sparks and a few smoke puffs at the end. Many per second late in a
 ## run: plain circles and lines only (no antialiasing).
@@ -365,24 +367,19 @@ func _draw_explosion(center: Vector2, radius: float, noise_seed: float, color: C
 		for k in BLAST_SMOKE:
 			var a := noise_seed * 2.3 + k * TAU / BLAST_SMOKE
 			var at := center + Vector2.from_angle(a) * radius * (0.45 + 0.4 * smoke)
-			draw_circle(at, radius * 0.28 * (1.0 - smoke * 0.4), Color(0.18, 0.15, 0.22, 0.5 * (1.0 - smoke)))
+			draw_circle(at, radius * 0.28 * (1.0 - smoke * 0.4), Color(0.18, 0.15, 0.22, 0.3 * (1.0 - smoke)))
 	# Fire lobes: swell for the first third, then shrink away.
 	var swell := minf(age / 0.3, 1.0) * (1.0 - maxf(age - 0.3, 0.0) / 0.7)
 	if swell > 0.02:
 		for k in BLAST_LOBES:
 			var a := noise_seed + k * TAU / BLAST_LOBES
-			var at := center + Vector2.from_angle(a) * radius * 0.5 * grow
-			var r := radius * (0.32 + 0.08 * sin(noise_seed * 7.0 + k * 2.1)) * swell
-			draw_circle(at, r + 3.0, INK)
-		for k in BLAST_LOBES:
-			var a := noise_seed + k * TAU / BLAST_LOBES
-			var at := center + Vector2.from_angle(a) * radius * 0.5 * grow
-			var r := radius * (0.32 + 0.08 * sin(noise_seed * 7.0 + k * 2.1)) * swell
-			draw_circle(at, r, fire)
-		draw_circle(center, radius * 0.45 * swell, fire.lerp(Color(1.0, 0.95, 0.6), 0.6))
+			# A ring of lobes, hollow in the middle: monsters show through.
+			var at := center + Vector2.from_angle(a) * radius * 0.62 * grow
+			var r := radius * (0.26 + 0.06 * sin(noise_seed * 7.0 + k * 2.1)) * swell
+			draw_circle(at, r, Color(fire, BLAST_ALPHA))
 	# White-hot core, gone after a quarter of the blast.
 	if age < 0.25:
-		draw_circle(center, radius * (0.55 + 0.3 * grow) * (1.0 - age / 0.25), Color(1.0, 1.0, 0.9, 0.9))
+		draw_circle(center, radius * (0.55 + 0.3 * grow) * (1.0 - age / 0.25), Color(1.0, 1.0, 0.9, 0.4))
 	# Shock ring running out and thinning.
 	var ring := radius * (0.4 + 0.75 * grow)
 	draw_arc(center, ring, 0.0, TAU, 28, Color(INK, 0.7 * t), 3.0 + 7.0 * t)
@@ -403,7 +400,7 @@ func _draw_death(center: Vector2, radius: float, noise_seed: float, color: Color
 	var out := 1.0 - (1.0 - age) * (1.0 - age)  # ease out
 	if age < 0.45:
 		var flash := 1.0 - age / 0.45
-		draw_circle(center, radius * (0.8 + 0.4 * age), Color(1.0, 1.0, 1.0, 0.8 * flash))
+		draw_circle(center, radius * (0.8 + 0.4 * age), Color(1.0, 1.0, 1.0, 0.5 * flash))
 		# Pop ring in the monster's color.
 		draw_arc(center, radius * (0.7 + 0.9 * out), 0.0, TAU, 16, Color(INK, 0.8 * flash), 5.0)
 		draw_arc(center, radius * (0.7 + 0.9 * out), 0.0, TAU, 16, Color(color, flash), 2.5)

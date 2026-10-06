@@ -111,7 +111,8 @@ func _trigger_blasts() -> void:
 		var column := Vfx.new()
 		add_child(column)
 		var x := -700.0 + c * 270.0
-		column.explosion(Vector2(x, -330), bazooka.explosion_radius, bazooka.color, false)
+		# Over the gallery's monsters: the blast must stay see-through.
+		column.explosion(Vector2(x, 280), bazooka.explosion_radius, bazooka.color, false)
 		column.death(Vector2(x - 60, -40), 26.0, grunt.color)
 		column.death(Vector2(x + 60, -40), 40.0, Color(0.85, 0.3, 0.35))
 		column._process(c * 0.055)
