@@ -13,5 +13,5 @@ percent = 0.0
 script = ExtResource("1_upgrade")
 id = &"fortune"
 name_key = "UPGRADE_FORTUNE"
-weight = 0.5
+weight = 0.3
 modifiers = Array[ExtResource("2_mod")]([SubResource("Resource_mod")])
