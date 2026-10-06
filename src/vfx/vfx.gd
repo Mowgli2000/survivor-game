@@ -10,6 +10,18 @@ signal shake_requested(amount: float)
 enum Kind { SLASH, BEAM, EXPLOSION, HIT, LIGHTNING, WARN_CIRCLE, WARN_LINE, PORTAL, DEATH }
 
 const CAPACITY := 384
+## Late game (Zone stat, many weapons) the drawn effects stay readable: past these sizes
+## the picture grows at a fraction of the real hit area (the hits themselves are untouched).
+const SLASH_FULL := 140.0
+const BLAST_FULL := 120.0
+const BEAM_FULL := 10.0
+const BEAM_MAX := 22.0
+const OVERSIZE_SHARE := 0.4
+## Past this many live effects, new swings, beams and blasts fade sooner (visual noise).
+const BUSY_COUNT := 40
+const BUSY_LIFE := 0.6
+## Coop: two players' effects share the screen, drawn a bit smaller.
+var coop_scale: float = 1.0
 ## Outline color of every effect (the art's black line).
 const INK := Color(0.05, 0.04, 0.1)
 ## Gate color: monsters step out of violet portals (art bible).
@@ -73,15 +85,16 @@ func active_count() -> int:
 func slash(center: Vector2, angle: float, radius: float, half_angle: float, color: Color,
 		style: int = 0) -> void:
 	var life := SLASH_LIFE_SLOW if style == WeaponData.SlashStyle.HEAVY or style == WeaponData.SlashStyle.SMASH 		else SLASH_LIFE
-	_add(Kind.SLASH, center, Vector2.from_angle(angle), radius, half_angle, color, life, style)
+	_add(Kind.SLASH, center, Vector2.from_angle(angle), shown_size(radius, SLASH_FULL), half_angle,
+		color, life, style)
 
 
 func beam(from: Vector2, to: Vector2, width: float, color: Color) -> void:
-	_add(Kind.BEAM, from, to, width, 0.0, color, 0.14)
+	_add(Kind.BEAM, from, to, minf(shown_size(width, BEAM_FULL), BEAM_MAX), 0.0, color, 0.14)
 
 
 func explosion(center: Vector2, radius: float, color: Color, shake: bool) -> void:
-	_add(Kind.EXPLOSION, center, Vector2.ZERO, radius, _next_seed(), color, BLAST_LIFE)
+	_add(Kind.EXPLOSION, center, Vector2.ZERO, shown_size(radius, BLAST_FULL), _next_seed(), color, BLAST_LIFE)
 	if shake:
 		shake_requested.emit(clampf(radius / 400.0, 0.1, 0.4))
 
@@ -89,6 +102,12 @@ func explosion(center: Vector2, radius: float, color: Color, shake: bool) -> voi
 ## A monster dies: short flash and ring in its color (`radius` = its size).
 func death(center: Vector2, radius: float, color: Color) -> void:
 	_add(Kind.DEATH, center, Vector2.ZERO, radius, _next_seed(), color, DEATH_LIFE)
+
+
+## Size drawn for a real size `real`: it follows up to `full`, then grows at OVERSIZE_SHARE.
+func shown_size(real: float, full: float) -> float:
+	var size := real if real <= full else full + (real - full) * OVERSIZE_SHARE
+	return size * coop_scale
 
 
 func hit(pos: Vector2, color: Color = Color(1, 1, 1, 0.8)) -> void:
@@ -121,6 +140,8 @@ func _add(kind: Kind, a: Vector2, b: Vector2, size: float, extra: float, color: 
 		style: int = 0) -> void:
 	if _count >= CAPACITY:
 		return  # Dropping a cosmetic effect is better than a frame spike.
+	if _count > BUSY_COUNT and (kind == Kind.SLASH or kind == Kind.EXPLOSION or kind == Kind.BEAM):
+		life *= BUSY_LIFE
 	var i := _count
 	_kind[i] = kind
 	_a[i] = a

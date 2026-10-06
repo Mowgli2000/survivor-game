@@ -11,6 +11,7 @@ UI_LEVEL_UP,Level up!,Niveau supérieur !
 UI_CHOOSE_UPGRADE,Choose an upgrade,Choisis une amélioration
 UI_TIME_SURVIVED,Time survived:,Temps survécu :
 UI_KILLS,Kills:,Ennemis vaincus :
+UI_DEATHS,Deaths:,Morts :
 STAT_MAX_HP,Max HP,PV max
 STAT_HP_REGEN,HP regeneration,Régénération
 STAT_ARMOR,Armor,Armure
@@ -41,7 +42,8 @@ UPGRADE_PLATING,Plating,Blindage
 WEAPON_PULSE,Arcane orb,Orbe arcanique
 ENEMY_GRUNT,Orc,Orc
 ENEMY_RUNNER,Dungeon wolf,Loup du donjon
-CHARACTER_DRIFTER,Novice Hunter,Chasseur novice
+CHARACTER_DRIFTER,Novice Huntress,Chasseuse novice
+CHARACTER_DRIFTER_ALT,Novice Hunter,Chasseur novice
 UI_LEVEL_LABEL,Level:,Niveau :
 UI_NEW_WEAPON,New weapon,Nouvelle arme
 UI_STAT_UPGRADE,Upgrade,Amélioration
@@ -180,6 +182,16 @@ ITEM_BLADE_OIL_EFFECT,+4% damage per Blade weapon,+4 % de dégâts par arme de L
 ITEM_BLACK_POWDER,Black powder,Poudre noire
 UI_SETTINGS,Settings,Paramètres
 UI_BACK,Back,Retour
+UI_PICK_HERO,Pick a hunter,Choisis un chasseur
+UI_HINT_CONFIRM,Confirm,Valider
+UI_HINT_BACK,Back,Retour
+UI_HINT_CHOOSE,Choose,Choisir
+UI_HINT_BUY,Buy,Acheter
+UI_HINT_LOCK,Lock,Verrouiller
+UI_HINT_REROLL,Reroll,Relancer
+UI_HINT_SWITCH_LOOK,Switch look,Changer d'apparence
+UI_HINT_RESUME,Resume,Reprendre
+UI_HINT_ADJUST,Adjust,Modifier
 UI_MAIN_MENU,Main menu,Menu principal
 UI_RESTART,Restart,Recommencer
 UI_CONFIRM_ABANDON,Abandon the run?,Abandonner la partie ?
@@ -200,6 +212,7 @@ SET_LANGUAGE,Language,Langue
 LANG_SYSTEM,System,Système
 LANG_EN,English,English
 LANG_FR,Français,Français
+UI_SWITCH_LOOK,Switch look,Changer d'apparence
 UI_CHOOSE_CHARACTER,Choose your character,Choisis ton personnage
 UI_CHOOSE_WEAPON,Starting weapon,Arme de départ
 UI_LOCKED,Locked — %s,Verrouillé — %s
@@ -208,10 +221,13 @@ UI_UNLOCKED,Unlocked: %s,Débloqué : %s
 UI_PROFILE_STATS,Runs %d · Wins %d · Best wave %d · Enemies killed %d,Parties %d · Victoires %d · Meilleure vague %d · Ennemis tués %d
 CHARACTER_DRIFTER_RULE,Awakening: level-up cards are 50% stronger.,Éveil : les cartes d'amélioration sont 50 % plus fortes.
 CHARACTER_RONIN,Swordswoman,Épéiste
+CHARACTER_RONIN_ALT,Swordsman,Épéiste
 CHARACTER_RONIN_RULE,Melee weapons only.,Armes de mêlée uniquement.
-CHARACTER_GUNSLINGER,Archer,Archer
+CHARACTER_GUNSLINGER,Archeress,Archère
+CHARACTER_GUNSLINGER_ALT,Archer,Archer
 CHARACTER_GUNSLINGER_RULE,Ranged weapons only. +3% damage per 10% bonus range.,Armes à distance uniquement. +3 % de dégâts par 10 % de portée bonus.
-CHARACTER_MERCHANT,Gate Smuggler,Contrebandier
+CHARACTER_MERCHANT,Gate Smuggler,Contrebandière
+CHARACTER_MERCHANT_ALT,Gate Smuggler,Contrebandier
 CHARACTER_MERCHANT_RULE,"Black market: shop prices -20%, rerolls +50%. End of wave: +10% of your materials (max 25).","Marché noir : prix de la boutique -20 %, relances +50 %. Fin de vague : +10 % de tes matériaux (max 25)."
 CHALLENGE_WIN_DRIFTER,Novice's road,La route du novice
 CHALLENGE_WIN_DRIFTER_DESC,Win a run with the Novice Hunter,Gagner une partie avec le Chasseur novice
@@ -234,8 +250,10 @@ CHALLENGE_WIN_GUNSLINGER_DESC,Win a run with the Archer,Gagner une partie avec l
 CHALLENGE_KILL_SHOGUN,Knight breaker,Briseur de chevalier
 CHALLENGE_KILL_SHOGUN_DESC,Defeat the Demon Knight (wave 20),Vaincre le Chevalier démon (vague 20)
 CHARACTER_MAGE,Mage,Mage
+CHARACTER_MAGE_ALT,Mage,Mage
 CHARACTER_MAGE_RULE,Arcane affinity: +8% damage per Magic weapon. Other weapons: -25% damage.,Affinité arcanique : +8 % de dégâts par arme de Magie. Autres armes : -25 % de dégâts.
-CHARACTER_BERSERKER,Berserker,Berserker
+CHARACTER_BERSERKER,Berserker,Berserkeuse
+CHARACTER_BERSERKER_ALT,Berserker,Berserker
 CHARACTER_BERSERKER_RULE,Rage: +1% damage per % of HP missing. Cannot dodge.,Rage : +1 % de dégâts par % de PV manquants. Ne peut pas esquiver.
 UI_CHOOSE_DANGER,Choose your seal,Choisis ton sceau
 UI_CONTINUE_ENDLESS,Continue (endless),Continuer en infini
@@ -266,6 +284,7 @@ UI_COOP_PADS,"Player 1: keyboard + gamepad 1, Player 2: gamepad 2","Joueur 1 : c
 UI_COOP_ONE_PAD,"Player 1: keyboard, Player 2: gamepad","Joueur 1 : clavier, Joueur 2 : manette"
 UI_COOP_NO_PAD,Connect a gamepad for player 2.,Branche une manette pour le joueur 2.
 CHARACTER_HERO,Assassin,Assassin
+CHARACTER_HERO_ALT,Assassin,Assassine
 CHARACTER_HERO_RULE,"Shadow step: after a dodge, +25% crit chance for 2 s.","Pas d'ombre : après une esquive, +25 % de chance de critique pendant 2 s."
 SEAL_PLACE_COMING,Place to come (stone dungeon for now),Lieu à venir (donjon de pierre en attendant)
 SEAL_FX_NONE,The normal run,La partie normale

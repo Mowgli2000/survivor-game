@@ -15,6 +15,10 @@ var max_slots: int = 6
 var favored_family: StringName = &""
 var off_family_scale: float = 1.0
 
+## Share of its cooldown a new copy of an owned weapon waits before its first attack, per
+## copy already owned (golden ratio: any number of copies spread evenly).
+const COPY_PHASE := 0.618
+
 var _ctx: WeaponContext
 var _slots: Array[WeaponSlot] = []
 
@@ -30,6 +34,13 @@ func add_weapon(data: WeaponData, level: int = 1) -> WeaponSlot:
 	if favored_family != &"" and not favored_family in data.families:
 		slot.damage_scale = off_family_scale
 		slot.set_level(level)
+	# Copies of one weapon attack out of step: melee swings come out of the player's
+	# center, so copies firing on the same frame drew one single overlapping swing.
+	var copies := 0
+	for other in _slots:
+		if other.data == data:
+			copies += 1
+	slot.cooldown = fposmod(copies * COPY_PHASE, 1.0) * slot.stats.cooldown
 	_slots.append(slot)
 	_refresh_mounts()
 	weapons_changed.emit()
