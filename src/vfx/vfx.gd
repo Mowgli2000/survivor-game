@@ -26,9 +26,8 @@ const BLAST_LIFE := 0.36
 const BLAST_LOBES := 7
 const BLAST_SPARKS := 6
 const BLAST_SMOKE := 4
-## Monster death "pop": flash, then chunks of the monster's color thrown out.
+## Monster death "pop": flash and ring (no flying chunks: visual noise, playtest).
 const DEATH_LIFE := 0.24
-const DEATH_CHUNKS := 6
 
 var _kind := PackedInt32Array()
 var _a := PackedVector2Array()       # center / start
@@ -87,7 +86,7 @@ func explosion(center: Vector2, radius: float, color: Color, shake: bool) -> voi
 		shake_requested.emit(clampf(radius / 400.0, 0.1, 0.4))
 
 
-## A monster dies: short flash and chunks of its color flying out (`radius` = its size).
+## A monster dies: short flash and ring in its color (`radius` = its size).
 func death(center: Vector2, radius: float, color: Color) -> void:
 	_add(Kind.DEATH, center, Vector2.ZERO, radius, _next_seed(), color, DEATH_LIFE)
 
@@ -392,8 +391,7 @@ func _draw_explosion(center: Vector2, radius: float, noise_seed: float, color: C
 		draw_line(from, from + direction * radius * 0.25 * t, Color(fire.lerp(Color.WHITE, 0.4), t), 3.0)
 
 
-## Monster death "pop": a flash and a ring of its size, then chunks (ink-outlined
-## drops of its color) thrown out and falling a little. One per kill: plain
+## Monster death "pop": a flash and a ring of its size. One per kill: plain
 ## circles and arcs only.
 func _draw_death(center: Vector2, radius: float, noise_seed: float, color: Color, t: float) -> void:
 	var age := 1.0 - t
@@ -404,14 +402,6 @@ func _draw_death(center: Vector2, radius: float, noise_seed: float, color: Color
 		# Pop ring in the monster's color.
 		draw_arc(center, radius * (0.7 + 0.9 * out), 0.0, TAU, 16, Color(INK, 0.8 * flash), 5.0)
 		draw_arc(center, radius * (0.7 + 0.9 * out), 0.0, TAU, 16, Color(color, flash), 2.5)
-	var size := radius * 0.34 * (1.0 - age * 0.6)
-	for k in DEATH_CHUNKS:
-		var a := noise_seed * 1.3 + k * TAU / DEATH_CHUNKS
-		var reach := radius * (0.3 + 1.4 * out) * (0.8 + 0.4 * sin(noise_seed + k * 3.7))
-		var at := center + Vector2.from_angle(a) * reach + Vector2(0.0, radius * 0.9 * age * age)
-		var alpha := minf(t * 1.8, 1.0)  # solid most of the way, fades at the end
-		draw_circle(at, size + 2.5, Color(INK, alpha))
-		draw_circle(at, size, Color(color.lerp(Color.WHITE, 0.15), alpha))
 
 
 func _draw_hit(pos: Vector2, size: float, noise_seed: float, color: Color, t: float) -> void:
