@@ -29,6 +29,8 @@ const UI_LOCK := preload("res://assets/audio/sfx/ui_lock.ogg")
 const UI_SELL := preload("res://assets/audio/sfx/ui_sell.ogg")
 const UI_MERGE := preload("res://assets/audio/sfx/ui_merge.ogg")
 const UI_SELECT := preload("res://assets/audio/sfx/ui_select.ogg")
+## Quick wind whoosh (the select-screen turntable changes look).
+const UI_SWOOSH := preload("res://assets/audio/sfx/ui_swoosh.wav")
 ## Every button (Audio hooks them): hover / focus tick and press click (Kenney UI Audio, CC0).
 const UI_HOVER := preload("res://assets/audio/sfx/ui_hover.ogg")
 const UI_CLICK := preload("res://assets/audio/sfx/ui_click.ogg")

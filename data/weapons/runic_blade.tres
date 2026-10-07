@@ -53,5 +53,6 @@ fire_sound = ExtResource("9_sound")
 fire_volume_db = 5.5
 color = Color(0.4, 0.95, 1.0, 1)
 icon = ExtResource("icon_tex")
+float_scale = 1.15
 icon_diagonal = true
 families = Array[StringName]([&"blade", &"energy"])

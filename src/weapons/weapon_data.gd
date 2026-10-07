@@ -76,6 +76,9 @@ enum SlashStyle { CRESCENT, THIN, THRUST, HEAVY, SMASH, FLAME, RUNIC }
 ## The icon art lies diagonally, tip up-right (long weapons: it fills the UI squares).
 ## WeaponVisuals turns it back to horizontal for the floating weapon.
 @export var icon_diagonal: bool = false
+## Size of the floating weapon relative to WeaponVisuals.SIZE: round things (bombs,
+## flasks) fill their icon and looked too big next to blades; melee weapons a bit bigger.
+@export var float_scale: float = 1.0
 
 
 func max_level() -> int:

@@ -116,12 +116,12 @@ func _draw() -> void:
 		var flip := -1.0 if absf(angle_difference(0.0, angle)) > PI * 0.5 else 1.0
 		if slot.data.icon_diagonal:
 			# Diagonal art (tip up-right): turned back to horizontal, same drawn length.
-			var diagonal_scale := SIZE / (icon.get_width() * sqrt(2.0))
+			var diagonal_scale := SIZE * slot.data.float_scale / (icon.get_width() * sqrt(2.0))
 			draw_set_transform_matrix(Transform2D(angle, pos)
 				* Transform2D(0.0, Vector2(diagonal_scale, diagonal_scale * flip), 0.0, Vector2.ZERO)
 				* Transform2D(PI / 4.0, Vector2.ZERO))
 		else:
-			var scale_factor := SIZE / icon.get_width()
+			var scale_factor := SIZE * slot.data.float_scale / icon.get_width()
 			draw_set_transform(pos, angle, Vector2(scale_factor, scale_factor * flip))
 		draw_texture(icon, -icon.get_size() * 0.5, Tiers.color(slot.level))
 	draw_set_transform_matrix(Transform2D.IDENTITY)

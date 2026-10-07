@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" path="res://assets/characters/cards/assassin_card.png" id="card"]
 [ext_resource type="Texture2D" path="res://assets/characters/cards/assassin_f_card.png" id="card_alt"]
 [ext_resource type="Resource" path="res://data/weapons/shuriken.tres" id="w0"]
-[ext_resource type="Resource" path="res://data/weapons/rapier.tres" id="w1"]
+[ext_resource type="Resource" path="res://data/weapons/venom_fangs.tres" id="w1"]
 
 [sub_resource type="Resource" id="Mod_1"]
 script = ExtResource("2_mod")

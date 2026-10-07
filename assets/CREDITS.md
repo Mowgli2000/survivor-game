@@ -13,3 +13,4 @@ All assets below are public domain (CC0 1.0) unless noted: no attribution requir
 | Font `assets/fonts/Fredoka.ttf` — Fredoka | Milena Brandão, Hafontia | https://fonts.google.com/specimen/Fredoka | SIL OFL 1.1 (`assets/fonts/OFL-Fredoka.txt`) |
 | Font `assets/fonts/Nunito.ttf` — Nunito | Vernon Adams, Cyreal, Jacques Le Bailly | https://fonts.google.com/specimen/Nunito | SIL OFL 1.1 (`assets/fonts/OFL-Nunito.txt`) |
 | Font `assets/fonts/Bangers.ttf` — Bangers | Vernon Adams | https://fonts.google.com/specimen/Bangers | SIL OFL 1.1 (`assets/fonts/OFL-Bangers.txt`) |
+| Sound `assets/audio/sfx/ui_swoosh.wav` (swing.wav) — "RPG Sound Pack" | OpenGameArt | https://opengameart.org/content/rpg-sound-pack | CC0 1.0 |

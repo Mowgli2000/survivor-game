@@ -3,47 +3,44 @@
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="1_weapon"]
 [ext_resource type="Script" path="res://src/weapons/behaviors/melee_arc_behavior.gd" id="2_behavior"]
 [ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/spear.ogg" id="9_sound"]
-[ext_resource type="Texture2D" path="res://assets/icons/weapons/spear.png" id="icon_tex"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/rapier.wav" id="9_sound"]
+[ext_resource type="Texture2D" path="res://assets/icons/weapons/venom_fangs.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")
 
 [sub_resource type="Resource" id="Resource_l2"]
 script = ExtResource("3_level")
-damage_percent = 0.25
-area_percent = 0.2
+fire_rate_percent = 0.2
 
 [sub_resource type="Resource" id="Resource_l3"]
 script = ExtResource("3_level")
-projectile_count = 1
+damage_percent = 0.3
 
 [sub_resource type="Resource" id="Resource_l4"]
 script = ExtResource("3_level")
-damage_percent = 0.25
+damage_percent = 0.2
 fire_rate_percent = 0.2
 
 [resource]
 script = ExtResource("1_weapon")
-id = &"spear"
-name_key = "WEAPON_SPEAR"
-description_key = "WEAPON_SPEAR_DESC"
+id = &"venom_fangs"
+name_key = "WEAPON_VENOM_FANGS"
+description_key = "WEAPON_VENOM_FANGS_DESC"
 behavior = SubResource("Resource_behavior")
 levels = Array[ExtResource("3_level")]([SubResource("Resource_l2"), SubResource("Resource_l3"), SubResource("Resource_l4")])
 base_price = 18
-base_damage = 10.0
-cooldown = 0.75
-attack_range = 290.0
-crit_chance = 0.15
-knockback = 160.0
-projectile_count = 1
-area = 230.0
-arc_degrees = 40.0
+base_damage = 5.0
+cooldown = 0.32
+attack_range = 210.0
+crit_chance = 0.35
+knockback = 30.0
+area = 170.0
+arc_degrees = 60.0
 slash_style = 2
 fire_sound = ExtResource("9_sound")
-fire_volume_db = -3.5
-color = Color(0.85, 0.88, 1, 1)
+fire_volume_db = -4.0
+color = Color(0.72, 0.4, 1.0, 1)
 icon = ExtResource("icon_tex")
-float_scale = 1.15
-icon_diagonal = true
+float_scale = 1.0
 families = Array[StringName]([&"blade"])
