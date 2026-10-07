@@ -2525,3 +2525,2250 @@ e3667da docs: 6b status (D55-D56)
 eee2274 feat: seals and biomes, Iron seal sunken temple (ADR 0018)
 ---
 
+## Session End: 20261005_094754
+### Commits
+18350ea docs: playtest branch status (D62-D63, latest feedback)
+6de36d0 merge: playtest notes fixes
+3f8e00e fix: playtest notes (clean main menu, Assassin card, weapon sounds, smaller weapons)
+117e199 merge: balance v2 + seal rewards for the dev's playtest
+9d7db0d balance(v2): keep the player strong, slow the economy, raise late HP
+4880d80 docs: seal rewards (ADR 0015 addendum, D62)
+c8758c8 fix: progression lists seal rewards from Copper to Astral
+fa1dd4b feat: seal rewards, each seal won unlocks a weapon and two items
+688b848 docs: session logs
+### Uncommitted Changes
+notes.md
+---
+
+## Session End: 20261005_173932
+### Commits
+18350ea docs: playtest branch status (D62-D63, latest feedback)
+6de36d0 merge: playtest notes fixes
+3f8e00e fix: playtest notes (clean main menu, Assassin card, weapon sounds, smaller weapons)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261005_175130
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261005_181042
+### Commits
+6c93e62 merge: economy v3 (per-kill materials, steep rerolls)
+2b43b2f balance(v3): second reroll costs at least 1.5x the first
+79f6632 merge: music, UI sounds, seal silhouettes, first-time tips
+0f7d4a4 balance(v3): scale per-kill materials, cap their items, steep rerolls
+b961d8e docs: status for music, UI sounds, seal silhouettes and tips (D64)
+f579b26 feat: first-time tips (onboarding)
+23bfda1 feat: UI sounds, selection sounds and seal reward silhouettes
+d7fc714 feat: fantasy music (menu, combat, boss themes, CC0)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261005_185749
+### Commits
+aa13d0e balance: skip offers whose bonuses are all capped, Zone raises the area target cap
+05131c8 fix: back button room on character select, owned n/max on shop cards
+08fe8da fix: even out weapon sound volumes (-13 dB RMS, measured offline)
+6c93e62 merge: economy v3 (per-kill materials, steep rerolls)
+2b43b2f balance(v3): second reroll costs at least 1.5x the first
+79f6632 merge: music, UI sounds, seal silhouettes, first-time tips
+0f7d4a4 balance(v3): scale per-kill materials, cap their items, steep rerolls
+b961d8e docs: status for music, UI sounds, seal silhouettes and tips (D64)
+f579b26 feat: first-time tips (onboarding)
+23bfda1 feat: UI sounds, selection sounds and seal reward silhouettes
+d7fc714 feat: fantasy music (menu, combat, boss themes, CC0)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261005_190343
+### Commits
+7d19bdf balance: cap Zone at +100% (area x4, 40 targets per hit)
+aa13d0e balance: skip offers whose bonuses are all capped, Zone raises the area target cap
+05131c8 fix: back button room on character select, owned n/max on shop cards
+08fe8da fix: even out weapon sound volumes (-13 dB RMS, measured offline)
+6c93e62 merge: economy v3 (per-kill materials, steep rerolls)
+2b43b2f balance(v3): second reroll costs at least 1.5x the first
+79f6632 merge: music, UI sounds, seal silhouettes, first-time tips
+0f7d4a4 balance(v3): scale per-kill materials, cap their items, steep rerolls
+b961d8e docs: status for music, UI sounds, seal silhouettes and tips (D64)
+f579b26 feat: first-time tips (onboarding)
+23bfda1 feat: UI sounds, selection sounds and seal reward silhouettes
+d7fc714 feat: fantasy music (menu, combat, boss themes, CC0)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261005_190838
+### Commits
+1583ed6 balance: Zone cap at +200% for now (area x9, 60 targets per hit)
+7d19bdf balance: cap Zone at +100% (area x4, 40 targets per hit)
+aa13d0e balance: skip offers whose bonuses are all capped, Zone raises the area target cap
+05131c8 fix: back button room on character select, owned n/max on shop cards
+08fe8da fix: even out weapon sound volumes (-13 dB RMS, measured offline)
+6c93e62 merge: economy v3 (per-kill materials, steep rerolls)
+2b43b2f balance(v3): second reroll costs at least 1.5x the first
+79f6632 merge: music, UI sounds, seal silhouettes, first-time tips
+0f7d4a4 balance(v3): scale per-kill materials, cap their items, steep rerolls
+b961d8e docs: status for music, UI sounds, seal silhouettes and tips (D64)
+f579b26 feat: first-time tips (onboarding)
+23bfda1 feat: UI sounds, selection sounds and seal reward silhouettes
+d7fc714 feat: fantasy music (menu, combat, boss themes, CC0)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261005_193330
+### Commits
+ec56165 feat: articulated puppet pilot for the Swordswoman (ADR 0020)
+961be11 docs: global analysis before the demo (priorities P1-P3, animation pilot plan)
+1583ed6 balance: Zone cap at +200% for now (area x9, 60 targets per hit)
+7d19bdf balance: cap Zone at +100% (area x4, 40 targets per hit)
+aa13d0e balance: skip offers whose bonuses are all capped, Zone raises the area target cap
+05131c8 fix: back button room on character select, owned n/max on shop cards
+08fe8da fix: even out weapon sound volumes (-13 dB RMS, measured offline)
+6c93e62 merge: economy v3 (per-kill materials, steep rerolls)
+2b43b2f balance(v3): second reroll costs at least 1.5x the first
+79f6632 merge: music, UI sounds, seal silhouettes, first-time tips
+0f7d4a4 balance(v3): scale per-kill materials, cap their items, steep rerolls
+b961d8e docs: status for music, UI sounds, seal silhouettes and tips (D64)
+f579b26 feat: first-time tips (onboarding)
+23bfda1 feat: UI sounds, selection sounds and seal reward silhouettes
+d7fc714 feat: fantasy music (menu, combat, boss themes, CC0)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261005_203322
+### Commits
+33c9e95 feat: Swordswoman puppet v2 from a rig-ready three-quarter parts sheet
+d40181c fix: Swordswoman back on her baked sprite until a rig-ready parts sheet exists
+ec56165 feat: articulated puppet pilot for the Swordswoman (ADR 0020)
+961be11 docs: global analysis before the demo (priorities P1-P3, animation pilot plan)
+1583ed6 balance: Zone cap at +200% for now (area x9, 60 targets per hit)
+7d19bdf balance: cap Zone at +100% (area x4, 40 targets per hit)
+aa13d0e balance: skip offers whose bonuses are all capped, Zone raises the area target cap
+05131c8 fix: back button room on character select, owned n/max on shop cards
+08fe8da fix: even out weapon sound volumes (-13 dB RMS, measured offline)
+6c93e62 merge: economy v3 (per-kill materials, steep rerolls)
+2b43b2f balance(v3): second reroll costs at least 1.5x the first
+79f6632 merge: music, UI sounds, seal silhouettes, first-time tips
+0f7d4a4 balance(v3): scale per-kill materials, cap their items, steep rerolls
+b961d8e docs: status for music, UI sounds, seal silhouettes and tips (D64)
+f579b26 feat: first-time tips (onboarding)
+23bfda1 feat: UI sounds, selection sounds and seal reward silhouettes
+d7fc714 feat: fantasy music (menu, combat, boss themes, CC0)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261005_214922
+### Commits
+599e71a fix: puppet faces left when walking left, shorter arms
+33c9e95 feat: Swordswoman puppet v2 from a rig-ready three-quarter parts sheet
+d40181c fix: Swordswoman back on her baked sprite until a rig-ready parts sheet exists
+ec56165 feat: articulated puppet pilot for the Swordswoman (ADR 0020)
+961be11 docs: global analysis before the demo (priorities P1-P3, animation pilot plan)
+1583ed6 balance: Zone cap at +200% for now (area x9, 60 targets per hit)
+7d19bdf balance: cap Zone at +100% (area x4, 40 targets per hit)
+aa13d0e balance: skip offers whose bonuses are all capped, Zone raises the area target cap
+05131c8 fix: back button room on character select, owned n/max on shop cards
+08fe8da fix: even out weapon sound volumes (-13 dB RMS, measured offline)
+6c93e62 merge: economy v3 (per-kill materials, steep rerolls)
+2b43b2f balance(v3): second reroll costs at least 1.5x the first
+79f6632 merge: music, UI sounds, seal silhouettes, first-time tips
+0f7d4a4 balance(v3): scale per-kill materials, cap their items, steep rerolls
+b961d8e docs: status for music, UI sounds, seal silhouettes and tips (D64)
+f579b26 feat: first-time tips (onboarding)
+23bfda1 feat: UI sounds, selection sounds and seal reward silhouettes
+d7fc714 feat: fantasy music (menu, combat, boss themes, CC0)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261005_215520
+### Commits
+91398fd fix: puppet arms hang along the body (rest angles), smaller arm swing
+599e71a fix: puppet faces left when walking left, shorter arms
+33c9e95 feat: Swordswoman puppet v2 from a rig-ready three-quarter parts sheet
+d40181c fix: Swordswoman back on her baked sprite until a rig-ready parts sheet exists
+ec56165 feat: articulated puppet pilot for the Swordswoman (ADR 0020)
+961be11 docs: global analysis before the demo (priorities P1-P3, animation pilot plan)
+1583ed6 balance: Zone cap at +200% for now (area x9, 60 targets per hit)
+7d19bdf balance: cap Zone at +100% (area x4, 40 targets per hit)
+aa13d0e balance: skip offers whose bonuses are all capped, Zone raises the area target cap
+05131c8 fix: back button room on character select, owned n/max on shop cards
+08fe8da fix: even out weapon sound volumes (-13 dB RMS, measured offline)
+6c93e62 merge: economy v3 (per-kill materials, steep rerolls)
+2b43b2f balance(v3): second reroll costs at least 1.5x the first
+79f6632 merge: music, UI sounds, seal silhouettes, first-time tips
+0f7d4a4 balance(v3): scale per-kill materials, cap their items, steep rerolls
+b961d8e docs: status for music, UI sounds, seal silhouettes and tips (D64)
+f579b26 feat: first-time tips (onboarding)
+23bfda1 feat: UI sounds, selection sounds and seal reward silhouettes
+d7fc714 feat: fantasy music (menu, combat, boss themes, CC0)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261005_215926
+### Commits
+ac0e086 fix: puppet arms at 70 %, front fist mirrored so it reads as a right hand
+91398fd fix: puppet arms hang along the body (rest angles), smaller arm swing
+599e71a fix: puppet faces left when walking left, shorter arms
+33c9e95 feat: Swordswoman puppet v2 from a rig-ready three-quarter parts sheet
+d40181c fix: Swordswoman back on her baked sprite until a rig-ready parts sheet exists
+ec56165 feat: articulated puppet pilot for the Swordswoman (ADR 0020)
+961be11 docs: global analysis before the demo (priorities P1-P3, animation pilot plan)
+1583ed6 balance: Zone cap at +200% for now (area x9, 60 targets per hit)
+7d19bdf balance: cap Zone at +100% (area x4, 40 targets per hit)
+aa13d0e balance: skip offers whose bonuses are all capped, Zone raises the area target cap
+05131c8 fix: back button room on character select, owned n/max on shop cards
+08fe8da fix: even out weapon sound volumes (-13 dB RMS, measured offline)
+6c93e62 merge: economy v3 (per-kill materials, steep rerolls)
+2b43b2f balance(v3): second reroll costs at least 1.5x the first
+79f6632 merge: music, UI sounds, seal silhouettes, first-time tips
+0f7d4a4 balance(v3): scale per-kill materials, cap their items, steep rerolls
+b961d8e docs: status for music, UI sounds, seal silhouettes and tips (D64)
+f579b26 feat: first-time tips (onboarding)
+23bfda1 feat: UI sounds, selection sounds and seal reward silhouettes
+d7fc714 feat: fantasy music (menu, combat, boss themes, CC0)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261005_220220
+### Commits
+8cd1e2c docs: project status at the end of session 9 (D61-D68, puppet pilot, next steps)
+ac0e086 fix: puppet arms at 70 %, front fist mirrored so it reads as a right hand
+91398fd fix: puppet arms hang along the body (rest angles), smaller arm swing
+599e71a fix: puppet faces left when walking left, shorter arms
+33c9e95 feat: Swordswoman puppet v2 from a rig-ready three-quarter parts sheet
+d40181c fix: Swordswoman back on her baked sprite until a rig-ready parts sheet exists
+ec56165 feat: articulated puppet pilot for the Swordswoman (ADR 0020)
+961be11 docs: global analysis before the demo (priorities P1-P3, animation pilot plan)
+1583ed6 balance: Zone cap at +200% for now (area x9, 60 targets per hit)
+7d19bdf balance: cap Zone at +100% (area x4, 40 targets per hit)
+aa13d0e balance: skip offers whose bonuses are all capped, Zone raises the area target cap
+05131c8 fix: back button room on character select, owned n/max on shop cards
+08fe8da fix: even out weapon sound volumes (-13 dB RMS, measured offline)
+6c93e62 merge: economy v3 (per-kill materials, steep rerolls)
+2b43b2f balance(v3): second reroll costs at least 1.5x the first
+79f6632 merge: music, UI sounds, seal silhouettes, first-time tips
+0f7d4a4 balance(v3): scale per-kill materials, cap their items, steep rerolls
+b961d8e docs: status for music, UI sounds, seal silhouettes and tips (D64)
+f579b26 feat: first-time tips (onboarding)
+23bfda1 feat: UI sounds, selection sounds and seal reward silhouettes
+d7fc714 feat: fantasy music (menu, combat, boss themes, CC0)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261005_220820
+### Commits
+a51a9d0 feat: puppet keeps its elbows bent while walking
+8cd1e2c docs: project status at the end of session 9 (D61-D68, puppet pilot, next steps)
+ac0e086 fix: puppet arms at 70 %, front fist mirrored so it reads as a right hand
+91398fd fix: puppet arms hang along the body (rest angles), smaller arm swing
+599e71a fix: puppet faces left when walking left, shorter arms
+33c9e95 feat: Swordswoman puppet v2 from a rig-ready three-quarter parts sheet
+d40181c fix: Swordswoman back on her baked sprite until a rig-ready parts sheet exists
+ec56165 feat: articulated puppet pilot for the Swordswoman (ADR 0020)
+961be11 docs: global analysis before the demo (priorities P1-P3, animation pilot plan)
+1583ed6 balance: Zone cap at +200% for now (area x9, 60 targets per hit)
+7d19bdf balance: cap Zone at +100% (area x4, 40 targets per hit)
+aa13d0e balance: skip offers whose bonuses are all capped, Zone raises the area target cap
+05131c8 fix: back button room on character select, owned n/max on shop cards
+08fe8da fix: even out weapon sound volumes (-13 dB RMS, measured offline)
+6c93e62 merge: economy v3 (per-kill materials, steep rerolls)
+2b43b2f balance(v3): second reroll costs at least 1.5x the first
+79f6632 merge: music, UI sounds, seal silhouettes, first-time tips
+0f7d4a4 balance(v3): scale per-kill materials, cap their items, steep rerolls
+b961d8e docs: status for music, UI sounds, seal silhouettes and tips (D64)
+f579b26 feat: first-time tips (onboarding)
+23bfda1 feat: UI sounds, selection sounds and seal reward silhouettes
+d7fc714 feat: fantasy music (menu, combat, boss themes, CC0)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261005_221239
+### Commits
+b56122a fix: puppet far arm hangs higher and a bit smaller (three-quarter view)
+a51a9d0 feat: puppet keeps its elbows bent while walking
+8cd1e2c docs: project status at the end of session 9 (D61-D68, puppet pilot, next steps)
+ac0e086 fix: puppet arms at 70 %, front fist mirrored so it reads as a right hand
+91398fd fix: puppet arms hang along the body (rest angles), smaller arm swing
+599e71a fix: puppet faces left when walking left, shorter arms
+33c9e95 feat: Swordswoman puppet v2 from a rig-ready three-quarter parts sheet
+d40181c fix: Swordswoman back on her baked sprite until a rig-ready parts sheet exists
+ec56165 feat: articulated puppet pilot for the Swordswoman (ADR 0020)
+961be11 docs: global analysis before the demo (priorities P1-P3, animation pilot plan)
+1583ed6 balance: Zone cap at +200% for now (area x9, 60 targets per hit)
+7d19bdf balance: cap Zone at +100% (area x4, 40 targets per hit)
+aa13d0e balance: skip offers whose bonuses are all capped, Zone raises the area target cap
+05131c8 fix: back button room on character select, owned n/max on shop cards
+08fe8da fix: even out weapon sound volumes (-13 dB RMS, measured offline)
+6c93e62 merge: economy v3 (per-kill materials, steep rerolls)
+2b43b2f balance(v3): second reroll costs at least 1.5x the first
+79f6632 merge: music, UI sounds, seal silhouettes, first-time tips
+0f7d4a4 balance(v3): scale per-kill materials, cap their items, steep rerolls
+b961d8e docs: status for music, UI sounds, seal silhouettes and tips (D64)
+f579b26 feat: first-time tips (onboarding)
+23bfda1 feat: UI sounds, selection sounds and seal reward silhouettes
+d7fc714 feat: fantasy music (menu, combat, boss themes, CC0)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261006_090105
+### Commits
+98bddf2 balance: softer endless mode (aim: deaths around waves 35-40)
+a84f29d merge: simulator zone policy and endless option
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261006_091852
+### Commits
+a3569d5 docs: status D70 (level-up cards, run recap, art redesign pending references)
+c9a303d feat: end-of-run damage summary by weapon and best hit
+8fc69e7 feat: 7 new level-up cards (regeneration, bloodthirst, evasion, reach, ferocity, fortune, harvest)
+98bddf2 balance: softer endless mode (aim: deaths around waves 35-40)
+a84f29d merge: simulator zone policy and endless option
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261006_092752
+### Commits
+dbf7194 fix: end-of-run damage summary for every player in coop, best hit removed
+a3569d5 docs: status D70 (level-up cards, run recap, art redesign pending references)
+c9a303d feat: end-of-run damage summary by weapon and best hit
+8fc69e7 feat: 7 new level-up cards (regeneration, bloodthirst, evasion, reach, ferocity, fortune, harvest)
+98bddf2 balance: softer endless mode (aim: deaths around waves 35-40)
+a84f29d merge: simulator zone policy and endless option
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261006_094538
+### Commits
+6afc707 test: stronger regression test for the shop Next wave button (fails on the old layout)
+c025148 fix: Next wave button always on screen in the shop
+dbf7194 fix: end-of-run damage summary for every player in coop, best hit removed
+a3569d5 docs: status D70 (level-up cards, run recap, art redesign pending references)
+c9a303d feat: end-of-run damage summary by weapon and best hit
+8fc69e7 feat: 7 new level-up cards (regeneration, bloodthirst, evasion, reach, ferocity, fortune, harvest)
+98bddf2 balance: softer endless mode (aim: deaths around waves 35-40)
+a84f29d merge: simulator zone policy and endless option
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261006_100222
+### Commits
+5d4bb42 fix: see-through explosions (monsters stay visible under the blast)
+0e758bb balance: smoother late-game economy (waves 11-20)
+6afc707 test: stronger regression test for the shop Next wave button (fails on the old layout)
+c025148 fix: Next wave button always on screen in the shop
+dbf7194 fix: end-of-run damage summary for every player in coop, best hit removed
+a3569d5 docs: status D70 (level-up cards, run recap, art redesign pending references)
+c9a303d feat: end-of-run damage summary by weapon and best hit
+8fc69e7 feat: 7 new level-up cards (regeneration, bloodthirst, evasion, reach, ferocity, fortune, harvest)
+98bddf2 balance: softer endless mode (aim: deaths around waves 35-40)
+a84f29d merge: simulator zone policy and endless option
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261006_100803
+### Commits
+93a3011 fix: Next wave back under the items (away from Reroll), item list capped at two rows
+5d4bb42 fix: see-through explosions (monsters stay visible under the blast)
+0e758bb balance: smoother late-game economy (waves 11-20)
+6afc707 test: stronger regression test for the shop Next wave button (fails on the old layout)
+c025148 fix: Next wave button always on screen in the shop
+dbf7194 fix: end-of-run damage summary for every player in coop, best hit removed
+a3569d5 docs: status D70 (level-up cards, run recap, art redesign pending references)
+c9a303d feat: end-of-run damage summary by weapon and best hit
+8fc69e7 feat: 7 new level-up cards (regeneration, bloodthirst, evasion, reach, ferocity, fortune, harvest)
+98bddf2 balance: softer endless mode (aim: deaths around waves 35-40)
+a84f29d merge: simulator zone policy and endless option
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261006_104445
+### Commits
+86d2aaf merge: weapon details in the shop
+03f18e4 feat: owned weapon details in the shop (hover, gamepad focus, selection)
+93a3011 fix: Next wave back under the items (away from Reroll), item list capped at two rows
+5d4bb42 fix: see-through explosions (monsters stay visible under the blast)
+0e758bb balance: smoother late-game economy (waves 11-20)
+6afc707 test: stronger regression test for the shop Next wave button (fails on the old layout)
+c025148 fix: Next wave button always on screen in the shop
+dbf7194 fix: end-of-run damage summary for every player in coop, best hit removed
+a3569d5 docs: status D70 (level-up cards, run recap, art redesign pending references)
+c9a303d feat: end-of-run damage summary by weapon and best hit
+8fc69e7 feat: 7 new level-up cards (regeneration, bloodthirst, evasion, reach, ferocity, fortune, harvest)
+98bddf2 balance: softer endless mode (aim: deaths around waves 35-40)
+a84f29d merge: simulator zone policy and endless option
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261006_112631
+### Commits
+75a41a3 docs: status D71 (seal and boss balancing in progress, how to resume)
+86d2aaf merge: weapon details in the shop
+03f18e4 feat: owned weapon details in the shop (hover, gamepad focus, selection)
+93a3011 fix: Next wave back under the items (away from Reroll), item list capped at two rows
+5d4bb42 fix: see-through explosions (monsters stay visible under the blast)
+0e758bb balance: smoother late-game economy (waves 11-20)
+6afc707 test: stronger regression test for the shop Next wave button (fails on the old layout)
+c025148 fix: Next wave button always on screen in the shop
+dbf7194 fix: end-of-run damage summary for every player in coop, best hit removed
+a3569d5 docs: status D70 (level-up cards, run recap, art redesign pending references)
+c9a303d feat: end-of-run damage summary by weapon and best hit
+8fc69e7 feat: 7 new level-up cards (regeneration, bloodthirst, evasion, reach, ferocity, fortune, harvest)
+98bddf2 balance: softer endless mode (aim: deaths around waves 35-40)
+a84f29d merge: simulator zone policy and endless option
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261006_113849
+### Commits
+75a41a3 docs: status D71 (seal and boss balancing in progress, how to resume)
+86d2aaf merge: weapon details in the shop
+03f18e4 feat: owned weapon details in the shop (hover, gamepad focus, selection)
+93a3011 fix: Next wave back under the items (away from Reroll), item list capped at two rows
+5d4bb42 fix: see-through explosions (monsters stay visible under the blast)
+0e758bb balance: smoother late-game economy (waves 11-20)
+6afc707 test: stronger regression test for the shop Next wave button (fails on the old layout)
+c025148 fix: Next wave button always on screen in the shop
+dbf7194 fix: end-of-run damage summary for every player in coop, best hit removed
+a3569d5 docs: status D70 (level-up cards, run recap, art redesign pending references)
+c9a303d feat: end-of-run damage summary by weapon and best hit
+8fc69e7 feat: 7 new level-up cards (regeneration, bloodthirst, evasion, reach, ferocity, fortune, harvest)
+98bddf2 balance: softer endless mode (aim: deaths around waves 35-40)
+a84f29d merge: simulator zone policy and endless option
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+---
+
+## Session End: 20261006_114820
+### Commits
+75a41a3 docs: status D71 (seal and boss balancing in progress, how to resume)
+86d2aaf merge: weapon details in the shop
+03f18e4 feat: owned weapon details in the shop (hover, gamepad focus, selection)
+93a3011 fix: Next wave back under the items (away from Reroll), item list capped at two rows
+5d4bb42 fix: see-through explosions (monsters stay visible under the blast)
+0e758bb balance: smoother late-game economy (waves 11-20)
+6afc707 test: stronger regression test for the shop Next wave button (fails on the old layout)
+c025148 fix: Next wave button always on screen in the shop
+dbf7194 fix: end-of-run damage summary for every player in coop, best hit removed
+a3569d5 docs: status D70 (level-up cards, run recap, art redesign pending references)
+c9a303d feat: end-of-run damage summary by weapon and best hit
+8fc69e7 feat: 7 new level-up cards (regeneration, bloodthirst, evasion, reach, ferocity, fortune, harvest)
+98bddf2 balance: softer endless mode (aim: deaths around waves 35-40)
+a84f29d merge: simulator zone policy and endless option
+### Uncommitted Changes
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+src/debug/capture.gd
+src/ui/shop/shop_screen.gd
+---
+
+## Session End: 20261006_115824
+### Commits
+75a41a3 docs: status D71 (seal and boss balancing in progress, how to resume)
+86d2aaf merge: weapon details in the shop
+03f18e4 feat: owned weapon details in the shop (hover, gamepad focus, selection)
+93a3011 fix: Next wave back under the items (away from Reroll), item list capped at two rows
+5d4bb42 fix: see-through explosions (monsters stay visible under the blast)
+0e758bb balance: smoother late-game economy (waves 11-20)
+6afc707 test: stronger regression test for the shop Next wave button (fails on the old layout)
+c025148 fix: Next wave button always on screen in the shop
+dbf7194 fix: end-of-run damage summary for every player in coop, best hit removed
+a3569d5 docs: status D70 (level-up cards, run recap, art redesign pending references)
+c9a303d feat: end-of-run damage summary by weapon and best hit
+8fc69e7 feat: 7 new level-up cards (regeneration, bloodthirst, evasion, reach, ferocity, fortune, harvest)
+98bddf2 balance: softer endless mode (aim: deaths around waves 35-40)
+a84f29d merge: simulator zone policy and endless option
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+src/debug/capture.gd
+src/ui/shop/shop_screen.gd
+src/vfx/vfx.gd
+---
+
+## Session End: 20261006_133956
+### Commits
+a47181f docs: status D72 (shop merge frame, death chunks removed, seal simulator v3-v5)
+ef54516 fix: no flying chunks on monster death (visual noise), keep flash and ring
+b9b656e feat: gold frame on mergeable weapons in the shop, drop the weapon text bar
+75a41a3 docs: status D71 (seal and boss balancing in progress, how to resume)
+86d2aaf merge: weapon details in the shop
+03f18e4 feat: owned weapon details in the shop (hover, gamepad focus, selection)
+93a3011 fix: Next wave back under the items (away from Reroll), item list capped at two rows
+5d4bb42 fix: see-through explosions (monsters stay visible under the blast)
+0e758bb balance: smoother late-game economy (waves 11-20)
+6afc707 test: stronger regression test for the shop Next wave button (fails on the old layout)
+c025148 fix: Next wave button always on screen in the shop
+dbf7194 fix: end-of-run damage summary for every player in coop, best hit removed
+a3569d5 docs: status D70 (level-up cards, run recap, art redesign pending references)
+c9a303d feat: end-of-run damage summary by weapon and best hit
+8fc69e7 feat: 7 new level-up cards (regeneration, bloodthirst, evasion, reach, ferocity, fortune, harvest)
+98bddf2 balance: softer endless mode (aim: deaths around waves 35-40)
+a84f29d merge: simulator zone policy and endless option
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+---
+
+## Session End: 20261006_152518
+### Commits
+a32e5dc docs: status, seal simulator v6 results
+a47181f docs: status D72 (shop merge frame, death chunks removed, seal simulator v3-v5)
+ef54516 fix: no flying chunks on monster death (visual noise), keep flash and ring
+b9b656e feat: gold frame on mergeable weapons in the shop, drop the weapon text bar
+75a41a3 docs: status D71 (seal and boss balancing in progress, how to resume)
+86d2aaf merge: weapon details in the shop
+03f18e4 feat: owned weapon details in the shop (hover, gamepad focus, selection)
+93a3011 fix: Next wave back under the items (away from Reroll), item list capped at two rows
+5d4bb42 fix: see-through explosions (monsters stay visible under the blast)
+0e758bb balance: smoother late-game economy (waves 11-20)
+6afc707 test: stronger regression test for the shop Next wave button (fails on the old layout)
+c025148 fix: Next wave button always on screen in the shop
+dbf7194 fix: end-of-run damage summary for every player in coop, best hit removed
+a3569d5 docs: status D70 (level-up cards, run recap, art redesign pending references)
+c9a303d feat: end-of-run damage summary by weapon and best hit
+8fc69e7 feat: 7 new level-up cards (regeneration, bloodthirst, evasion, reach, ferocity, fortune, harvest)
+98bddf2 balance: softer endless mode (aim: deaths around waves 35-40)
+a84f29d merge: simulator zone policy and endless option
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+---
+
+## Session End: 20261006_160001
+### Commits
+6709b40 docs: status, seal balancing applied
+469a686 balance: seal multipliers 1.12 / 1.35 / 1.62 / 1.85 / 2.20 (simulator v3-v6)
+b544872 tools(balance): --static-after N (bot moves up to wave N, then stands still)
+623990e merge: seal and boss balancing (progressive seals, boss HP share, simulator tools)
+a32e5dc docs: status, seal simulator v6 results
+a47181f docs: status D72 (shop merge frame, death chunks removed, seal simulator v3-v5)
+ef54516 fix: no flying chunks on monster death (visual noise), keep flash and ring
+b9b656e feat: gold frame on mergeable weapons in the shop, drop the weapon text bar
+75a41a3 docs: status D71 (seal and boss balancing in progress, how to resume)
+3ae8f38 tools(balance): per-seal report of a simulator batch
+bb69902 tools(balance): --static option (a bot that never moves, static builds)
+53a8898 tools(balance): record final boss kills on the kill, mini-bosses while the wave runs
+013db45 tools(balance): boss fight times in simulator reports
+8339c27 balance(candidate): softer seal start (25 % at wave 1), steeper top seals (up to x1.9)
+86d2aaf merge: weapon details in the shop
+03f18e4 feat: owned weapon details in the shop (hover, gamepad focus, selection)
+875f510 balance(candidate): seal bonuses ramp up over the run, even steps between seals
+53d46dc balance(candidate): monster HP x110 at wave 20 (was x160), rarer new level-up cards
+95d7eb9 balance: final bosses take 40 % of the wave HP; capped area hits always reach bosses
+93a3011 fix: Next wave back under the items (away from Reroll), item list capped at two rows
+5d4bb42 fix: see-through explosions (monsters stay visible under the blast)
+0e758bb balance: smoother late-game economy (waves 11-20)
+6afc707 test: stronger regression test for the shop Next wave button (fails on the old layout)
+c025148 fix: Next wave button always on screen in the shop
+dbf7194 fix: end-of-run damage summary for every player in coop, best hit removed
+a3569d5 docs: status D70 (level-up cards, run recap, art redesign pending references)
+c9a303d feat: end-of-run damage summary by weapon and best hit
+8fc69e7 feat: 7 new level-up cards (regeneration, bloodthirst, evasion, reach, ferocity, fortune, harvest)
+98bddf2 balance: softer endless mode (aim: deaths around waves 35-40)
+a84f29d merge: simulator zone policy and endless option
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+---
+
+## Session End: 20261006_170214
+### Commits
+6709b40 docs: status, seal balancing applied
+469a686 balance: seal multipliers 1.12 / 1.35 / 1.62 / 1.85 / 2.20 (simulator v3-v6)
+b544872 tools(balance): --static-after N (bot moves up to wave N, then stands still)
+623990e merge: seal and boss balancing (progressive seals, boss HP share, simulator tools)
+a32e5dc docs: status, seal simulator v6 results
+a47181f docs: status D72 (shop merge frame, death chunks removed, seal simulator v3-v5)
+ef54516 fix: no flying chunks on monster death (visual noise), keep flash and ring
+b9b656e feat: gold frame on mergeable weapons in the shop, drop the weapon text bar
+75a41a3 docs: status D71 (seal and boss balancing in progress, how to resume)
+3ae8f38 tools(balance): per-seal report of a simulator batch
+bb69902 tools(balance): --static option (a bot that never moves, static builds)
+53a8898 tools(balance): record final boss kills on the kill, mini-bosses while the wave runs
+013db45 tools(balance): boss fight times in simulator reports
+8339c27 balance(candidate): softer seal start (25 % at wave 1), steeper top seals (up to x1.9)
+86d2aaf merge: weapon details in the shop
+03f18e4 feat: owned weapon details in the shop (hover, gamepad focus, selection)
+875f510 balance(candidate): seal bonuses ramp up over the run, even steps between seals
+53d46dc balance(candidate): monster HP x110 at wave 20 (was x160), rarer new level-up cards
+95d7eb9 balance: final bosses take 40 % of the wave HP; capped area hits always reach bosses
+93a3011 fix: Next wave back under the items (away from Reroll), item list capped at two rows
+5d4bb42 fix: see-through explosions (monsters stay visible under the blast)
+0e758bb balance: smoother late-game economy (waves 11-20)
+6afc707 test: stronger regression test for the shop Next wave button (fails on the old layout)
+c025148 fix: Next wave button always on screen in the shop
+dbf7194 fix: end-of-run damage summary for every player in coop, best hit removed
+a3569d5 docs: status D70 (level-up cards, run recap, art redesign pending references)
+c9a303d feat: end-of-run damage summary by weapon and best hit
+8fc69e7 feat: 7 new level-up cards (regeneration, bloodthirst, evasion, reach, ferocity, fortune, harvest)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+---
+
+## Session End: 20261006_171359
+### Commits
+6709b40 docs: status, seal balancing applied
+469a686 balance: seal multipliers 1.12 / 1.35 / 1.62 / 1.85 / 2.20 (simulator v3-v6)
+b544872 tools(balance): --static-after N (bot moves up to wave N, then stands still)
+623990e merge: seal and boss balancing (progressive seals, boss HP share, simulator tools)
+a32e5dc docs: status, seal simulator v6 results
+a47181f docs: status D72 (shop merge frame, death chunks removed, seal simulator v3-v5)
+ef54516 fix: no flying chunks on monster death (visual noise), keep flash and ring
+b9b656e feat: gold frame on mergeable weapons in the shop, drop the weapon text bar
+75a41a3 docs: status D71 (seal and boss balancing in progress, how to resume)
+3ae8f38 tools(balance): per-seal report of a simulator batch
+bb69902 tools(balance): --static option (a bot that never moves, static builds)
+53a8898 tools(balance): record final boss kills on the kill, mini-bosses while the wave runs
+013db45 tools(balance): boss fight times in simulator reports
+8339c27 balance(candidate): softer seal start (25 % at wave 1), steeper top seals (up to x1.9)
+86d2aaf merge: weapon details in the shop
+03f18e4 feat: owned weapon details in the shop (hover, gamepad focus, selection)
+875f510 balance(candidate): seal bonuses ramp up over the run, even steps between seals
+53d46dc balance(candidate): monster HP x110 at wave 20 (was x160), rarer new level-up cards
+95d7eb9 balance: final bosses take 40 % of the wave HP; capped area hits always reach bosses
+93a3011 fix: Next wave back under the items (away from Reroll), item list capped at two rows
+5d4bb42 fix: see-through explosions (monsters stay visible under the blast)
+0e758bb balance: smoother late-game economy (waves 11-20)
+6afc707 test: stronger regression test for the shop Next wave button (fails on the old layout)
+c025148 fix: Next wave button always on screen in the shop
+dbf7194 fix: end-of-run damage summary for every player in coop, best hit removed
+a3569d5 docs: status D70 (level-up cards, run recap, art redesign pending references)
+c9a303d feat: end-of-run damage summary by weapon and best hit
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+---
+
+## Session End: 20261006_172219
+### Commits
+6709b40 docs: status, seal balancing applied
+469a686 balance: seal multipliers 1.12 / 1.35 / 1.62 / 1.85 / 2.20 (simulator v3-v6)
+b544872 tools(balance): --static-after N (bot moves up to wave N, then stands still)
+623990e merge: seal and boss balancing (progressive seals, boss HP share, simulator tools)
+a32e5dc docs: status, seal simulator v6 results
+a47181f docs: status D72 (shop merge frame, death chunks removed, seal simulator v3-v5)
+ef54516 fix: no flying chunks on monster death (visual noise), keep flash and ring
+b9b656e feat: gold frame on mergeable weapons in the shop, drop the weapon text bar
+75a41a3 docs: status D71 (seal and boss balancing in progress, how to resume)
+3ae8f38 tools(balance): per-seal report of a simulator batch
+bb69902 tools(balance): --static option (a bot that never moves, static builds)
+53a8898 tools(balance): record final boss kills on the kill, mini-bosses while the wave runs
+013db45 tools(balance): boss fight times in simulator reports
+8339c27 balance(candidate): softer seal start (25 % at wave 1), steeper top seals (up to x1.9)
+86d2aaf merge: weapon details in the shop
+03f18e4 feat: owned weapon details in the shop (hover, gamepad focus, selection)
+875f510 balance(candidate): seal bonuses ramp up over the run, even steps between seals
+53d46dc balance(candidate): monster HP x110 at wave 20 (was x160), rarer new level-up cards
+95d7eb9 balance: final bosses take 40 % of the wave HP; capped area hits always reach bosses
+93a3011 fix: Next wave back under the items (away from Reroll), item list capped at two rows
+5d4bb42 fix: see-through explosions (monsters stay visible under the blast)
+0e758bb balance: smoother late-game economy (waves 11-20)
+6afc707 test: stronger regression test for the shop Next wave button (fails on the old layout)
+c025148 fix: Next wave button always on screen in the shop
+dbf7194 fix: end-of-run damage summary for every player in coop, best hit removed
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+---
+
+## Session End: 20261006_173023
+### Commits
+6709b40 docs: status, seal balancing applied
+469a686 balance: seal multipliers 1.12 / 1.35 / 1.62 / 1.85 / 2.20 (simulator v3-v6)
+b544872 tools(balance): --static-after N (bot moves up to wave N, then stands still)
+623990e merge: seal and boss balancing (progressive seals, boss HP share, simulator tools)
+a32e5dc docs: status, seal simulator v6 results
+a47181f docs: status D72 (shop merge frame, death chunks removed, seal simulator v3-v5)
+ef54516 fix: no flying chunks on monster death (visual noise), keep flash and ring
+b9b656e feat: gold frame on mergeable weapons in the shop, drop the weapon text bar
+75a41a3 docs: status D71 (seal and boss balancing in progress, how to resume)
+3ae8f38 tools(balance): per-seal report of a simulator batch
+bb69902 tools(balance): --static option (a bot that never moves, static builds)
+53a8898 tools(balance): record final boss kills on the kill, mini-bosses while the wave runs
+013db45 tools(balance): boss fight times in simulator reports
+8339c27 balance(candidate): softer seal start (25 % at wave 1), steeper top seals (up to x1.9)
+86d2aaf merge: weapon details in the shop
+03f18e4 feat: owned weapon details in the shop (hover, gamepad focus, selection)
+875f510 balance(candidate): seal bonuses ramp up over the run, even steps between seals
+53d46dc balance(candidate): monster HP x110 at wave 20 (was x160), rarer new level-up cards
+95d7eb9 balance: final bosses take 40 % of the wave HP; capped area hits always reach bosses
+93a3011 fix: Next wave back under the items (away from Reroll), item list capped at two rows
+5d4bb42 fix: see-through explosions (monsters stay visible under the blast)
+0e758bb balance: smoother late-game economy (waves 11-20)
+6afc707 test: stronger regression test for the shop Next wave button (fails on the old layout)
+c025148 fix: Next wave button always on screen in the shop
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+---
+
+## Session End: 20261006_174443
+### Commits
+6709b40 docs: status, seal balancing applied
+469a686 balance: seal multipliers 1.12 / 1.35 / 1.62 / 1.85 / 2.20 (simulator v3-v6)
+b544872 tools(balance): --static-after N (bot moves up to wave N, then stands still)
+623990e merge: seal and boss balancing (progressive seals, boss HP share, simulator tools)
+a32e5dc docs: status, seal simulator v6 results
+a47181f docs: status D72 (shop merge frame, death chunks removed, seal simulator v3-v5)
+ef54516 fix: no flying chunks on monster death (visual noise), keep flash and ring
+b9b656e feat: gold frame on mergeable weapons in the shop, drop the weapon text bar
+75a41a3 docs: status D71 (seal and boss balancing in progress, how to resume)
+3ae8f38 tools(balance): per-seal report of a simulator batch
+bb69902 tools(balance): --static option (a bot that never moves, static builds)
+53a8898 tools(balance): record final boss kills on the kill, mini-bosses while the wave runs
+013db45 tools(balance): boss fight times in simulator reports
+8339c27 balance(candidate): softer seal start (25 % at wave 1), steeper top seals (up to x1.9)
+86d2aaf merge: weapon details in the shop
+03f18e4 feat: owned weapon details in the shop (hover, gamepad focus, selection)
+875f510 balance(candidate): seal bonuses ramp up over the run, even steps between seals
+53d46dc balance(candidate): monster HP x110 at wave 20 (was x160), rarer new level-up cards
+95d7eb9 balance: final bosses take 40 % of the wave HP; capped area hits always reach bosses
+93a3011 fix: Next wave back under the items (away from Reroll), item list capped at two rows
+5d4bb42 fix: see-through explosions (monsters stay visible under the blast)
+0e758bb balance: smoother late-game economy (waves 11-20)
+6afc707 test: stronger regression test for the shop Next wave button (fails on the old layout)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+---
+
+## Session End: 20261006_174734
+### Commits
+6709b40 docs: status, seal balancing applied
+469a686 balance: seal multipliers 1.12 / 1.35 / 1.62 / 1.85 / 2.20 (simulator v3-v6)
+b544872 tools(balance): --static-after N (bot moves up to wave N, then stands still)
+623990e merge: seal and boss balancing (progressive seals, boss HP share, simulator tools)
+a32e5dc docs: status, seal simulator v6 results
+a47181f docs: status D72 (shop merge frame, death chunks removed, seal simulator v3-v5)
+ef54516 fix: no flying chunks on monster death (visual noise), keep flash and ring
+b9b656e feat: gold frame on mergeable weapons in the shop, drop the weapon text bar
+75a41a3 docs: status D71 (seal and boss balancing in progress, how to resume)
+3ae8f38 tools(balance): per-seal report of a simulator batch
+bb69902 tools(balance): --static option (a bot that never moves, static builds)
+53a8898 tools(balance): record final boss kills on the kill, mini-bosses while the wave runs
+013db45 tools(balance): boss fight times in simulator reports
+8339c27 balance(candidate): softer seal start (25 % at wave 1), steeper top seals (up to x1.9)
+86d2aaf merge: weapon details in the shop
+03f18e4 feat: owned weapon details in the shop (hover, gamepad focus, selection)
+875f510 balance(candidate): seal bonuses ramp up over the run, even steps between seals
+53d46dc balance(candidate): monster HP x110 at wave 20 (was x160), rarer new level-up cards
+95d7eb9 balance: final bosses take 40 % of the wave HP; capped area hits always reach bosses
+93a3011 fix: Next wave back under the items (away from Reroll), item list capped at two rows
+5d4bb42 fix: see-through explosions (monsters stay visible under the blast)
+0e758bb balance: smoother late-game economy (waves 11-20)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+---
+
+## Session End: 20261006_192021
+### Commits
+6709b40 docs: status, seal balancing applied
+469a686 balance: seal multipliers 1.12 / 1.35 / 1.62 / 1.85 / 2.20 (simulator v3-v6)
+b544872 tools(balance): --static-after N (bot moves up to wave N, then stands still)
+623990e merge: seal and boss balancing (progressive seals, boss HP share, simulator tools)
+a32e5dc docs: status, seal simulator v6 results
+a47181f docs: status D72 (shop merge frame, death chunks removed, seal simulator v3-v5)
+ef54516 fix: no flying chunks on monster death (visual noise), keep flash and ring
+b9b656e feat: gold frame on mergeable weapons in the shop, drop the weapon text bar
+75a41a3 docs: status D71 (seal and boss balancing in progress, how to resume)
+3ae8f38 tools(balance): per-seal report of a simulator batch
+bb69902 tools(balance): --static option (a bot that never moves, static builds)
+53a8898 tools(balance): record final boss kills on the kill, mini-bosses while the wave runs
+013db45 tools(balance): boss fight times in simulator reports
+### Uncommitted Changes
+assets/characters/cards/gunslinger_card.png
+assets/sprites/atlas.png
+assets/sprites/charger.tres
+assets/sprites/charger_elite.tres
+assets/sprites/grunt.tres
+assets/sprites/grunt_elite.tres
+assets/sprites/gunslinger.tres
+assets/sprites/hayate.tres
+assets/sprites/kamikaze.tres
+assets/sprites/kamikaze_elite.tres
+assets/sprites/mage.tres
+assets/sprites/merchant.tres
+assets/sprites/ronin_pc.tres
+assets/sprites/runner.tres
+assets/sprites/runner_elite.tres
+assets/sprites/shooter.tres
+assets/sprites/shooter_elite.tres
+assets/sprites/spawner.tres
+assets/sprites/spawner_elite.tres
+assets/sprites/tank.tres
+assets/sprites/tank_elite.tres
+data/characters/gunslinger.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+src/debug/capture.gd
+src/meta/run_setup.gd
+src/player/character_data.gd
+src/player/player.gd
+src/run/run.gd
+src/run/run_player.gd
+src/ui/character_select/character_select.gd
+tools/sprites/atlas_layout.json
+tools/sprites/sprites.json
+---
+
+## Session End: 20261006_195718
+### Commits
+6709b40 docs: status, seal balancing applied
+469a686 balance: seal multipliers 1.12 / 1.35 / 1.62 / 1.85 / 2.20 (simulator v3-v6)
+b544872 tools(balance): --static-after N (bot moves up to wave N, then stands still)
+623990e merge: seal and boss balancing (progressive seals, boss HP share, simulator tools)
+a32e5dc docs: status, seal simulator v6 results
+a47181f docs: status D72 (shop merge frame, death chunks removed, seal simulator v3-v5)
+ef54516 fix: no flying chunks on monster death (visual noise), keep flash and ring
+b9b656e feat: gold frame on mergeable weapons in the shop, drop the weapon text bar
+### Uncommitted Changes
+PROJECT_STATUS.md
+assets/characters/cards/assassin_card.png
+assets/characters/cards/berserker_card.png
+assets/characters/cards/drifter_card.png
+assets/characters/cards/gunslinger_card.png
+assets/characters/cards/mage_card.png
+assets/characters/cards/merchant_card.png
+assets/characters/cards/ronin_card.png
+assets/sprites/assassin.tres
+assets/sprites/atlas.png
+assets/sprites/berserker.tres
+assets/sprites/charger.tres
+assets/sprites/charger_elite.tres
+assets/sprites/drifter.tres
+assets/sprites/grunt.tres
+assets/sprites/grunt_elite.tres
+assets/sprites/gunslinger.tres
+assets/sprites/hayate.tres
+assets/sprites/kamikaze.tres
+assets/sprites/kamikaze_elite.tres
+assets/sprites/mage.tres
+assets/sprites/merchant.tres
+assets/sprites/ronin_pc.tres
+assets/sprites/runner.tres
+assets/sprites/runner_elite.tres
+assets/sprites/shooter.tres
+assets/sprites/shooter_elite.tres
+assets/sprites/spawner.tres
+assets/sprites/spawner_elite.tres
+assets/sprites/tank.tres
+assets/sprites/tank_elite.tres
+data/characters/berserker.tres
+data/characters/drifter.tres
+data/characters/gunslinger.tres
+data/characters/hero.tres
+data/characters/mage.tres
+data/characters/merchant.tres
+data/characters/ronin.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+src/debug/capture.gd
+src/meta/run_setup.gd
+src/player/character_data.gd
+src/player/player.gd
+src/run/run.gd
+src/run/run_player.gd
+src/ui/character_select/character_select.gd
+tests/unit/test_character_rig.gd
+tools/sprites/atlas_layout.json
+tools/sprites/sprites.json
+---
+
+## Session End: 20261006_215504
+### Commits
+6709b40 docs: status, seal balancing applied
+469a686 balance: seal multipliers 1.12 / 1.35 / 1.62 / 1.85 / 2.20 (simulator v3-v6)
+b544872 tools(balance): --static-after N (bot moves up to wave N, then stands still)
+623990e merge: seal and boss balancing (progressive seals, boss HP share, simulator tools)
+a32e5dc docs: status, seal simulator v6 results
+### Uncommitted Changes
+PROJECT_STATUS.md
+assets/characters/cards/assassin_card.png
+assets/characters/cards/berserker_card.png
+assets/characters/cards/drifter_card.png
+assets/characters/cards/gunslinger_card.png
+assets/characters/cards/mage_card.png
+assets/characters/cards/merchant_card.png
+assets/characters/cards/ronin_card.png
+assets/sprites/assassin.tres
+assets/sprites/atlas.png
+assets/sprites/berserker.tres
+assets/sprites/charger.tres
+assets/sprites/charger_elite.tres
+assets/sprites/drifter.tres
+assets/sprites/grunt.tres
+assets/sprites/grunt_elite.tres
+assets/sprites/gunslinger.tres
+assets/sprites/hayate.tres
+assets/sprites/kamikaze.tres
+assets/sprites/kamikaze_elite.tres
+assets/sprites/mage.tres
+assets/sprites/merchant.tres
+assets/sprites/ronin_pc.tres
+assets/sprites/runner.tres
+assets/sprites/runner_elite.tres
+assets/sprites/shooter.tres
+assets/sprites/shooter_elite.tres
+assets/sprites/spawner.tres
+assets/sprites/spawner_elite.tres
+assets/sprites/tank.tres
+assets/sprites/tank_elite.tres
+data/characters/berserker.tres
+data/characters/drifter.tres
+data/characters/gunslinger.tres
+data/characters/hero.tres
+data/characters/mage.tres
+data/characters/merchant.tres
+data/characters/ronin.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+src/debug/capture.gd
+src/meta/run_setup.gd
+src/player/character_data.gd
+src/player/player.gd
+src/run/run.gd
+src/run/run_player.gd
+src/ui/character_select/character_select.gd
+tests/unit/test_character_rig.gd
+tools/sprites/atlas_layout.json
+tools/sprites/sprites.json
+---
+
+## Session End: 20261006_220448
+### Commits
+6709b40 docs: status, seal balancing applied
+469a686 balance: seal multipliers 1.12 / 1.35 / 1.62 / 1.85 / 2.20 (simulator v3-v6)
+b544872 tools(balance): --static-after N (bot moves up to wave N, then stands still)
+623990e merge: seal and boss balancing (progressive seals, boss HP share, simulator tools)
+a32e5dc docs: status, seal simulator v6 results
+### Uncommitted Changes
+PROJECT_STATUS.md
+assets/characters/cards/assassin_card.png
+assets/characters/cards/berserker_card.png
+assets/characters/cards/drifter_card.png
+assets/characters/cards/gunslinger_card.png
+assets/characters/cards/mage_card.png
+assets/characters/cards/merchant_card.png
+assets/characters/cards/ronin_card.png
+assets/sprites/assassin.tres
+assets/sprites/atlas.png
+assets/sprites/berserker.tres
+assets/sprites/charger.tres
+assets/sprites/charger_elite.tres
+assets/sprites/drifter.tres
+assets/sprites/grunt.tres
+assets/sprites/grunt_elite.tres
+assets/sprites/gunslinger.tres
+assets/sprites/hayate.tres
+assets/sprites/kamikaze.tres
+assets/sprites/kamikaze_elite.tres
+assets/sprites/mage.tres
+assets/sprites/merchant.tres
+assets/sprites/ronin_pc.tres
+assets/sprites/runner.tres
+assets/sprites/runner_elite.tres
+assets/sprites/shooter.tres
+assets/sprites/shooter_elite.tres
+assets/sprites/spawner.tres
+assets/sprites/spawner_elite.tres
+assets/sprites/tank.tres
+assets/sprites/tank_elite.tres
+data/characters/berserker.tres
+data/characters/drifter.tres
+data/characters/gunslinger.tres
+data/characters/hero.tres
+data/characters/mage.tres
+data/characters/merchant.tres
+data/characters/ronin.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+src/debug/capture.gd
+src/meta/run_setup.gd
+src/player/character_data.gd
+src/player/player.gd
+src/run/run.gd
+src/run/run_player.gd
+src/ui/character_select/character_select.gd
+src/ui/main_menu/main_menu.gd
+src/ui/main_menu/menu_crowd.gd
+src/ui/main_menu/menu_gate.gd
+tests/unit/test_character_rig.gd
+tests/unit/test_main_menu.gd
+tools/sprites/atlas_layout.json
+tools/sprites/sprites.json
+---
+
+## Session End: 20261006_223155
+### Commits
+6709b40 docs: status, seal balancing applied
+469a686 balance: seal multipliers 1.12 / 1.35 / 1.62 / 1.85 / 2.20 (simulator v3-v6)
+b544872 tools(balance): --static-after N (bot moves up to wave N, then stands still)
+623990e merge: seal and boss balancing (progressive seals, boss HP share, simulator tools)
+a32e5dc docs: status, seal simulator v6 results
+### Uncommitted Changes
+PROJECT_STATUS.md
+assets/characters/cards/assassin_card.png
+assets/characters/cards/berserker_card.png
+assets/characters/cards/drifter_card.png
+assets/characters/cards/gunslinger_card.png
+assets/characters/cards/mage_card.png
+assets/characters/cards/merchant_card.png
+assets/characters/cards/ronin_card.png
+assets/sprites/assassin.tres
+assets/sprites/atlas.png
+assets/sprites/berserker.tres
+assets/sprites/charger.tres
+assets/sprites/charger_elite.tres
+assets/sprites/drifter.tres
+assets/sprites/grunt.tres
+assets/sprites/grunt_elite.tres
+assets/sprites/gunslinger.tres
+assets/sprites/hayate.tres
+assets/sprites/kamikaze.tres
+assets/sprites/kamikaze_elite.tres
+assets/sprites/mage.tres
+assets/sprites/merchant.tres
+assets/sprites/ronin_pc.tres
+assets/sprites/runner.tres
+assets/sprites/runner_elite.tres
+assets/sprites/shooter.tres
+assets/sprites/shooter_elite.tres
+assets/sprites/spawner.tres
+assets/sprites/spawner_elite.tres
+assets/sprites/tank.tres
+assets/sprites/tank_elite.tres
+data/characters/berserker.tres
+data/characters/drifter.tres
+data/characters/gunslinger.tres
+data/characters/hero.tres
+data/characters/mage.tres
+data/characters/merchant.tres
+data/characters/ronin.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+src/debug/capture.gd
+src/meta/run_setup.gd
+src/player/character_data.gd
+src/player/player.gd
+src/run/run.gd
+src/run/run_player.gd
+src/ui/character_select/character_select.gd
+src/ui/level_up/level_up_screen.gd
+src/ui/main_menu/main_menu.gd
+src/ui/main_menu/menu_crowd.gd
+src/ui/main_menu/menu_gate.gd
+src/ui/pause/pause_menu.gd
+src/ui/settings/settings_screen.gd
+src/ui/shop/shop_screen.gd
+src/ui/theme/ui_theme.gd
+tests/unit/test_character_rig.gd
+tests/unit/test_main_menu.gd
+tests/unit/test_shop_screen.gd
+tests/unit/test_ui_theme.gd
+tools/sprites/atlas_layout.json
+tools/sprites/sprites.json
+---
+
+## Session End: 20261006_232056
+### Commits
+6709b40 docs: status, seal balancing applied
+469a686 balance: seal multipliers 1.12 / 1.35 / 1.62 / 1.85 / 2.20 (simulator v3-v6)
+b544872 tools(balance): --static-after N (bot moves up to wave N, then stands still)
+623990e merge: seal and boss balancing (progressive seals, boss HP share, simulator tools)
+a32e5dc docs: status, seal simulator v6 results
+### Uncommitted Changes
+PROJECT_STATUS.md
+assets/characters/cards/assassin_card.png
+assets/characters/cards/berserker_card.png
+assets/characters/cards/drifter_card.png
+assets/characters/cards/gunslinger_card.png
+assets/characters/cards/mage_card.png
+assets/characters/cards/merchant_card.png
+assets/characters/cards/ronin_card.png
+assets/sprites/assassin.tres
+assets/sprites/atlas.png
+assets/sprites/berserker.tres
+assets/sprites/charger.tres
+assets/sprites/charger_elite.tres
+assets/sprites/drifter.tres
+assets/sprites/grunt.tres
+assets/sprites/grunt_elite.tres
+assets/sprites/gunslinger.tres
+assets/sprites/hayate.tres
+assets/sprites/kamikaze.tres
+assets/sprites/kamikaze_elite.tres
+assets/sprites/mage.tres
+assets/sprites/merchant.tres
+assets/sprites/ronin_pc.tres
+assets/sprites/runner.tres
+assets/sprites/runner_elite.tres
+assets/sprites/shooter.tres
+assets/sprites/shooter_elite.tres
+assets/sprites/spawner.tres
+assets/sprites/spawner_elite.tres
+assets/sprites/tank.tres
+assets/sprites/tank_elite.tres
+data/characters/berserker.tres
+data/characters/drifter.tres
+data/characters/gunslinger.tres
+data/characters/hero.tres
+data/characters/mage.tres
+data/characters/merchant.tres
+data/characters/ronin.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+src/audio/audio.gd
+src/debug/capture.gd
+src/economy/wallet.gd
+src/meta/run_setup.gd
+src/pickups/pickup_manager.gd
+src/pickups/xp_gem.gd
+src/player/character_data.gd
+src/player/player.gd
+src/run/coop_input_gate.gd
+src/run/coop_input_gate.gd.uid
+src/run/run.gd
+src/run/run_player.gd
+src/ui/character_select/character_select.gd
+src/ui/game_over/game_over_screen.gd
+src/ui/hud/hud.gd
+src/ui/level_up/level_up_screen.gd
+src/ui/main_menu/main_menu.gd
+src/ui/main_menu/menu_crowd.gd
+src/ui/main_menu/menu_gate.gd
+src/ui/pause/pause_menu.gd
+src/ui/settings/settings_screen.gd
+src/ui/shop/shop_screen.gd
+src/ui/stats/stats_panel.gd
+src/ui/theme/ui_theme.gd
+src/vfx/vfx.gd
+src/weapons/weapon_holder.gd
+tests/smoke/test_coop_smoke.gd
+tests/unit/test_character_rig.gd
+tests/unit/test_main_menu.gd
+tests/unit/test_run_recap.gd
+tests/unit/test_shop_screen.gd
+tests/unit/test_ui_theme.gd
+tools/sprites/atlas_layout.json
+tools/sprites/sprites.json
+---
+
+## Session End: 20261006_233732
+### Commits
+6709b40 docs: status, seal balancing applied
+469a686 balance: seal multipliers 1.12 / 1.35 / 1.62 / 1.85 / 2.20 (simulator v3-v6)
+b544872 tools(balance): --static-after N (bot moves up to wave N, then stands still)
+623990e merge: seal and boss balancing (progressive seals, boss HP share, simulator tools)
+### Uncommitted Changes
+PROJECT_STATUS.md
+assets/characters/cards/assassin_card.png
+assets/characters/cards/berserker_card.png
+assets/characters/cards/drifter_card.png
+assets/characters/cards/gunslinger_card.png
+assets/characters/cards/mage_card.png
+assets/characters/cards/merchant_card.png
+assets/characters/cards/ronin_card.png
+assets/sprites/assassin.tres
+assets/sprites/atlas.png
+assets/sprites/berserker.tres
+assets/sprites/charger.tres
+assets/sprites/charger_elite.tres
+assets/sprites/drifter.tres
+assets/sprites/grunt.tres
+assets/sprites/grunt_elite.tres
+assets/sprites/gunslinger.tres
+assets/sprites/hayate.tres
+assets/sprites/kamikaze.tres
+assets/sprites/kamikaze_elite.tres
+assets/sprites/mage.tres
+assets/sprites/merchant.tres
+assets/sprites/ronin_pc.tres
+assets/sprites/runner.tres
+assets/sprites/runner_elite.tres
+assets/sprites/shooter.tres
+assets/sprites/shooter_elite.tres
+assets/sprites/spawner.tres
+assets/sprites/spawner_elite.tres
+assets/sprites/tank.tres
+assets/sprites/tank_elite.tres
+data/characters/berserker.tres
+data/characters/drifter.tres
+data/characters/gunslinger.tres
+data/characters/hero.tres
+data/characters/mage.tres
+data/characters/merchant.tres
+data/characters/ronin.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+src/audio/audio.gd
+src/debug/capture.gd
+src/economy/wallet.gd
+src/meta/run_setup.gd
+src/pickups/pickup_manager.gd
+src/pickups/xp_gem.gd
+src/player/character_data.gd
+src/player/player.gd
+src/run/coop_input_gate.gd
+src/run/coop_input_gate.gd.uid
+src/run/party.gd
+src/run/run.gd
+src/run/run_player.gd
+src/ui/character_select/character_select.gd
+src/ui/game_over/game_over_screen.gd
+src/ui/hud/hud.gd
+src/ui/level_up/level_up_screen.gd
+src/ui/main_menu/main_menu.gd
+src/ui/main_menu/menu_crowd.gd
+src/ui/main_menu/menu_gate.gd
+src/ui/pause/pause_menu.gd
+src/ui/settings/settings_screen.gd
+src/ui/shop/shop_screen.gd
+src/ui/stats/stats_panel.gd
+src/ui/theme/ui_theme.gd
+src/vfx/game_camera.gd
+src/vfx/vfx.gd
+src/weapons/weapon_holder.gd
+tests/smoke/test_coop_smoke.gd
+tests/unit/test_character_rig.gd
+tests/unit/test_characters.gd
+tests/unit/test_coop.gd
+tests/unit/test_danger_per_character.gd
+tests/unit/test_game_camera.gd
+tests/unit/test_main_menu.gd
+tests/unit/test_modes.gd
+tests/unit/test_run_recap.gd
+tests/unit/test_shop_screen.gd
+tests/unit/test_ui_theme.gd
+tools/sprites/atlas_layout.json
+tools/sprites/sprites.json
+---
+
+## Session End: 20261006_234256
+### Commits
+e7eec41 docs: project status at the end of session 9; test uid files
+945d6ef docs: status D72-D76 (UI Portal, heroes, coop, pickups), input action switch_variant
+e1e3173 fix: calmer late-game effects, copies of a weapon attack out of step, strings
+2ac71fc feat: material coins apart from XP crystals, pickup sounds with rising pitch
+474bf98 feat: coop between waves at the same time, per-player stats and recap, free camera
+f6e6d2a feat: Portal UI theme, main menu C2, hero select with seal then Play button
+bc686e9 feat: a female and a male hero per class (14 looks), switch on the select screen
+6709b40 docs: status, seal balancing applied
+469a686 balance: seal multipliers 1.12 / 1.35 / 1.62 / 1.85 / 2.20 (simulator v3-v6)
+b544872 tools(balance): --static-after N (bot moves up to wave N, then stands still)
+623990e merge: seal and boss balancing (progressive seals, boss HP share, simulator tools)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261006_235901
+### Commits
+e7eec41 docs: project status at the end of session 9; test uid files
+945d6ef docs: status D72-D76 (UI Portal, heroes, coop, pickups), input action switch_variant
+e1e3173 fix: calmer late-game effects, copies of a weapon attack out of step, strings
+2ac71fc feat: material coins apart from XP crystals, pickup sounds with rising pitch
+474bf98 feat: coop between waves at the same time, per-player stats and recap, free camera
+f6e6d2a feat: Portal UI theme, main menu C2, hero select with seal then Play button
+bc686e9 feat: a female and a male hero per class (14 looks), switch on the select screen
+6709b40 docs: status, seal balancing applied
+469a686 balance: seal multipliers 1.12 / 1.35 / 1.62 / 1.85 / 2.20 (simulator v3-v6)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/run/coop_screens.gd
+src/ui/character_select/character_select.gd
+---
+
+## Session End: 20261007_000153
+### Commits
+e7eec41 docs: project status at the end of session 9; test uid files
+945d6ef docs: status D72-D76 (UI Portal, heroes, coop, pickups), input action switch_variant
+e1e3173 fix: calmer late-game effects, copies of a weapon attack out of step, strings
+2ac71fc feat: material coins apart from XP crystals, pickup sounds with rising pitch
+474bf98 feat: coop between waves at the same time, per-player stats and recap, free camera
+f6e6d2a feat: Portal UI theme, main menu C2, hero select with seal then Play button
+bc686e9 feat: a female and a male hero per class (14 looks), switch on the select screen
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/run/coop_screens.gd
+src/ui/character_select/character_select.gd
+src/ui/theme/ui_theme.gd
+---
+
+## Session End: 20261007_010718
+### Commits
+e7eec41 docs: project status at the end of session 9; test uid files
+945d6ef docs: status D72-D76 (UI Portal, heroes, coop, pickups), input action switch_variant
+e1e3173 fix: calmer late-game effects, copies of a weapon attack out of step, strings
+2ac71fc feat: material coins apart from XP crystals, pickup sounds with rising pitch
+474bf98 feat: coop between waves at the same time, per-player stats and recap, free camera
+f6e6d2a feat: Portal UI theme, main menu C2, hero select with seal then Play button
+bc686e9 feat: a female and a male hero per class (14 looks), switch on the select screen
+### Uncommitted Changes
+assets/audio/sfx/weapons/CREDITS.md
+assets/audio/sfx/weapons/heavy_axe.ogg
+assets/audio/sfx/weapons/heavy_axe.ogg.import
+assets/audio/sfx/weapons/katana.ogg
+assets/audio/sfx/weapons/katana.ogg.import
+assets/audio/sfx/weapons/scythe.wav
+assets/audio/sfx/weapons/scythe.wav.import
+assets/audio/sfx/weapons/steel_katana.ogg
+assets/audio/sfx/weapons/steel_katana.ogg.import
+assets/audio/sfx/weapons/warhammer.ogg
+assets/audio/sfx/weapons/warhammer.ogg.import
+data/weapons/rapier.tres
+data/weapons/runic_blade.tres
+data/weapons/spear.tres
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/run/coop_screens.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/shop/shop_screen.gd
+src/ui/theme/ui_theme.gd
+---
+
+## Session End: 20261007_014309
+### Commits
+e7eec41 docs: project status at the end of session 9; test uid files
+945d6ef docs: status D72-D76 (UI Portal, heroes, coop, pickups), input action switch_variant
+e1e3173 fix: calmer late-game effects, copies of a weapon attack out of step, strings
+2ac71fc feat: material coins apart from XP crystals, pickup sounds with rising pitch
+474bf98 feat: coop between waves at the same time, per-player stats and recap, free camera
+f6e6d2a feat: Portal UI theme, main menu C2, hero select with seal then Play button
+bc686e9 feat: a female and a male hero per class (14 looks), switch on the select screen
+### Uncommitted Changes
+PROJECT_STATUS.md
+assets/audio/sfx/weapons/CREDITS.md
+assets/audio/sfx/weapons/heavy_axe.ogg
+assets/audio/sfx/weapons/heavy_axe.ogg.import
+assets/audio/sfx/weapons/katana.ogg
+assets/audio/sfx/weapons/katana.ogg.import
+assets/audio/sfx/weapons/scythe.wav
+assets/audio/sfx/weapons/scythe.wav.import
+assets/audio/sfx/weapons/steel_katana.ogg
+assets/audio/sfx/weapons/steel_katana.ogg.import
+assets/audio/sfx/weapons/warhammer.ogg
+assets/audio/sfx/weapons/warhammer.ogg.import
+data/enemies/astral_boss_final.tres
+data/enemies/astral_boss_mini.tres
+data/enemies/astral_charger.tres
+data/enemies/astral_grunt.tres
+data/enemies/astral_kamikaze.tres
+data/enemies/astral_runner.tres
+data/enemies/astral_shooter.tres
+data/enemies/astral_spawner.tres
+data/enemies/astral_tank.tres
+data/enemies/charger.tres
+data/enemies/gold_boss_final.tres
+data/enemies/gold_boss_mini.tres
+data/enemies/gold_charger.tres
+data/enemies/gold_grunt.tres
+data/enemies/gold_kamikaze.tres
+data/enemies/gold_runner.tres
+data/enemies/gold_shooter.tres
+data/enemies/gold_spawner.tres
+data/enemies/gold_tank.tres
+data/enemies/grunt.tres
+data/enemies/iron_boss_final.tres
+data/enemies/iron_boss_mini.tres
+data/enemies/iron_charger.tres
+data/enemies/iron_grunt.tres
+data/enemies/iron_kamikaze.tres
+data/enemies/iron_runner.tres
+data/enemies/iron_shooter.tres
+data/enemies/iron_spawner.tres
+data/enemies/iron_tank.tres
+data/enemies/kamikaze.tres
+data/enemies/obsidian_boss_final.tres
+data/enemies/obsidian_boss_mini.tres
+data/enemies/obsidian_charger.tres
+data/enemies/obsidian_grunt.tres
+data/enemies/obsidian_kamikaze.tres
+data/enemies/obsidian_runner.tres
+data/enemies/obsidian_shooter.tres
+data/enemies/obsidian_spawner.tres
+data/enemies/obsidian_tank.tres
+data/enemies/ronin.tres
+data/enemies/runner.tres
+data/enemies/shogun.tres
+data/enemies/shooter.tres
+data/enemies/silver_boss_final.tres
+data/enemies/silver_boss_mini.tres
+data/enemies/silver_charger.tres
+data/enemies/silver_grunt.tres
+data/enemies/silver_kamikaze.tres
+data/enemies/silver_runner.tres
+data/enemies/silver_shooter.tres
+data/enemies/silver_spawner.tres
+data/enemies/silver_tank.tres
+data/enemies/spawner.tres
+data/enemies/tank.tres
+data/weapons/rapier.tres
+data/weapons/runic_blade.tres
+data/weapons/spear.tres
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/player/player.gd
+src/run/coop_screens.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/shop/shop_screen.gd
+src/ui/theme/ui_theme.gd
+src/vfx/vfx.gd
+src/weapons/behaviors/melee_arc_behavior.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_vfx_size.gd
+---
+
+## Session End: 20261007_015326
+### Commits
+e7eec41 docs: project status at the end of session 9; test uid files
+945d6ef docs: status D72-D76 (UI Portal, heroes, coop, pickups), input action switch_variant
+e1e3173 fix: calmer late-game effects, copies of a weapon attack out of step, strings
+2ac71fc feat: material coins apart from XP crystals, pickup sounds with rising pitch
+474bf98 feat: coop between waves at the same time, per-player stats and recap, free camera
+f6e6d2a feat: Portal UI theme, main menu C2, hero select with seal then Play button
+bc686e9 feat: a female and a male hero per class (14 looks), switch on the select screen
+### Uncommitted Changes
+PROJECT_STATUS.md
+assets/audio/sfx/weapons/CREDITS.md
+assets/audio/sfx/weapons/heavy_axe.ogg
+assets/audio/sfx/weapons/heavy_axe.ogg.import
+assets/audio/sfx/weapons/katana.ogg
+assets/audio/sfx/weapons/katana.ogg.import
+assets/audio/sfx/weapons/scythe.wav
+assets/audio/sfx/weapons/scythe.wav.import
+assets/audio/sfx/weapons/steel_katana.ogg
+assets/audio/sfx/weapons/steel_katana.ogg.import
+assets/audio/sfx/weapons/warhammer.ogg
+assets/audio/sfx/weapons/warhammer.ogg.import
+data/enemies/astral_boss_final.tres
+data/enemies/astral_boss_mini.tres
+data/enemies/astral_charger.tres
+data/enemies/astral_grunt.tres
+data/enemies/astral_kamikaze.tres
+data/enemies/astral_runner.tres
+data/enemies/astral_shooter.tres
+data/enemies/astral_spawner.tres
+data/enemies/astral_tank.tres
+data/enemies/charger.tres
+data/enemies/gold_boss_final.tres
+data/enemies/gold_boss_mini.tres
+data/enemies/gold_charger.tres
+data/enemies/gold_grunt.tres
+data/enemies/gold_kamikaze.tres
+data/enemies/gold_runner.tres
+data/enemies/gold_shooter.tres
+data/enemies/gold_spawner.tres
+data/enemies/gold_tank.tres
+data/enemies/grunt.tres
+data/enemies/iron_boss_final.tres
+data/enemies/iron_boss_mini.tres
+data/enemies/iron_charger.tres
+data/enemies/iron_grunt.tres
+data/enemies/iron_kamikaze.tres
+data/enemies/iron_runner.tres
+data/enemies/iron_shooter.tres
+data/enemies/iron_spawner.tres
+data/enemies/iron_tank.tres
+data/enemies/kamikaze.tres
+data/enemies/obsidian_boss_final.tres
+data/enemies/obsidian_boss_mini.tres
+data/enemies/obsidian_charger.tres
+data/enemies/obsidian_grunt.tres
+data/enemies/obsidian_kamikaze.tres
+data/enemies/obsidian_runner.tres
+data/enemies/obsidian_shooter.tres
+data/enemies/obsidian_spawner.tres
+data/enemies/obsidian_tank.tres
+data/enemies/ronin.tres
+data/enemies/runner.tres
+data/enemies/shogun.tres
+data/enemies/shooter.tres
+data/enemies/silver_boss_final.tres
+data/enemies/silver_boss_mini.tres
+data/enemies/silver_charger.tres
+data/enemies/silver_grunt.tres
+data/enemies/silver_kamikaze.tres
+data/enemies/silver_runner.tres
+data/enemies/silver_shooter.tres
+data/enemies/silver_spawner.tres
+data/enemies/silver_tank.tres
+data/enemies/spawner.tres
+data/enemies/tank.tres
+data/weapons/rapier.tres
+data/weapons/runic_blade.tres
+data/weapons/spear.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/debug/capture.gd
+src/player/player.gd
+src/run/coop_screens.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/main_menu/main_menu.gd
+src/ui/shop/shop_screen.gd
+src/ui/theme/ui_theme.gd
+src/vfx/vfx.gd
+src/weapons/behaviors/melee_arc_behavior.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_vfx_size.gd
+---
+
+## Session End: 20261007_020242
+### Commits
+e7eec41 docs: project status at the end of session 9; test uid files
+945d6ef docs: status D72-D76 (UI Portal, heroes, coop, pickups), input action switch_variant
+e1e3173 fix: calmer late-game effects, copies of a weapon attack out of step, strings
+2ac71fc feat: material coins apart from XP crystals, pickup sounds with rising pitch
+474bf98 feat: coop between waves at the same time, per-player stats and recap, free camera
+f6e6d2a feat: Portal UI theme, main menu C2, hero select with seal then Play button
+bc686e9 feat: a female and a male hero per class (14 looks), switch on the select screen
+### Uncommitted Changes
+PROJECT_STATUS.md
+assets/audio/sfx/weapons/CREDITS.md
+assets/audio/sfx/weapons/heavy_axe.ogg
+assets/audio/sfx/weapons/heavy_axe.ogg.import
+assets/audio/sfx/weapons/katana.ogg
+assets/audio/sfx/weapons/katana.ogg.import
+assets/audio/sfx/weapons/scythe.wav
+assets/audio/sfx/weapons/scythe.wav.import
+assets/audio/sfx/weapons/steel_katana.ogg
+assets/audio/sfx/weapons/steel_katana.ogg.import
+assets/audio/sfx/weapons/warhammer.ogg
+assets/audio/sfx/weapons/warhammer.ogg.import
+data/enemies/astral_boss_final.tres
+data/enemies/astral_boss_mini.tres
+data/enemies/astral_charger.tres
+data/enemies/astral_grunt.tres
+data/enemies/astral_kamikaze.tres
+data/enemies/astral_runner.tres
+data/enemies/astral_shooter.tres
+data/enemies/astral_spawner.tres
+data/enemies/astral_tank.tres
+data/enemies/charger.tres
+data/enemies/gold_boss_final.tres
+data/enemies/gold_boss_mini.tres
+data/enemies/gold_charger.tres
+data/enemies/gold_grunt.tres
+data/enemies/gold_kamikaze.tres
+data/enemies/gold_runner.tres
+data/enemies/gold_shooter.tres
+data/enemies/gold_spawner.tres
+data/enemies/gold_tank.tres
+data/enemies/grunt.tres
+data/enemies/iron_boss_final.tres
+data/enemies/iron_boss_mini.tres
+data/enemies/iron_charger.tres
+data/enemies/iron_grunt.tres
+data/enemies/iron_kamikaze.tres
+data/enemies/iron_runner.tres
+data/enemies/iron_shooter.tres
+data/enemies/iron_spawner.tres
+data/enemies/iron_tank.tres
+data/enemies/kamikaze.tres
+data/enemies/obsidian_boss_final.tres
+data/enemies/obsidian_boss_mini.tres
+data/enemies/obsidian_charger.tres
+data/enemies/obsidian_grunt.tres
+data/enemies/obsidian_kamikaze.tres
+data/enemies/obsidian_runner.tres
+data/enemies/obsidian_shooter.tres
+data/enemies/obsidian_spawner.tres
+data/enemies/obsidian_tank.tres
+data/enemies/ronin.tres
+data/enemies/runner.tres
+data/enemies/shogun.tres
+data/enemies/shooter.tres
+data/enemies/silver_boss_final.tres
+data/enemies/silver_boss_mini.tres
+data/enemies/silver_charger.tres
+data/enemies/silver_grunt.tres
+data/enemies/silver_kamikaze.tres
+data/enemies/silver_runner.tres
+data/enemies/silver_shooter.tres
+data/enemies/silver_spawner.tres
+data/enemies/silver_tank.tres
+data/enemies/spawner.tres
+data/enemies/tank.tres
+data/weapons/rapier.tres
+data/weapons/runic_blade.tres
+data/weapons/spear.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+src/debug/capture.gd
+src/player/player.gd
+src/run/coop_screens.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/main_menu/main_menu.gd
+src/ui/shop/shop_screen.gd
+src/ui/theme/ui_theme.gd
+src/vfx/vfx.gd
+src/weapons/behaviors/melee_arc_behavior.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_shop_screen.gd
+tests/unit/test_vfx_size.gd
+---
+
+## Session End: 20261007_030600
+### Commits
+e7eec41 docs: project status at the end of session 9; test uid files
+945d6ef docs: status D72-D76 (UI Portal, heroes, coop, pickups), input action switch_variant
+e1e3173 fix: calmer late-game effects, copies of a weapon attack out of step, strings
+2ac71fc feat: material coins apart from XP crystals, pickup sounds with rising pitch
+474bf98 feat: coop between waves at the same time, per-player stats and recap, free camera
+f6e6d2a feat: Portal UI theme, main menu C2, hero select with seal then Play button
+bc686e9 feat: a female and a male hero per class (14 looks), switch on the select screen
+### Uncommitted Changes
+PROJECT_STATUS.md
+assets/audio/sfx/weapons/CREDITS.md
+assets/audio/sfx/weapons/heavy_axe.ogg
+assets/audio/sfx/weapons/heavy_axe.ogg.import
+assets/audio/sfx/weapons/katana.ogg
+assets/audio/sfx/weapons/katana.ogg.import
+assets/audio/sfx/weapons/scythe.wav
+assets/audio/sfx/weapons/scythe.wav.import
+assets/audio/sfx/weapons/steel_katana.ogg
+assets/audio/sfx/weapons/steel_katana.ogg.import
+assets/audio/sfx/weapons/warhammer.ogg
+assets/audio/sfx/weapons/warhammer.ogg.import
+data/enemies/astral_boss_final.tres
+data/enemies/astral_boss_mini.tres
+data/enemies/astral_charger.tres
+data/enemies/astral_grunt.tres
+data/enemies/astral_runner.tres
+data/enemies/astral_shooter.tres
+data/enemies/astral_spawner.tres
+data/enemies/astral_tank.tres
+data/enemies/charger.tres
+data/enemies/gold_boss_final.tres
+data/enemies/gold_boss_mini.tres
+data/enemies/gold_charger.tres
+data/enemies/gold_grunt.tres
+data/enemies/gold_runner.tres
+data/enemies/gold_shooter.tres
+data/enemies/gold_spawner.tres
+data/enemies/gold_tank.tres
+data/enemies/grunt.tres
+data/enemies/iron_boss_final.tres
+data/enemies/iron_boss_mini.tres
+data/enemies/iron_charger.tres
+data/enemies/iron_grunt.tres
+data/enemies/iron_runner.tres
+data/enemies/iron_shooter.tres
+data/enemies/iron_spawner.tres
+data/enemies/iron_tank.tres
+data/enemies/obsidian_boss_final.tres
+data/enemies/obsidian_boss_mini.tres
+data/enemies/obsidian_charger.tres
+data/enemies/obsidian_grunt.tres
+data/enemies/obsidian_runner.tres
+data/enemies/obsidian_shooter.tres
+data/enemies/obsidian_spawner.tres
+data/enemies/obsidian_tank.tres
+data/enemies/ronin.tres
+data/enemies/runner.tres
+data/enemies/shogun.tres
+data/enemies/shooter.tres
+data/enemies/silver_boss_final.tres
+data/enemies/silver_boss_mini.tres
+data/enemies/silver_charger.tres
+data/enemies/silver_grunt.tres
+data/enemies/silver_runner.tres
+data/enemies/silver_shooter.tres
+data/enemies/silver_spawner.tres
+data/enemies/silver_tank.tres
+data/enemies/spawner.tres
+data/enemies/tank.tres
+data/weapons/rapier.tres
+data/weapons/runic_blade.tres
+data/weapons/spear.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+src/core/settings_data.gd
+src/debug/capture.gd
+src/player/player.gd
+src/run/coop_screens.gd
+src/run/run.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/main_menu/main_menu.gd
+src/ui/progression/progression_screen.gd
+src/ui/settings/settings_screen.gd
+src/ui/shop/shop_screen.gd
+src/ui/theme/ui_theme.gd
+src/vfx/vfx.gd
+src/weapons/behaviors/melee_arc_behavior.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_shop_screen.gd
+tests/unit/test_vfx_size.gd
+---
+
+## Session End: 20261007_104258
+### Uncommitted Changes
+PROJECT_STATUS.md
+assets/audio/sfx/weapons/CREDITS.md
+assets/audio/sfx/weapons/heavy_axe.ogg
+assets/audio/sfx/weapons/heavy_axe.ogg.import
+assets/audio/sfx/weapons/katana.ogg
+assets/audio/sfx/weapons/katana.ogg.import
+assets/audio/sfx/weapons/scythe.wav
+assets/audio/sfx/weapons/scythe.wav.import
+assets/audio/sfx/weapons/steel_katana.ogg
+assets/audio/sfx/weapons/steel_katana.ogg.import
+assets/audio/sfx/weapons/warhammer.ogg
+assets/audio/sfx/weapons/warhammer.ogg.import
+data/enemies/astral_boss_final.tres
+data/enemies/astral_boss_mini.tres
+data/enemies/astral_charger.tres
+data/enemies/astral_grunt.tres
+data/enemies/astral_runner.tres
+data/enemies/astral_shooter.tres
+data/enemies/astral_spawner.tres
+data/enemies/astral_tank.tres
+data/enemies/charger.tres
+data/enemies/gold_boss_final.tres
+data/enemies/gold_boss_mini.tres
+data/enemies/gold_charger.tres
+data/enemies/gold_grunt.tres
+data/enemies/gold_runner.tres
+data/enemies/gold_shooter.tres
+data/enemies/gold_spawner.tres
+data/enemies/gold_tank.tres
+data/enemies/grunt.tres
+data/enemies/iron_boss_final.tres
+data/enemies/iron_boss_mini.tres
+data/enemies/iron_charger.tres
+data/enemies/iron_grunt.tres
+data/enemies/iron_runner.tres
+data/enemies/iron_shooter.tres
+data/enemies/iron_spawner.tres
+data/enemies/iron_tank.tres
+data/enemies/obsidian_boss_final.tres
+data/enemies/obsidian_boss_mini.tres
+data/enemies/obsidian_charger.tres
+data/enemies/obsidian_grunt.tres
+data/enemies/obsidian_runner.tres
+data/enemies/obsidian_shooter.tres
+data/enemies/obsidian_spawner.tres
+data/enemies/obsidian_tank.tres
+data/enemies/ronin.tres
+data/enemies/runner.tres
+data/enemies/shogun.tres
+data/enemies/shooter.tres
+data/enemies/silver_boss_final.tres
+data/enemies/silver_boss_mini.tres
+data/enemies/silver_charger.tres
+data/enemies/silver_grunt.tres
+data/enemies/silver_runner.tres
+data/enemies/silver_shooter.tres
+data/enemies/silver_spawner.tres
+data/enemies/silver_tank.tres
+data/enemies/spawner.tres
+data/enemies/tank.tres
+data/weapons/rapier.tres
+data/weapons/runic_blade.tres
+data/weapons/spear.tres
+docs/decisions/0021-coop-simultanee.md
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+src/core/settings_data.gd
+src/core/spatial_grid.gd
+src/debug/capture.gd
+src/player/player.gd
+src/run/coop_screens.gd
+src/run/run.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/level_up/level_up_screen.gd
+src/ui/main_menu/main_menu.gd
+src/ui/progression/progression_screen.gd
+src/ui/settings/settings_screen.gd
+src/ui/shop/shop_screen.gd
+src/ui/theme/ui_theme.gd
+src/vfx/vfx.gd
+src/weapons/behaviors/melee_arc_behavior.gd
+src/weapons/projectiles/projectile_manager.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_level_up_preview.gd
+tests/unit/test_shop_screen.gd
+tests/unit/test_vfx_size.gd
+---
+
+## Session End: 20261007_152111
+### Uncommitted Changes
+PROJECT_STATUS.md
+art_source/ai/weapons/alchemy_cannon.png
+art_source/ai/weapons/bazooka.png
+art_source/ai/weapons/bomb.png
+art_source/ai/weapons/celestial_bow.png
+art_source/ai/weapons/fire_flask.png
+art_source/ai/weapons/fire_staff.png
+art_source/ai/weapons/frag_grenade.png
+art_source/ai/weapons/frost_flask.png
+art_source/ai/weapons/frost_scepter.png
+art_source/ai/weapons/heavy_axe.png
+art_source/ai/weapons/heavy_crossbow.png
+art_source/ai/weapons/javelins.png
+art_source/ai/weapons/katana.png
+art_source/ai/weapons/laser_pistol.png
+art_source/ai/weapons/lightning_staff.png
+art_source/ai/weapons/longbow.png
+art_source/ai/weapons/meteor_grimoire.png
+art_source/ai/weapons/pulse.png
+art_source/ai/weapons/rapier.png
+art_source/ai/weapons/runic_blade.png
+art_source/ai/weapons/scythe.png
+art_source/ai/weapons/shuriken.png
+art_source/ai/weapons/sling.png
+art_source/ai/weapons/smg.png
+art_source/ai/weapons/spear.png
+art_source/ai/weapons/steel_katana.png
+art_source/ai/weapons/warhammer.png
+assets/audio/sfx/weapons/CREDITS.md
+assets/audio/sfx/weapons/heavy_axe.ogg
+assets/audio/sfx/weapons/heavy_axe.ogg.import
+assets/audio/sfx/weapons/katana.ogg
+assets/audio/sfx/weapons/katana.ogg.import
+assets/audio/sfx/weapons/scythe.wav
+assets/audio/sfx/weapons/scythe.wav.import
+assets/audio/sfx/weapons/steel_katana.ogg
+assets/audio/sfx/weapons/steel_katana.ogg.import
+assets/audio/sfx/weapons/warhammer.ogg
+assets/audio/sfx/weapons/warhammer.ogg.import
+assets/icons/weapons/alchemy_cannon.png
+assets/icons/weapons/bazooka.png
+assets/icons/weapons/bomb.png
+assets/icons/weapons/celestial_bow.png
+assets/icons/weapons/fire_flask.png
+assets/icons/weapons/fire_staff.png
+assets/icons/weapons/frag_grenade.png
+assets/icons/weapons/frost_flask.png
+assets/icons/weapons/frost_scepter.png
+assets/icons/weapons/heavy_axe.png
+assets/icons/weapons/heavy_crossbow.png
+assets/icons/weapons/javelins.png
+assets/icons/weapons/katana.png
+assets/icons/weapons/laser_pistol.png
+assets/icons/weapons/lightning_staff.png
+assets/icons/weapons/longbow.png
+assets/icons/weapons/meteor_grimoire.png
+assets/icons/weapons/pulse.png
+assets/icons/weapons/rapier.png
+assets/icons/weapons/runic_blade.png
+assets/icons/weapons/scythe.png
+assets/icons/weapons/shuriken.png
+assets/icons/weapons/sling.png
+assets/icons/weapons/smg.png
+assets/icons/weapons/spear.png
+assets/icons/weapons/steel_katana.png
+assets/icons/weapons/warhammer.png
+data/enemies/astral_boss_final.tres
+data/enemies/astral_boss_mini.tres
+data/enemies/astral_charger.tres
+data/enemies/astral_grunt.tres
+data/enemies/astral_runner.tres
+data/enemies/astral_shooter.tres
+data/enemies/astral_spawner.tres
+data/enemies/astral_tank.tres
+data/enemies/charger.tres
+data/enemies/gold_boss_final.tres
+data/enemies/gold_boss_mini.tres
+data/enemies/gold_charger.tres
+data/enemies/gold_grunt.tres
+data/enemies/gold_runner.tres
+data/enemies/gold_shooter.tres
+data/enemies/gold_spawner.tres
+data/enemies/gold_tank.tres
+data/enemies/grunt.tres
+data/enemies/iron_boss_final.tres
+data/enemies/iron_boss_mini.tres
+data/enemies/iron_charger.tres
+data/enemies/iron_grunt.tres
+data/enemies/iron_runner.tres
+data/enemies/iron_shooter.tres
+data/enemies/iron_spawner.tres
+data/enemies/iron_tank.tres
+data/enemies/obsidian_boss_final.tres
+data/enemies/obsidian_boss_mini.tres
+data/enemies/obsidian_charger.tres
+data/enemies/obsidian_grunt.tres
+data/enemies/obsidian_runner.tres
+data/enemies/obsidian_shooter.tres
+data/enemies/obsidian_spawner.tres
+data/enemies/obsidian_tank.tres
+data/enemies/ronin.tres
+data/enemies/runner.tres
+data/enemies/shogun.tres
+data/enemies/shooter.tres
+data/enemies/silver_boss_final.tres
+data/enemies/silver_boss_mini.tres
+data/enemies/silver_charger.tres
+data/enemies/silver_grunt.tres
+data/enemies/silver_runner.tres
+data/enemies/silver_shooter.tres
+data/enemies/silver_spawner.tres
+data/enemies/silver_tank.tres
+data/enemies/spawner.tres
+data/enemies/tank.tres
+data/weapons/rapier.tres
+data/weapons/runic_blade.tres
+data/weapons/spear.tres
+docs/decisions/0021-coop-simultanee.md
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+src/core/settings_data.gd
+src/core/spatial_grid.gd
+src/debug/capture.gd
+src/player/player.gd
+src/run/coop_screens.gd
+src/run/run.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/level_up/level_up_screen.gd
+src/ui/main_menu/main_menu.gd
+src/ui/progression/progression_screen.gd
+src/ui/settings/settings_screen.gd
+src/ui/shop/shop_screen.gd
+src/ui/theme/ui_theme.gd
+src/vfx/vfx.gd
+src/weapons/behaviors/melee_arc_behavior.gd
+src/weapons/projectiles/projectile_manager.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_level_up_preview.gd
+tests/unit/test_shop_screen.gd
+tests/unit/test_vfx_size.gd
+---
+
+## Session End: 20261007_155622
+### Uncommitted Changes
+PROJECT_STATUS.md
+art_source/ai/skins/README.md
+art_source/ai/weapons/alchemy_cannon.png
+art_source/ai/weapons/bazooka.png
+art_source/ai/weapons/bomb.png
+art_source/ai/weapons/celestial_bow.png
+art_source/ai/weapons/fire_flask.png
+art_source/ai/weapons/fire_staff.png
+art_source/ai/weapons/frag_grenade.png
+art_source/ai/weapons/frost_flask.png
+art_source/ai/weapons/frost_scepter.png
+art_source/ai/weapons/heavy_axe.png
+art_source/ai/weapons/heavy_crossbow.png
+art_source/ai/weapons/javelins.png
+art_source/ai/weapons/katana.png
+art_source/ai/weapons/laser_pistol.png
+art_source/ai/weapons/lightning_staff.png
+art_source/ai/weapons/longbow.png
+art_source/ai/weapons/meteor_grimoire.png
+art_source/ai/weapons/pulse.png
+art_source/ai/weapons/rapier.png
+art_source/ai/weapons/runic_blade.png
+art_source/ai/weapons/scythe.png
+art_source/ai/weapons/shuriken.png
+art_source/ai/weapons/sling.png
+art_source/ai/weapons/smg.png
+art_source/ai/weapons/spear.png
+art_source/ai/weapons/steel_katana.png
+art_source/ai/weapons/warhammer.png
+assets/audio/sfx/weapons/CREDITS.md
+assets/audio/sfx/weapons/heavy_axe.ogg
+assets/audio/sfx/weapons/heavy_axe.ogg.import
+assets/audio/sfx/weapons/katana.ogg
+assets/audio/sfx/weapons/katana.ogg.import
+assets/audio/sfx/weapons/scythe.wav
+assets/audio/sfx/weapons/scythe.wav.import
+assets/audio/sfx/weapons/steel_katana.ogg
+assets/audio/sfx/weapons/steel_katana.ogg.import
+assets/audio/sfx/weapons/warhammer.ogg
+assets/audio/sfx/weapons/warhammer.ogg.import
+assets/characters/cards/assassin_f_card.png
+assets/characters/cards/berserker_m_card.png
+assets/characters/cards/gunslinger_m_card.png
+assets/characters/cards/mage_m_card.png
+assets/characters/cards/merchant_m_card.png
+assets/characters/cards/ronin_m_card.png
+assets/icons/weapons/alchemy_cannon.png
+assets/icons/weapons/bazooka.png
+assets/icons/weapons/bomb.png
+assets/icons/weapons/celestial_bow.png
+assets/icons/weapons/fire_flask.png
+assets/icons/weapons/fire_staff.png
+assets/icons/weapons/frag_grenade.png
+assets/icons/weapons/frost_flask.png
+assets/icons/weapons/frost_scepter.png
+assets/icons/weapons/heavy_axe.png
+assets/icons/weapons/heavy_crossbow.png
+assets/icons/weapons/javelins.png
+assets/icons/weapons/katana.png
+assets/icons/weapons/laser_pistol.png
+assets/icons/weapons/lightning_staff.png
+assets/icons/weapons/longbow.png
+assets/icons/weapons/meteor_grimoire.png
+assets/icons/weapons/pulse.png
+assets/icons/weapons/rapier.png
+assets/icons/weapons/runic_blade.png
+assets/icons/weapons/scythe.png
+assets/icons/weapons/shuriken.png
+assets/icons/weapons/sling.png
+assets/icons/weapons/smg.png
+assets/icons/weapons/spear.png
+assets/icons/weapons/steel_katana.png
+assets/icons/weapons/warhammer.png
+assets/sprites/assassin_f.tres
+assets/sprites/atlas.png
+assets/sprites/berserker_m.tres
+assets/sprites/charger.tres
+assets/sprites/charger_elite.tres
+assets/sprites/grunt.tres
+assets/sprites/grunt_elite.tres
+assets/sprites/gunslinger_m.tres
+assets/sprites/kamikaze.tres
+assets/sprites/kamikaze_elite.tres
+assets/sprites/mage_m.tres
+assets/sprites/merchant.tres
+assets/sprites/merchant_m.tres
+assets/sprites/ronin_pc.tres
+assets/sprites/ronin_pc_m.tres
+assets/sprites/runner.tres
+assets/sprites/runner_elite.tres
+assets/sprites/shooter.tres
+assets/sprites/shooter_elite.tres
+assets/sprites/spawner.tres
+assets/sprites/spawner_elite.tres
+assets/sprites/tank.tres
+assets/sprites/tank_elite.tres
+data/enemies/astral_boss_final.tres
+data/enemies/astral_boss_mini.tres
+data/enemies/astral_charger.tres
+data/enemies/astral_grunt.tres
+data/enemies/astral_runner.tres
+data/enemies/astral_shooter.tres
+data/enemies/astral_spawner.tres
+data/enemies/astral_tank.tres
+data/enemies/charger.tres
+data/enemies/gold_boss_final.tres
+data/enemies/gold_boss_mini.tres
+data/enemies/gold_charger.tres
+data/enemies/gold_grunt.tres
+data/enemies/gold_runner.tres
+data/enemies/gold_shooter.tres
+data/enemies/gold_spawner.tres
+data/enemies/gold_tank.tres
+data/enemies/grunt.tres
+data/enemies/iron_boss_final.tres
+data/enemies/iron_boss_mini.tres
+data/enemies/iron_charger.tres
+data/enemies/iron_grunt.tres
+data/enemies/iron_runner.tres
+data/enemies/iron_shooter.tres
+data/enemies/iron_spawner.tres
+data/enemies/iron_tank.tres
+data/enemies/obsidian_boss_final.tres
+data/enemies/obsidian_boss_mini.tres
+data/enemies/obsidian_charger.tres
+data/enemies/obsidian_grunt.tres
+data/enemies/obsidian_runner.tres
+data/enemies/obsidian_shooter.tres
+data/enemies/obsidian_spawner.tres
+data/enemies/obsidian_tank.tres
+data/enemies/ronin.tres
+data/enemies/runner.tres
+data/enemies/shogun.tres
+data/enemies/shooter.tres
+data/enemies/silver_boss_final.tres
+data/enemies/silver_boss_mini.tres
+data/enemies/silver_charger.tres
+data/enemies/silver_grunt.tres
+data/enemies/silver_runner.tres
+data/enemies/silver_shooter.tres
+data/enemies/silver_spawner.tres
+data/enemies/silver_tank.tres
+data/enemies/spawner.tres
+data/enemies/tank.tres
+data/weapons/alchemy_cannon.tres
+data/weapons/fire_staff.tres
+data/weapons/frost_scepter.tres
+data/weapons/javelins.tres
+data/weapons/katana.tres
+data/weapons/laser_pistol.tres
+data/weapons/lightning_staff.tres
+data/weapons/pulse.tres
+data/weapons/rapier.tres
+data/weapons/runic_blade.tres
+data/weapons/scythe.tres
+data/weapons/sling.tres
+data/weapons/smg.tres
+data/weapons/spear.tres
+data/weapons/steel_katana.tres
+docs/decisions/0021-coop-simultanee.md
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+project.godot
+src/core/settings_data.gd
+src/core/spatial_grid.gd
+src/debug/capture.gd
+src/player/player.gd
+src/run/coop_screens.gd
+src/run/run.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/level_up/level_up_screen.gd
+src/ui/main_menu/main_menu.gd
+src/ui/progression/progression_screen.gd
+src/ui/settings/settings_screen.gd
+src/ui/shop/shop_screen.gd
+src/ui/theme/ui_theme.gd
+src/vfx/vfx.gd
+src/weapons/behaviors/melee_arc_behavior.gd
+src/weapons/projectiles/projectile_manager.gd
+src/weapons/weapon_data.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_level_up_preview.gd
+tests/unit/test_shop_screen.gd
+tests/unit/test_vfx_size.gd
+tools/art/make_icon.gd
+tools/sprites/atlas_layout.json
+---
+

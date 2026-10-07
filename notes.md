@@ -1,5 +1,9 @@
-Pour l'arme, l'arbalète à répétition, je n'entends quasi pas de son lorsqu'il tire. 
+Dans la sélection de personnages en solo ou bien en coop, lorsqu'on ouvre sur les personnages à la manette, il faut également que les armes de départ changent en fonction du personnage sur lequel on est. 
 
-Dans le fichier art_test, j'ai rajouté des images d'armes avec le nom de l'arme, puis .png. C'est un style graphique d'armes qui me plaît. Peux-tu un peu réagencer le graphisme de certaines armes pour qu'elles ressemblent un peu à ça ? 
+Lorsqu'on sélectionne des personnages, aussi en solo ou en coop, lorsqu'on clique sur l'interface, on apparaît directement sur la sélection des personnages : juste avec les cases des personnages en haut et tout le reste de l'écran fait vide à première vue.  Peux-tu me proposer des propositions pour remédier à cela ? Faut-il directement mettre l'affiche du premier personnage affichée ainsi que l'arme et le niveau de saut ? Faut-il mettre une image d'arrière-plan ? Je suis ouvert à tes propositions.  
+Je veux vraiment une ergonomie optimale de navigation, d'interface, de design, avec un jeu de feeling un peu premium. 
+Lors de la sélection des personnages, lorsqu'on voit le personnage, peut-on lui mettre un effet d'animation comme une respiration ? 
+Je t'écoute pour toute proposition. N'hésite pas à me créer des mockups à l'avance pour que je visualise mieux tes idées, tes concepts. 
+Si tu dois également changer la typographie des titres ou des couleurs ou quoi, n'hésite vraiment pas à optimiser le jeu et à me demander validation
 
-Et dans la sélection des personnages, lorsqu'on veut choisir le monde avec le niveau de difficulté, il y a un bug d'affichage, je pense. Quand on choisit la difficulté 3, 4, 5, 6 (je ne sais plus laquelle), c'est parce que l'écriture de la description de la difficulté est trop longue, je pense. 
+Lors de mon playtest J'ai également constaté que, au plus on a d'armes et d'objets, le bouton « Vague suivante » descend trop bas sur l'écran. Et est ensuite en bordure d'écran  
