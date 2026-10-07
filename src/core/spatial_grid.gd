@@ -56,17 +56,23 @@ func size() -> int:
 
 ## Fills `out` with every item whose position is within `radius` of `center`.
 ## Returns the number of results.
+## Hot path (one call per projectile per tick): the cell bounds are computed inline,
+## a GDScript call each (_col_of / _row_of) cost a third of the query (profiled).
 func query_radius(center: Vector2, radius: float, out: Array[int]) -> int:
 	out.clear()
 	var r2 := radius * radius
-	var min_x := _col_of(center.x - radius)
-	var max_x := _col_of(center.x + radius)
-	var min_y := _row_of(center.y - radius)
-	var max_y := _row_of(center.y + radius)
+	var last_col := cols - 1
+	var last_row := rows - 1
+	var min_x := clampi(floori((center.x - radius - origin.x) / cell_size), 0, last_col)
+	var max_x := clampi(floori((center.x + radius - origin.x) / cell_size), 0, last_col)
+	var min_y := clampi(floori((center.y - radius - origin.y) / cell_size), 0, last_row)
+	var max_y := clampi(floori((center.y + radius - origin.y) / cell_size), 0, last_row)
 	for cy in range(min_y, max_y + 1):
+		var row_start := cy * cols
 		for cx in range(min_x, max_x + 1):
-			var c := cy * cols + cx
-			for k in range(_cell_start[c], _cell_start[c + 1]):
+			var c := row_start + cx
+			var end := _cell_start[c + 1]
+			for k in range(_cell_start[c], end):
 				var item := _cell_items[k]
 				if _positions[item].distance_squared_to(center) <= r2:
 					out.append(item)

@@ -86,9 +86,12 @@ func _steer(p: Projectile, delta: float) -> void:
 
 
 func _resolve_hits(p: Projectile) -> bool:
+	var found := _enemies.grid.query_radius(p.position, p.radius + _enemies.max_radius, _candidates)
+	if found == 0:
+		return true  # most projectiles, most ticks: nothing near
+	# Damage attribution, set only when something may be hit (hot path).
 	_enemies.damage_source = p.source
 	_enemies.damage_weapon = p.weapon
-	var found := _enemies.grid.query_radius(p.position, p.radius + _enemies.max_radius, _candidates)
 	for k in found:
 		var index := _candidates[k]
 		var enemy := _enemies.get_enemy(index)
