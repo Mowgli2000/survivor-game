@@ -56,5 +56,6 @@ color = Color(1, 0.54, 0.17, 1)
 status = SubResource("Resource_burn")
 status_chance = 0.6
 icon = ExtResource("icon_tex")
+icon_diagonal = true
 families = Array[StringName]([&"energy"])
 explosion_radius = 45.0

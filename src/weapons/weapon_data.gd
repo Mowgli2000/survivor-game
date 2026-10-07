@@ -73,6 +73,9 @@ enum SlashStyle { CRESCENT, THIN, THRUST, HEAVY, SMASH, FLAME, RUNIC }
 ## Shop/HUD icon, also drawn as the in-game weapon (profile, barrel pointing right,
 ## centered). Null: text only in the UI, not drawn in game.
 @export var icon: Texture2D
+## The icon art lies diagonally, tip up-right (long weapons: it fills the UI squares).
+## WeaponVisuals turns it back to horizontal for the floating weapon.
+@export var icon_diagonal: bool = false
 
 
 func max_level() -> int:

@@ -9,7 +9,8 @@ extends Node2D
 const OUTLINE_SHADER := preload("res://src/weapons/weapon_outline.gdshader")
 ## Turning speed toward the aimed direction (1/s, used as a lerp factor).
 const AIM_SPEED := 18.0
-## Drawn length of a weapon (the icon's width), in px.
+## Drawn length of a weapon (the icon's width), in px. The dev wants the floating
+## weapons this size; only the UI icons grow (diagonal art, see tools/art/make_icon.gd).
 const SIZE := 60.0
 const RECOIL := 7.0
 const KICK_TIME := 0.12
@@ -80,7 +81,8 @@ func _process(delta: float) -> void:
 	for i in slots.size():
 		var slot := slots[i]
 		var mount := origin + slot.mount_offset
-		var target := _enemies.find_nearest(mount, slot.stats.attack_range * range_multiplier) \
+		var reach := MeleeArcBehavior.reach_multiplier(_owner.stats) if _is_melee(slot) else range_multiplier
+		var target := _enemies.find_nearest(mount, slot.stats.attack_range * reach) \
 			if _enemies != null else -1
 		var wanted := _aim[i]
 		if target >= 0:
@@ -110,12 +112,19 @@ func _draw() -> void:
 				angle += lerpf(-SWING_ARC, SWING_ARC, 1.0 - _kick[i])
 		else:
 			pos -= Vector2.from_angle(angle) * RECOIL * _kick[i]
-		var scale_factor := SIZE / icon.get_width()
 		# Aiming left: mirror vertically so the weapon is not upside down.
 		var flip := -1.0 if absf(angle_difference(0.0, angle)) > PI * 0.5 else 1.0
-		draw_set_transform(pos, angle, Vector2(scale_factor, scale_factor * flip))
+		if slot.data.icon_diagonal:
+			# Diagonal art (tip up-right): turned back to horizontal, same drawn length.
+			var diagonal_scale := SIZE / (icon.get_width() * sqrt(2.0))
+			draw_set_transform_matrix(Transform2D(angle, pos)
+				* Transform2D(0.0, Vector2(diagonal_scale, diagonal_scale * flip), 0.0, Vector2.ZERO)
+				* Transform2D(PI / 4.0, Vector2.ZERO))
+		else:
+			var scale_factor := SIZE / icon.get_width()
+			draw_set_transform(pos, angle, Vector2(scale_factor, scale_factor * flip))
 		draw_texture(icon, -icon.get_size() * 0.5, Tiers.color(slot.level))
-	draw_set_transform(Vector2.ZERO)
+	draw_set_transform_matrix(Transform2D.IDENTITY)
 
 
 func _draw_flashes(canvas: CanvasItem) -> void:

@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://wy8c3kbh18k7"
-path="res://.godot/imported/scythe.wav-1d659d9a36922ffeeee27b4a98efad5b.sample"
+uid="uid://cucvo0d8rjvf7"
+path="res://.godot/imported/rapier.wav-f1664fbf6f3f9458a60adc990d036aec.sample"
 
 [deps]
 
-source_file="res://assets/audio/sfx/weapons/scythe.wav"
-dest_files=["res://.godot/imported/scythe.wav-1d659d9a36922ffeeee27b4a98efad5b.sample"]
+source_file="res://assets/audio/sfx/weapons/rapier.wav"
+dest_files=["res://.godot/imported/rapier.wav-f1664fbf6f3f9458a60adc990d036aec.sample"]
 
 [params]
 
