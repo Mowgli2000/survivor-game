@@ -395,6 +395,9 @@ func _resume_from_pause() -> void:
 func _apply_settings() -> void:
 	damage_numbers.enabled = Settings.data.damage_numbers
 	camera.shake_enabled = Settings.data.screen_shake
+	for rp in players:
+		if rp.player.health_bar != null:
+			rp.player.health_bar.visible = Settings.data.player_hp_bar
 
 
 func _on_player_damaged(_amount: float) -> void:

@@ -9,9 +9,15 @@ const WEAPON_ICON := 56.0
 
 ## Seconds a toast stays fully visible.
 const TOAST_TIME := 2.5
+## Timer warning (playtest): from TIMER_WARNING_SECONDS left, the timer grows each second.
+const TIMER_FONT_SIZE := 48
+const TIMER_WARNING_SECONDS := 5
+const TIMER_FONT_STEP := 12
 
 var _weapons: WeaponHolder
 var _weapons_box: HBoxContainer
+## Coop: player 2's weapon icons (bottom right).
+var _weapons_box_2: HBoxContainer
 var _hp_bar: ProgressBar
 var _hp_label: Label
 var _xp_bar: ProgressBar
@@ -51,8 +57,8 @@ func setup(player: Player, progression: Progression, waves: WaveDirector, wallet
 	_on_materials_changed(wallet.amount)
 	_stats_panel.setup(player.stats)
 	_weapons = player.weapons
-	_weapons.weapons_changed.connect(_refresh_weapons)
-	_refresh_weapons()
+	_weapons.weapons_changed.connect(func() -> void: _refresh_weapons(_weapons, _weapons_box))
+	_refresh_weapons(_weapons, _weapons_box)
 
 
 ## Coop (ADR 0017): compact block for player 2 (top right) and a tag on player 1's.
@@ -113,6 +119,18 @@ func setup_second_player(player: Player, progression: Progression, wallet: Walle
 	refresh_xp.call(progression.xp, progression.xp_needed())
 	refresh_info.call()
 
+	# Player 2's weapon icons: bottom right, mirroring player 1's (playtest: only P1's showed).
+	_weapons_box_2 = HBoxContainer.new()
+	_weapons_box_2.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT)
+	_weapons_box_2.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	_weapons_box_2.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_weapons_box_2.offset_right = -32
+	_weapons_box_2.offset_bottom = -56  # above the "[Tab] Stats" hint
+	_weapons_box_2.add_theme_constant_override("separation", 8)
+	_root.add_child(_weapons_box_2)
+	player.weapons.weapons_changed.connect(func() -> void: _refresh_weapons(player.weapons, _weapons_box_2))
+	_refresh_weapons(player.weapons, _weapons_box_2)
+
 
 func setup_boss(director: BossDirector) -> void:
 	_boss_bar.setup(director)
@@ -149,20 +167,21 @@ func setup_families(families: WeaponFamilies) -> void:
 	_stats_panel.setup_families(families)
 
 
-func _refresh_weapons() -> void:
-	for child in _weapons_box.get_children():
-		_weapons_box.remove_child(child)
+## Icons of `holder`'s weapons, framed by tier, in `box`.
+func _refresh_weapons(holder: WeaponHolder, box: HBoxContainer) -> void:
+	for child in box.get_children():
+		box.remove_child(child)
 		child.queue_free()
-	for slot in _weapons.get_slots():
+	for slot in holder.get_slots():
 		if slot.data.icon == null:
 			var label := _make_label(&"ValueLabel", 24)
 			label.text = "%s  %s" % [tr(slot.data.name_key), Tiers.roman(slot.level)]
 			label.add_theme_color_override("font_color", Tiers.color(slot.level))
-			_weapons_box.add_child(label)
+			box.add_child(label)
 			continue
 		var tile := IconTile.create(slot.data.icon, slot.level, WEAPON_ICON)
 		tile.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		_weapons_box.add_child(tile)
+		box.add_child(tile)
 
 
 func _init() -> void:
@@ -211,7 +230,7 @@ func _init() -> void:
 	_wave_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	root.add_child(_wave_label)
 
-	_timer_label = _make_label(&"TitleLabel", 48)
+	_timer_label = _make_label(&"TitleLabel", TIMER_FONT_SIZE)
 	_timer_label.add_theme_color_override("font_color", UiTheme.TEXT)
 	_timer_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
 	_timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -277,6 +296,7 @@ func _process(_delta: float) -> void:
 	if seconds != _last_second:
 		_last_second = seconds
 		_timer_label.text = format_time(seconds)
+		_update_timer_warning(seconds)
 		if _waves.wave > _waves.wave_count():
 			_wave_label.text = tr("UI_WAVE_ENDLESS") % _waves.wave
 		else:
@@ -284,6 +304,28 @@ func _process(_delta: float) -> void:
 	if _progression.pending_level_ups != _last_pending:
 		_last_pending = _progression.pending_level_ups
 		_refresh_level()
+
+
+## Last seconds of a wave: the timer grows a step and bounces each second, in a hotter color.
+func _update_timer_warning(seconds: int) -> void:
+	var size := timer_font_size(seconds)
+	_timer_label.add_theme_font_size_override("font_size", size)
+	# Re-centered on its new size (a Label does not shrink back by itself).
+	_timer_label.reset_size()
+	_timer_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE)
+	_timer_label.offset_top = 64
+	if size == TIMER_FONT_SIZE:
+		_timer_label.add_theme_color_override("font_color", UiTheme.TEXT)
+		return
+	_timer_label.add_theme_color_override("font_color", UiTheme.BAD if seconds <= 2 else UiTheme.GOLD)
+	UiFx.bounce(_timer_label)
+
+
+## Font size of the timer: normal, then one step bigger for each of the last seconds.
+static func timer_font_size(seconds: int) -> int:
+	if seconds <= 0 or seconds > TIMER_WARNING_SECONDS:
+		return TIMER_FONT_SIZE
+	return TIMER_FONT_SIZE + (TIMER_WARNING_SECONDS + 1 - seconds) * TIMER_FONT_STEP
 
 
 static func format_time(seconds: float) -> String:

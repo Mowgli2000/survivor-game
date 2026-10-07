@@ -133,6 +133,13 @@ func close() -> void:
 	visible = false
 
 
+## reroll (gamepad Triangle / Y, key R): same as the reroll button, as the hints say.
+func _unhandled_input(event: InputEvent) -> void:
+	if visible and _reroll.visible and not _reroll.disabled and event.is_action_pressed("reroll"):
+		get_viewport().set_input_as_handled()
+		reroll_requested.emit()
+
+
 ## Card texts: [tag, title, description].
 static func describe_offer(offer: UpgradeOffer) -> PackedStringArray:
 	return PackedStringArray(["%s · %s" % [TranslationServer.translate("UI_STAT_UPGRADE"), Tiers.roman(offer.tier)],

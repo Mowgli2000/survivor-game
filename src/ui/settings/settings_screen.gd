@@ -9,7 +9,7 @@ signal closed
 const VOLUMES: Array[StringName] = [&"master_volume", &"music_volume", &"sfx_volume"]
 const DISPLAY: Array[StringName] = [&"fullscreen", &"vsync"]
 const GAME: Array[StringName] = [&"screen_shake", &"damage_numbers", &"reduce_motion",
-	&"show_hints"]
+	&"show_hints", &"player_hp_bar"]
 ## Same order as SettingsData.LOCALES.
 const LANGUAGE_KEYS: Array[String] = ["LANG_SYSTEM", "LANG_EN", "LANG_FR"]
 

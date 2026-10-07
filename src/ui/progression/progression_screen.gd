@@ -5,9 +5,15 @@ extends Control
 
 signal closed
 
+## Pixels per second the list scrolls while up / down (D-pad, stick, arrows) is held.
+const SCROLL_SPEED := 900.0
+
 var _stats: Label
 var _rows: VBoxContainer
 var _back: Button
+## The rows are not focusable (read-only): up / down scroll the list instead (playtest:
+## the list could not be scrolled with a gamepad).
+var _scroll: ScrollContainer
 
 
 func _init() -> void:
@@ -39,6 +45,7 @@ func _init() -> void:
 	scroll.custom_minimum_size = Vector2(900, 480)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	box.add_child(scroll)
+	_scroll = scroll
 	_rows = VBoxContainer.new()
 	_rows.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_rows.add_theme_constant_override("separation", 10)
@@ -71,7 +78,16 @@ func open() -> void:
 	for challenge in challenges:
 		_rows.add_child(_row(challenge, profile.completed.has(challenge.id)))
 	visible = true
+	_scroll.scroll_vertical = 0
 	_back.grab_focus()
+
+
+func _process(delta: float) -> void:
+	if not visible:
+		return
+	var axis := Input.get_axis(&"ui_up", &"ui_down")
+	if axis != 0.0:
+		_scroll.scroll_vertical += roundi(axis * SCROLL_SPEED * delta)
 
 
 func close() -> void:

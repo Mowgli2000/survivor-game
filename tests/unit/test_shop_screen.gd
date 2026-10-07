@@ -209,3 +209,57 @@ func test_owned_weapon_details_show_description_and_tier_stats() -> void:
 	assert_string_contains(low, "Damage")
 	assert_string_contains(low, "Blast")
 	assert_ne(low, high, "the numbers follow the tier")
+
+
+
+
+func test_merge_shortcut_merges_the_focused_weapon() -> void:
+	_open_screen(100)
+	assert_eq(_weapons.slot_count(), 2, "two pulses of the same tier")
+	_screen._controls["weapon:0"].grab_focus()
+	var event := InputEventAction.new()
+	event.action = &"merge_weapon"
+	event.pressed = true
+	_screen._unhandled_input(event)
+	assert_eq(_weapons.slot_count(), 1, "merged into one weapon")
+
+
+func test_lock_sits_under_buy_in_coop() -> void:
+	_open_screen(100)
+	var stats := StatBlock.from_defaults()
+	var screen := ShopScreen.new(true)
+	add_child_autofree(screen)
+	screen.setup(_shop, _wallet, Inventory.new(stats), _weapons, stats)
+	screen.open()
+	var buy: Control = screen._controls["buy:0"]
+	var lock: Control = screen._controls["lock:0"]
+	assert_eq(buy.get_parent(), lock.get_parent(), "same column")
+	assert_gt(lock.get_index(), buy.get_index(), "lock under buy")
+
+
+func test_coop_shop_shows_stats_while_share_is_held() -> void:
+	_open_screen(100)
+	var stats := StatBlock.from_defaults()
+	var screen := ShopScreen.new(true)
+	add_child_autofree(screen)
+	screen.setup(_shop, _wallet, Inventory.new(stats), _weapons, stats)
+	screen.open()
+	assert_false(screen.stats_panel.visible)
+	var event := InputEventAction.new()
+	event.action = &"show_stats"
+	event.pressed = true
+	screen._input(event)
+	assert_true(screen.stats_panel.visible)
+	event.pressed = false
+	screen._input(event)
+	assert_false(screen.stats_panel.visible)
+
+
+func test_reroll_shortcut_rerolls_the_offers() -> void:
+	_open_screen(100)
+	var before := _wallet.amount
+	var event := InputEventAction.new()
+	event.action = &"reroll"
+	event.pressed = true
+	_screen._unhandled_input(event)
+	assert_lt(_wallet.amount, before, "the reroll was paid")

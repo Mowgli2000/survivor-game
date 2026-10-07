@@ -88,6 +88,14 @@ static func card_style(accent: Color, strength: float = 1.0) -> StyleBoxFlat:
 	return style
 
 
+## Focus frame of a card-shaped button (card_style): same rounded corners as the card,
+## a pill frame on a card read as a second, different outline (playtest).
+static func card_focus_style(accent: Color = ACCENT) -> StyleBoxFlat:
+	var style := focus_style(accent, 21)
+	style.set_border_width_all(4)
+	return style
+
+
 ## Focus frame (keyboard / gamepad): crisp neon border drawn around the control.
 static func focus_style(accent: Color = ACCENT, radius: int = 18) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
@@ -173,9 +181,16 @@ static func _focused_button_style(pressed: bool = false) -> StyleBoxFlat:
 
 
 ## Main action (Play, Next wave): bright violet, white text.
-static func _cta_button_style(pressed: bool = false) -> StyleBoxFlat:
+## Unfocused: frame in its own violet, so the white frame of the focused state stands out.
+static func _cta_button_style(pressed: bool = false, focused: bool = false) -> StyleBoxFlat:
 	var style := _focused_button_style(pressed)
 	style.bg_color = CTA_FILL.darkened(0.25 if pressed else 0.0)
+	if focused:
+		style.bg_color = style.bg_color.lightened(0.15)
+		style.border_color = Color.WHITE
+		style.set_border_width_all(7)
+	else:
+		style.border_color = CTA_FILL.lightened(0.2)
 	return style
 
 
@@ -216,9 +231,10 @@ static func _build() -> Theme:
 	theme.set_type_variation(&"CtaButton", &"Button")
 	theme.set_font_size("font_size", &"CtaButton", 40)
 	theme.set_font("font", &"CtaButton", BANGERS)
-	for state in ["normal", "hover", "focus"]:
-		theme.set_stylebox(state, &"CtaButton", _cta_button_style())
-	theme.set_stylebox("pressed", &"CtaButton", _cta_button_style(true))
+	theme.set_stylebox("normal", &"CtaButton", _cta_button_style())
+	for state in ["hover", "focus"]:
+		theme.set_stylebox(state, &"CtaButton", _cta_button_style(false, true))
+	theme.set_stylebox("pressed", &"CtaButton", _cta_button_style(true, true))
 	theme.set_stylebox("disabled", &"CtaButton", disabled)
 
 	theme.set_stylebox("panel", "PanelContainer", panel_style(ACCENT, 0.6))

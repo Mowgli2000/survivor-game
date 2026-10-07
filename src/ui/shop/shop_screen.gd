@@ -11,9 +11,13 @@ signal next_wave_requested
 const INPUT_DELAY_MS := 350
 const CARD_SIZE := Vector2(300, 400)
 ## Coop: each player's shop fills half of the screen (compact layout).
-const COMPACT_CARD_SIZE := Vector2(214, 392)
+const COMPACT_CARD_SIZE := Vector2(214, 372)
 const COMPACT_ITEMS_WIDTH := 800.0
+## Coop: height kept free at the bottom for the pinned "Next wave" button.
+const COMPACT_NEXT_AREA := 110.0
 const CARD_ICON := 96.0
+## Coop: smaller icon, room for the card's text.
+const COMPACT_CARD_ICON := 64.0
 const ITEM_ICON := 60.0
 ## With many different items, the tiles shrink so the list stays on 3 rows.
 const ITEM_ICON_SMALL := 46.0
@@ -22,7 +26,7 @@ const ITEMS_WIDTH := 1100.0
 const ITEM_GAP := 8
 ## Rows of item icons shown before the list scrolls.
 const ITEM_ROWS := 2
-const WEAPON_ICON := 40
+const WEAPON_ICON := 56
 const TEXT_COLOR := UiTheme.TEXT
 const TOO_EXPENSIVE := UiTheme.BAD
 ## Delay between two cards appearing when the shop opens.
@@ -99,10 +103,13 @@ func _init(p_compact: bool = false) -> void:
 
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	if _compact:
+		# "Next wave" is pinned at the bottom (below): the rest is centered above it.
+		center.offset_bottom = -COMPACT_NEXT_AREA
 	root.add_child(center)
 
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 24)
+	box.add_theme_constant_override("separation", 14 if _compact else 24)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 40)
 	center.add_child(row)
@@ -111,7 +118,15 @@ func _init(p_compact: bool = false) -> void:
 	stats_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	stats_panel.set_dense()
 	stats_panel.visible = not _compact
-	row.add_child(stats_panel)
+	if _compact:
+		# Coop: no room beside the shop; shown over it while show_stats is held
+		# (Share / Tab of this half's player, see _input).
+		stats_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+		stats_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
+		stats_panel.grow_vertical = Control.GROW_DIRECTION_BOTH
+		root.add_child(stats_panel)
+	else:
+		row.add_child(stats_panel)
 
 	var header := HBoxContainer.new()
 	header.add_theme_constant_override("separation", 48)
@@ -138,10 +153,10 @@ func _init(p_compact: bool = false) -> void:
 	var weapons_title := _label(28, TEXT_COLOR, &"SubtitleLabel")
 	weapons_title.text = "UI_SHOP_WEAPONS"
 	box.add_child(weapons_title)
-	# A grid (3 per row, 2 in coop): a flow container reported its unwrapped width and
+	# A grid (3 per row): a flow container reported its unwrapped width and
 	# pushed the whole screen past the edge with six long weapon names.
 	_weapon_row = GridContainer.new()
-	_weapon_row.columns = 2 if _compact else 3
+	_weapon_row.columns = 3
 	_weapon_row.add_theme_constant_override("h_separation", 12)
 	_weapon_row.add_theme_constant_override("v_separation", 8)
 	_weapon_row.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
@@ -175,11 +190,55 @@ func _init(p_compact: bool = false) -> void:
 	_next = _button("UI_NEXT_WAVE", 0)
 	_next.theme_type_variation = &"CtaButton"
 	_next.custom_minimum_size = Vector2(300, 72) if _compact else Vector2(380, 84)
-	_next.size_flags_horizontal = Control.SIZE_SHRINK_CENTER if _compact else Control.SIZE_SHRINK_END
 	_next.pressed.connect(_on_next)
-	box.add_child(_next)
+	if _compact:
+		# Coop: pinned at the bottom center of the half. In the box it went down as
+		# weapons and items were added, until it left the screen (playtest).
+		_next.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+		_next.grow_horizontal = Control.GROW_DIRECTION_BOTH
+		_next.grow_vertical = Control.GROW_DIRECTION_BEGIN
+		_next.offset_bottom = -24.0
+		root.add_child(_next)
+	else:
+		_next.size_flags_horizontal = Control.SIZE_SHRINK_END
+		box.add_child(_next)
 	if not _compact:
-		root.add_child(ButtonHints.create([[&"A", "UI_HINT_BUY"], [&"X", "UI_HINT_LOCK"], [&"Y", "UI_HINT_REROLL"]]))
+		root.add_child(ButtonHints.create([[&"A", "UI_HINT_BUY"], [&"X", "UI_SHOP_MERGE"], [&"Y", "UI_HINT_REROLL"]]))
+
+
+## Coop: holding show_stats shows the stats over this half. The events reach the
+## half's viewport only from its player's devices (CoopScreens).
+func _input(event: InputEvent) -> void:
+	if visible and _compact and event.is_action("show_stats"):
+		stats_panel.visible = event.is_pressed()
+
+
+## merge_weapon (gamepad Square / X, key F) on an owned weapon merges it at once;
+## reroll (gamepad Triangle / Y, key R) rerolls the offers, as the button hints say.
+func _unhandled_input(event: InputEvent) -> void:
+	if not visible:
+		return
+	if event.is_action_pressed("reroll"):
+		get_viewport().set_input_as_handled()
+		_on_reroll()
+		return
+	if not event.is_action_pressed("merge_weapon"):
+		return
+	var focused := get_viewport().gui_get_focus_owner()
+	for key in _controls:
+		if _controls[key] == focused and key.begins_with("weapon:"):
+			get_viewport().set_input_as_handled()
+			merge_from_focus(int(key.get_slice(":", 1)))
+			return
+
+
+## Merges owned weapon `index` with its copy (shortcut), error sound if it cannot.
+func merge_from_focus(index: int) -> void:
+	if not _shop.can_merge(index):
+		_play(Sounds.UI_ERROR)
+		return
+	_selected_weapon = index
+	_on_merge()
 
 
 func open() -> void:
@@ -198,6 +257,8 @@ func open() -> void:
 
 func close() -> void:
 	visible = false
+	if _compact:
+		stats_panel.visible = false
 
 
 ## Coop: shows whose turn it is; an empty text hides the tag (solo).
@@ -359,7 +420,7 @@ func _make_card(index: int, offer: ShopOffer) -> Control:
 		return panel
 	var texts := describe(offer, 0 if offer.is_weapon() else _inventory.count(offer.item), _stats)
 	var icon := IconTile.create(offer.weapon.icon if offer.is_weapon() else offer.item.icon,
-		offer.tier, CARD_ICON)
+		offer.tier, COMPACT_CARD_ICON if _compact else CARD_ICON)
 	icon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	if not offer.is_weapon():
 		# Hover: total bonus with this copy added to the ones already owned.
@@ -380,6 +441,13 @@ func _make_card(index: int, offer: ShopOffer) -> Control:
 	effects.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	effects.custom_minimum_size.x = _card_size.x - 24.0
 	effects.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	if _compact:
+		# Coop: a long text must not make the card taller (it pushed "Next wave" off the
+		# screen): it fills the card's free height, ends with "…", full text on hover.
+		effects.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		name_label.max_lines_visible = 2
+		if offer.is_weapon():
+			panel.tooltip_text = "%s\n%s" % [texts[1], texts[2]]
 	box.add_child(effects)
 	var buy := _button(tr("UI_SHOP_BUY") % offer.price, 20 if _compact else 24)
 	UiFx.hover_lift(buy)
@@ -393,6 +461,8 @@ func _make_card(index: int, offer: ShopOffer) -> Control:
 	var lock := _button("🔒" if offer.locked else "🔓", 26)
 	lock.tooltip_text = "UI_SHOP_UNLOCK" if offer.locked else "UI_SHOP_LOCK"
 	lock.pressed.connect(_on_lock.bind(index))
+	if _compact:
+		lock.add_theme_font_size_override("font_size", 20)
 	box.add_child(lock)
 	_controls["lock:%d" % index] = lock
 	return panel
@@ -416,9 +486,11 @@ func _rebuild_weapons() -> void:
 			1.0 if mergeable or i == _selected_weapon else 0.45)
 		normal.set_content_margin_all(10)
 		button.add_theme_stylebox_override("normal", normal)
+		button.add_theme_stylebox_override("focus", UiTheme.card_focus_style())
 		button.add_theme_color_override("font_color", tier_color)
 		button.icon = slot.data.icon
 		button.add_theme_constant_override("icon_max_width", WEAPON_ICON)
+		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		button.pressed.connect(_on_weapon_selected.bind(i))
 		button.tooltip_text = weapon_details(slot)
 		_weapon_row.add_child(button)

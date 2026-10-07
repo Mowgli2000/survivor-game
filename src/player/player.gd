@@ -37,6 +37,8 @@ var tag_color := Color(0, 0, 0, 0)
 var weapons: WeaponHolder
 ## Weapons drawn around the player (set up by Run once the enemies exist).
 var weapon_visuals: WeaponVisuals
+## HP bar above the head (null in tests that skip setup()).
+var health_bar: PlayerHealthBar
 ## Gameplay rolls (dodge). Run replaces it with the run RNG (replays).
 var rng := RandomNumberGenerator.new()
 var animator := SpriteAnimator.new()
@@ -92,6 +94,12 @@ func _ready() -> void:
 	weapon_visuals = WeaponVisuals.new()
 	weapon_visuals.name = "WeaponVisuals"
 	add_child(weapon_visuals)
+
+	if stats != null:
+		health_bar = PlayerHealthBar.new()
+		health_bar.name = "HealthBar"
+		add_child(health_bar)
+		health_bar.setup(self, head_height())
 
 
 func _physics_process(delta: float) -> void:
@@ -217,6 +225,12 @@ func _draw_dust(feet: Vector2) -> void:
 		var r := motion.dust_ages[i] / PlayerMotion.DUST_LIFE
 		var at := motion.dust_positions[i] - global_position + feet + Vector2(0.0, -r * radius * 0.3)
 		draw_circle(at, radius * (0.2 + r * 0.45), Color(0.9, 0.88, 0.95, 0.4 * (1.0 - r)))
+
+
+## Distance from the center to the top of the sprite (where the HP bar sits).
+func head_height() -> float:
+	var height := radius * SPRITE_HEIGHT_PER_RADIUS * (_data.sprite_scale_for(_variant) if _data != null else 1.0)
+	return height - radius * SPRITE_FOOT
 
 
 ## The puppet stands on the feet, as tall as the sprite would be, leaning and
