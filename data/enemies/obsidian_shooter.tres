@@ -20,4 +20,5 @@ xp_value = 2
 color = Color(0.55, 1.0, 0.3, 1)
 shape_sides = 4
 sprite_id = &"obsidian_shooter"
+sprite_scale = 1.1
 projectile_style = 20

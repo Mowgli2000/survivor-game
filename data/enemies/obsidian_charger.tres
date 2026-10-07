@@ -22,4 +22,4 @@ xp_value = 2
 color = Color(0.8, 0.35, 0.3, 1)
 shape_sides = 4
 sprite_id = &"obsidian_charger"
-sprite_scale = 0.75
+sprite_scale = 1.1

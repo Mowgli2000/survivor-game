@@ -20,4 +20,5 @@ xp_value = 2
 color = Color(0.8, 0.35, 0.6, 1)
 shape_sides = 4
 sprite_id = &"gold_shooter"
+sprite_scale = 1.1
 projectile_style = 19

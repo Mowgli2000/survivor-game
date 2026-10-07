@@ -15,4 +15,4 @@ xp_value = 1
 color = Color(0.62, 0.4, 0.85, 1)
 shape_sides = 3
 sprite_id = &"iron_runner"
-sprite_scale = 1.3
+sprite_scale = 1.35

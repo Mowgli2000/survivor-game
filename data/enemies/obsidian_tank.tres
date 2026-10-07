@@ -17,4 +17,4 @@ xp_value = 5
 color = Color(0.45, 0.4, 0.8, 1)
 shape_sides = 6
 sprite_id = &"obsidian_tank"
-sprite_scale = 0.7
+sprite_scale = 1.25

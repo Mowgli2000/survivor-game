@@ -14,3 +14,4 @@ xp_value = 1
 color = Color(0.6, 0.85, 1.0, 1)
 shape_sides = 0
 sprite_id = &"silver_grunt"
+sprite_scale = 1.4

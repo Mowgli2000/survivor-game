@@ -15,4 +15,4 @@ xp_value = 1
 color = Color(0.3, 0.9, 0.55, 1)
 shape_sides = 3
 sprite_id = &"obsidian_runner"
-sprite_scale = 1.3
+sprite_scale = 1.35

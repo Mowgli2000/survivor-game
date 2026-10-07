@@ -12,7 +12,9 @@ enum Kind { SLASH, BEAM, EXPLOSION, HIT, LIGHTNING, WARN_CIRCLE, WARN_LINE, PORT
 const CAPACITY := 384
 ## Late game (Zone stat, many weapons) the drawn effects stay readable: past these sizes
 ## the picture grows at a fraction of the real hit area (the hits themselves are untouched).
-const SLASH_FULL := 140.0
+## Slashes are drawn at their real size up to 320 px (playtest: with the cap at 140, more
+## Zone or Range on a melee weapon did not show, every base slash being already past it).
+const SLASH_FULL := 320.0
 const BLAST_FULL := 120.0
 const BEAM_FULL := 10.0
 const BEAM_MAX := 22.0

@@ -83,6 +83,6 @@ reward_item_tier = 2
 color = Color(0.4, 0.95, 0.45, 1)
 shape_sides = 6
 sprite_id = &"obsidian_boss_mini"
-sprite_scale = 1.0
+sprite_scale = 1.1
 phases = Array[ExtResource("2_phase")]([SubResource("Phase_1"), SubResource("Phase_2")])
 projectile_style = 20

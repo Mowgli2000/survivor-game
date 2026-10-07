@@ -13,7 +13,7 @@ func test_oversized_effects_grow_at_a_fraction() -> void:
 	autofree(vfx)
 	var shown := vfx.shown_size(400.0, Vfx.SLASH_FULL)
 	assert_lt(shown, 400.0)
-	assert_almost_eq(shown, 140.0 + 260.0 * Vfx.OVERSIZE_SHARE, 0.01)
+	assert_almost_eq(shown, Vfx.SLASH_FULL + (400.0 - Vfx.SLASH_FULL) * Vfx.OVERSIZE_SHARE, 0.01)
 
 
 func test_coop_draws_effects_smaller() -> void:

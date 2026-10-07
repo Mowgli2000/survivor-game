@@ -22,4 +22,4 @@ xp_value = 2
 color = Color(0.85, 0.2, 0.15, 1)
 shape_sides = 4
 sprite_id = &"gold_charger"
-sprite_scale = 0.75
+sprite_scale = 1.1

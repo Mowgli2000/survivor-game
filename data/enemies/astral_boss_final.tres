@@ -125,6 +125,6 @@ xp_value = 0
 color = Color(1.0, 0.35, 0.2, 1)
 shape_sides = 8
 sprite_id = &"astral_boss_final"
-sprite_scale = 1.0
+sprite_scale = 1.15
 phases = Array[ExtResource("2_phase")]([SubResource("Phase_1"), SubResource("Phase_2"), SubResource("Phase_3")])
 projectile_style = 19

@@ -17,4 +17,4 @@ xp_value = 5
 color = Color(0.4, 0.62, 0.48, 1)
 shape_sides = 6
 sprite_id = &"iron_tank"
-sprite_scale = 0.7
+sprite_scale = 1.25

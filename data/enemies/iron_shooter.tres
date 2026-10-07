@@ -20,4 +20,5 @@ xp_value = 2
 color = Color(0.4, 0.68, 0.64, 1)
 shape_sides = 4
 sprite_id = &"iron_shooter"
+sprite_scale = 1.1
 projectile_style = 21
