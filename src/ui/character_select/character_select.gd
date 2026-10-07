@@ -2,12 +2,16 @@ class_name CharacterSelect
 extends Control
 ## Character and starting weapon choice before a run (ADR 0015). Locked
 ## characters are shown greyed out with the challenge that unlocks them.
-## Local coop (ADR 0017): player 1 then player 2 pick a character and a weapon,
-## then the Danger (the lower one both characters have unlocked).
+## Local coop (ADR 0017): CoopCharacterSelect shows one compact copy per half of the
+## screen (`split_index`), both players pick at once; player 1 also picks the seal
+## and presses Play without waiting: the run starts as soon as player 2 is ready.
 ## Emits `started(setup)`; the main menu asks SceneRouter to start the run.
 
 signal started(setup: RunSetup)
 signal closed
+## Split coop: this half's character and weapon are chosen (`unpicked`: taken back).
+signal picked
+signal unpicked
 
 ## "Portal" layout (dev's mockup): the hero in full on the left with his rule,
 ## bonuses and stats; on the right the heads of the seven classes, then the
@@ -18,6 +22,10 @@ const HEAD_REGION := Rect2(72.0, 8.0, 368.0, 368.0)
 const HERO_COLUMN := 700.0
 const HERO_ART_HEIGHT := 420.0
 const PREVIEW_HEIGHT := 170.0
+## Half-screen layout (split coop): heads on top, the hero beside his art below.
+const COMPACT_HEAD_SIZE := 108.0
+const COMPACT_ART := Vector2(230, 290)
+const COMPACT_SEAL_SIZE := Vector2(140, 100)
 ## Six seals must fit the right column.
 const SEAL_SIZE := Vector2(168, 116)
 const ROMAN: Array[String] = ["I", "II", "III", "IV", "V", "VI"]
@@ -65,21 +73,31 @@ var _weapon: WeaponData
 var _back: Button
 var _chosen: CharacterData
 var _title: Label
-## Which gamepad drives which player (coop only).
+## Which gamepad drives this player (split coop only).
 var _devices: Label
-## True for a local coop pick (two players).
-var coop: bool = false
-## Coop: 0 while player 1 picks, 1 for player 2.
-var _picking: int = 0
-## Coop: player 1's choice, kept while player 2 picks.
-var _first_character: CharacterData
-var _first_weapon: WeaponData
-var _first_variant: int = 0
+## Split coop: 0 = left half (player 1), 1 = right half; -1 = full-screen (solo).
+var split_index: int = -1
+## Split coop: character and weapon chosen, waiting for the other player.
+var is_ready: bool = false
+## Split coop: "Ready, waiting for..." under the weapons.
+var _ready_label: Label
+## Split coop (player 1): the partner's character once picked, for the seals both have unlocked.
+var _partner: CharacterData
+var _compact: bool = false
+var _head_size := HEAD_SIZE
+var _seal_size := SEAL_SIZE
+## Last key / gamepad event came from a gamepad: focusing a head shows the hero
+## (with the keyboard or the mouse, only a click does).
+var _pad_focus: bool = false
 ## Look picked on each card (0 = the character itself, 1 = its second look).
 var _variants: Dictionary[StringName, int] = {}
 
 
-func _init() -> void:
+func _init(p_compact: bool = false) -> void:
+	_compact = p_compact
+	if _compact:
+		_head_size = COMPACT_HEAD_SIZE
+		_seal_size = COMPACT_SEAL_SIZE
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	theme = UiTheme.get_theme()
 	visible = false
@@ -90,9 +108,9 @@ func _init() -> void:
 	var margin := MarginContainer.new()
 	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
 	for side in ["left", "right"]:
-		margin.add_theme_constant_override("margin_" + side, 48)
-	margin.add_theme_constant_override("margin_top", 28)
-	margin.add_theme_constant_override("margin_bottom", 96)
+		margin.add_theme_constant_override("margin_" + side, 24 if _compact else 48)
+	margin.add_theme_constant_override("margin_top", 20 if _compact else 28)
+	margin.add_theme_constant_override("margin_bottom", 24 if _compact else 96)
 	add_child(margin)
 	var page := VBoxContainer.new()
 	page.add_theme_constant_override("separation", 10)
@@ -103,30 +121,35 @@ func _init() -> void:
 	page.add_child(top)
 	_back = Button.new()
 	_back.text = "UI_BACK"
-	_back.custom_minimum_size = Vector2(190, 64)
+	_back.custom_minimum_size = Vector2(150, 52) if _compact else Vector2(190, 64)
 	_back.pressed.connect(_go_back)
 	top.add_child(_back)
 	_title = Label.new()
 	_title.text = "UI_CHOOSE_CHARACTER"
 	_title.theme_type_variation = &"TitleLabel"
-	_title.add_theme_font_size_override("font_size", 64)
+	_title.add_theme_font_size_override("font_size", 44 if _compact else 64)
 	top.add_child(_title)
 	_devices = Label.new()
 	_devices.theme_type_variation = &"SmallLabel"
 	_devices.size_flags_vertical = Control.SIZE_SHRINK_END
 	top.add_child(_devices)
-	var body := HBoxContainer.new()
-	body.add_theme_constant_override("separation", 40)
+	# Full screen: hero on the left, heads and rows on the right. Half screen: heads,
+	# then the hero, then the rows, from top to bottom.
+	var body: BoxContainer = VBoxContainer.new() if _compact else HBoxContainer.new()
+	body.add_theme_constant_override("separation", 12 if _compact else 40)
 	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	page.add_child(body)
+	_cards = HBoxContainer.new()
+	_cards.add_theme_constant_override("separation", 10 if _compact else 12)
+	if _compact:
+		body.add_child(_cards)
 	body.add_child(_build_hero_panel())
 	var right := VBoxContainer.new()
-	right.add_theme_constant_override("separation", 10)
+	right.add_theme_constant_override("separation", 8 if _compact else 10)
 	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	body.add_child(right)
-	_cards = HBoxContainer.new()
-	_cards.add_theme_constant_override("separation", 12)
-	right.add_child(_cards)
+	if not _compact:
+		right.add_child(_cards)
 	_weapon_title = _section_label("UI_CHOOSE_WEAPON")
 	right.add_child(_weapon_title)
 	_weapons = HBoxContainer.new()
@@ -142,23 +165,28 @@ func _init() -> void:
 	_seal_info = Label.new()
 	_seal_info.add_theme_font_size_override("font_size", 20)
 	_seal_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_seal_info.custom_minimum_size = Vector2(SEAL_SIZE.x * 6 + 12 * 5, 28)
+	_seal_info.custom_minimum_size = Vector2(_seal_size.x * 6 + 12 * 5, 28)
 	right.add_child(_seal_info)
 	_seal_effects = Label.new()
 	_seal_effects.add_theme_font_size_override("font_size", 16)
 	_seal_effects.add_theme_color_override("font_color", UiTheme.MUTED)
 	_seal_effects.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_seal_effects.custom_minimum_size = Vector2(SEAL_SIZE.x * 6 + 12 * 5, 24)
+	_seal_effects.custom_minimum_size = Vector2(_seal_size.x * 6 + 12 * 5, 24)
 	right.add_child(_seal_effects)
 	_launch = Button.new()
 	_launch.text = "UI_PLAY"
 	_launch.theme_type_variation = &"CtaButton"
-	_launch.custom_minimum_size = Vector2(340, 84)
+	_launch.custom_minimum_size = Vector2(280, 72) if _compact else Vector2(340, 84)
 	_launch.size_flags_horizontal = Control.SIZE_SHRINK_END
 	_launch.visible = false
 	_launch.pressed.connect(_start)
 	right.add_child(_launch)
-	add_child(ButtonHints.create([[&"A", "UI_HINT_CHOOSE"], [&"B", "UI_HINT_BACK"], [&"Y", "UI_HINT_SWITCH_LOOK"]]))
+	_ready_label = _section_label("UI_COOP_READY")
+	_ready_label.add_theme_color_override("font_color", UiTheme.GOOD)
+	_ready_label.visible = false
+	right.add_child(_ready_label)
+	if not _compact:
+		add_child(ButtonHints.create([[&"A", "UI_HINT_CHOOSE"], [&"B", "UI_HINT_BACK"], [&"Y", "UI_HINT_SWITCH_LOOK"]]))
 
 
 func _section_label(key: String) -> Label:
@@ -172,13 +200,17 @@ func _section_label(key: String) -> Label:
 
 ## Left column: the illustration of the shown hero (switch top-right), then a plate
 ## with his name, rule, bonus / malus chips and four stat bars.
+## Half screen: the illustration on the left of the plate instead of above it.
 func _build_hero_panel() -> Control:
-	var column := VBoxContainer.new()
-	column.custom_minimum_size.x = HERO_COLUMN
+	var column: BoxContainer = HBoxContainer.new() if _compact else VBoxContainer.new()
+	if not _compact:
+		column.custom_minimum_size.x = HERO_COLUMN
 	column.add_theme_constant_override("separation", 8)
 	var art_box := Control.new()
-	art_box.custom_minimum_size = Vector2(HERO_COLUMN, HERO_ART_HEIGHT)
+	art_box.custom_minimum_size = COMPACT_ART if _compact else Vector2(HERO_COLUMN, HERO_ART_HEIGHT)
 	column.add_child(art_box)
+	# Width left to the texts of the plate.
+	var text_width := 560.0 if _compact else HERO_COLUMN - 64.0
 	_hero_art = TextureRect.new()
 	_hero_art.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_hero_art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -205,25 +237,26 @@ func _build_hero_panel() -> Control:
 	art_box.add_child(_look_switch)
 	_hero_plate = PanelContainer.new()
 	_hero_plate.add_theme_stylebox_override("panel", UiTheme.plate_style())
+	_hero_plate.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	column.add_child(_hero_plate)
 	var info := VBoxContainer.new()
 	info.add_theme_constant_override("separation", 10)
 	_hero_plate.add_child(info)
 	_hero_name = Label.new()
 	_hero_name.theme_type_variation = &"TitleLabel"
-	_hero_name.add_theme_font_size_override("font_size", 60)
+	_hero_name.add_theme_font_size_override("font_size", 40 if _compact else 60)
 	info.add_child(_hero_name)
 	_hero_rule = Label.new()
-	_hero_rule.add_theme_font_size_override("font_size", 21)
+	_hero_rule.add_theme_font_size_override("font_size", 18 if _compact else 21)
 	_hero_rule.add_theme_color_override("font_color", UiTheme.MUTED)
 	_hero_rule.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_hero_rule.custom_minimum_size = Vector2(HERO_COLUMN - 64.0, 56.0)
+	_hero_rule.custom_minimum_size = Vector2(text_width, 48.0 if _compact else 56.0)
 	info.add_child(_hero_rule)
 	# Bonuses (green) and maluses (red): two columns of plain text, no frames.
 	_hero_chips = HFlowContainer.new()
 	_hero_chips.add_theme_constant_override("h_separation", 26)
 	_hero_chips.add_theme_constant_override("v_separation", 2)
-	_hero_chips.custom_minimum_size = Vector2(HERO_COLUMN - 64.0, 56.0)
+	_hero_chips.custom_minimum_size = Vector2(text_width, 48.0 if _compact else 56.0)
 	info.add_child(_hero_chips)
 	# Stats: label, thin bar, value on one line each.
 	var grid := GridContainer.new()
@@ -236,15 +269,15 @@ func _build_hero_panel() -> Control:
 		var stat: StringName = entry[0]
 		var name_label := Label.new()
 		name_label.text = entry[1]
-		name_label.add_theme_font_size_override("font_size", 21)
+		name_label.add_theme_font_size_override("font_size", 18 if _compact else 21)
 		name_label.add_theme_color_override("font_color", UiTheme.MUTED)
 		name_label.add_theme_constant_override("outline_size", 0)
-		name_label.custom_minimum_size.x = 230.0
+		name_label.custom_minimum_size.x = 170.0 if _compact else 230.0
 		grid.add_child(name_label)
 		var bar := ProgressBar.new()
 		bar.max_value = 1.0
 		bar.show_percentage = false
-		bar.custom_minimum_size = Vector2(250, 12)
+		bar.custom_minimum_size = Vector2(200 if _compact else 250, 12)
 		bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		var styles := UiTheme.flat_bar_styles(STAT_COLORS[stat])
 		bar.add_theme_stylebox_override("background", styles[0])
@@ -262,22 +295,21 @@ func _build_hero_panel() -> Control:
 	return column
 
 
-func open(p_coop: bool = false) -> void:
-	coop = p_coop
-	_picking = 0
-	_first_character = null
-	_first_weapon = null
-	_first_variant = 0
-	_devices.visible = coop
-	_devices.text = _devices_hint()
+## `p_split_index` >= 0: one half of the split coop pick (CoopCharacterSelect).
+func open(p_split_index: int = -1) -> void:
+	split_index = p_split_index
+	_partner = null
+	_set_ready(false)
+	_devices.visible = split_index >= 0
+	_devices.text = devices_hint(split_index, Input.get_connected_joypads().size())
 	_begin_pick()
 
 
-## Shows the cards for the player who picks now.
+## Shows the cards.
 func _begin_pick() -> void:
-	_title.text = tr("UI_COOP_PICK") % (_picking + 1) if coop else tr("UI_CHOOSE_CHARACTER")
-	if coop:
-		_title.add_theme_color_override("font_color", RunPlayer.COLORS[_picking])
+	_title.text = tr("UI_PLAYER_N") % (split_index + 1) if split_index >= 0 else tr("UI_CHOOSE_CHARACTER")
+	if split_index >= 0:
+		_title.add_theme_color_override("font_color", RunPlayer.COLORS[split_index])
 	else:
 		_title.remove_theme_color_override("font_color")
 	_chosen = null
@@ -289,10 +321,17 @@ func _begin_pick() -> void:
 
 
 func _focus_first_card() -> void:
+	var first := first_card()
+	if first != null:
+		first.grab_focus()
+
+
+## First head that can be picked (null if none).
+func first_card() -> Button:
 	for button: Button in _character_buttons.values():
 		if not button.disabled:
-			button.grab_focus()
-			break
+			return button
+	return null
 
 
 func close() -> void:
@@ -300,6 +339,14 @@ func close() -> void:
 		return
 	visible = false
 	closed.emit()
+
+
+## Remembers whether the player uses a gamepad (see _pad_focus).
+func _input(event: InputEvent) -> void:
+	if event is InputEventJoypadButton or (event is InputEventJoypadMotion and absf(event.axis_value) >= 0.5):
+		_pad_focus = true
+	elif event is InputEventKey or event is InputEventMouseButton:
+		_pad_focus = false
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -317,27 +364,37 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _go_back() -> void:
-	if _dangers.visible:
+	if is_ready:
+		# Split coop: take the choice back (player 1: back to his seals and Play).
+		_set_ready(false)
+		unpicked.emit()
+		if _dangers.visible:
+			_launch.visible = true
+			_launch.grab_focus()
+		else:
+			_focus_weapon()
+	elif _dangers.visible:
 		_show_dangers(false)
-		if _weapons.get_child_count() > 0:
-			(_weapons.get_child(0) as Button).grab_focus()
+		_focus_weapon()
 	elif _weapons.visible:
 		_show_weapons(false)
 		_character_buttons[_chosen.id].grab_focus()
-	elif coop and _picking == 1:
-		# Back to player 1's weapon choice.
-		_picking = 0
-		_begin_pick()
-		_choose_character(_first_character)
 	else:
 		close()
 
 
-func _devices_hint() -> String:
-	var pads := Input.get_connected_joypads().size()
-	if pads >= 2:
-		return tr("UI_COOP_PADS")
-	return tr("UI_COOP_ONE_PAD") if pads == 1 else tr("UI_COOP_NO_PAD")
+func _focus_weapon() -> void:
+	if _weapons.get_child_count() > 0:
+		(_weapons.get_child(0) as Button).grab_focus()
+
+
+## Devices of player `index` (same rule as PlayerInput.assign) for `pads` connected gamepads.
+static func devices_hint(index: int, pads: int) -> String:
+	if index == 0:
+		return TranslationServer.translate("UI_COOP_DEVICES_P1_PAD" if pads >= 2 else "UI_COOP_DEVICES_P1_KEYBOARD")
+	if pads == 0:
+		return TranslationServer.translate("UI_COOP_NO_PAD")
+	return TranslationServer.translate("UI_COOP_DEVICES_P2" if pads >= 2 else "UI_COOP_DEVICES_P2_PAD")
 
 
 func _build_cards() -> void:
@@ -354,7 +411,7 @@ func _build_cards() -> void:
 		var unlocked := SaveService.is_unlocked(&"characters", character)
 		var look := variant_of(character)
 		var button := Button.new()
-		button.custom_minimum_size = Vector2(HEAD_SIZE, HEAD_SIZE)
+		button.custom_minimum_size = Vector2(_head_size, _head_size)
 		button.disabled = not unlocked
 		button.tooltip_text = character.name_key_for(look)
 		button.add_theme_stylebox_override("normal", UiTheme.card_style(character.color, 0.6 if unlocked else 0.15))
@@ -373,6 +430,10 @@ func _build_cards() -> void:
 			lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			button.add_child(lock)
 		button.pressed.connect(_choose_character.bind(character))
+		# Gamepad: the hero shows as soon as his head is focused (dev's request).
+		button.focus_entered.connect(func() -> void:
+			if _pad_focus:
+				_show_hero(character))
 		UiFx.hover_lift(button)
 		_cards.add_child(button)
 		_character_buttons[character.id] = button
@@ -387,7 +448,7 @@ func _head(character: CharacterData, unlocked: bool, look: int) -> Control:
 		var frame := CenterContainer.new()
 		frame.set_anchors_preset(Control.PRESET_FULL_RECT)
 		frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		frame.add_child(SpritePreview.create(character_sheet(character, look), HEAD_SIZE - 24.0, not unlocked))
+		frame.add_child(SpritePreview.create(character_sheet(character, look), _head_size - 24.0, not unlocked))
 		return frame
 	var atlas := AtlasTexture.new()
 	atlas.atlas = card_art
@@ -536,6 +597,10 @@ func _unlock_hint(character: CharacterData) -> String:
 
 
 func _choose_character(character: CharacterData) -> void:
+	if is_ready:
+		# Split coop: another hero takes the previous choice back.
+		_set_ready(false)
+		unpicked.emit()
 	_chosen = character
 	_show_hero(character)
 	# Feedback: the hunter's first weapon rings out.
@@ -563,9 +628,14 @@ func _choose_character(character: CharacterData) -> void:
 		button.icon = weapon.icon
 		# Fixed icon size: with expand_icon a long name squeezed the icon to nothing.
 		button.add_theme_constant_override("icon_max_width", 64)
-		button.custom_minimum_size = Vector2(300, 72)
+		# Name right after the icon (centered, a short name left a wide gap: playtest).
+		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		button.custom_minimum_size = Vector2(260, 64) if _compact else Vector2(300, 72)
 		button.add_theme_color_override("font_color", Tiers.color(1))
 		button.pressed.connect(_choose_weapon.bind(weapon))
+		button.focus_entered.connect(func() -> void:
+			if _shown != _chosen:
+				_show_hero(_chosen))
 		_weapons.add_child(button)
 	_show_weapons(true)
 	if _weapons.get_child_count() > 0:
@@ -581,22 +651,51 @@ func _choose_weapon(weapon: WeaponData) -> void:
 	_weapon = weapon
 	if weapon.fire_sound != null:
 		Audio.play(weapon.fire_sound, weapon.fire_volume_db)
-	if coop and _picking == 0:
-		# Player 1 is done: player 2's turn.
-		_first_character = _chosen
-		_first_weapon = weapon
-		_first_variant = variant_of(_chosen)
-		_picking = 1
-		_show_weapons(false)
-		_begin_pick()
-		_focus_first_card()
+	if split_index == 1:
+		# Split coop, player 2: done (player 1 picks the seal).
+		_set_ready(true)
+		picked.emit()
 		return
+	_show_seal_row()
+
+
+## Split coop, player 1's half: player 2's character (null: not picked yet). The seal
+## row shown keeps its locks; CoopCharacterSelect lowers the seal at launch if needed.
+func set_partner(partner: CharacterData) -> void:
+	_partner = partner
+
+
+func _set_ready(on: bool) -> void:
+	is_ready = on
+	_ready_label.visible = on
+	_ready_label.text = "UI_COOP_WAIT_P2" if split_index == 0 else "UI_COOP_READY"
+
+
+## Seal picked by player 1 (split coop).
+func chosen_difficulty() -> DifficultyData:
+	return _difficulty
+
+
+## Character, weapon and look picked in this half (split coop).
+func chosen_character() -> CharacterData:
+	return _chosen
+
+
+func chosen_weapon() -> WeaponData:
+	return _weapon
+
+
+func chosen_variant() -> int:
+	return variant_of(_chosen) if _chosen != null else 0
+
+
+func _show_seal_row() -> void:
 	for child in _dangers.get_children():
 		_dangers.remove_child(child)
 		child.queue_free()
 	var allowed := SaveService.profile.max_difficulty(_chosen.id)
-	if coop:
-		allowed = mini(allowed, SaveService.profile.max_difficulty(_first_character.id))
+	if _partner != null:
+		allowed = mini(allowed, SaveService.profile.max_difficulty(_partner.id))
 	var levels: Array[DifficultyData] = []
 	levels.assign(ContentDB.get_all(&"difficulties"))
 	levels.sort_custom(func(a: DifficultyData, b: DifficultyData) -> bool: return a.level < b.level)
@@ -621,19 +720,20 @@ func _choose_weapon(weapon: WeaponData) -> void:
 func _seal_button(difficulty: DifficultyData, unlocked: bool) -> Button:
 	var heat := seal_heat(difficulty.level)
 	var button := Button.new()
-	button.custom_minimum_size = SEAL_SIZE
+	button.custom_minimum_size = _seal_size
 	button.disabled = not unlocked
 	button.add_theme_stylebox_override("normal", UiTheme.card_style(heat, 0.6))
 	button.add_theme_stylebox_override("hover", UiTheme.card_style(heat, 1.0))
 	button.add_theme_stylebox_override("pressed", UiTheme.card_style(heat, 1.0))
 	button.add_theme_stylebox_override("disabled", UiTheme.card_style(UiTheme.MUTED, 0.1))
+	button.add_theme_stylebox_override("focus", UiTheme.card_focus_style())
 	var box := VBoxContainer.new()
 	box.set_anchors_preset(Control.PRESET_FULL_RECT)
 	box.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_theme_constant_override("separation", 0)
 	button.add_child(box)
-	var numeral := _seal_label(ROMAN[difficulty.level], 44, heat if unlocked else UiTheme.MUTED)
+	var numeral := _seal_label(ROMAN[difficulty.level], 34 if _compact else 44, heat if unlocked else UiTheme.MUTED)
 	numeral.add_theme_font_override("font", UiTheme.BANGERS)
 	box.add_child(numeral)
 	# Locked: a padlock instead of the skulls. Copper (0 skulls) keeps an empty line.
@@ -769,7 +869,8 @@ func _select_seal(difficulty: DifficultyData, focus_launch: bool = true) -> void
 		button.add_theme_stylebox_override("normal", style)
 	if focus_launch:
 		Audio.play(Sounds.UI_SELECT, -6.0)
-		_launch.grab_focus()
+		if _launch.visible:
+			_launch.grab_focus()
 
 
 func _show_dangers(on: bool) -> void:
@@ -779,6 +880,7 @@ func _show_dangers(on: bool) -> void:
 	_seal_info.visible = on
 	_seal_effects.visible = on
 	if on:
+		_ready_label.visible = is_ready
 		# Over the title: the cards and the seals row stay visible.
 		HintBanner.show_once(self, &"seals", HintBanner.TOP_CENTER, Vector2(0.0, 4.0), 1500.0)
 
@@ -786,18 +888,18 @@ func _show_dangers(on: bool) -> void:
 func _start() -> void:
 	if _difficulty == null:
 		return
+	if split_index == 0:
+		# Split coop: player 1 is done too; CoopCharacterSelect starts once both are.
+		Audio.play(Sounds.UI_SELECT, -6.0)
+		_launch.visible = false
+		_set_ready(true)
+		(_dangers.get_child(_difficulty.level) as Button).grab_focus()
+		picked.emit()
+		return
 	Audio.play(Sounds.PORTAL_OPEN, -4.0)
 	var setup := RunSetup.new()
 	setup.difficulty = _difficulty
-	if coop:
-		setup.character = _first_character
-		setup.weapon = _first_weapon
-		setup.variant = _first_variant
-		setup.character_2 = _chosen
-		setup.weapon_2 = _weapon
-		setup.variant_2 = variant_of(_chosen)
-	else:
-		setup.character = _chosen
-		setup.weapon = _weapon
-		setup.variant = variant_of(_chosen)
+	setup.character = _chosen
+	setup.weapon = _weapon
+	setup.variant = variant_of(_chosen)
 	started.emit(setup)

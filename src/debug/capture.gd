@@ -60,7 +60,14 @@ func _ready() -> void:
 				for def in ContentDB.get_all(&"characters"):
 					menu._character_select._variants[(def as CharacterData).id] = variant
 				menu._character_select._build_cards()
-			if character_id != "":
+			if _mode == "--coopselect" and character_id != "":
+				# Both halves pick that character; with --danger too, both are ready.
+				for i in 2:
+					var half := menu._coop_select.select_of(i)
+					half._choose_character(ContentDB.get_def(&"characters", StringName(character_id)))
+					if danger >= 0:
+						(half._weapons.get_child(0) as Button).pressed.emit()
+			elif character_id != "":
 				menu._character_select._choose_character(ContentDB.get_def(&"characters", StringName(character_id)))
 				# With --danger=N too: pick the first weapon to show the seals row.
 				if danger >= 0:

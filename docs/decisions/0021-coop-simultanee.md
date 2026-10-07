@@ -1,6 +1,6 @@
 # ADR 0021 — Coop : level-ups et boutique en même temps
 
-**Date :** 2026-10-06 · **Statut :** appliqué (remplace le « à tour de rôle » de l'ADR 0017)
+**Date :** 2026-10-06 · **Statut :** appliqué (remplace le « à tour de rôle » de l'ADR 0017) · **corrigé par l'ADR 0022** (un seul focus GUI par fenêtre : focus des moitiés géré par `CoopScreens`)
 
 ## Contexte
 En coop, les deux joueurs passaient entre les vagues l'un après l'autre (level-ups puis boutique de J1, puis de J2). Retour du dev : les deux joueurs doivent pouvoir acheter et choisir leurs cartes en même temps.

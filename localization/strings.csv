@@ -279,9 +279,12 @@ UI_UNLOCK_ITEM,New item,Nouvel objet
 UI_PLAYER_N,Player %d,Joueur %d
 UI_PLAYER_DOWN,Down: back next wave,À terre : retour à la vague suivante
 UI_COOP,Local co-op,Coop locale
-UI_COOP_PICK,Player %d: choose your character,Joueur %d : choisis ton personnage
-UI_COOP_PADS,"Player 1: keyboard + gamepad 1, Player 2: gamepad 2","Joueur 1 : clavier + manette 1, Joueur 2 : manette 2"
-UI_COOP_ONE_PAD,"Player 1: keyboard, Player 2: gamepad","Joueur 1 : clavier, Joueur 2 : manette"
+UI_COOP_DEVICES_P1_PAD,Keyboard + gamepad 1,Clavier + manette 1
+UI_COOP_DEVICES_P1_KEYBOARD,Keyboard,Clavier
+UI_COOP_DEVICES_P2,Gamepad 2,Manette 2
+UI_COOP_DEVICES_P2_PAD,Gamepad,Manette
+UI_COOP_READY,Ready! Waiting for the other player…,Prêt ! En attente de l'autre joueur…
+UI_COOP_WAIT_P2,Ready! Waiting for player 2…,Prêt ! En attente du joueur 2…
 UI_COOP_NO_PAD,Connect a gamepad for player 2.,Branche une manette pour le joueur 2.
 CHARACTER_HERO,Assassin,Assassin
 CHARACTER_HERO_ALT,Assassin,Assassine
@@ -398,6 +401,7 @@ CHALLENGE_SEAL_5_DESC,Win a run at the Astral seal or higher,Gagner une partie a
 SEAL_REWARD,Reward: %s,Récompense : %s
 SEAL_REWARD_MORE,%s + %d items,%s + %d objets
 SET_SHOW_HINTS,Show tips,Afficher les astuces
+SET_PLAYER_HP_BAR,HP bar above the hero,Barre de vie au-dessus du héros
 HINT_MOVE,"Move with WASD or the arrow keys: your weapons attack on their own. Pick up what monsters drop: experience and materials.","Déplace-toi avec ZQSD ou les flèches : tes armes attaquent toutes seules. Ramasse ce que lâchent les monstres : expérience et matériaux."
 HINT_STATS,Hold Tab to see your stats.,Maintiens Tab pour voir tes statistiques.
 HINT_LEVEL_UP,"Level up! Pick an upgrade: it lasts for the whole run.","Niveau supérieur ! Choisis une amélioration : elle dure toute la partie."

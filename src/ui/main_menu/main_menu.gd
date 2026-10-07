@@ -34,6 +34,8 @@ var _quit: Button
 var _settings: SettingsScreen
 var _progression_button: Button
 var _character_select: CharacterSelect
+## Local coop: split-screen pick, both players at once.
+var _coop_select: CoopCharacterSelect
 var _progression: ProgressionScreen
 
 
@@ -108,9 +110,12 @@ func _ready() -> void:
 	root.add_child(_settings)
 	_character_select = CharacterSelect.new()
 	_character_select.started.connect(SceneRouter.goto_run)
-	_character_select.closed.connect(func() -> void:
-		_on_overlay_closed(_coop if _character_select.coop else _play))
+	_character_select.closed.connect(_on_overlay_closed.bind(_play))
 	root.add_child(_character_select)
+	_coop_select = CoopCharacterSelect.new()
+	_coop_select.started.connect(SceneRouter.goto_run)
+	_coop_select.closed.connect(_on_overlay_closed.bind(_coop))
+	root.add_child(_coop_select)
 	_progression = ProgressionScreen.new()
 	_progression.closed.connect(_on_overlay_closed.bind(_progression_button))
 	root.add_child(_progression)
@@ -172,7 +177,10 @@ func _on_settings_closed() -> void:
 func _open_character_select(coop: bool) -> void:
 	_buttons.visible = false
 	_hints.visible = false
-	_character_select.open(coop)
+	if coop:
+		_coop_select.open()
+	else:
+		_character_select.open()
 
 
 func _open_progression() -> void:
