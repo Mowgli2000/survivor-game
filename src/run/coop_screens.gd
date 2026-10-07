@@ -60,7 +60,7 @@ func setup(inputs: Array[PlayerInput]) -> void:
 		var frame := FocusFrame.new()
 		frame.color = RunPlayer.COLORS[i]
 		frame.style = UiTheme.focus_style(RunPlayer.COLORS[i])
-		frame.style.set_border_width_all(5)
+		frame.style.set_border_width_all(3)
 		top.add_child(frame)
 		_frames.append(frame)
 

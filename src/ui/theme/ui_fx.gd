@@ -1,10 +1,12 @@
 class_name UiFx
 ## Small, stateless UI animations (ADR 0011): appear, hover lift, bounce, number
-## roll. All last <= 0.35 s, never block input, and are skipped entirely when
-## `reduce_motion` is on (future accessibility setting).
+## roll, hero breathing. All (but the breathing loop) last <= 0.35 s, never block input,
+## and are skipped entirely when `reduce_motion` is on (future accessibility setting).
 
 static var reduce_motion: bool = false
 
+## Half of a breathing cycle (UiFx.breathe), in seconds.
+const BREATH_TIME := 1.6
 const APPEAR_TIME := 0.18
 const APPEAR_SCALE := 0.94
 const LIFT_SCALE := 1.04
@@ -57,6 +59,19 @@ static func bounce(control: Control) -> void:
 	var tween := control.create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tween.tween_property(control, "scale", Vector2.ONE, 0.25).from(Vector2.ONE * 1.1)
 	control.set_meta(&"_ui_fx_lift", tween)
+
+
+## Slow breathing loop (hero illustration of the select screen): the art grows
+## a little taller from its feet and back. Started once; nothing with reduce_motion.
+static func breathe(control: Control) -> void:
+	if reduce_motion or control.has_meta(&"_ui_fx_breathe"):
+		return
+	control.pivot_offset = Vector2(control.size.x * 0.5, control.size.y)
+	control.resized.connect(func() -> void: control.pivot_offset = Vector2(control.size.x * 0.5, control.size.y))
+	var tween := control.create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(control, "scale", Vector2(0.995, 1.018), BREATH_TIME)
+	tween.tween_property(control, "scale", Vector2.ONE, BREATH_TIME)
+	control.set_meta(&"_ui_fx_breathe", tween)
 
 
 ## Rolls `label.text` (format with one %d) from `from` to `to`.

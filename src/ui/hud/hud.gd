@@ -5,7 +5,7 @@ extends CanvasLayer
 ## Holding `show_stats` (Tab / gamepad Select) shows the stats panel.
 ## Read-only: listens to signals and reads state, never changes it.
 
-const WEAPON_ICON := 56.0
+const WEAPON_ICON := 76.0
 
 ## Seconds a toast stays fully visible.
 const TOAST_TIME := 2.5

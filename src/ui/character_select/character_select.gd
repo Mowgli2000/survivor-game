@@ -2,9 +2,14 @@ class_name CharacterSelect
 extends Control
 ## Character and starting weapon choice before a run (ADR 0015). Locked
 ## characters are shown greyed out with the challenge that unlocks them.
+## Layout chosen by the dev (mockup C, 2026-10-08), three columns, nothing numbered:
+## PERSONNAGES (list with the class names) -> the hero on a stone platform, his looks
+## on a turntable (left / right turn it) -> ARMES (weapon, then seal, then Play).
+## A moves to the next column, B back to the previous one.
 ## Local coop (ADR 0017): CoopCharacterSelect shows one compact copy per half of the
-## screen (`split_index`), both players pick at once; player 1 also picks the seal
-## and presses Play without waiting: the run starts as soon as player 2 is ready.
+## screen (`split_index`): the list, then a column with the hero and the weapons under
+## him. Both players pick at once; player 1 also picks the seal and presses Play
+## without waiting: the run starts as soon as player 2 is ready.
 ## Emits `started(setup)`; the main menu asks SceneRouter to start the run.
 
 signal started(setup: RunSetup)
@@ -13,30 +18,35 @@ signal closed
 signal picked
 signal unpicked
 
-## "Portal" layout (dev's mockup): the hero in full on the left with his rule,
-## bonuses and stats; on the right the heads of the seven classes, then the
-## starting weapons and the seals once a hero is picked.
-const HEAD_SIZE := 142.0
+## Steps (the lit column).
+enum Step { LIST, LOOK, WEAPON }
+
 ## Head and shoulders of a card illustration (512x768): the square shown in a head tile.
 const HEAD_REGION := Rect2(72.0, 8.0, 368.0, 368.0)
-const HERO_COLUMN := 700.0
-const HERO_ART_HEIGHT := 420.0
 const PREVIEW_HEIGHT := 170.0
-## Half-screen layout (split coop): heads on top, the hero beside his art below.
-const COMPACT_HEAD_SIZE := 108.0
-const COMPACT_ART := Vector2(230, 290)
-const COMPACT_SEAL_SIZE := Vector2(140, 100)
-## Six seals must fit the right column.
-const SEAL_SIZE := Vector2(168, 116)
+const LIST_WIDTH := 420.0
+const COMPACT_LIST_WIDTH := 280.0
+const ROW_HEIGHT := 96.0
+const COMPACT_ROW_HEIGHT := 104.0
+const STAGE_SIZE := Vector2(700, 500)
+const COMPACT_STAGE_SIZE := Vector2(0, 360)
+const SEAL_SIZE := Vector2(176, 104)
+const COMPACT_SEAL_SIZE := Vector2(86, 80)
+## Stone platform; PLATFORM_TOP is the middle of its top surface (fractions of the image).
+const PLATFORM := preload("res://assets/ui/select/platform_stone.png")
+const PLATFORM_TOP := Vector2(0.52, 0.37)
+const RUNE_CIRCLE := preload("res://assets/ui/select/rune_circle.png")
+## The look behind on the turntable: smaller, higher, darker (dev: "more behind than beside").
+const BACK_SCALE := 0.72
+const BACK_TINT := Color(0.3, 0.26, 0.45, 0.9)
 const ROMAN: Array[String] = ["I", "II", "III", "IV", "V", "VI"]
 const SKULL := "☠"
 const LOCK := "🔒"
 const REWARD_ICON := 30.0
+const COMPACT_REWARD_ICON := 20.0
 ## Copper -> Astral: sea green, lime, yellow, orange, red, blood red.
 const SEAL_HEAT: Array[Color] = [Color("4de0b8"), Color("a6e34d"), Color("ffd84d"),
 		Color("ff9a3d"), Color("ff4a3d"), Color("c8102e")]
-const FEMALE_COLOR := Color("ff7ab8")
-const MALE_COLOR := Color("5fb4ff")
 ## Bar fill = stat / these values (a full bar is a strong class, not a maximum).
 const BAR_HP := 150.0
 const BAR_DAMAGE := 1.5
@@ -47,22 +57,38 @@ const STAT_COLORS: Dictionary[StringName, Color] = {
 	StatIds.MAX_HP: Color("ff6673"), StatIds.DAMAGE: Color("ffb347"),
 	StatIds.MOVE_SPEED: Color("66f2ff"), StatIds.RANGE: Color("b86bff")}
 
+## Where the feet are in a card illustration (fractions of its size), measured once.
+static var _feet_cache: Dictionary = {}
+
+## One row per class (name and head), by id.
 var _character_buttons: Dictionary[StringName, Button] = {}
-var _cards: HBoxContainer
-## Hero panel (left): illustration, switch, name, rule, bonuses, stat bars.
+var _row_heads: Dictionary[StringName, TextureRect] = {}
+var _rows: VBoxContainer
+var _list_panel: PanelContainer
+var _stage_panel: PanelContainer
+var _arms_panel: PanelContainer
+## Turntable: platform, the other look behind, the shown look in front.
+var _stage: Control
+var _platform: TextureRect
+var _back_art: TextureRect
 var _hero_art: TextureRect
-var _look_switch: Button
+var _shadow: ContactShadow
+## Covers the stage: holds the focus at the look step (left / right turn, A validates).
+var _turn: Button
+var _arrow_left: Button
+var _arrow_right: Button
+var _dots: HBoxContainer
 var _hero_name: Label
 var _hero_rule: Label
 var _hero_chips: HFlowContainer
 var _hero_bars: Dictionary[StringName, ProgressBar] = {}
 var _hero_values: Dictionary[StringName, Label] = {}
-var _hero_plate: PanelContainer
-## Hero shown in the panel: the focused head, else the chosen one.
+var _hero_plate: VBoxContainer
+## Hero shown in the middle column: the focused row (gamepad), else the chosen one.
 var _shown: CharacterData
-var _weapons: HBoxContainer
+var _weapons: VBoxContainer
 var _weapon_title: Label
-var _dangers: HBoxContainer
+var _dangers: GridContainer
 ## Starts the run with the chosen seal (a seal press only selects it).
 var _launch: Button
 var _difficulty: DifficultyData
@@ -84,19 +110,28 @@ var _ready_label: Label
 ## Split coop (player 1): the partner's character once picked, for the seals both have unlocked.
 var _partner: CharacterData
 var _compact: bool = false
-var _head_size := HEAD_SIZE
 var _seal_size := SEAL_SIZE
-## Last key / gamepad event came from a gamepad: focusing a head shows the hero
+var _step: Step = Step.LIST
+## Last key / gamepad event came from a gamepad: focusing a row picks that hero
 ## (with the keyboard or the mouse, only a click does).
 var _pad_focus: bool = false
-## Look picked on each card (0 = the character itself, 1 = its second look).
+## Look picked for each class (0 = the character itself, 1 = its second look).
 var _variants: Dictionary[StringName, int] = {}
+
+
+## Soft dark ellipse under the feet, on the platform.
+class ContactShadow extends Control:
+	func _init() -> void:
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	func _draw() -> void:
+		draw_set_transform(size * 0.5, 0.0, Vector2(1.0, size.y / maxf(size.x, 1.0)))
+		draw_circle(Vector2.ZERO, size.x * 0.5, Color(0.02, 0.01, 0.06, 0.45))
 
 
 func _init(p_compact: bool = false) -> void:
 	_compact = p_compact
 	if _compact:
-		_head_size = COMPACT_HEAD_SIZE
 		_seal_size = COMPACT_SEAL_SIZE
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	theme = UiTheme.get_theme()
@@ -108,14 +143,14 @@ func _init(p_compact: bool = false) -> void:
 	var margin := MarginContainer.new()
 	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
 	for side in ["left", "right"]:
-		margin.add_theme_constant_override("margin_" + side, 24 if _compact else 48)
-	margin.add_theme_constant_override("margin_top", 20 if _compact else 28)
-	margin.add_theme_constant_override("margin_bottom", 24 if _compact else 96)
+		margin.add_theme_constant_override("margin_" + side, 20 if _compact else 40)
+	margin.add_theme_constant_override("margin_top", 18 if _compact else 26)
+	margin.add_theme_constant_override("margin_bottom", 20 if _compact else 90)
 	add_child(margin)
 	var page := VBoxContainer.new()
-	page.add_theme_constant_override("separation", 10)
+	page.add_theme_constant_override("separation", 12)
 	margin.add_child(page)
-	# Top bar: back pill, title (the co-op line next to it).
+	# Top bar: back pill, title (the co-op devices next to it).
 	var top := HBoxContainer.new()
 	top.add_theme_constant_override("separation", 28)
 	page.add_child(top)
@@ -127,172 +162,260 @@ func _init(p_compact: bool = false) -> void:
 	_title = Label.new()
 	_title.text = "UI_CHOOSE_CHARACTER"
 	_title.theme_type_variation = &"TitleLabel"
-	_title.add_theme_font_size_override("font_size", 44 if _compact else 64)
+	_title.add_theme_font_size_override("font_size", 44 if _compact else 60)
 	top.add_child(_title)
 	_devices = Label.new()
 	_devices.theme_type_variation = &"SmallLabel"
 	_devices.size_flags_vertical = Control.SIZE_SHRINK_END
 	top.add_child(_devices)
-	# Full screen: hero on the left, heads and rows on the right. Half screen: heads,
-	# then the hero, then the rows, from top to bottom.
-	var body: BoxContainer = VBoxContainer.new() if _compact else HBoxContainer.new()
-	body.add_theme_constant_override("separation", 12 if _compact else 40)
+	var body := HBoxContainer.new()
+	body.add_theme_constant_override("separation", 20 if _compact else 30)
 	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	page.add_child(body)
-	_cards = HBoxContainer.new()
-	_cards.add_theme_constant_override("separation", 10 if _compact else 12)
+	body.add_child(_build_list_column())
+	body.add_child(_build_stage_column())
+	# Half screen: the weapons go under the hero, in the same column.
+	var arms := _build_arms()
 	if _compact:
-		body.add_child(_cards)
-	body.add_child(_build_hero_panel())
-	var right := VBoxContainer.new()
-	right.add_theme_constant_override("separation", 8 if _compact else 10)
-	right.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	body.add_child(right)
-	if not _compact:
-		right.add_child(_cards)
-	_weapon_title = _section_label("UI_CHOOSE_WEAPON")
-	right.add_child(_weapon_title)
-	_weapons = HBoxContainer.new()
-	_weapons.add_theme_constant_override("separation", 16)
-	right.add_child(_weapons)
-	_danger_title = _section_label("UI_CHOOSE_DANGER")
-	right.add_child(_danger_title)
-	_dangers = HBoxContainer.new()
-	_dangers.add_theme_constant_override("separation", 12)
-	right.add_child(_dangers)
-	# Effects and place of the hovered / focused seal. Two reserved lines as wide
-	# as the seal row: a long text wraps inside them instead of shifting the layout.
-	_seal_info = Label.new()
-	_seal_info.add_theme_font_size_override("font_size", 20)
-	_seal_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_seal_info.custom_minimum_size = Vector2(_seal_size.x * 6 + 12 * 5, 28)
-	right.add_child(_seal_info)
-	_seal_effects = Label.new()
-	_seal_effects.add_theme_font_size_override("font_size", 16)
-	_seal_effects.add_theme_color_override("font_color", UiTheme.MUTED)
-	_seal_effects.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_seal_effects.custom_minimum_size = Vector2(_seal_size.x * 6 + 12 * 5, 24)
-	right.add_child(_seal_effects)
-	_launch = Button.new()
-	_launch.text = "UI_PLAY"
-	_launch.theme_type_variation = &"CtaButton"
-	_launch.custom_minimum_size = Vector2(280, 72) if _compact else Vector2(340, 84)
-	_launch.size_flags_horizontal = Control.SIZE_SHRINK_END
-	_launch.visible = false
-	_launch.pressed.connect(_start)
-	right.add_child(_launch)
-	_ready_label = _section_label("UI_COOP_READY")
-	_ready_label.add_theme_color_override("font_color", UiTheme.GOOD)
-	_ready_label.visible = false
-	right.add_child(_ready_label)
+		(_stage_panel.get_child(0) as VBoxContainer).add_child(arms)
+	else:
+		_arms_panel = _column(true)
+		_arms_panel.custom_minimum_size.x = SEAL_SIZE.x * 3 + 2 * 12 + 36
+		_arms_panel.add_child(arms)
+		body.add_child(_arms_panel)
 	if not _compact:
 		add_child(ButtonHints.create([[&"A", "UI_HINT_CHOOSE"], [&"B", "UI_HINT_BACK"], [&"Y", "UI_HINT_SWITCH_LOOK"]]))
 
 
-func _section_label(key: String) -> Label:
+func _column(expand: bool) -> PanelContainer:
+	var panel := PanelContainer.new()
+	panel.add_theme_stylebox_override("panel", UiTheme.column_style(false))
+	if expand:
+		panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	return panel
+
+
+func _section_label(key: String, size: int = 28) -> Label:
 	var label := Label.new()
 	label.text = key
 	label.theme_type_variation = &"SubtitleLabel"
-	label.add_theme_font_size_override("font_size", 28)
+	label.add_theme_font_size_override("font_size", size)
 	label.add_theme_color_override("font_color", UiTheme.MUTED)
 	return label
 
 
-## Left column: the illustration of the shown hero (switch top-right), then a plate
-## with his name, rule, bonus / malus chips and four stat bars.
-## Half screen: the illustration on the left of the plate instead of above it.
-func _build_hero_panel() -> Control:
-	var column: BoxContainer = HBoxContainer.new() if _compact else VBoxContainer.new()
-	if not _compact:
-		column.custom_minimum_size.x = HERO_COLUMN
-	column.add_theme_constant_override("separation", 8)
-	var art_box := Control.new()
-	art_box.custom_minimum_size = COMPACT_ART if _compact else Vector2(HERO_COLUMN, HERO_ART_HEIGHT)
-	column.add_child(art_box)
-	# Width left to the texts of the plate.
-	var text_width := 560.0 if _compact else HERO_COLUMN - 64.0
-	_hero_art = TextureRect.new()
-	_hero_art.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_hero_art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_hero_art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	_hero_art.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	art_box.add_child(_hero_art)
-	_look_switch = Button.new()
-	_look_switch.focus_mode = Control.FOCUS_NONE
-	_look_switch.flat = true
+func _column_title(key: String) -> Label:
+	var label := Label.new()
+	label.text = key
+	label.theme_type_variation = &"TitleLabel"
+	label.add_theme_font_size_override("font_size", 30 if _compact else 36)
+	return label
+
+
+## PERSONNAGES: one row per class, head and name.
+func _build_list_column() -> Control:
+	_list_panel = _column(false)
+	_list_panel.custom_minimum_size.x = COMPACT_LIST_WIDTH if _compact else LIST_WIDTH
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 10)
+	_list_panel.add_child(box)
+	box.add_child(_column_title("UI_SELECT_CHARACTERS"))
+	_rows = VBoxContainer.new()
+	_rows.add_theme_constant_override("separation", 10 if _compact else 12)
+	box.add_child(_rows)
+	return _list_panel
+
+
+## Middle column: the turntable on its platform, then name, rule, bonuses, stats.
+## Half screen: the weapons are added under it (see _init).
+func _build_stage_column() -> Control:
+	_stage_panel = _column(true)
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 6 if _compact else 10)
+	_stage_panel.add_child(box)
+	var stage_row := HBoxContainer.new()
+	stage_row.add_theme_constant_override("separation", 12)
+	box.add_child(stage_row)
+	_stage = Control.new()
+	_stage.custom_minimum_size = COMPACT_STAGE_SIZE if _compact else STAGE_SIZE
+	_stage.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_stage.clip_contents = true
+	_stage.resized.connect(_layout_stage)
+	stage_row.add_child(_stage)
+	var rune := TextureRect.new()
+	rune.texture = RUNE_CIRCLE
+	rune.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	rune.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	rune.set_anchors_preset(Control.PRESET_FULL_RECT)
+	rune.modulate = Color(UiTheme.VIOLET, 0.16)
+	rune.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_stage.add_child(rune)
+	_platform = _art_rect(PLATFORM)
+	_stage.add_child(_platform)
+	_back_art = _art_rect(null)
+	_back_art.modulate = BACK_TINT
+	_stage.add_child(_back_art)
+	_shadow = ContactShadow.new()
+	_stage.add_child(_shadow)
+	_hero_art = _art_rect(null)
+	_stage.add_child(_hero_art)
+	_turn = Button.new()
+	_turn.flat = true
+	_turn.set_anchors_preset(Control.PRESET_FULL_RECT)
 	var empty := StyleBoxEmpty.new()
-	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
-		_look_switch.add_theme_stylebox_override(state, empty)
-	_look_switch.add_theme_font_size_override("font_size", 46)
-	_look_switch.tooltip_text = "UI_SWITCH_LOOK"
-	_look_switch.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	_look_switch.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	_look_switch.offset_left = -64.0
-	_look_switch.offset_right = -8.0
-	_look_switch.offset_top = 4.0
-	_look_switch.offset_bottom = 60.0
-	_look_switch.pressed.connect(func() -> void:
-		if _shown != null:
-			_toggle_variant(_shown))
-	art_box.add_child(_look_switch)
-	_hero_plate = PanelContainer.new()
-	_hero_plate.add_theme_stylebox_override("panel", UiTheme.plate_style())
-	_hero_plate.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	column.add_child(_hero_plate)
-	var info := VBoxContainer.new()
-	info.add_theme_constant_override("separation", 10)
-	_hero_plate.add_child(info)
+	for state in ["normal", "hover", "pressed", "disabled"]:
+		_turn.add_theme_stylebox_override(state, empty)
+	_turn.add_theme_stylebox_override("focus", UiTheme.focus_style(UiTheme.ACCENT, 22))
+	_turn.pressed.connect(_confirm_look)
+	_turn.gui_input.connect(_on_turn_input)
+	_stage.add_child(_turn)
+	_arrow_left = _arrow("❮", -1)
+	_arrow_right = _arrow("❯", 1)
+	_stage.add_child(_arrow_left)
+	_stage.add_child(_arrow_right)
+	_dots = HBoxContainer.new()
+	_dots.add_theme_constant_override("separation", 10)
+	_dots.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_stage.add_child(_dots)
+	# Name and stats under the stage (half screen too: the stage gets the full width).
+	_hero_plate = VBoxContainer.new()
+	box.add_child(_hero_plate)
+	_hero_plate.add_theme_constant_override("separation", 6 if _compact else 8)
 	_hero_name = Label.new()
 	_hero_name.theme_type_variation = &"TitleLabel"
-	_hero_name.add_theme_font_size_override("font_size", 40 if _compact else 60)
-	info.add_child(_hero_name)
+	_hero_name.add_theme_font_size_override("font_size", 28 if _compact else 54)
+	_hero_name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_hero_plate.add_child(_hero_name)
 	_hero_rule = Label.new()
-	_hero_rule.add_theme_font_size_override("font_size", 18 if _compact else 21)
+	_hero_rule.add_theme_font_size_override("font_size", 20)
 	_hero_rule.add_theme_color_override("font_color", UiTheme.MUTED)
 	_hero_rule.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_hero_rule.custom_minimum_size = Vector2(text_width, 48.0 if _compact else 56.0)
-	info.add_child(_hero_rule)
-	# Bonuses (green) and maluses (red): two columns of plain text, no frames.
+	_hero_rule.custom_minimum_size = Vector2(STAGE_SIZE.x - 40.0, 52.0)
+	_hero_rule.visible = not _compact
+	_hero_plate.add_child(_hero_rule)
+	# Bonuses (green) and maluses (red) as plain text.
 	_hero_chips = HFlowContainer.new()
 	_hero_chips.add_theme_constant_override("h_separation", 26)
 	_hero_chips.add_theme_constant_override("v_separation", 2)
-	_hero_chips.custom_minimum_size = Vector2(text_width, 48.0 if _compact else 56.0)
-	info.add_child(_hero_chips)
-	# Stats: label, thin bar, value on one line each.
+	_hero_chips.custom_minimum_size = Vector2(STAGE_SIZE.x - 40.0, 0.0)
+	_hero_chips.visible = not _compact
+	_hero_plate.add_child(_hero_chips)
 	var grid := GridContainer.new()
-	grid.columns = 3
-	grid.add_theme_constant_override("h_separation", 16)
-	grid.add_theme_constant_override("v_separation", 8)
-	info.add_child(grid)
+	grid.columns = 4 if _compact else 3
+	grid.add_theme_constant_override("h_separation", 14)
+	grid.add_theme_constant_override("v_separation", 6)
+	_hero_plate.add_child(grid)
 	for entry in [[StatIds.MAX_HP, "STAT_MAX_HP"], [StatIds.DAMAGE, "STAT_DAMAGE"],
 			[StatIds.MOVE_SPEED, "STAT_MOVE_SPEED"], [StatIds.RANGE, "STAT_RANGE"]]:
 		var stat: StringName = entry[0]
 		var name_label := Label.new()
 		name_label.text = entry[1]
-		name_label.add_theme_font_size_override("font_size", 18 if _compact else 21)
+		name_label.add_theme_font_size_override("font_size", 14 if _compact else 20)
 		name_label.add_theme_color_override("font_color", UiTheme.MUTED)
 		name_label.add_theme_constant_override("outline_size", 0)
-		name_label.custom_minimum_size.x = 170.0 if _compact else 230.0
+		name_label.custom_minimum_size.x = 0.0 if _compact else 230.0
 		grid.add_child(name_label)
 		var bar := ProgressBar.new()
 		bar.max_value = 1.0
 		bar.show_percentage = false
-		bar.custom_minimum_size = Vector2(200 if _compact else 250, 12)
+		bar.custom_minimum_size = Vector2(70 if _compact else 300, 12)
 		bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		var styles := UiTheme.flat_bar_styles(STAT_COLORS[stat])
 		bar.add_theme_stylebox_override("background", styles[0])
 		bar.add_theme_stylebox_override("fill", styles[1])
 		grid.add_child(bar)
 		var value_label := Label.new()
-		value_label.add_theme_font_size_override("font_size", 23)
+		value_label.add_theme_font_size_override("font_size", 22)
 		value_label.add_theme_color_override("font_color", STAT_COLORS[stat])
 		value_label.add_theme_constant_override("outline_size", 0)
 		value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		value_label.custom_minimum_size.x = 80.0
-		grid.add_child(value_label)
+		value_label.visible = not _compact
+		if not _compact:
+			grid.add_child(value_label)
 		_hero_bars[stat] = bar
 		_hero_values[stat] = value_label
-	return column
+	return _stage_panel
+
+
+func _art_rect(texture: Texture2D) -> TextureRect:
+	var rect := TextureRect.new()
+	rect.texture = texture
+	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	rect.stretch_mode = TextureRect.STRETCH_SCALE
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return rect
+
+
+## Turntable arrow: a glowing chevron, no plate (dev's pick A). Mouse; the gamepad uses
+## left / right on the stage.
+func _arrow(text: String, direction: int) -> Button:
+	var button := Button.new()
+	button.text = text
+	button.flat = true
+	button.focus_mode = Control.FOCUS_NONE
+	button.custom_minimum_size = Vector2(56, 72)
+	var empty := StyleBoxEmpty.new()
+	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
+		button.add_theme_stylebox_override(state, empty)
+	button.add_theme_font_size_override("font_size", 46 if _compact else 60)
+	button.add_theme_color_override("font_color", UiTheme.ACCENT)
+	button.add_theme_color_override("font_hover_color", Color.WHITE)
+	button.add_theme_color_override("font_pressed_color", Color.WHITE)
+	button.add_theme_color_override("font_outline_color", Color(UiTheme.ACCENT, 0.3))
+	button.add_theme_constant_override("outline_size", 12)
+	button.pressed.connect(func() -> void:
+		if _chosen != null:
+			_turn_look(direction))
+	return button
+
+
+## ARMES: weapon cards, then the seals and Play.
+func _build_arms() -> Control:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 8 if _compact else 12)
+	_weapon_title = _column_title("UI_SELECT_WEAPONS")
+	box.add_child(_weapon_title)
+	_weapons = VBoxContainer.new()
+	_weapons.add_theme_constant_override("separation", 8 if _compact else 12)
+	box.add_child(_weapons)
+	_danger_title = _section_label("UI_CHOOSE_DANGER", 22 if _compact else 26)
+	box.add_child(_danger_title)
+	_dangers = GridContainer.new()
+	_dangers.columns = 6 if _compact else 3
+	_dangers.add_theme_constant_override("h_separation", 8 if _compact else 12)
+	_dangers.add_theme_constant_override("v_separation", 8 if _compact else 12)
+	box.add_child(_dangers)
+	# Effects and place of the hovered / focused seal: two reserved lines, a long text
+	# wraps inside them instead of shifting the layout.
+	var info_width := _seal_size.x * _dangers.columns + 12 * (_dangers.columns - 1)
+	_seal_info = Label.new()
+	_seal_info.add_theme_font_size_override("font_size", 18 if _compact else 22)
+	_seal_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_seal_info.custom_minimum_size = Vector2(info_width, 26)
+	box.add_child(_seal_info)
+	_seal_effects = Label.new()
+	_seal_effects.add_theme_font_size_override("font_size", 15 if _compact else 17)
+	_seal_effects.add_theme_color_override("font_color", UiTheme.MUTED)
+	_seal_effects.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_seal_effects.custom_minimum_size = Vector2(info_width, 22)
+	box.add_child(_seal_effects)
+	var spacer := Control.new()
+	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	box.add_child(spacer)
+	_launch = Button.new()
+	_launch.text = "UI_PLAY"
+	_launch.theme_type_variation = &"CtaButton"
+	_launch.custom_minimum_size = Vector2(280, 72) if _compact else Vector2(460, 100)
+	_launch.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_launch.visible = false
+	_launch.pressed.connect(_start)
+	box.add_child(_launch)
+	_ready_label = _section_label("UI_COOP_READY")
+	_ready_label.add_theme_color_override("font_color", UiTheme.GOOD)
+	_ready_label.visible = false
+	box.add_child(_ready_label)
+	return box
 
 
 ## `p_split_index` >= 0: one half of the split coop pick (CoopCharacterSelect).
@@ -303,9 +426,11 @@ func open(p_split_index: int = -1) -> void:
 	_devices.visible = split_index >= 0
 	_devices.text = devices_hint(split_index, Input.get_connected_joypads().size())
 	_begin_pick()
+	UiFx.breathe(_hero_art)
 
 
-## Shows the cards.
+## Shows the list; the first class is shown on the platform at once (dev's choice:
+## the screen is never empty on arrival).
 func _begin_pick() -> void:
 	_title.text = tr("UI_PLAYER_N") % (split_index + 1) if split_index >= 0 else tr("UI_CHOOSE_CHARACTER")
 	if split_index >= 0:
@@ -317,6 +442,10 @@ func _begin_pick() -> void:
 	_show_weapons(false)
 	_show_dangers(false)
 	visible = true
+	var first := first_card()
+	if first != null:
+		_choose_character(_character_of(first), false)
+	_set_step(Step.LIST)
 	_focus_first_card()
 
 
@@ -326,11 +455,18 @@ func _focus_first_card() -> void:
 		first.grab_focus()
 
 
-## First head that can be picked (null if none).
+## First row that can be picked (null if none).
 func first_card() -> Button:
-	for button: Button in _character_buttons.values():
-		if not button.disabled:
-			return button
+	for id in _character_buttons:
+		if not _character_buttons[id].disabled:
+			return _character_buttons[id]
+	return null
+
+
+func _character_of(button: Button) -> CharacterData:
+	for id in _character_buttons:
+		if _character_buttons[id] == button:
+			return ContentDB.get_def(&"characters", id) as CharacterData
 	return null
 
 
@@ -339,6 +475,18 @@ func close() -> void:
 		return
 	visible = false
 	closed.emit()
+
+
+## Lights the column of `step`.
+func _set_step(step: Step) -> void:
+	_step = step
+	_list_panel.add_theme_stylebox_override("panel", UiTheme.column_style(step == Step.LIST))
+	_stage_panel.add_theme_stylebox_override("panel", UiTheme.column_style(
+		step == Step.LOOK or (_compact and step == Step.WEAPON)))
+	if _arms_panel != null:
+		_arms_panel.add_theme_stylebox_override("panel", UiTheme.column_style(step == Step.WEAPON))
+	_arrow_left.modulate = Color.WHITE if step == Step.LOOK else Color(1, 1, 1, 0.55)
+	_arrow_right.modulate = _arrow_left.modulate
 
 
 ## Remembers whether the player uses a gamepad (see _pad_focus).
@@ -353,14 +501,24 @@ func _unhandled_input(event: InputEvent) -> void:
 	if visible and (event.is_action_pressed("cancel") or event.is_action_pressed("pause")):
 		get_viewport().set_input_as_handled()
 		_go_back()
-	elif visible and event.is_action_pressed("switch_variant"):
-		# The card under the focus changes look (gamepad Y / keyboard V).
+	elif visible and event.is_action_pressed("switch_variant") and _chosen != null:
+		# Gamepad Y / keyboard V turns the turntable from the list or the platform.
 		var focused := get_viewport().gui_get_focus_owner()
-		for id in _character_buttons:
-			if _character_buttons[id] == focused:
-				get_viewport().set_input_as_handled()
-				_toggle_variant(ContentDB.get_def(&"characters", id) as CharacterData)
-				return
+		if focused == _turn or _character_buttons.values().has(focused):
+			get_viewport().set_input_as_handled()
+			_turn_look(1)
+
+
+## Left / right on the platform turn it; the focus stays on it.
+func _on_turn_input(event: InputEvent) -> void:
+	if _chosen == null:
+		return
+	if event.is_action_pressed("ui_left", true):
+		_turn.accept_event()
+		_turn_look(-1)
+	elif event.is_action_pressed("ui_right", true):
+		_turn.accept_event()
+		_turn_look(1)
 
 
 func _go_back() -> void:
@@ -376,9 +534,13 @@ func _go_back() -> void:
 	elif _dangers.visible:
 		_show_dangers(false)
 		_focus_weapon()
-	elif _weapons.visible:
-		_show_weapons(false)
-		_character_buttons[_chosen.id].grab_focus()
+	elif _step == Step.WEAPON:
+		_set_step(Step.LOOK)
+		_turn.grab_focus()
+	elif _step == Step.LOOK:
+		_set_step(Step.LIST)
+		if _chosen != null:
+			_character_buttons[_chosen.id].grab_focus()
 	else:
 		close()
 
@@ -398,100 +560,136 @@ static func devices_hint(index: int, pads: int) -> String:
 
 
 func _build_cards() -> void:
-	for child in _cards.get_children():
-		_cards.remove_child(child)
+	for child in _rows.get_children():
+		_rows.remove_child(child)
 		child.queue_free()
 	_character_buttons.clear()
+	_row_heads.clear()
 	var characters: Array[CharacterData] = []
 	characters.assign(ContentDB.get_all(&"characters"))
 	# Starting characters first, then the ones to unlock (stable by id).
 	characters.sort_custom(func(a: CharacterData, b: CharacterData) -> bool:
 		return a.locked != b.locked and not a.locked or a.locked == b.locked and String(a.id) < String(b.id))
 	for character in characters:
-		var unlocked := SaveService.is_unlocked(&"characters", character)
-		var look := variant_of(character)
-		var button := Button.new()
-		button.custom_minimum_size = Vector2(_head_size, _head_size)
-		button.disabled = not unlocked
-		button.tooltip_text = character.name_key_for(look)
-		button.add_theme_stylebox_override("normal", UiTheme.card_style(character.color, 0.6 if unlocked else 0.15))
-		button.add_theme_stylebox_override("hover", UiTheme.card_style(UiTheme.ACCENT, 1.0))
-		button.add_theme_stylebox_override("focus", UiTheme.card_style(UiTheme.ACCENT, 1.0))
-		button.add_theme_stylebox_override("pressed", UiTheme.card_style(UiTheme.ACCENT, 1.0))
-		button.add_theme_stylebox_override("disabled", UiTheme.card_style(character.color, 0.1))
-		button.add_child(_head(character, unlocked, look))
-		if not unlocked:
-			var lock := Label.new()
-			lock.text = LOCK
-			lock.set_anchors_preset(Control.PRESET_FULL_RECT)
-			lock.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			lock.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-			lock.add_theme_font_size_override("font_size", 44)
-			lock.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			button.add_child(lock)
-		button.pressed.connect(_choose_character.bind(character))
-		# Gamepad: the hero shows as soon as his head is focused (dev's request).
-		button.focus_entered.connect(func() -> void:
-			if _pad_focus:
-				_show_hero(character))
-		UiFx.hover_lift(button)
-		_cards.add_child(button)
+		var button := _row(character)
+		_rows.add_child(button)
 		_character_buttons[character.id] = button
 	_show_hero(_chosen)
 
 
-## Head and shoulders of a hero (his card illustration cropped), as a tile content.
+## Row of the list: head and class name (a long name on two lines).
+func _row(character: CharacterData) -> Button:
+	var unlocked := SaveService.is_unlocked(&"characters", character)
+	var look := variant_of(character)
+	var height := COMPACT_ROW_HEIGHT if _compact else ROW_HEIGHT
+	var button := Button.new()
+	button.custom_minimum_size = Vector2(0.0, height)
+	button.disabled = not unlocked
+	button.add_theme_stylebox_override("normal", UiTheme.card_style(character.color, 0.5 if unlocked else 0.12))
+	button.add_theme_stylebox_override("hover", UiTheme.card_style(UiTheme.ACCENT, 1.0))
+	button.add_theme_stylebox_override("pressed", UiTheme.card_style(UiTheme.ACCENT, 1.0))
+	button.add_theme_stylebox_override("disabled", UiTheme.card_style(character.color, 0.1))
+	button.add_theme_stylebox_override("focus", UiTheme.card_focus_style())
+	var line := HBoxContainer.new()
+	line.set_anchors_preset(Control.PRESET_FULL_RECT)
+	line.offset_left = 8.0
+	line.offset_right = -8.0
+	line.add_theme_constant_override("separation", 14)
+	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	button.add_child(line)
+	# Half screen: smaller heads leave room for the longest class name on one line.
+	var head := _head(character, unlocked, look, 62.0 if _compact else height - 16.0)
+	line.add_child(head)
+	_row_heads[character.id] = head as TextureRect if head is TextureRect else null
+	var name_label := Label.new()
+	name_label.text = character.name_key_for(look) if unlocked else LOCK + " ???"
+	name_label.add_theme_font_size_override("font_size", 20 if _compact else 28)
+	name_label.add_theme_color_override("font_color", UiTheme.TEXT if unlocked else UiTheme.MUTED)
+	# Two lines at most, never a cut inside a word.
+	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD
+	name_label.max_lines_visible = 2
+	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	name_label.size_flags_vertical = Control.SIZE_FILL
+	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	line.add_child(name_label)
+	if not unlocked:
+		button.tooltip_text = _unlock_hint(character)
+	button.pressed.connect(_choose_character.bind(character))
+	# Gamepad: moving onto a row shows that hero at once (art, stats and starting
+	# weapons), the focus stays on the list (dev's request).
+	button.focus_entered.connect(func() -> void:
+		if not _pad_focus:
+			return
+		if unlocked and character != _chosen:
+			_choose_character(character, false)
+		elif not unlocked:
+			_show_hero(character))
+	UiFx.hover_lift(button)
+	return button
+
+
+## Head and shoulders of a hero (his card illustration cropped), `side` px square.
 ## Locked heroes are shown as a dark silhouette.
-func _head(character: CharacterData, unlocked: bool, look: int) -> Control:
+func _head(character: CharacterData, unlocked: bool, look: int, side: float) -> Control:
 	var card_art := character.card_art_for(look)
 	if card_art == null:
 		var frame := CenterContainer.new()
-		frame.set_anchors_preset(Control.PRESET_FULL_RECT)
+		frame.custom_minimum_size = Vector2(side, side)
 		frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		frame.add_child(SpritePreview.create(character_sheet(character, look), _head_size - 24.0, not unlocked))
+		frame.add_child(SpritePreview.create(character_sheet(character, look), side - 8.0, not unlocked))
 		return frame
-	var atlas := AtlasTexture.new()
-	atlas.atlas = card_art
-	var scale := card_art.get_width() / 512.0
-	atlas.region = Rect2(HEAD_REGION.position * scale, HEAD_REGION.size * scale)
 	var art := TextureRect.new()
-	art.texture = atlas
+	art.texture = _head_texture(card_art)
 	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	art.set_anchors_preset(Control.PRESET_FULL_RECT)
-	art.offset_left = 8.0
-	art.offset_top = 8.0
-	art.offset_right = -8.0
-	art.offset_bottom = -8.0
+	art.custom_minimum_size = Vector2(side, side)
+	art.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	art.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if not unlocked:
 		art.modulate = SpritePreview.SILHOUETTE
 	return art
 
 
-## Fills the hero panel with `character` (focused head, else the chosen one).
+static func _head_texture(card_art: Texture2D) -> AtlasTexture:
+	var atlas := AtlasTexture.new()
+	atlas.atlas = card_art
+	var scale := card_art.get_width() / 512.0
+	atlas.region = Rect2(HEAD_REGION.position * scale, HEAD_REGION.size * scale)
+	return atlas
+
+
+## Fills the middle column with `character` (focused row, else the chosen one).
 func _show_hero(character: CharacterData) -> void:
 	_shown = character
 	_hero_plate.visible = character != null
-	_look_switch.visible = false
 	if character == null:
 		_hero_art.texture = null
+		_back_art.texture = null
+		_layout_stage()
 		return
 	var unlocked := SaveService.is_unlocked(&"characters", character)
 	var look := variant_of(character)
 	_hero_art.texture = character.card_art_for(look)
 	_hero_art.modulate = Color.WHITE if unlocked else SpritePreview.SILHOUETTE
+	var looks := look_count(character) if unlocked else 1
+	_back_art.texture = character.card_art_for((look + 1) % looks) if looks > 1 else null
+	_arrow_left.visible = looks > 1
+	_arrow_right.visible = looks > 1
+	for dot in _dots.get_children():
+		_dots.remove_child(dot)
+		dot.queue_free()
+	if looks > 1:
+		for i in looks:
+			var dot := Label.new()
+			dot.text = "●" if i == look else "○"
+			dot.add_theme_font_size_override("font_size", 18)
+			dot.add_theme_color_override("font_color", UiTheme.ACCENT if i == look else UiTheme.MUTED)
+			_dots.add_child(dot)
 	_hero_name.text = character.name_key_for(look)
 	_hero_name.add_theme_color_override("font_color", character.color if unlocked else UiTheme.MUTED)
 	_hero_rule.text = character.description_key if unlocked else _unlock_hint(character)
 	_hero_rule.add_theme_color_override("font_color", UiTheme.TEXT if unlocked else UiTheme.MUTED)
-	_look_switch.visible = unlocked and character.has_alt_look()
-	# The sign shown is the look it switches to: blue male sign while the female look shows.
-	var male_next := look == 0
-	_look_switch.text = "♂" if male_next else "♀"
-	var sign_color := MALE_COLOR if male_next else FEMALE_COLOR
-	_look_switch.add_theme_color_override("font_color", sign_color)
-	_look_switch.add_theme_color_override("font_hover_color", sign_color.lightened(0.35))
 	for chip in _hero_chips.get_children():
 		_hero_chips.remove_child(chip)
 		chip.queue_free()
@@ -503,6 +701,124 @@ func _show_hero(character: CharacterData) -> void:
 	for stat in _hero_bars:
 		_hero_bars[stat].value = stats[stat] if unlocked else 0.0
 		_hero_values[stat].text = values[stat] if unlocked else ""
+	_layout_stage()
+
+
+## Places the platform, the two looks and the arrows: the feet of the front look stand
+## in the middle of the platform's top surface; the other look stands behind, higher
+## and smaller.
+func _layout_stage() -> void:
+	var area := _stage.size
+	if area.x <= 0.0:
+		return
+	# The whole platform fits, dots under it; the hero fills the height above his feet.
+	var dots_room := 26.0
+	# One size for every class, wide enough for the broadest hero (the male berserker).
+	var platform_w := minf(area.x * 0.7, area.y * 0.84)
+	var platform_h := platform_w * PLATFORM.get_height() / float(PLATFORM.get_width())
+	var feet := Vector2(area.x * 0.5, area.y - dots_room - platform_h * (1.0 - PLATFORM_TOP.y))
+	_platform.position = feet - Vector2(platform_w * PLATFORM_TOP.x, platform_h * PLATFORM_TOP.y)
+	_platform.size = Vector2(platform_w, platform_h)
+	var hero_h := feet.y - 6.0
+	_place_on_feet(_hero_art, feet, hero_h)
+	# Behind: up toward the back of the platform, off to the right of the hero's
+	# shoulder, so it reads as the next look waiting its turn.
+	_place_on_feet(_back_art, feet + Vector2(platform_w * 0.27, -platform_h * 0.24), hero_h * BACK_SCALE)
+	_shadow.size = Vector2(platform_w * 0.34, platform_h * 0.14)
+	_shadow.position = feet - _shadow.size * 0.5
+	var arrow_y := feet.y - hero_h * 0.5
+	_arrow_left.position = Vector2(area.x * 0.5 - platform_w * 0.62 - 28.0, arrow_y - 36.0)
+	_arrow_right.position = Vector2(area.x * 0.5 + platform_w * 0.62 - 28.0, arrow_y - 36.0)
+	_dots.position = Vector2(area.x * 0.5 - _dots.size.x * 0.5, area.y - dots_room)
+
+
+## Sizes `rect` to `height` (its texture's aspect) with the art's feet on `feet`.
+func _place_on_feet(rect: TextureRect, feet: Vector2, height: float) -> void:
+	if rect.texture == null:
+		rect.size = Vector2.ZERO
+		return
+	var width := height * rect.texture.get_width() / float(rect.texture.get_height())
+	var anchor := feet_anchor(rect.texture)
+	rect.size = Vector2(width, height)
+	rect.position = feet - Vector2(width * anchor.x, height * anchor.y)
+
+
+## Where the hero stands in a card illustration, as fractions of its size: the middle
+## between his two feet (not one foot: in a three-quarter view the front foot is lower).
+## The feet are the two widest groups of columns reaching the bottom band of the
+## figure; the anchor is between their centers, at the mean of their lowest points.
+## Measured once per texture (the art is not always centered).
+static func feet_anchor(texture: Texture2D) -> Vector2:
+	if _feet_cache.has(texture):
+		return _feet_cache[texture]
+	var anchor := Vector2(0.5, 0.97)
+	var image := texture.get_image()
+	if image != null:
+		if image.is_compressed():
+			image.decompress()
+		anchor = _feet_of(image)
+	_feet_cache[texture] = anchor
+	return anchor
+
+
+## The two feet of `image` as [Vector2 left, Vector2 right] in pixels (one twice if only one
+## is found), then their middle as fractions: see feet_anchor.
+static func feet_points(image: Image) -> Array[Vector2]:
+	var w := image.get_width()
+	var h := image.get_height()
+	var bottom := -1
+	for y in range(h - 1, -1, -1):
+		for x in range(0, w, 2):
+			if image.get_pixel(x, y).a > 0.6:
+				bottom = y
+				break
+		if bottom >= 0:
+			break
+	var result: Array[Vector2] = [Vector2(w * 0.5, h), Vector2(w * 0.5, h)]
+	if bottom < 0:
+		return result
+	# Lowest opaque pixel of each column within the bottom band of the figure.
+	var band_top := maxi(bottom - roundi(h * 0.16), 0)
+	var lowest := PackedInt32Array()
+	lowest.resize(w)
+	for x in w:
+		lowest[x] = -1
+		for y in range(bottom, band_top - 1, -1):
+			if image.get_pixel(x, y).a > 0.6:
+				lowest[x] = y
+				break
+	# Groups of neighbouring columns = feet (and bits of cloth); keep the two widest.
+	var groups: Array[Vector3i] = []  # start x, end x, lowest y
+	var start := -1
+	var low := 0
+	for x in w + 1:
+		var on := x < w and lowest[x] >= 0
+		if on and start < 0:
+			start = x
+			low = lowest[x]
+		elif on:
+			low = maxi(low, lowest[x])
+		elif start >= 0:
+			groups.append(Vector3i(start, x - 1, low))
+			start = -1
+	groups.sort_custom(func(a: Vector3i, b: Vector3i) -> bool: return a.y - a.x > b.y - b.x)
+	if groups.is_empty():
+		result[0] = Vector2(w * 0.5, bottom)
+		result[1] = result[0]
+		return result
+	var first := groups[0]
+	var second := groups[1] if groups.size() > 1 and groups[1].y - groups[1].x > (first.y - first.x) * 0.3 else first
+	var a := Vector2((first.x + first.y) * 0.5, first.z)
+	var b := Vector2((second.x + second.y) * 0.5, second.z)
+	result[0] = a if a.x <= b.x else b
+	result[1] = b if a.x <= b.x else a
+	return result
+
+
+static func _feet_of(image: Image) -> Vector2:
+	var feet := feet_points(image)
+	var middle := (feet[0] + feet[1]) * 0.5
+	return Vector2(middle.x / image.get_width(), middle.y / image.get_height())
 
 
 ## A bonus (green, up arrow) or malus (red, down arrow) as plain colored text.
@@ -510,7 +826,7 @@ func _chip(text: String) -> Label:
 	var bad := text.begins_with("-")
 	var label := Label.new()
 	label.text = ("▼ " if bad else "▲ ") + text
-	label.add_theme_font_size_override("font_size", 21)
+	label.add_theme_font_size_override("font_size", 20)
 	label.add_theme_color_override("font_color", UiTheme.BAD if bad else UiTheme.GOOD)
 	label.add_theme_constant_override("outline_size", 0)
 	return label
@@ -572,20 +888,49 @@ static func character_sheet(character: CharacterData, look: int = 0) -> SpriteSh
 	return load(path) as SpriteSheet if sprite_id != &"" and ResourceLoader.exists(path) else null
 
 
-## Look picked on `character`'s card (0 = the character itself).
+## Look picked for `character` (0 = the character itself).
 func variant_of(character: CharacterData) -> int:
 	return _variants.get(character.id, 0) if character.has_alt_look() else 0
 
 
+## Looks on the turntable: the character and its second look (skins later).
+static func look_count(character: CharacterData) -> int:
+	return 2 if character.has_alt_look() else 1
+
+
+## Turns the turntable of the chosen class by `direction` looks.
+func _turn_look(direction: int) -> void:
+	var looks := look_count(_chosen)
+	if looks <= 1:
+		return
+	_variants[_chosen.id] = posmod(variant_of(_chosen) + direction, looks)
+	Audio.play(Sounds.UI_SWOOSH, -4.0)
+	var head := _row_heads.get(_chosen.id) as TextureRect
+	var art := _chosen.card_art_for(variant_of(_chosen))
+	if head != null and art != null:
+		head.texture = _head_texture(art)
+	var label := (_character_buttons[_chosen.id].get_child(0).get_child(1)) as Label
+	label.text = _chosen.name_key_for(variant_of(_chosen))
+	_show_hero(_chosen)
+	if not UiFx.reduce_motion:
+		_hero_art.modulate.a = 0.0
+		create_tween().tween_property(_hero_art, "modulate:a", 1.0, 0.18)
+
+
+## Kept for the Y shortcut and the tests: the other look of `character`.
 func _toggle_variant(character: CharacterData) -> void:
-	_variants[character.id] = 1 - variant_of(character)
+	if character != _chosen:
+		_choose_character(character, false)
+	_turn_look(1)
+
+
+## The look is chosen: on to the weapons.
+func _confirm_look() -> void:
+	if _chosen == null:
+		return
 	Audio.play(Sounds.UI_SELECT, -6.0)
-	_build_cards()
-	_show_hero(character)
-	var focused := get_viewport().gui_get_focus_owner()
-	if _character_buttons.has(character.id) and not _character_buttons[character.id].disabled \
-			and (focused == null or focused == _look_switch):
-		_character_buttons[character.id].grab_focus()
+	_set_step(Step.WEAPON)
+	_focus_weapon()
 
 
 ## "Locked: <challenge description>" for the challenge that unlocks `character`.
@@ -596,7 +941,9 @@ func _unlock_hint(character: CharacterData) -> String:
 	return tr("UI_LOCKED") % "?"
 
 
-func _choose_character(character: CharacterData) -> void:
+## `confirm`: the player pressed the row (sound, on to the look); false when a gamepad
+## only moved onto it, or for the first class shown on arrival.
+func _choose_character(character: CharacterData, confirm: bool = true) -> void:
 	if is_ready:
 		# Split coop: another hero takes the previous choice back.
 		_set_ready(false)
@@ -604,10 +951,9 @@ func _choose_character(character: CharacterData) -> void:
 	_chosen = character
 	_show_hero(character)
 	# Feedback: the hunter's first weapon rings out.
-	if not character.starting_weapons.is_empty() and character.starting_weapons[0].fire_sound != null:
+	if confirm and not character.starting_weapons.is_empty() and character.starting_weapons[0].fire_sound != null:
 		Audio.play(character.starting_weapons[0].fire_sound, -4.0)
-	# Another card may be picked while the previous character's weapon and
-	# Danger rows are still shown: forget them (they belong to that character).
+	# The previous character's weapon and seals belong to him: forget them.
 	_weapon = null
 	for child in _dangers.get_children():
 		_dangers.remove_child(child)
@@ -623,32 +969,77 @@ func _choose_character(character: CharacterData) -> void:
 	if choices.is_empty() and character.starting_weapon != null:
 		choices.append(character.starting_weapon)
 	for weapon in choices:
-		var button := Button.new()
-		button.text = weapon.name_key
-		button.icon = weapon.icon
-		# Fixed icon size: with expand_icon a long name squeezed the icon to nothing.
-		button.add_theme_constant_override("icon_max_width", 64)
-		# Name right after the icon (centered, a short name left a wide gap: playtest).
-		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		button.custom_minimum_size = Vector2(260, 64) if _compact else Vector2(300, 72)
-		button.add_theme_color_override("font_color", Tiers.color(1))
-		button.pressed.connect(_choose_weapon.bind(weapon))
-		button.focus_entered.connect(func() -> void:
-			if _shown != _chosen:
-				_show_hero(_chosen))
-		_weapons.add_child(button)
+		_weapons.add_child(_weapon_card(weapon))
 	_show_weapons(true)
-	if _weapons.get_child_count() > 0:
-		(_weapons.get_child(0) as Button).grab_focus()
+	if confirm:
+		_set_step(Step.LOOK)
+		_turn.grab_focus()
+
+
+## Weapon card: icon, name, one-line description.
+func _weapon_card(weapon: WeaponData) -> Button:
+	var height := 80.0 if _compact else 104.0
+	var button := Button.new()
+	button.custom_minimum_size = Vector2(0.0, height)
+	button.add_theme_stylebox_override("normal", UiTheme.card_style(Tiers.color(1), 0.4))
+	button.add_theme_stylebox_override("hover", UiTheme.card_style(UiTheme.ACCENT, 1.0))
+	button.add_theme_stylebox_override("pressed", UiTheme.card_style(UiTheme.ACCENT, 1.0))
+	button.add_theme_stylebox_override("focus", UiTheme.card_focus_style())
+	var line := HBoxContainer.new()
+	line.set_anchors_preset(Control.PRESET_FULL_RECT)
+	line.offset_left = 12.0
+	line.offset_right = -12.0
+	line.add_theme_constant_override("separation", 14)
+	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	button.add_child(line)
+	var icon := TextureRect.new()
+	icon.texture = weapon.icon
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.custom_minimum_size = Vector2(height - 20.0, height - 20.0)
+	icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	line.add_child(icon)
+	var texts := VBoxContainer.new()
+	texts.alignment = BoxContainer.ALIGNMENT_CENTER
+	texts.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	texts.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	texts.add_theme_constant_override("separation", 2)
+	line.add_child(texts)
+	var name_label := Label.new()
+	name_label.text = weapon.name_key
+	name_label.add_theme_font_size_override("font_size", 22 if _compact else 26)
+	name_label.add_theme_color_override("font_color", Tiers.color(1))
+	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	texts.add_child(name_label)
+	if not _compact:
+		var description := Label.new()
+		description.text = weapon.description_key
+		description.add_theme_font_size_override("font_size", 17)
+		description.add_theme_color_override("font_color", UiTheme.MUTED)
+		description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		description.max_lines_visible = 2
+		description.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		texts.add_child(description)
+	else:
+		button.tooltip_text = weapon.description_key
+	button.pressed.connect(_choose_weapon.bind(weapon))
+	button.focus_entered.connect(func() -> void:
+		if _step != Step.WEAPON:
+			_set_step(Step.WEAPON)
+		if _shown != _chosen:
+			_show_hero(_chosen))
+	return button
 
 
 func _show_weapons(on: bool) -> void:
 	_weapons.visible = on
-	_weapon_title.visible = on
+	_weapon_title.visible = on or not _compact
 
 
 func _choose_weapon(weapon: WeaponData) -> void:
 	_weapon = weapon
+	_set_step(Step.WEAPON)
 	if weapon.fire_sound != null:
 		Audio.play(weapon.fire_sound, weapon.fire_volume_db)
 	if split_index == 1:
@@ -715,8 +1106,8 @@ func _show_seal_row() -> void:
 		_show_seal_info(_seal_info_text(levels[last], levels, true))
 
 
-## Seal button: big roman numeral and skulls in the seal's heat color, metal-colored
-## name. Locked seals are greyed out with a padlock.
+## Seal button: big roman numeral and skulls in the seal's heat color, the rewards
+## under them. Locked seals are greyed out with a padlock.
 func _seal_button(difficulty: DifficultyData, unlocked: bool) -> Button:
 	var heat := seal_heat(difficulty.level)
 	var button := Button.new()
@@ -733,24 +1124,24 @@ func _seal_button(difficulty: DifficultyData, unlocked: bool) -> Button:
 	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_theme_constant_override("separation", 0)
 	button.add_child(box)
-	var numeral := _seal_label(ROMAN[difficulty.level], 34 if _compact else 44, heat if unlocked else UiTheme.MUTED)
+	var numeral := _seal_label(ROMAN[difficulty.level], 30 if _compact else 40, heat if unlocked else UiTheme.MUTED)
 	numeral.add_theme_font_override("font", UiTheme.BANGERS)
 	box.add_child(numeral)
 	# Locked: a padlock instead of the skulls. Copper (0 skulls) keeps an empty line.
 	var marks := LOCK if not unlocked else SKULL.repeat(difficulty.level)
-	box.add_child(_seal_label(marks if marks != "" else " ", 18, heat if unlocked else UiTheme.MUTED))
-	# The seal's rewards: silhouettes until won, in color once unlocked (the name
-	# of the seal is in the info line under the row).
+	box.add_child(_seal_label(marks if marks != "" else " ", 14 if _compact else 18, heat if unlocked else UiTheme.MUTED))
+	# The seal's rewards: silhouettes until won, in color once unlocked.
 	var rewards := HBoxContainer.new()
 	rewards.alignment = BoxContainer.ALIGNMENT_CENTER
 	rewards.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	rewards.add_theme_constant_override("separation", 6)
+	rewards.add_theme_constant_override("separation", 4 if _compact else 6)
+	var reward_icon := COMPACT_REWARD_ICON if _compact else REWARD_ICON
 	for target in seal_rewards(difficulty.level):
 		var icon := TextureRect.new()
 		icon.texture = target.get(&"icon")
 		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon.custom_minimum_size = Vector2(REWARD_ICON, REWARD_ICON)
+		icon.custom_minimum_size = Vector2(reward_icon, reward_icon)
 		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		var category: StringName = &"weapons" if target is WeaponData else &"items"
 		if not SaveService.is_unlocked(category, target):
@@ -865,7 +1256,7 @@ func _select_seal(difficulty: DifficultyData, focus_launch: bool = true) -> void
 		var style := UiTheme.card_style(seal_heat(i), 1.0 if chosen else 0.6)
 		if chosen:
 			style.border_color = Color.WHITE
-			style.set_border_width_all(6)
+			style.set_border_width_all(4)
 		button.add_theme_stylebox_override("normal", style)
 	if focus_launch:
 		Audio.play(Sounds.UI_SELECT, -6.0)
@@ -881,7 +1272,7 @@ func _show_dangers(on: bool) -> void:
 	_seal_effects.visible = on
 	if on:
 		_ready_label.visible = is_ready
-		# Over the title: the cards and the seals row stay visible.
+		# Over the title: the columns and the seals stay visible.
 		HintBanner.show_once(self, &"seals", HintBanner.TOP_CENTER, Vector2(0.0, 4.0), 1500.0)
 
 

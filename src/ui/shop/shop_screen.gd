@@ -9,11 +9,12 @@ signal next_wave_requested
 
 ## Ignores presses right after opening (a held confirm key must not buy).
 const INPUT_DELAY_MS := 350
-const CARD_SIZE := Vector2(300, 400)
+const CARD_SIZE := Vector2(300, 370)
 ## Coop: each player's shop fills half of the screen (compact layout).
 const COMPACT_CARD_SIZE := Vector2(214, 372)
 const COMPACT_ITEMS_WIDTH := 800.0
-## Coop: height kept free at the bottom for the pinned "Next wave" button.
+## Height kept free at the bottom for the pinned "Next wave" button (solo / coop).
+const NEXT_AREA := 140.0
 const COMPACT_NEXT_AREA := 110.0
 const CARD_ICON := 96.0
 ## Coop: smaller icon, room for the card's text.
@@ -103,13 +104,12 @@ func _init(p_compact: bool = false) -> void:
 
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	if _compact:
-		# "Next wave" is pinned at the bottom (below): the rest is centered above it.
-		center.offset_bottom = -COMPACT_NEXT_AREA
+	# "Next wave" is pinned at the bottom (below): the rest is centered above it.
+	center.offset_bottom = -(COMPACT_NEXT_AREA if _compact else NEXT_AREA)
 	root.add_child(center)
 
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 14 if _compact else 24)
+	box.add_theme_constant_override("separation", 14)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 40)
 	center.add_child(row)
@@ -186,22 +186,20 @@ func _init(p_compact: bool = false) -> void:
 	_items_row.add_theme_constant_override("v_separation", ITEM_GAP)
 	_items_scroll.add_child(_items_row)
 
-	# Bottom right, under the items, far from Reroll (no misclick).
+	# Pinned at the bottom (coop: center of the half; solo: right, far from Reroll).
+	# In the column it went down as weapons and items were added, until it left the
+	# screen (playtest, solo and coop).
 	_next = _button("UI_NEXT_WAVE", 0)
 	_next.theme_type_variation = &"CtaButton"
 	_next.custom_minimum_size = Vector2(300, 72) if _compact else Vector2(380, 84)
 	_next.pressed.connect(_on_next)
-	if _compact:
-		# Coop: pinned at the bottom center of the half. In the box it went down as
-		# weapons and items were added, until it left the screen (playtest).
-		_next.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
-		_next.grow_horizontal = Control.GROW_DIRECTION_BOTH
-		_next.grow_vertical = Control.GROW_DIRECTION_BEGIN
-		_next.offset_bottom = -24.0
-		root.add_child(_next)
-	else:
-		_next.size_flags_horizontal = Control.SIZE_SHRINK_END
-		box.add_child(_next)
+	_next.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM if _compact else Control.PRESET_BOTTOM_RIGHT)
+	_next.grow_horizontal = Control.GROW_DIRECTION_BOTH if _compact else Control.GROW_DIRECTION_BEGIN
+	_next.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_next.offset_bottom = -24.0 if _compact else -36.0
+	if not _compact:
+		_next.offset_right = -60.0
+	root.add_child(_next)
 	if not _compact:
 		root.add_child(ButtonHints.create([[&"A", "UI_HINT_BUY"], [&"X", "UI_SHOP_MERGE"], [&"Y", "UI_HINT_REROLL"]]))
 
@@ -487,6 +485,11 @@ func _rebuild_weapons() -> void:
 		normal.set_content_margin_all(10)
 		button.add_theme_stylebox_override("normal", normal)
 		button.add_theme_stylebox_override("focus", UiTheme.card_focus_style())
+		# Hover / press keep the card shape (the theme's pill read as another button).
+		var lit := UiTheme.card_style(UiTheme.GOLD if mergeable else tier_color, 1.0)
+		lit.set_content_margin_all(10)
+		button.add_theme_stylebox_override("hover", lit)
+		button.add_theme_stylebox_override("pressed", lit)
 		button.add_theme_color_override("font_color", tier_color)
 		button.icon = slot.data.icon
 		button.add_theme_constant_override("icon_max_width", WEAPON_ICON)

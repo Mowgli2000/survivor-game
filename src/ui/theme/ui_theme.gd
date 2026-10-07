@@ -29,8 +29,10 @@ const PANEL_BG := Color(0.106, 0.09, 0.188, 0.95)
 ## Full-screen veil behind menus: night violet, not pure black.
 const DIM := Color(0.06, 0.04, 0.12, 0.78)
 const OUTLINE := Color.BLACK
-const OUTLINE_WIDTH := 4
-const GLOW_SIZE := 8
+## Thinner frames and a tighter glow (playtest: thick neon borders hurt the eyes, the
+## accent glow read as color bleeding past the black outline).
+const OUTLINE_WIDTH := 3
+const GLOW_SIZE := 4
 ## Portal theme: focused / hovered button fill, main-action button fill.
 const FOCUS_FILL := Color("4a2a86")
 const CTA_FILL := Color("7b3ff2")
@@ -65,18 +67,28 @@ static func panel_style(accent: Color, strength: float = 1.0, radius: int = 16) 
 	style.border_color = OUTLINE
 	style.set_border_width_all(OUTLINE_WIDTH)
 	style.set_corner_radius_all(radius)
-	style.shadow_color = Color(accent, 0.22 * strength)
+	style.shadow_color = Color(accent, 0.14 * strength)
 	style.shadow_size = roundi(GLOW_SIZE * strength)
 	style.set_content_margin_all(20)
 	style.anti_aliasing = true
 	return style
 
 
+## Column of the select screen; `lit`: the step being edited (soft accent frame).
+static func column_style(lit: bool) -> StyleBoxFlat:
+	var style := panel_style(ACCENT, 0.4, 22)
+	style.bg_color = Color(0.05, 0.03, 0.12, 0.8)
+	style.border_color = Color(ACCENT, 0.8) if lit else OUTLINE
+	style.set_border_width_all(3)
+	style.set_content_margin_all(18)
+	return style
+
+
 ## Window (pause, settings): the panel with a cyan frame.
 static func window_style() -> StyleBoxFlat:
 	var style := panel_style(ACCENT, 0.5, 26)
-	style.border_color = ACCENT
-	style.set_border_width_all(5)
+	style.border_color = Color(ACCENT, 0.85)
+	style.set_border_width_all(3)
 	style.set_content_margin_all(26)
 	return style
 
@@ -92,7 +104,7 @@ static func card_style(accent: Color, strength: float = 1.0) -> StyleBoxFlat:
 ## a pill frame on a card read as a second, different outline (playtest).
 static func card_focus_style(accent: Color = ACCENT) -> StyleBoxFlat:
 	var style := focus_style(accent, 21)
-	style.set_border_width_all(4)
+	style.set_border_width_all(3)
 	return style
 
 
@@ -176,7 +188,7 @@ static func _focused_button_style(pressed: bool = false) -> StyleBoxFlat:
 	var style := _button_style(ACCENT, 1.0, pressed)
 	style.bg_color = FOCUS_FILL.darkened(0.25 if pressed else 0.0)
 	style.border_color = ACCENT
-	style.set_border_width_all(5)
+	style.set_border_width_all(3)
 	return style
 
 
@@ -188,7 +200,7 @@ static func _cta_button_style(pressed: bool = false, focused: bool = false) -> S
 	if focused:
 		style.bg_color = style.bg_color.lightened(0.15)
 		style.border_color = Color.WHITE
-		style.set_border_width_all(7)
+		style.set_border_width_all(4)
 	else:
 		style.border_color = CTA_FILL.lightened(0.2)
 	return style

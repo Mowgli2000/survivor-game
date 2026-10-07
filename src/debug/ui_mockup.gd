@@ -3,7 +3,9 @@ extends Node
 ## data and art (offers, icons, stats, settings), and saves a screenshot.
 ## Nothing here is used by the game: it is a throwaway proposal to validate.
 ## Usage: Godot.exe --path . res://src/debug/ui_mockup.tscn -- --screen=<name> --out=<png>
-## Screens: menu_a, menu_b, menu_c1, menu_c2, menu_c3, select, select_seals, shop, pause, settings, levelup
+## Screens: menu_a, menu_b, menu_c1, menu_c2, menu_c3, select, select_seals, shop, pause, settings, levelup,
+## select_v2_a, select_v2_b, select_v2_c, select_v3, select_v3_coop, select_v4, select_v4_coop, select_v5_dalles,
+## select_v6
 
 const W := 1920.0
 const H := 1080.0
@@ -760,3 +762,498 @@ func _screen_menu_c3() -> void:
 		_mob(m[0], Vector2(m[1], m[2]), m[3], m[4])
 	_left_fade(900)
 	_menu_left()
+
+
+# --- character select v2 (proposals, 2026-10-08) ------------------------------------
+
+const V2_WEAPONS := [["longbow", "Arc long", "Flèches perçantes à longue portée."],
+	["smg", "Arbalète à répétition", "Rafales de carreaux rapides."]]
+const SEAL_HEAT := [Color("4de0b8"), Color("a6e34d"), Color("ffd84d"), Color("ff9a3d"), Color("ff4a3d"), Color("c8102e")]
+
+
+## Shared backdrop of the v2 proposals: night gradient, faint rune seal behind the
+## hero (the dungeon portal of the main menu), a soft floor glow.
+func _v2_backdrop(hero_center: Vector2) -> void:
+	_gradient()
+	_tex("res://art_source/ai/decor/decal_rune_circle.png", Rect2(hero_center - Vector2(420, 420), Vector2(840, 840)),
+		Rect2(), Color(VIOLET, 0.22))
+	for k in 3:
+		_ring(hero_center, 300.0 + k * 70.0, Color(CYAN, 0.10 - k * 0.03), 6.0)
+	_ring(hero_center + Vector2(0, 330), 260.0, Color(0, 0, 0, 0), 0.0, 0.0, TAU, Color(VIOLET, 0.18))
+
+
+func _v2_seal(rect: Rect2, level: int, state: String) -> void:
+	var locked := state == "locked"
+	var heat: Color = SEAL_HEAT[level]
+	_panel(rect, Color(PANEL, 0.95), Color.WHITE if state == "selected" else (BORDER if locked else Color(heat, 0.7)),
+		6 if state == "selected" else BW, 16)
+	_label(["I", "II", "III", "IV", "V", "VI"][level], int(rect.size.y * 0.42), heat if not locked else Color(MUTED, 0.5),
+		rect.position + Vector2(0, 2), rect.size.x, HORIZONTAL_ALIGNMENT_CENTER, true)
+	_label("☠".repeat(level) if not locked else "🔒", int(rect.size.y * 0.18), heat if not locked else MUTED,
+		rect.position + Vector2(0, rect.size.y * 0.58), rect.size.x, HORIZONTAL_ALIGNMENT_CENTER)
+
+
+func _v2_weapon_card(rect: Rect2, weapon: Array, focused: bool) -> void:
+	_panel(rect, Color(PANEL, 0.95), CYAN if focused else BORDER, 5 if focused else BW, 18)
+	_tex(_weapon_icon(weapon[0]), Rect2(rect.position + Vector2(16, 14), Vector2(rect.size.y - 28, rect.size.y - 28)))
+	_label(weapon[1], 28, Tiers.color(1), rect.position + Vector2(rect.size.y, 16), rect.size.x - rect.size.y - 16)
+	_label(weapon[2], 20, MUTED, rect.position + Vector2(rect.size.y, 56), rect.size.x - rect.size.y - 16)
+
+
+func _v2_back() -> void:
+	_panel(Rect2(40, 30, 170, 64), PANEL, BORDER, BW, 32)
+	_label("Retour", 28, TEXT, Vector2(40, 42), 170, HORIZONTAL_ALIGNMENT_CENTER)
+
+
+## A: same layout as today, but nothing is empty on arrival: the last hero played is
+## already selected (art, stats, weapons, seal, Play), the focus is on his head.
+func _screen_select_v2_a() -> void:
+	_v2_backdrop(Vector2(390, 420))
+	_v2_back()
+	_label("CHOISIS TON CHASSEUR", 64, CYAN, Vector2(240, 26), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+	_tex(_card_path(0), Rect2(60, 110, 660, 520))
+	_label("♂", 52, Color("5fb4ff"), Vector2(650, 110))
+	_panel(Rect2(40, 640, 700, 330), Color(PANEL_DARK, 0.92))
+	_label(HEROES[0][1].to_upper(), 54, Color("ff6b6b"), Vector2(70, 650), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+	_label(HEROES[0][2], 22, TEXT, Vector2(70, 716), 640)
+	_stat_bars(Vector2(70, 790), 640, [0.55, 0.7, 0.62, 0.78])
+	for n in 7:
+		_hero_head(n, Rect2(790 + n * 158.0, 110, 146, 146), n == 0, n == 5)
+	_label("Arme de départ", 28, MUTED, Vector2(790, 290))
+	_v2_weapon_card(Rect2(790, 330, 520, 110), V2_WEAPONS[0], false)
+	_v2_weapon_card(Rect2(1330, 330, 520, 110), V2_WEAPONS[1], false)
+	_label("Sceau", 28, MUTED, Vector2(790, 480))
+	for i in 6:
+		_v2_seal(Rect2(790 + i * 180.0, 520, 166, 120), i, "selected" if i == 1 else ("locked" if i > 2 else ""))
+	_label("Fer · Temple englouti", 30, SEAL_HEAT[1], Vector2(790, 660))
+	_label("Élites 1 % · Ennemis +12 % PV et dégâts", 22, MUTED, Vector2(790, 704))
+	_button(Rect2(1500, 860, 360, 110), "JOUER", "cta", 52)
+	_label("Dernier chasseur joué présélectionné : tout est prêt, A sur JOUER pour relancer.", 20, MUTED,
+		Vector2(790, 900), 680)
+	_hints([["A", "Choisir", GO], ["B", "Retour", BAD], ["Y", "♀ / ♂", GOLD]])
+
+
+## B: showcase. The hero stands big in the middle on the portal (breathing), the
+## seven heads are a carousel at the bottom; info on the left, loadout on the right.
+func _screen_select_v2_b() -> void:
+	_v2_backdrop(Vector2(960, 470))
+	_label("CHOISIS TON CHASSEUR", 60, CYAN, Vector2(0, 22), W, HORIZONTAL_ALIGNMENT_CENTER, true)
+	_v2_back()
+	_tex(_card_path(0), Rect2(660, 100, 600, 640))
+	_label("♂", 52, Color("5fb4ff"), Vector2(1220, 120))
+	_panel(Rect2(40, 130, 560, 600), Color(PANEL_DARK, 0.85))
+	_label(HEROES[0][1].to_upper(), 64, Color("ff6b6b"), Vector2(70, 140), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+	_label(HEROES[0][2], 24, TEXT, Vector2(70, 220), 500)
+	var chips: Array = HEROES[0][4]
+	for i in chips.size():
+		var bad: bool = String(chips[i]).begins_with("-")
+		_label(("▼ " if bad else "▲ ") + chips[i], 24, BAD if bad else GOOD, Vector2(70 + (i % 2) * 250.0, 320 + (i / 2) * 40.0))
+	_stat_bars(Vector2(70, 440), 500, [0.55, 0.7, 0.62, 0.78])
+	_panel(Rect2(1320, 130, 560, 600), Color(PANEL_DARK, 0.85))
+	_label("Arme de départ", 28, MUTED, Vector2(1350, 145))
+	_v2_weapon_card(Rect2(1350, 190, 500, 110), V2_WEAPONS[0], true)
+	_v2_weapon_card(Rect2(1350, 314, 500, 110), V2_WEAPONS[1], false)
+	_label("Sceau", 28, MUTED, Vector2(1350, 450))
+	for i in 6:
+		_v2_seal(Rect2(1350 + (i % 3) * 168.0, 490 + (i / 3) * 112.0, 156, 100), i,
+			"selected" if i == 1 else ("locked" if i > 2 else ""))
+	var x := 300.0
+	for n in 7:
+		var big := n == 0
+		var s := 150.0 if big else 120.0
+		_hero_head(n, Rect2(x, 800 + (0.0 if big else 15.0), s, s), big, n == 5)
+		x += s + 18.0
+	_button(Rect2(1540, 820, 340, 120), "JOUER", "cta", 54)
+	_hints([["LB/RB", "Chasseur", MUTED], ["A", "Choisir", GO], ["B", "Retour", BAD], ["Y", "♀ / ♂", GOLD]])
+
+
+## C: three steps side by side. 1 hunter list (names), 2 preview, 3 loadout and Play;
+## the step being edited is lit, the others stay readable.
+func _screen_select_v2_c() -> void:
+	_v2_backdrop(Vector2(860, 470))
+	_v2_back()
+	var steps := [["1", "CHASSEUR", Rect2(40, 120, 420, 860)], ["2", "APERÇU", Rect2(490, 120, 760, 860)],
+		["3", "ÉQUIPEMENT", Rect2(1280, 120, 600, 860)]]
+	for k in 3:
+		var r: Rect2 = steps[k][2]
+		_panel(r, Color(PANEL_DARK, 0.8), CYAN if k == 0 else BORDER, 5 if k == 0 else BW, 22)
+		_label(steps[k][0] + "  " + steps[k][1], 34, CYAN if k == 0 else MUTED, r.position + Vector2(24, 14), 0.0,
+			HORIZONTAL_ALIGNMENT_LEFT, true)
+	for n in 7:
+		var row := Rect2(60, 180 + n * 110.0, 380, 96)
+		_panel(row, Color("4a2a86") if n == 0 else Color(PANEL, 0.9), CYAN if n == 0 else BORDER, 4, 16)
+		_tex(_card_path(n), Rect2(row.position + Vector2(8, 8), Vector2(80, 80)), Rect2(72, 8, 368, 368),
+			Color(0.18, 0.15, 0.3, 1) if n == 5 else Color.WHITE)
+		_label(HEROES[n][1] if n != 5 else "🔒 ???", 28, TEXT if n != 5 else MUTED, row.position + Vector2(104, 26))
+	_tex(_card_path(0), Rect2(540, 180, 660, 480))
+	_label(HEROES[0][1].to_upper(), 56, Color("ff6b6b"), Vector2(520, 670), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+	_label(HEROES[0][2], 22, TEXT, Vector2(520, 736), 700)
+	_stat_bars(Vector2(520, 800), 700, [0.55, 0.7, 0.62, 0.78])
+	_v2_weapon_card(Rect2(1300, 190, 560, 104), V2_WEAPONS[0], false)
+	_v2_weapon_card(Rect2(1300, 306, 560, 104), V2_WEAPONS[1], false)
+	for i in 6:
+		_v2_seal(Rect2(1300 + (i % 3) * 188.0, 440 + (i / 3) * 118.0, 176, 104), i,
+			"selected" if i == 1 else ("locked" if i > 2 else ""))
+	_label("Fer · Temple englouti", 28, SEAL_HEAT[1], Vector2(1300, 690))
+	_button(Rect2(1340, 840, 480, 110), "JOUER", "cta", 52)
+	_hints([["A", "Valider", GO], ["B", "Étape précédente", BAD], ["Y", "♀ / ♂", GOLD]])
+
+
+# --- character select v3: the dev picked C (2026-10-08) -----------------------------
+
+## Hunter list row: head and class name.
+func _v3_row(rect: Rect2, index: int, focused: bool, locked: bool = false) -> void:
+	_panel(rect, Color("4a2a86") if focused else Color(PANEL, 0.9), CYAN if focused else BORDER, 4, 16)
+	var head := rect.size.y - 16.0
+	_tex(_card_path(index), Rect2(rect.position + Vector2(8, 8), Vector2(head, head)), Rect2(72, 8, 368, 368),
+		Color(0.18, 0.15, 0.3, 1) if locked else Color.WHITE)
+	_label(HEROES[index][1] if not locked else "🔒 ???", int(rect.size.y * 0.3), TEXT if not locked else MUTED,
+		rect.position + Vector2(head + 24, rect.size.y * 0.5 - rect.size.y * 0.21))
+
+
+## Look switch of the middle panel: ◀ ♀ ♂ ▶, the current look lit.
+func _v3_looks(center: Vector2, focused: bool, male: bool) -> void:
+	var rect := Rect2(center - Vector2(170, 34), Vector2(340, 68))
+	_panel(rect, Color("4a2a86") if focused else Color(PANEL, 0.9), CYAN if focused else BORDER, 4, 34)
+	_label("◀", 30, CYAN if focused else MUTED, rect.position + Vector2(20, 12))
+	_label("▶", 30, CYAN if focused else MUTED, rect.position + Vector2(rect.size.x - 50, 12))
+	_label("♀", 40, Color("ff7ab8") if not male else Color(MUTED, 0.5), rect.position + Vector2(110, 6))
+	_label("♂", 40, Color("5fb4ff") if male else Color(MUTED, 0.5), rect.position + Vector2(190, 6))
+
+
+## One column panel; `lit` = the step being edited.
+func _v3_column(rect: Rect2, title: String, lit: bool) -> void:
+	_panel(rect, Color(PANEL_DARK, 0.8), CYAN if lit else BORDER, 5 if lit else BW, 22)
+	if title != "":
+		_label(title, 34, CYAN if lit else MUTED, rect.position + Vector2(24, 14), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+
+
+## Solo: list, look, weapon. The step shown here: the look (middle column lit).
+func _screen_select_v3() -> void:
+	_v2_backdrop(Vector2(860, 470))
+	_v2_back()
+	_label("CHOISIS TON PERSONNAGE", 56, CYAN, Vector2(240, 30), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+	_v3_column(Rect2(40, 120, 420, 860), "PERSONNAGE", false)
+	_v3_column(Rect2(490, 120, 760, 860), "", true)
+	_v3_column(Rect2(1280, 120, 600, 860), "ARME", false)
+	for n in 7:
+		_v3_row(Rect2(60, 180 + n * 110.0, 380, 96), n, n == 0, n == 5)
+	_tex(_card_path(0), Rect2(540, 140, 660, 500))
+	_v3_looks(Vector2(870, 680), true, false)
+	_label(HEROES[0][1].to_upper(), 52, Color("ff6b6b"), Vector2(520, 720), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+	_label(HEROES[0][2], 22, TEXT, Vector2(520, 780), 700)
+	_stat_bars(Vector2(520, 830), 700, [0.55, 0.7, 0.62, 0.78])
+	_v2_weapon_card(Rect2(1300, 190, 560, 104), V2_WEAPONS[0], false)
+	_v2_weapon_card(Rect2(1300, 306, 560, 104), V2_WEAPONS[1], false)
+	_label("Sceau", 26, MUTED, Vector2(1300, 428))
+	for i in 6:
+		_v2_seal(Rect2(1300 + (i % 3) * 188.0, 466 + (i / 3) * 118.0, 176, 104), i,
+			"selected" if i == 1 else ("locked" if i > 2 else ""))
+	_label("Fer · Temple englouti", 28, SEAL_HEAT[1], Vector2(1300, 712))
+	_button(Rect2(1340, 840, 480, 110), "JOUER", "cta", 52)
+	_hints([["A", "Valider", GO], ["B", "Retour", BAD], ["◀ ▶", "Apparence", GOLD]])
+
+
+## Coop: one half per player, the same three steps in two columns (the list stays,
+## the right column shows the look, then the weapon under it). Player 1 also picks
+## the seal and Play; the run starts when both are ready.
+func _screen_select_v3_coop() -> void:
+	_gradient()
+	for p in 2:
+		var x0 := 960.0 * p
+		var color: Color = RunPlayer.COLORS[p]
+		_ring(Vector2(x0 + 640, 420), 300.0, Color(VIOLET, 0.12), 10.0)
+		_label("JOUEUR %d" % (p + 1), 44, color, Vector2(x0 + 30, 22), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+		_label("Manette %d" % (p + 1), 20, MUTED, Vector2(x0 + 240, 40))
+		# List: heads and names, narrower.
+		_v3_column(Rect2(x0 + 20, 90, 300, 900), "PERSONNAGE", false)
+		var chosen := 0 if p == 0 else 2
+		for n in 7:
+			_v3_row(Rect2(x0 + 34, 146 + n * 118.0, 272, 104), n, n == chosen, n == 5)
+		# Right: look on top, then weapon (and seal for player 1).
+		_v3_column(Rect2(x0 + 340, 90, 600, 900), "", false)
+		_tex(_card_path(chosen), Rect2(x0 + 400, 100, 300, 360))
+		_label(HEROES[chosen][1].to_upper(), 40, Color("ff6b6b") if p == 0 else Color("6fb6ff"), Vector2(x0 + 700, 140), 0.0,
+			HORIZONTAL_ALIGNMENT_LEFT, true)
+		_stat_bars(Vector2(x0 + 700, 210), 220, [0.55, 0.7, 0.62, 0.78])
+		_v3_looks(Vector2(x0 + 640, 500), p == 1, p == 0)
+		if p == 0:
+			_label("ARME", 30, CYAN, Vector2(x0 + 364, 556), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+			_v2_weapon_card(Rect2(x0 + 364, 600, 560, 92), V2_WEAPONS[0], false)
+			_panel(Rect2(x0 + 364, 600, 560, 92), Color(0, 0, 0, 0), Color.WHITE, 4, 18)
+			_label("Sceau", 22, MUTED, Vector2(x0 + 364, 706))
+			for i in 6:
+				_v2_seal(Rect2(x0 + 364 + i * 94.0, 738, 86, 80), i, "selected" if i == 1 else ("locked" if i > 2 else ""))
+			_button(Rect2(x0 + 520, 860, 300, 90), "JOUER", "cta", 44)
+		else:
+			_label("ARME", 30, MUTED, Vector2(x0 + 364, 556), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+			_label("Valide l'apparence pour choisir l'arme.", 22, MUTED, Vector2(x0 + 364, 606))
+	_line(Vector2(960, 0), Vector2(960, H), Color(BORDER, 0.9), 6.0)
+
+
+# --- character select v4: turntable of looks, stone platform (2026-10-08) -----------
+
+## Backdrop without the big floor glow: night gradient and a faint rune seal only.
+func _v4_backdrop(center: Vector2) -> void:
+	_gradient()
+	_tex("res://art_source/ai/decor/decal_rune_circle.png", Rect2(center - Vector2(420, 420), Vector2(840, 840)),
+		Rect2(), Color(VIOLET, 0.16))
+
+
+## Flat ellipse (ring node squashed vertically).
+func _ellipse(center: Vector2, rx: float, ry: float, fill: Color, border: Color, width: float) -> void:
+	var node := Node2D.new()
+	node.set_script(preload("res://src/debug/mockup_ring.gd"))
+	node.set("center", Vector2.ZERO)
+	node.set("radius", rx)
+	node.set("color", border)
+	node.set("width", width)
+	node.set("start", 0.0)
+	node.set("sweep", TAU)
+	node.set("fill", fill)
+	node.position = center
+	node.scale = Vector2(1.0, ry / rx)
+	_root.add_child(node)
+
+
+## Stone platform the hero stands on: a thick disc (side then top), rune glow on top.
+func _platform(center: Vector2, rx: float) -> void:
+	var ry := rx * 0.26
+	_ellipse(center + Vector2(0, ry * 0.7), rx, ry, Color("221a3a"), BORDER, 6.0)
+	_panel(Rect2(center.x - rx, center.y, rx * 2.0, ry * 0.7), Color("221a3a"), Color(0, 0, 0, 0), 0, 0)
+	_ellipse(center, rx, ry, Color("3a2f62"), BORDER, 6.0)
+	_ellipse(center, rx * 0.78, ry * 0.78, Color(0, 0, 0, 0), Color(CYAN, 0.55), 4.0)
+	_ellipse(center, rx * 0.5, ry * 0.5, Color(0, 0, 0, 0), Color(VIOLET, 0.6), 3.0)
+
+
+## Turntable: the current look in front on the platform, the next one darker and
+## smaller behind (turned away to the right), arrows on both sides, a dot per look.
+func _turntable(center: Vector2, height: float, front: String, back: String, focused: bool, dots: int = 2) -> void:
+	var w := height * 0.67
+	_platform(center + Vector2(0, height * 0.02), w * 0.62)
+	var behind := Rect2(center + Vector2(w * 0.08, -height * 0.86), Vector2(w * 0.78, height * 0.78))
+	_tex(back, behind, Rect2(), Color(0.32, 0.27, 0.48, 0.85))
+	_tex(front, Rect2(center + Vector2(-w * 0.5, -height), Vector2(w, height)))
+	var arrow := CYAN if focused else MUTED
+	for side in [-1.0, 1.0]:
+		var p := center + Vector2(side * (w * 0.62 + 40.0), -height * 0.45)
+		_ring(p, 30.0, BORDER, 4.0, 0.0, TAU, Color("4a2a86") if focused else PANEL)
+		_label("▶" if side > 0.0 else "◀", 30, arrow, p - Vector2(30, 22), 60, HORIZONTAL_ALIGNMENT_CENTER)
+	for d in dots:
+		_ring(center + Vector2((d - (dots - 1) * 0.5) * 26.0, height * 0.28), 7.0, BORDER, 2.0, 0.0, TAU,
+			CYAN if d == 0 else Color(MUTED, 0.5))
+
+
+## Hunter row with a long name shrunk to fit.
+func _v4_row(rect: Rect2, index: int, focused: bool, locked: bool = false) -> void:
+	_panel(rect, Color("4a2a86") if focused else Color(PANEL, 0.9), CYAN if focused else BORDER, 4, 16)
+	var head := rect.size.y - 16.0
+	_tex(_card_path(index), Rect2(rect.position + Vector2(8, 8), Vector2(head, head)), Rect2(72, 8, 368, 368),
+		Color(0.18, 0.15, 0.3, 1) if locked else Color.WHITE)
+	var name: String = HEROES[index][1] if not locked else "🔒 ???"
+	var room := rect.size.x - head - 36.0
+	var size := mini(int(rect.size.y * 0.3), int(room / (name.length() * 0.52)))
+	_label(name, size, TEXT if not locked else MUTED, rect.position + Vector2(head + 24, rect.size.y * 0.5 - size * 0.7))
+
+
+const ALT_CARDS := ["gunslinger_m_card", "mage_m_card", "berserker_m_card", "ronin_m_card", "assassin_f_card",
+	"merchant_m_card", "drifter_m_card"]
+
+
+func _alt_path(index: int) -> String:
+	return "res://assets/characters/cards/%s.png" % ALT_CARDS[index]
+
+
+## Solo: PERSONNAGES list, turntable in the middle (lit: the look step), ARMES.
+func _screen_select_v4() -> void:
+	_v4_backdrop(Vector2(860, 470))
+	_v2_back()
+	_label("CHOISIS TON PERSONNAGE", 56, CYAN, Vector2(240, 30), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+	_v3_column(Rect2(40, 120, 420, 860), "PERSONNAGES", false)
+	_v3_column(Rect2(490, 120, 760, 860), "", true)
+	_v3_column(Rect2(1280, 120, 600, 860), "ARMES", false)
+	for n in 7:
+		_v4_row(Rect2(60, 180 + n * 110.0, 380, 96), n, n == 0, n == 5)
+	_turntable(Vector2(870, 640), 480.0, _card_path(0), _alt_path(0), true)
+	_label(HEROES[0][1].to_upper(), 52, Color("ff6b6b"), Vector2(520, 700), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+	_label(HEROES[0][2], 22, TEXT, Vector2(520, 764), 700)
+	_stat_bars(Vector2(520, 800), 700, [0.55, 0.7, 0.62, 0.78])
+	_v2_weapon_card(Rect2(1300, 190, 560, 104), V2_WEAPONS[0], false)
+	_v2_weapon_card(Rect2(1300, 306, 560, 104), V2_WEAPONS[1], false)
+	_label("Sceau", 26, MUTED, Vector2(1300, 428))
+	for i in 6:
+		_v2_seal(Rect2(1300 + (i % 3) * 188.0, 466 + (i / 3) * 118.0, 176, 104), i,
+			"selected" if i == 1 else ("locked" if i > 2 else ""))
+	_label("Fer · Temple englouti", 28, SEAL_HEAT[1], Vector2(1300, 712))
+	_button(Rect2(1340, 840, 480, 110), "JOUER", "cta", 52)
+	_hints([["A", "Valider", GO], ["B", "Retour", BAD], ["◀ ▶", "Tourner", GOLD]])
+
+
+## Coop: two columns per half, same turntable and platform, smaller.
+func _screen_select_v4_coop() -> void:
+	_gradient()
+	for p in 2:
+		var x0 := 960.0 * p
+		_label("JOUEUR %d" % (p + 1), 44, RunPlayer.COLORS[p], Vector2(x0 + 30, 22), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+		_label("Manette %d" % (p + 1), 20, MUTED, Vector2(x0 + 240, 40))
+		_v3_column(Rect2(x0 + 20, 90, 300, 900), "PERSONNAGES", false)
+		var chosen := 0 if p == 0 else 2
+		for n in 7:
+			_v4_row(Rect2(x0 + 34, 146 + n * 118.0, 272, 104), n, n == chosen, n == 5)
+		_v3_column(Rect2(x0 + 340, 90, 600, 900), "", p == 1)
+		_turntable(Vector2(x0 + 560, 470), 340.0, _card_path(chosen), _alt_path(chosen), p == 1)
+		_label(HEROES[chosen][1].to_upper(), 36, Color("ff6b6b") if p == 0 else Color("6fb6ff"), Vector2(x0 + 740, 140), 0.0,
+			HORIZONTAL_ALIGNMENT_LEFT, true)
+		for k in 4:
+			var names := ["PV", "Dégâts", "Vitesse", "Portée"]
+			_label(names[k], 20, MUTED, Vector2(x0 + 740, 196 + k * 34.0))
+			_panel(Rect2(x0 + 830, 202 + k * 34.0, 90, 14), PANEL_DARK, BORDER, 2, 7)
+			_panel(Rect2(x0 + 830, 202 + k * 34.0, 90 * [0.55, 0.7, 0.62, 0.78][k], 14), CYAN, BORDER, 2, 7)
+		if p == 0:
+			_label("ARMES", 30, CYAN, Vector2(x0 + 364, 556), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+			_v2_weapon_card(Rect2(x0 + 364, 600, 560, 92), V2_WEAPONS[0], false)
+			_panel(Rect2(x0 + 364, 600, 560, 92), Color(0, 0, 0, 0), Color.WHITE, 4, 18)
+			_label("Sceau", 22, MUTED, Vector2(x0 + 364, 706))
+			for i in 6:
+				_v2_seal(Rect2(x0 + 364 + i * 94.0, 738, 86, 80), i, "selected" if i == 1 else ("locked" if i > 2 else ""))
+			_button(Rect2(x0 + 520, 860, 300, 90), "JOUER", "cta", 44)
+		else:
+			_label("ARMES", 30, MUTED, Vector2(x0 + 364, 556), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+			_label("Valide l'apparence pour choisir l'arme.", 22, MUTED, Vector2(x0 + 364, 606))
+	_line(Vector2(960, 0), Vector2(960, H), Color(BORDER, 0.9), 6.0)
+
+
+# --- character select v5: three platforms to choose from (2026-10-08) ----------------
+
+## [image, label, center of the top surface as a fraction of the image height].
+const DALLES := [["res://art_tests/interface/dalles/1_pierre_runique.png", "1 · Pierre runique", 0.40],
+	["res://art_tests/interface/dalles/2_obsidienne_portail.png", "2 · Obsidienne du portail", 0.44],
+	["res://art_tests/interface/dalles/3_sceau_bronze.png", "3 · Sceau de la guilde", 0.37]]
+
+
+## Turntable on a generated platform: the feet of the front look stand in the middle
+## of the platform's top surface, with a contact shadow; the other look behind.
+func _turntable_on(center: Vector2, height: float, front: String, back: String, dalle: Array) -> void:
+	var dw := height * 0.95
+	var dh := dw * 1024.0 / 1536.0
+	var feet := center
+	_tex(dalle[0], Rect2(feet - Vector2(dw * 0.5, dh * dalle[2]), Vector2(dw, dh)))
+	_ellipse(feet + Vector2(height * 0.16, -height * 0.02), height * 0.15, height * 0.035, Color(0, 0, 0, 0.35),
+		Color(0, 0, 0, 0), 0.0)
+	var w := height * 0.67
+	# Card art: the feet are at 98 % of the image height.
+	_tex(back, Rect2(feet + Vector2(w * 0.12, -height * 0.84), Vector2(w * 0.82, height * 0.82)), Rect2(),
+		Color(0.32, 0.27, 0.48, 0.85))
+	_ellipse(feet + Vector2(0, -height * 0.005), height * 0.17, height * 0.04, Color(0, 0, 0, 0.4), Color(0, 0, 0, 0), 0.0)
+	_tex(front, Rect2(feet + Vector2(-w * 0.5, -height * 0.98), Vector2(w, height)))
+	for side in [-1.0, 1.0]:
+		var p := feet + Vector2(side * (w * 0.62 + 40.0), -height * 0.45)
+		_ring(p, 30.0, BORDER, 4.0, 0.0, TAU, Color("4a2a86"))
+		_label("▶" if side > 0.0 else "◀", 30, CYAN, p - Vector2(30, 22), 60, HORIZONTAL_ALIGNMENT_CENTER)
+
+
+## Three middle panels side by side, one per platform.
+func _screen_select_v5_dalles() -> void:
+	_v4_backdrop(Vector2(960, 470))
+	_label("TROIS DALLES AU CHOIX", 56, CYAN, Vector2(0, 26), W, HORIZONTAL_ALIGNMENT_CENTER, true)
+	for k in 3:
+		var r := Rect2(40 + k * 625.0, 120, 590, 900)
+		_v3_column(r, "", k == 0)
+		_turntable_on(Vector2(r.position.x + r.size.x * 0.5, 680), 480.0, _card_path(0), _alt_path(0), DALLES[k])
+		_label(DALLES[k][1], 34, TEXT, Vector2(r.position.x, 880), r.size.x, HORIZONTAL_ALIGNMENT_CENTER, true)
+
+
+# --- character select v6: middle between the feet, turntable arrows (2026-10-08) -----
+
+## One hero on the stone platform, placed by CharacterSelect.feet_anchor (middle between
+## the feet); red dots on the feet found, cyan cross on their middle, yellow ring on the
+## middle of the platform's top.
+func _v6_hero(center: Vector2, height: float, card: String) -> void:
+	var platform := load("res://assets/ui/select/platform_stone.png") as Texture2D
+	var pw := height * 0.66
+	var ph := pw * platform.get_height() / float(platform.get_width())
+	_tex("res://assets/ui/select/platform_stone.png",
+		Rect2(center - Vector2(pw * CharacterSelect.PLATFORM_TOP.x, ph * CharacterSelect.PLATFORM_TOP.y), Vector2(pw, ph)))
+	var texture := load(card) as Texture2D
+	var image := texture.get_image()
+	if image.is_compressed():
+		image.decompress()
+	var anchor := CharacterSelect.feet_anchor(texture)
+	var w := height * texture.get_width() / float(texture.get_height())
+	var origin := center - Vector2(w * anchor.x, height * anchor.y)
+	_tex(card, Rect2(origin, Vector2(w, height)))
+	var scale := height / image.get_height()
+	for foot in CharacterSelect.feet_points(image):
+		_ring(origin + foot * scale, 7.0, BORDER, 2.0, 0.0, TAU, Color("ff3b3b"))
+	_ring(center, 13.0, GOLD, 3.0)
+	_line(center - Vector2(16, 0), center + Vector2(16, 0), CYAN, 4.0)
+	_line(center - Vector2(0, 16), center + Vector2(0, 16), CYAN, 4.0)
+
+
+## A: thin chevrons with a glow, no button plate.
+func _v6_arrows_a(center: Vector2, gap: float) -> void:
+	for side in [-1.0, 1.0]:
+		var p := center + Vector2(side * gap, 0)
+		_label("❮" if side < 0.0 else "❯", 72, Color(CYAN, 0.25), p - Vector2(34, 54), 68, HORIZONTAL_ALIGNMENT_CENTER)
+		_label("❮" if side < 0.0 else "❯", 60, CYAN, p - Vector2(30, 46), 60, HORIZONTAL_ALIGNMENT_CENTER)
+
+
+## B: rotation arcs around the platform (it turns), small arrow heads at their ends.
+func _v6_arrows_b(center: Vector2, rx: float) -> void:
+	var node := Node2D.new()
+	node.set_script(preload("res://src/debug/mockup_ring.gd"))
+	node.set("center", Vector2.ZERO)
+	node.set("radius", rx)
+	node.set("color", Color(CYAN, 0.9))
+	node.set("width", 5.0)
+	node.set("start", PI * 0.15)
+	node.set("sweep", PI * 0.7)
+	node.position = center
+	node.scale = Vector2(1.0, 0.3)
+	_root.add_child(node)
+	var node2 := Node2D.new()
+	node2.set_script(preload("res://src/debug/mockup_ring.gd"))
+	node2.set("center", Vector2.ZERO)
+	node2.set("radius", rx)
+	node2.set("color", Color(CYAN, 0.9))
+	node2.set("width", 5.0)
+	node2.set("start", PI * 1.15)
+	node2.set("sweep", PI * 0.7)
+	node2.position = center
+	node2.scale = Vector2(1.0, 0.3)
+	_root.add_child(node2)
+	_label("◀", 30, CYAN, center + Vector2(-rx - 20, -24))
+	_label("▶", 30, CYAN, center + Vector2(rx - 12, -24))
+
+
+## C: two small rune stones set into the platform's rim, an arrow carved in each.
+func _v6_arrows_c(center: Vector2, gap: float) -> void:
+	for side in [-1.0, 1.0]:
+		var p := center + Vector2(side * gap, 0)
+		_panel(Rect2(p - Vector2(30, 26), Vector2(60, 52)), Color("8a8aa0"), BORDER, 4, 12)
+		_panel(Rect2(p - Vector2(24, 20), Vector2(48, 40)), Color("6f6f88"), Color(0, 0, 0, 0), 0, 8)
+		_label("◀" if side < 0.0 else "▶", 26, CYAN, p - Vector2(30, 20), 60, HORIZONTAL_ALIGNMENT_CENTER)
+
+
+func _screen_select_v6() -> void:
+	_v4_backdrop(Vector2(960, 300))
+	_label("LE MILIEU DES DEUX PIEDS AU CENTRE DE LA DALLE", 40, CYAN, Vector2(0, 16), W, HORIZONTAL_ALIGNMENT_CENTER, true)
+	var cards := ["gunslinger_card", "berserker_m_card", "ronin_card"]
+	for k in 3:
+		_v6_hero(Vector2(330 + k * 630.0, 520), 420.0, "res://assets/characters/cards/%s.png" % cards[k])
+	_label("● pieds repérés   ✚ milieu des pieds   ◯ centre de la dalle", 24, TEXT, Vector2(0, 600), W,
+		HORIZONTAL_ALIGNMENT_CENTER)
+	_label("FLÈCHES DU PLATEAU", 36, CYAN, Vector2(0, 650), W, HORIZONTAL_ALIGNMENT_CENTER, true)
+	var names := ["A · Chevrons lumineux", "B · Arcs de rotation", "C · Pierres runiques"]
+	for k in 3:
+		var c := Vector2(330 + k * 630.0, 880)
+		var platform := Rect2(c - Vector2(150, 70), Vector2(300, 198))
+		_tex("res://assets/ui/select/platform_stone.png", platform)
+		match k:
+			0:
+				_v6_arrows_a(c + Vector2(0, -10), 210.0)
+			1:
+				_v6_arrows_b(c + Vector2(0, 40), 190.0)
+			2:
+				_v6_arrows_c(c + Vector2(0, 60), 175.0)
+		_label(names[k], 26, TEXT, Vector2(c.x - 300, 1030), 600, HORIZONTAL_ALIGNMENT_CENTER)

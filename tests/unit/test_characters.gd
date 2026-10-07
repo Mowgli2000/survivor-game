@@ -88,7 +88,20 @@ func test_progression_screen_lists_every_challenge() -> void:
 	var screen := ProgressionScreen.new()
 	add_child_autofree(screen)
 	screen.open()
-	assert_eq(screen._rows.get_child_count(), SaveService.all_challenges().size())
+	var groups := ProgressionScreen.grouped(SaveService.all_challenges())
+	assert_eq(screen._rows.get_child_count(), groups.size())
+	assert_lt(groups.size(), SaveService.all_challenges().size(), "the seal rewards are grouped")
+
+
+func test_each_seal_is_one_challenge_row_with_its_three_rewards() -> void:
+	var seals: Array[ChallengeData] = []
+	for challenge in SaveService.all_challenges():
+		if challenge.kind == ChallengeData.Kind.WIN_SEAL:
+			seals.append(challenge)
+	var groups := ProgressionScreen.grouped(seals)
+	assert_eq(groups.size(), 6, "six seals")
+	for group in groups:
+		assert_eq(group.size(), 3, "three rewards per seal")
 
 
 func test_character_cards_show_the_card_illustration() -> void:

@@ -12,6 +12,8 @@ var _time: float = 0.0
 var _capture_at: float = 10.0
 var _out: String = "user://capture.png"
 var _mode: String = ""
+## --fullshop: 6 weapons and 30 items in the shop (layout worst case).
+var _full_shop := false
 var _done: bool = false
 var _boss_id: StringName = &""
 
@@ -49,6 +51,8 @@ func _ready() -> void:
 			show_pickups = true
 		elif arg == "--allweapons":
 			all_weapons = true
+		elif arg == "--fullshop":
+			_full_shop = true
 	if _mode in ["--menu", "--characters", "--coopselect", "--progression"]:
 		var menu: MainMenu = MENU_SCENE.instantiate()
 		add_child(menu)
@@ -78,6 +82,9 @@ func _ready() -> void:
 						seals.get_child(danger).mouse_entered.emit()
 		elif _mode == "--progression":
 			menu._open_progression()
+			# The seal rewards are at the bottom of the list.
+			get_tree().create_timer(0.5).timeout.connect(func() -> void:
+				menu._progression._scroll.scroll_vertical = 100000)
 		return
 	_run = RUN_SCENE.instantiate()
 	if stress:
@@ -138,6 +145,18 @@ func _process(delta: float) -> void:
 		# Own a few items so the inventory row shows, then end the wave.
 		for id in [&"oni_mask", &"magnet_glove", &"magnet_glove", &"plasma_ring"]:
 			_run.inventory.add(ContentDB.get_def(&"items", id))
+		if _full_shop:
+			# Late-game worst case: every weapon slot used and many different items.
+			for def in ContentDB.get_all(&"weapons"):
+				if _run.player.weapons.slot_count() >= _run.player.weapons.max_slots - 1:
+					break
+				_run.player.weapons.add_weapon(def as WeaponData, 3)
+			var n := 0
+			for def in ContentDB.get_all(&"items"):
+				if n >= 30:
+					break
+				_run.inventory.add(def as ItemData)
+				n += 1
 		# A mergeable pair (same weapon, same tier) to check the highlight.
 		var owned := _run.player.weapons.get_slots()[0]
 		_run.player.weapons.add_weapon(owned.data, owned.level)

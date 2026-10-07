@@ -97,5 +97,48 @@ func test_keyboard_focus_does_not_show_the_hero() -> void:
 	add_child_autofree(screen)
 	screen.open()
 	screen._input(InputEventKey.new())
+	var first := screen._shown
+	assert_not_null(first, "the first class is shown on arrival")
 	screen._character_buttons[&"hero"].grab_focus()
-	assert_null(screen._shown, "keyboard: only a press shows the hero")
+	assert_eq(screen._shown, first, "keyboard: only a press shows another hero")
+
+
+func test_gamepad_focus_on_a_head_shows_its_starting_weapons() -> void:
+	var screen := CharacterSelect.new()
+	add_child_autofree(screen)
+	screen.open()
+	var event := InputEventJoypadButton.new()
+	event.button_index = JOY_BUTTON_DPAD_RIGHT
+	event.pressed = true
+	screen._input(event)
+	screen._character_buttons[&"drifter"].grab_focus()
+	var hero: Button = screen._character_buttons[&"hero"]
+	hero.grab_focus()
+	assert_true(screen._weapons.visible, "weapons shown on hover")
+	assert_eq(screen.chosen_character().id, &"hero")
+	assert_eq(get_viewport().gui_get_focus_owner(), hero, "the focus stays on the heads")
+
+
+func test_new_flow_list_then_look_then_weapons() -> void:
+	var screen := CharacterSelect.new()
+	add_child_autofree(screen)
+	screen.open()
+	assert_eq(screen._step, CharacterSelect.Step.LIST)
+	screen._character_buttons[&"hero"].pressed.emit()
+	assert_eq(screen._step, CharacterSelect.Step.LOOK, "a row press goes to the turntable")
+	var look := screen.chosen_variant()
+	screen._turn_look(1)
+	assert_ne(screen.chosen_variant(), look, "the turntable turns")
+	screen._turn.pressed.emit()
+	assert_eq(screen._step, CharacterSelect.Step.WEAPON, "A on the turntable goes to the weapons")
+	screen._go_back()
+	assert_eq(screen._step, CharacterSelect.Step.LOOK, "B: back to the look")
+	screen._go_back()
+	assert_eq(screen._step, CharacterSelect.Step.LIST, "B: back to the list")
+
+
+func test_feet_anchor_is_inside_the_art() -> void:
+	var hero := ContentDB.get_def(&"characters", &"hero") as CharacterData
+	var anchor := CharacterSelect.feet_anchor(hero.card_art_for(0))
+	assert_between(anchor.x, 0.2, 0.8, "feet near the middle")
+	assert_gt(anchor.y, 0.8, "feet at the bottom")

@@ -185,16 +185,16 @@ func test_capped_bonus_is_marked_max() -> void:
 	assert_false(LevelUpScreen.describe_modifiers([shot]).contains("(max)"))
 
 
-func test_next_wave_stays_under_the_items_and_the_list_never_grows_past_two_rows() -> void:
-	# Regression (playtest, wave 19): with three rows of items the button was
-	# pushed below the screen. The dev wants it under the items, away from Reroll.
-	var screen := ShopScreen.new()
-	add_child_autofree(screen)
-	var column := screen._next.get_parent()
-	var items_box := screen._items_scroll.get_parent()
-	assert_eq(items_box.get_parent(), column, "same column as the items")
-	assert_gt(screen._next.get_index(), items_box.get_index(), "under the items")
-	assert_ne(screen._reroll.get_parent(), items_box, "away from Reroll")
+func test_next_wave_is_pinned_at_the_bottom_and_the_list_never_grows_past_two_rows() -> void:
+	# Regression (playtests): in the shop column the button went down as weapons and
+	# items were added, until it left the screen. Pinned at the bottom, solo and coop.
+	for compact in [false, true]:
+		var screen := ShopScreen.new(compact)
+		add_child_autofree(screen)
+		var root := screen.get_child(0) as Control
+		assert_eq(screen._next.get_parent(), root, "outside the growing column")
+		assert_eq(screen._next.anchor_bottom, 1.0, "anchored to the bottom")
+		assert_ne(screen._reroll.get_parent(), root, "away from Reroll")
 	var two_rows := 2 * ShopScreen.ITEM_ICON_SMALL + ShopScreen.ITEM_GAP
 	assert_almost_eq(ShopScreen.items_height(59), two_rows, 0.01, "every item owned: still two rows")
 	assert_almost_eq(ShopScreen.items_height(3), ShopScreen.ITEM_ICON, 0.01, "few items: one row")
@@ -263,3 +263,12 @@ func test_reroll_shortcut_rerolls_the_offers() -> void:
 	event.pressed = true
 	_screen._unhandled_input(event)
 	assert_lt(_wallet.amount, before, "the reroll was paid")
+
+
+func test_owned_weapon_keeps_its_card_shape_on_hover() -> void:
+	_open_screen(100)
+	var button: Button = _screen._controls["weapon:0"]
+	var normal := button.get_theme_stylebox("normal") as StyleBoxFlat
+	for state in ["hover", "pressed"]:
+		var style := button.get_theme_stylebox(state) as StyleBoxFlat
+		assert_eq(style.corner_radius_top_left, normal.corner_radius_top_left, "%s: same corners" % state)

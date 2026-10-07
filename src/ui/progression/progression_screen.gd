@@ -7,6 +7,8 @@ signal closed
 
 ## Pixels per second the list scrolls while up / down (D-pad, stick, arrows) is held.
 const SCROLL_SPEED := 900.0
+## Reward icon of a challenge row.
+const REWARD_ICON := 52.0
 
 var _stats: Label
 var _rows: VBoxContainer
@@ -75,8 +77,9 @@ func open() -> void:
 		if sa and a.threshold != b.threshold:
 			return a.threshold < b.threshold
 		return String(a.id) < String(b.id))
-	for challenge in challenges:
-		_rows.add_child(_row(challenge, profile.completed.has(challenge.id)))
+	# One row per condition: the three rewards of a seal are one challenge to the player.
+	for group in grouped(challenges):
+		_rows.add_child(_row(group, profile))
 	visible = true
 	_scroll.scroll_vertical = 0
 	_back.grab_focus()
@@ -103,7 +106,26 @@ func _unhandled_input(event: InputEvent) -> void:
 		close()
 
 
-func _row(challenge: ChallengeData, done: bool) -> Control:
+## Challenges sharing the same condition (kind, character, enemy, threshold), in order.
+static func grouped(challenges: Array[ChallengeData]) -> Array[Array]:
+	var groups: Array[Array] = []
+	var index: Dictionary = {}
+	for challenge in challenges:
+		var key := "%d|%s|%s|%d" % [challenge.kind, challenge.character_id, challenge.enemy_id, challenge.threshold]
+		if challenge.kind != ChallengeData.Kind.WIN_SEAL and challenge.kind != ChallengeData.Kind.WIN_WITH:
+			key += "|" + String(challenge.id)  # a single reward: never merged
+		if index.has(key):
+			groups[index[key]].append(challenge)
+		else:
+			index[key] = groups.size()
+			groups.append([challenge])
+	return groups
+
+
+## A row: mark, name and condition, then every reward of the group as an icon.
+func _row(group: Array, profile: Profile) -> Control:
+	var challenge: ChallengeData = group[0]
+	var done := profile.completed.has(challenge.id)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 16)
 	var mark := Label.new()
@@ -119,10 +141,31 @@ func _row(challenge: ChallengeData, done: bool) -> Control:
 	name_label.add_theme_color_override("font_color", UiTheme.TEXT if done else UiTheme.MUTED)
 	text.add_child(name_label)
 	var details := Label.new()
-	var target := ContentDB.get_def(challenge.unlock_category, challenge.unlock_id)
-	var target_name: String = tr(target.get(&"name_key")) if target != null else String(challenge.unlock_id)
-	details.text = "%s  →  %s" % [tr(challenge.description_key), target_name]
+	var names: Array[String] = []
+	for member: ChallengeData in group:
+		var target := ContentDB.get_def(member.unlock_category, member.unlock_id)
+		names.append(tr(target.get(&"name_key")) if target != null else String(member.unlock_id))
+	details.text = "%s  →  %s" % [tr(challenge.description_key), ", ".join(names)]
 	details.theme_type_variation = &"SmallLabel"
 	details.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	text.add_child(details)
+	# The rewards, side by side in the same slot (a silhouette until won).
+	var rewards := HBoxContainer.new()
+	rewards.add_theme_constant_override("separation", 8)
+	rewards.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	for member: ChallengeData in group:
+		var target := ContentDB.get_def(member.unlock_category, member.unlock_id)
+		var icon: Texture2D = target.get(&"icon") if target != null else null
+		if icon == null:
+			continue
+		var rect := TextureRect.new()
+		rect.texture = icon
+		rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		rect.custom_minimum_size = Vector2(REWARD_ICON, REWARD_ICON)
+		rect.tooltip_text = names[group.find(member)]
+		if not profile.completed.has(member.id):
+			rect.material = CharacterSelect._silhouette_material()
+		rewards.add_child(rect)
+	row.add_child(rewards)
 	return row

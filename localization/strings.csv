@@ -215,6 +215,8 @@ LANG_FR,Français,Français
 UI_SWITCH_LOOK,Switch look,Changer d'apparence
 UI_CHOOSE_CHARACTER,Choose your character,Choisis ton personnage
 UI_CHOOSE_WEAPON,Starting weapon,Arme de départ
+UI_SELECT_CHARACTERS,Characters,Personnages
+UI_SELECT_WEAPONS,Weapons,Armes
 UI_LOCKED,Locked — %s,Verrouillé — %s
 UI_PROGRESSION,Progression,Progression
 UI_UNLOCKED,Unlocked: %s,Débloqué : %s
@@ -342,6 +344,8 @@ WEAPON_SCYTHE,War scythe,Faux de guerre
 WEAPON_SCYTHE_DESC,Slow reaping sweep almost all around you.,Fauchage lent presque tout autour de toi.
 WEAPON_RAPIER,Rapier,Rapière
 WEAPON_RAPIER_DESC,"Very fast narrow thrust, deadly critical hits.","Estoc étroit très rapide, critiques redoutables."
+WEAPON_VENOM_FANGS,Venom fangs,Crocs du venin
+WEAPON_VENOM_FANGS_DESC,Twin daggers: very fast short slashes with frequent critical hits.,Dagues jumelles : coups courts très rapides aux critiques fréquents.
 WEAPON_WARHAMMER,War hammer,Marteau de guerre
 WEAPON_WARHAMMER_DESC,Very slow crushing blow that sends enemies flying.,Coup écrasant très lent qui projette les ennemis.
 WEAPON_RUNIC_BLADE,Runic blade,Lame runique
