@@ -64,6 +64,7 @@ Profiler avant d'optimiser. Pas d'allocation dans les boucles chaudes. Après to
 
 ## Git
 - **On travaille sur la branche `develop`** (remote `origin` = github.com/Mowgli2000/survivor-game). `main` ne reçoit que des versions validées, sur demande explicite du dev. Ne jamais commiter directement sur `main`.
+- **Graphismes, interfaces et visuel : dans une branche à part** (`visual/<sujet>`, créée depuis `develop`), fusionnée dans `develop` quand le dev valide (décision du dev, 2026-10-08). Le gameplay, les corrections et le reste restent sur `develop`.
 - Commits petits et logiques (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`). Jamais de secrets, clés Steam, credentials, `.godot/`, builds. Commit/push uniquement sur demande. Les fichiers `.uid` sont commités.
 
 ## Skills (`.claude/skills/`)
