@@ -4772,3 +4772,373 @@ tools/art/make_icon.gd
 tools/sprites/atlas_layout.json
 ---
 
+## Session End: 20261007_160710
+### Commits
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+---
+
+## Session End: 20261007_160907
+### Commits
+07e83ec docs: visual work goes to its own branch
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261007_165040
+### Commits
+07e83ec docs: visual work goes to its own branch
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/debug/capture.gd
+src/debug/ui_mockup.gd
+src/ui/character_select/character_select.gd
+src/ui/shop/shop_screen.gd
+src/ui/theme/ui_fx.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_shop_screen.gd
+---
+
+## Session End: 20261007_171639
+### Commits
+07e83ec docs: visual work goes to its own branch
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+### Uncommitted Changes
+data/weapons/bomb.tres
+data/weapons/fire_flask.tres
+data/weapons/frag_grenade.tres
+data/weapons/frost_flask.tres
+data/weapons/heavy_axe.tres
+data/weapons/katana.tres
+data/weapons/meteor_grimoire.tres
+data/weapons/rapier.tres
+data/weapons/runic_blade.tres
+data/weapons/scythe.tres
+data/weapons/shuriken.tres
+data/weapons/spear.tres
+data/weapons/steel_katana.tres
+data/weapons/warhammer.tres
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/debug/capture.gd
+src/debug/ui_mockup.gd
+src/ui/character_select/character_select.gd
+src/ui/shop/shop_screen.gd
+src/ui/theme/ui_fx.gd
+src/weapons/weapon_data.gd
+src/weapons/weapon_layout.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_shop_screen.gd
+---
+
+## Session End: 20261007_174011
+### Commits
+07e83ec docs: visual work goes to its own branch
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+### Uncommitted Changes
+assets/icons/weapons/smg.png
+data/weapons/bomb.tres
+data/weapons/fire_flask.tres
+data/weapons/frag_grenade.tres
+data/weapons/frost_flask.tres
+data/weapons/heavy_axe.tres
+data/weapons/katana.tres
+data/weapons/meteor_grimoire.tres
+data/weapons/rapier.tres
+data/weapons/runic_blade.tres
+data/weapons/scythe.tres
+data/weapons/shuriken.tres
+data/weapons/smg.tres
+data/weapons/spear.tres
+data/weapons/steel_katana.tres
+data/weapons/warhammer.tres
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/debug/capture.gd
+src/debug/ui_mockup.gd
+src/ui/character_select/character_select.gd
+src/ui/shop/shop_screen.gd
+src/ui/theme/ui_fx.gd
+src/weapons/weapon_data.gd
+src/weapons/weapon_layout.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_shop_screen.gd
+---
+
+## Session End: 20261007_175416
+### Commits
+07e83ec docs: visual work goes to its own branch
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+### Uncommitted Changes
+assets/icons/weapons/smg.png
+data/weapons/bomb.tres
+data/weapons/fire_flask.tres
+data/weapons/frag_grenade.tres
+data/weapons/frost_flask.tres
+data/weapons/heavy_axe.tres
+data/weapons/katana.tres
+data/weapons/meteor_grimoire.tres
+data/weapons/rapier.tres
+data/weapons/runic_blade.tres
+data/weapons/scythe.tres
+data/weapons/shuriken.tres
+data/weapons/smg.tres
+data/weapons/spear.tres
+data/weapons/steel_katana.tres
+data/weapons/warhammer.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/debug/capture.gd
+src/debug/ui_mockup.gd
+src/ui/character_select/character_select.gd
+src/ui/shop/shop_screen.gd
+src/ui/theme/ui_fx.gd
+src/ui/theme/ui_theme.gd
+src/weapons/weapon_data.gd
+src/weapons/weapon_layout.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_shop_screen.gd
+---
+
+## Session End: 20261007_183139
+### Commits
+07e83ec docs: visual work goes to its own branch
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+### Uncommitted Changes
+assets/CREDITS.md
+assets/icons/weapons/smg.png
+data/weapons/bomb.tres
+data/weapons/fire_flask.tres
+data/weapons/frag_grenade.tres
+data/weapons/frost_flask.tres
+data/weapons/heavy_axe.tres
+data/weapons/katana.tres
+data/weapons/meteor_grimoire.tres
+data/weapons/rapier.tres
+data/weapons/runic_blade.tres
+data/weapons/scythe.tres
+data/weapons/shuriken.tres
+data/weapons/smg.tres
+data/weapons/spear.tres
+data/weapons/steel_katana.tres
+data/weapons/warhammer.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/audio/sounds.gd
+src/debug/capture.gd
+src/debug/ui_mockup.gd
+src/run/coop_screens.gd
+src/ui/character_select/character_select.gd
+src/ui/shop/shop_screen.gd
+src/ui/theme/ui_fx.gd
+src/ui/theme/ui_theme.gd
+src/weapons/weapon_data.gd
+src/weapons/weapon_layout.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_shop_screen.gd
+---
+
+## Session End: 20261007_184040
+### Commits
+07e83ec docs: visual work goes to its own branch
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+### Uncommitted Changes
+assets/CREDITS.md
+assets/icons/weapons/smg.png
+data/weapons/bomb.tres
+data/weapons/fire_flask.tres
+data/weapons/frag_grenade.tres
+data/weapons/frost_flask.tres
+data/weapons/heavy_axe.tres
+data/weapons/katana.tres
+data/weapons/meteor_grimoire.tres
+data/weapons/rapier.tres
+data/weapons/runic_blade.tres
+data/weapons/scythe.tres
+data/weapons/shuriken.tres
+data/weapons/smg.tres
+data/weapons/spear.tres
+data/weapons/steel_katana.tres
+data/weapons/warhammer.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/audio/sounds.gd
+src/debug/capture.gd
+src/debug/ui_mockup.gd
+src/run/coop_screens.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/shop/shop_screen.gd
+src/ui/theme/ui_fx.gd
+src/ui/theme/ui_theme.gd
+src/weapons/weapon_data.gd
+src/weapons/weapon_layout.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_shop_screen.gd
+---
+
+## Session End: 20261007_184355
+### Commits
+07e83ec docs: visual work goes to its own branch
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+### Uncommitted Changes
+assets/CREDITS.md
+assets/icons/weapons/smg.png
+data/characters/hero.tres
+data/weapons/bomb.tres
+data/weapons/fire_flask.tres
+data/weapons/frag_grenade.tres
+data/weapons/frost_flask.tres
+data/weapons/heavy_axe.tres
+data/weapons/katana.tres
+data/weapons/meteor_grimoire.tres
+data/weapons/rapier.tres
+data/weapons/runic_blade.tres
+data/weapons/scythe.tres
+data/weapons/shuriken.tres
+data/weapons/smg.tres
+data/weapons/spear.tres
+data/weapons/steel_katana.tres
+data/weapons/warhammer.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/audio/sounds.gd
+src/debug/capture.gd
+src/debug/ui_mockup.gd
+src/run/coop_screens.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/shop/shop_screen.gd
+src/ui/theme/ui_fx.gd
+src/ui/theme/ui_theme.gd
+src/weapons/weapon_data.gd
+src/weapons/weapon_layout.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_shop_screen.gd
+---
+
+## Session End: 20261007_185204
+### Commits
+07e83ec docs: visual work goes to its own branch
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+### Uncommitted Changes
+assets/CREDITS.md
+assets/icons/weapons/smg.png
+data/characters/hero.tres
+data/weapons/bomb.tres
+data/weapons/fire_flask.tres
+data/weapons/frag_grenade.tres
+data/weapons/frost_flask.tres
+data/weapons/heavy_axe.tres
+data/weapons/katana.tres
+data/weapons/meteor_grimoire.tres
+data/weapons/rapier.tres
+data/weapons/runic_blade.tres
+data/weapons/scythe.tres
+data/weapons/shuriken.tres
+data/weapons/smg.tres
+data/weapons/spear.tres
+data/weapons/steel_katana.tres
+data/weapons/warhammer.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/audio/sounds.gd
+src/debug/capture.gd
+src/debug/ui_mockup.gd
+src/run/coop_screens.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/progression/progression_screen.gd
+src/ui/shop/shop_screen.gd
+src/ui/theme/ui_fx.gd
+src/ui/theme/ui_theme.gd
+src/weapons/weapon_data.gd
+src/weapons/weapon_layout.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_characters.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_shop_screen.gd
+---
+
