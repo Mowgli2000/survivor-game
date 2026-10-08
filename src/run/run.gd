@@ -13,6 +13,8 @@ signal retry_requested
 
 const DEFAULT_CONFIG_ID := &"default"
 const PLAYER_HIT_SHAKE := 0.35
+## Under this share of max HP the heartbeat starts.
+const HEARTBEAT_BELOW := 0.3
 ## Coop: players start this far apart, side by side.
 const COOP_START_GAP := 120.0
 
@@ -66,6 +68,7 @@ var hud: Hud
 var level_up_screen: LevelUpScreen
 ## Coop: the two halves of the screen between waves (null in solo).
 var coop_screens: CoopScreens
+var stats_overlay: StatsOverlay
 var wave_end_screen: WaveEndScreen
 var shop: Shop
 var shop_screen: ShopScreen
@@ -182,11 +185,9 @@ func _ready() -> void:
 	add_child(hud)
 	hud.setup_boss(bosses)
 	hud.setup(player, progression, waves, state.wallet)
-	hud.setup_families(weapon_families)
 	if players.size() > 1:
 		var second := players[1]
 		hud.setup_second_player(second.player, second.progression, second.wallet, second.color())
-		hud.setup_second_families(second.families)
 
 	wave_end_screen = WaveEndScreen.new()
 	add_child(wave_end_screen)
@@ -211,6 +212,8 @@ func _ready() -> void:
 			add_child(rp.level_up_screen)
 			add_child(rp.shop_screen)
 		rp.shop_screen.setup(rp.shop, rp.wallet, rp.inventory, rp.player.weapons, rp.player.stats)
+		# Coop: each shop scrolls with its own gamepad's right stick.
+		rp.shop_screen.scroll_device = rp.input.device if is_coop() else -2
 		rp.shop_screen.stats_panel.setup_families(rp.families)
 		rp.shop_screen.next_wave_requested.connect(_on_shop_done.bind(rp))
 		rp.level_up_screen.offer_chosen.connect(_apply_offer.bind(rp))
@@ -221,6 +224,13 @@ func _ready() -> void:
 	add_child(game_over_screen)
 	pause_menu = PauseMenu.new()
 	add_child(pause_menu)
+	# Share / Tab shows the holder's stats over every screen (wave, shop, end screens...).
+	stats_overlay = StatsOverlay.new()
+	stats_overlay.name = "StatsOverlay"
+	add_child(stats_overlay)
+	stats_overlay.setup(players, func(index: int) -> bool:
+		# Already on screen: the pause menu, and the solo shop (stats panel beside it).
+		return pause_menu.visible or (not is_coop() and players[index].shop_screen.visible))
 	pause_menu.stats_panel.setup(player.stats)
 	pause_menu.stats_panel.setup_families(weapon_families)
 	if players.size() > 1:
@@ -239,6 +249,7 @@ func _ready() -> void:
 		camera.add_trauma(amount, GameCamera.EXPLOSION_CAP))
 	for rp in players:
 		rp.player.damaged.connect(_on_player_damaged)
+		rp.player.dodged.connect(func() -> void: Audio.play(Sounds.UI_SWOOSH, -8.0, 0.1, 1.3))
 		rp.player.died.connect(_on_player_died)
 		rp.player.died.connect(func() -> void: rp.deaths += 1)
 	pickups.xp_collected.connect(_on_xp_collected)
@@ -259,7 +270,9 @@ func _ready() -> void:
 	waves.wave_started.connect(func(_wave: int) -> void: Audio.play(Sounds.WAVE_START, -6.0))
 	Audio.play_music(Sounds.MUSIC_RUN)
 	# Boss theme while a boss (or mini-boss) is alive.
-	bosses.boss_started.connect(func(_boss: Enemy) -> void: Audio.play_music(Sounds.MUSIC_BOSS))
+	bosses.boss_started.connect(func(_boss: Enemy) -> void:
+		Audio.play(Sounds.BOSS_ALERT, -4.0)
+		Audio.play_music(Sounds.MUSIC_BOSS))
 	bosses.boss_ended.connect(func(_boss: Enemy) -> void:
 		if bosses.boss_count() == 0 and not state.is_over:
 			Audio.play_music(Sounds.MUSIC_RUN))
@@ -368,6 +381,7 @@ func _starting_weapon(rp: RunPlayer) -> WeaponData:
 func _physics_process(delta: float) -> void:
 	if not state.is_over and waves.in_wave:
 		state.elapsed += delta
+		_update_heartbeat(delta)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -400,9 +414,27 @@ func _apply_settings() -> void:
 			rp.player.health_bar.visible = Settings.data.player_hp_bar
 
 
-func _on_player_damaged(_amount: float) -> void:
+func _on_player_damaged(amount: float) -> void:
 	camera.add_trauma(PLAYER_HIT_SHAKE)
 	Audio.play(Sounds.PLAYER_HURT, -4.0)
+	# A heavy blow adds a low thump: the louder, the bigger the hit (share of max HP).
+	var share := clampf(amount / maxf(player.stats.get_value(StatIds.MAX_HP), 1.0), 0.0, 0.5)
+	Audio.play(Sounds.PLAYER_HIT_HEAVY, -12.0 + share * 16.0, 0.04, 0.9)
+
+
+## Low health: a heartbeat under 30 % HP, faster as it drops (per player).
+func _update_heartbeat(delta: float) -> void:
+	for rp in players:
+		if rp.player.is_dead:
+			continue
+		var ratio := rp.player.hp / maxf(rp.player.stats.get_value(StatIds.MAX_HP), 1.0)
+		if ratio >= HEARTBEAT_BELOW:
+			rp.heartbeat_timer = 0.0
+			continue
+		rp.heartbeat_timer -= delta
+		if rp.heartbeat_timer <= 0.0:
+			rp.heartbeat_timer = lerpf(0.55, 1.05, ratio / HEARTBEAT_BELOW)
+			Audio.play(Sounds.HEARTBEAT, -6.0, 0.0)
 
 
 func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:

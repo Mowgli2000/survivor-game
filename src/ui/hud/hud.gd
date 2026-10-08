@@ -2,7 +2,7 @@ class_name Hud
 extends CanvasLayer
 ## In-run HUD: XP bar (top), HP bar + level, pending level-ups and materials (top left),
 ## wave and wave countdown (top center), owned weapon icons framed by tier (bottom left).
-## Holding `show_stats` (Tab / gamepad Select) shows the stats panel.
+## The stats panel (Tab / gamepad Share) is the StatsOverlay, over every screen.
 ## Read-only: listens to signals and reads state, never changes it.
 
 const WEAPON_ICON := 76.0
@@ -27,9 +27,6 @@ var _materials_label: Label
 ## change the amount many times per frame).
 var _materials: int = 0
 var _shown_materials: int = -1
-var _stats_panel: StatsPanel
-var _stats_panel_2: StatsPanel
-var _stats_row: HBoxContainer
 var _timer_label: Label
 var _wave_label: Label
 var _waves: WaveDirector
@@ -55,7 +52,6 @@ func setup(player: Player, progression: Progression, waves: WaveDirector, wallet
 	_on_leveled_up(progression.level)
 	wallet.changed.connect(_on_materials_changed)
 	_on_materials_changed(wallet.amount)
-	_stats_panel.setup(player.stats)
 	_weapons = player.weapons
 	_weapons.weapons_changed.connect(func() -> void: _refresh_weapons(_weapons, _weapons_box))
 	_refresh_weapons(_weapons, _weapons_box)
@@ -63,11 +59,6 @@ func setup(player: Player, progression: Progression, waves: WaveDirector, wallet
 
 ## Coop (ADR 0017): compact block for player 2 (top right) and a tag on player 1's.
 func setup_second_player(player: Player, progression: Progression, wallet: Wallet, color: Color) -> void:
-	_stats_panel_2 = StatsPanel.new()
-	_stats_panel_2.setup(player.stats)
-	_stats_panel_2.set_tag(tr("UI_PLAYER_N") % 2, color)
-	_stats_row.add_child(_stats_panel_2)
-	_stats_panel.set_tag(tr("UI_PLAYER_N") % 1, RunPlayer.COLORS[0])
 	var tag_1 := _make_label(&"SubtitleLabel", 24)
 	tag_1.text = tr("UI_PLAYER_N") % 1
 	tag_1.add_theme_color_override("font_color", RunPlayer.COLORS[0])
@@ -155,16 +146,6 @@ func show_hint(key: StringName) -> void:
 
 func toast_text() -> String:
 	return _toast.text if _toast.visible else ""
-
-
-## Coop: weapon family lines of player 2 in the Tab stats panel.
-func setup_second_families(families: WeaponFamilies) -> void:
-	_stats_panel_2.setup_families(families)
-
-
-## Weapon family lines in the Tab stats panel.
-func setup_families(families: WeaponFamilies) -> void:
-	_stats_panel.setup_families(families)
 
 
 ## Icons of `holder`'s weapons, framed by tier, in `box`.
@@ -262,17 +243,6 @@ func _init() -> void:
 	root.add_child(_weapons_box)
 
 	# Hold Tab / Select: the stats (coop: one panel per player, side by side).
-	_stats_row = HBoxContainer.new()
-	_stats_row.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
-	_stats_row.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	_stats_row.grow_vertical = Control.GROW_DIRECTION_BOTH
-	_stats_row.offset_right = -32
-	_stats_row.add_theme_constant_override("separation", 16)
-	_stats_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_stats_row.visible = false
-	root.add_child(_stats_row)
-	_stats_panel = StatsPanel.new()
-	_stats_row.add_child(_stats_panel)
 
 	var hint := _make_label(&"SmallLabel", 18)
 	hint.text = "UI_STATS_HINT"
@@ -285,7 +255,6 @@ func _init() -> void:
 
 
 func _process(_delta: float) -> void:
-	_stats_row.visible = Input.is_action_pressed("show_stats")
 	if _materials != _shown_materials:
 		var from := maxi(_shown_materials, 0)
 		_shown_materials = _materials
@@ -317,6 +286,8 @@ func _update_timer_warning(seconds: int) -> void:
 	if size == TIMER_FONT_SIZE:
 		_timer_label.add_theme_color_override("font_color", UiTheme.TEXT)
 		return
+	# One tick a second, higher and louder as the wave ends.
+	Audio.play(Sounds.TICK, -12.0 + (TIMER_WARNING_SECONDS - seconds) * 1.5, 0.0, 1.0 + (TIMER_WARNING_SECONDS - seconds) * 0.12)
 	_timer_label.add_theme_color_override("font_color", UiTheme.BAD if seconds <= 2 else UiTheme.GOLD)
 	UiFx.bounce(_timer_label)
 
