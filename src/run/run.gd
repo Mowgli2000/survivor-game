@@ -468,10 +468,12 @@ func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
 	var xp := data.xp_value
 	if elite:
 		xp = roundi(xp * stage.elite_xp_multiplier)
-	pickups.spawn_xp(pos, xp)
+	# The drops belong to the player who made the kill (coop).
+	var killer := clampi(enemies.damage_source, 0, players.size() - 1)
+	pickups.spawn_xp(pos, xp, killer)
 	# The materials of the kill drop as a gold coin next to the XP crystal.
 	pickups.spawn_material(pos + Vector2(randf_range(-14.0, 14.0), randf_range(-10.0, 10.0)),
-		xp * stage.material_rate_at(waves.wave))
+		xp * stage.material_rate_at(waves.wave), killer)
 	if data.boss or not data.phases.is_empty():
 		_killed_special.append(data.id)
 	if data.reward_item_tier > 0:

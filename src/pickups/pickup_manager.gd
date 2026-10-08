@@ -11,6 +11,8 @@ signal xp_collected(amount: int, collector: int)
 signal material_collected(amount: float, collector: int)
 
 const SHARED := -1
+## How much of the owner's color a pickup takes in coop.
+const OWNER_TINT_SHARE := 0.4
 
 const ATTRACT_START_SPEED := 150.0
 const ATTRACT_ACCELERATION := 1500.0
@@ -46,38 +48,54 @@ func _ready() -> void:
 	z_index = -1
 
 
-func spawn_xp(pos: Vector2, value: int) -> void:
+## `owner_index`: the player who made the kill (coop), -1 for nobody's.
+func spawn_xp(pos: Vector2, value: int, owner_index: int = -1) -> void:
 	if _active.size() >= _max_gems:
-		var target := _merge_target(false)
+		var target := _merge_target(false, owner_index)
 		if target != null:
 			target.add_value(value)
 			return
 	var gem: XpGem = _pool.acquire()
-	gem.reset(pos, value)
+	gem.reset(pos, value, owner_index, _owner_tint(owner_index))
 	_active.append(gem)
 
 
 ## A coin worth `amount` materials (Run converts the XP of a kill into materials).
-func spawn_material(pos: Vector2, amount: float) -> void:
+func spawn_material(pos: Vector2, amount: float, owner_index: int = -1) -> void:
 	if amount <= 0.0:
 		return
 	if _active.size() >= _max_gems:
-		var target := _merge_target(true)
+		var target := _merge_target(true, owner_index)
 		if target != null:
 			target.add_coins(amount)
 			return
 	var gem: XpGem = _pool.acquire()
-	gem.reset_material(pos, amount)
+	gem.reset_material(pos, amount, owner_index, _owner_tint(owner_index))
 	_active.append(gem)
 
 
-## Next pickup of the wanted kind to merge into (round robin), or null if there is none.
-func _merge_target(material: bool) -> XpGem:
+## Coop only: a light mix of the owner's color (solo and unowned pickups stay as drawn).
+func _owner_tint(owner_index: int) -> Color:
+	if _party == null or _party.size() < 2 or owner_index < 0 or owner_index >= _party.size():
+		return Color.WHITE
+	return Color.WHITE.lerp(_party.members[owner_index].tag_color, OWNER_TINT_SHARE)
+
+
+## Next pickup of the wanted kind and owner to merge into (round robin). Merging into
+## someone else's pickup would move rewards between players: only when none is left
+## (the cap matters more), and never in a coop run that still has an owned one.
+func _merge_target(material: bool, owner_index: int = -1) -> XpGem:
+	var fallback: XpGem = null
 	for step in _active.size():
 		_merge_cursor = (_merge_cursor + 1) % _active.size()
-		if _active[_merge_cursor].is_material == material:
-			return _active[_merge_cursor]
-	return null
+		var gem := _active[_merge_cursor]
+		if gem.is_material != material:
+			continue
+		if gem.owner_index == owner_index:
+			return gem
+		if fallback == null:
+			fallback = gem
+	return fallback
 
 
 ## Collects every gem at once (end of wave): a single xp_collected with the total.
@@ -134,7 +152,7 @@ func _update_for(player: Player, delta: float) -> void:
 				gem.attracted = false  # its player died: free for the others
 			elif d2 > collect_r2:
 				continue  # flying to the other player: only taken when passing right by
-		if not gem.attracted and d2 <= pickup_r2 and (not coop or _party.nearest_alive(gem.position) == player):
+		if not gem.attracted and d2 <= pickup_r2 and _pulls(gem, player, coop):
 			gem.attracted = true
 			gem.target = player.index
 			gem.speed = ATTRACT_START_SPEED
@@ -154,6 +172,17 @@ func _update_for(player: Player, delta: float) -> void:
 			else:
 				xp_collected.emit(value, player.index)
 			_play_pickup(material)
+
+
+## Whether `player`'s magnet pulls `gem`. Solo: always. Coop: only its owner's (the one who
+## made the kill), so a big pickup range cannot vacuum the other player's drops; an
+## unowned pickup, or one whose owner died, goes to the nearest living player.
+func _pulls(gem: XpGem, player: Player, coop: bool) -> bool:
+	if not coop:
+		return true
+	if gem.owner_index >= 0 and gem.owner_index < _party.size() and not _party.members[gem.owner_index].is_dead:
+		return gem.owner_index == player.index
+	return _party.nearest_alive(gem.position) == player
 
 
 ## One sound per kind and physics frame; the pitch climbs one step per chained pickup.

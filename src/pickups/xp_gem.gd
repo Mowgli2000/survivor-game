@@ -23,9 +23,16 @@ var attracted: bool = false
 var speed: float = 0.0
 ## Player number the pickup flies to once attracted.
 var target: int = 0
+## Coop (dev's rule): the player who made the kill. Only its magnet pulls the pickup,
+## but anyone touching it takes it. -1 = nobody's (solo, tests).
+var owner_index: int = -1
+## Coop: the owner's color, mixed lightly into the pickup so each player sees theirs.
+var tint: Color = Color.WHITE
 
 
-func reset(pos: Vector2, p_value: int) -> void:
+func reset(pos: Vector2, p_value: int, p_owner: int = -1, p_tint: Color = Color.WHITE) -> void:
+	owner_index = p_owner
+	tint = p_tint
 	position = pos
 	value = p_value
 	is_material = false
@@ -36,8 +43,8 @@ func reset(pos: Vector2, p_value: int) -> void:
 
 
 ## A material coin worth `amount` materials (fractions are kept: see Wallet.add_scaled).
-func reset_material(pos: Vector2, amount: float) -> void:
-	reset(pos, 0)
+func reset_material(pos: Vector2, amount: float, p_owner: int = -1, p_tint: Color = Color.WHITE) -> void:
+	reset(pos, 0, p_owner, p_tint)
 	is_material = true
 	coins = amount
 
@@ -55,14 +62,14 @@ func draw(canvas: CanvasItem) -> void:
 	if is_material:
 		var t := clampf(log(maxf(coins, 1.0)) / log(30.0), 0.0, 1.0)
 		var size := SIZE * 2.9 * (1.0 + 0.9 * t)
-		canvas.draw_texture_rect(coin_texture(), Rect2(position - Vector2(size, size) * 0.5, Vector2(size, size)), false)
+		canvas.draw_texture_rect(coin_texture(), Rect2(position - Vector2(size, size) * 0.5, Vector2(size, size)), false, tint)
 		return
 	# Mana crystal (art bible): bigger and more violet as the value grows (merged gems).
 	var t := clampf(log(float(value)) / log(50.0), 0.0, 1.0)
 	var height := SIZE * 3.2 * (1.0 + t)
 	var width := height * TEXTURE.get_width() / TEXTURE.get_height()
 	canvas.draw_texture_rect(TEXTURE, Rect2(position - Vector2(width, height) * 0.5, Vector2(width, height)), false,
-		Color.WHITE.lerp(BIG_TINT, t))
+		Color.WHITE.lerp(BIG_TINT, t) * tint)
 
 
 ## Gold coin drawn once into a texture: ink outline, flat gold, a darker inner ring and a
