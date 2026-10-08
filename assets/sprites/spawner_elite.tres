@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource("1_x5qto")
 texture = ExtResource("2_7kjna")
-origin = Vector2i(0, 2248)
+origin = Vector2i(0, 2040)
 cell_size = Vector2i(173, 184)
 animations = Dictionary[StringName, Vector3i]({
 &"idle": Vector3i(0, 6, 6),
