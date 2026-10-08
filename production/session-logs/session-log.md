@@ -5596,3 +5596,1137 @@ tools/sprites/atlas_layout.json
 tools/sprites/sprites.json
 ---
 
+## Session End: 20261008_025914
+### Commits
+07ff000 docs: status D85 (seal screen, AI animations, combat audio)
+8b4a129 feat: frame-by-frame AI animation for every playable look (14 looks)
+2778b63 fix: thin floating weapons (katana, scythe, spear) bigger, axe and hammer a bit smaller
+499aa09 fix: gamepad focus stuck at the Obsidian seal (hidden weapons behind the seal screen)
+9bc83b2 chore: playtest notes and screenshots, session logs
+fce9575 feat: frame-by-frame AI animation for the swordswoman (walk 6, idle 4)
+d188bdc feat: seal choice on its own screen, bigger hero on the select screen, Next button
+8b39cb9 feat: stats overlay, gamepad shop scrolling, one boss bar per boss
+24ab62b feat: combat audio (kill thuds, crits, warnings, heartbeat) and cartoon melee swings
+---
+
+## Session End: 20261008_104756
+### Commits
+07ff000 docs: status D85 (seal screen, AI animations, combat audio)
+8b4a129 feat: frame-by-frame AI animation for every playable look (14 looks)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_105133
+### Commits
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+07ff000 docs: status D85 (seal screen, AI animations, combat audio)
+8b4a129 feat: frame-by-frame AI animation for every playable look (14 looks)
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_110449
+### Commits
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_112217
+### Commits
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_113907
+### Commits
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_114550
+### Commits
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_115621
+### Commits
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_120932
+### Commits
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+assets/characters/cards/assassin_f_card.png
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_121324
+### Commits
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_122449
+### Commits
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_124352
+### Commits
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_124947
+### Commits
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+assets/characters/cards/assassin_f_card.png
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_125131
+### Commits
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_130703
+### Commits
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/ui/character_select/character_select.gd
+tests/unit/test_coop_character_select.gd
+---
+
+## Session End: 20261008_131155
+### Commits
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_133046
+### Commits
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_134034
+### Commits
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_135605
+### Commits
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_140236
+### Commits
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_140940
+### Commits
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_141741
+### Commits
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_142130
+### Commits
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_154621
+### Commits
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+assets/sprites/atlas.png
+assets/sprites/drifter.tres
+assets/sprites/drifter_m.tres
+assets/sprites/gunslinger.tres
+assets/sprites/gunslinger_m.tres
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+tools/sprites/atlas_layout.json
+tools/sprites/sprites.json
+---
+
+## Session End: 20261008_155101
+### Commits
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+assets/sprites/atlas.png
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+tools/sprites/sprites.json
+---
+
+## Session End: 20261008_163036
+### Commits
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_164718
+### Commits
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_171135
+### Commits
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_171832
+### Commits
+db15888 feat: compact seal screen, procedural vortex gate for the run arrival
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_172257
+### Commits
+91c882f feat: flattened arrival gate, smaller seal icons and details
+db15888 feat: compact seal screen, procedural vortex gate for the run arrival
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_173029
+### Commits
+51a5e57 fix: bomb flask floats at the bomb's size, coop select keeps a margin under the Next button
+91c882f feat: flattened arrival gate, smaller seal icons and details
+db15888 feat: compact seal screen, procedural vortex gate for the run arrival
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_180751
+### Commits
+a32598b fix: coop select list scrolls so Next stays on screen, shop hides the run HUD
+51a5e57 fix: bomb flask floats at the bomb's size, coop select keeps a margin under the Next button
+91c882f feat: flattened arrival gate, smaller seal icons and details
+db15888 feat: compact seal screen, procedural vortex gate for the run arrival
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_181818
+### Commits
+0572495 feat: global seal unlock, drop the skippable-animations rule
+a32598b fix: coop select list scrolls so Next stays on screen, shop hides the run HUD
+51a5e57 fix: bomb flask floats at the bomb's size, coop select keeps a margin under the Next button
+91c882f feat: flattened arrival gate, smaller seal icons and details
+db15888 feat: compact seal screen, procedural vortex gate for the run arrival
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+1365588 test: walk of the novice hunter in 8 frames, swordswoman walk copied from it
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_185134
+### Commits
+a12efe2 feat: portal shards, collection challenges and the skin shop (ADR 0023)
+0572495 feat: global seal unlock, drop the skippable-animations rule
+a32598b fix: coop select list scrolls so Next stays on screen, shop hides the run HUD
+51a5e57 fix: bomb flask floats at the bomb's size, coop select keeps a margin under the Next button
+91c882f feat: flattened arrival gate, smaller seal icons and details
+db15888 feat: compact seal screen, procedural vortex gate for the run arrival
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+### Uncommitted Changes
+art_source/ai/skins/hero/unlockable/hero_shadowgirl.png
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_191417
+### Commits
+dced6ca feat: monster death poof and pop sound, skin rarities, progression tabs, shard icon mockups
+a12efe2 feat: portal shards, collection challenges and the skin shop (ADR 0023)
+0572495 feat: global seal unlock, drop the skippable-animations rule
+a32598b fix: coop select list scrolls so Next stays on screen, shop hides the run HUD
+51a5e57 fix: bomb flask floats at the bomb's size, coop select keeps a margin under the Next button
+91c882f feat: flattened arrival gate, smaller seal icons and details
+db15888 feat: compact seal screen, procedural vortex gate for the run arrival
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+8317151 test: run cycle for the novice hunter, walk animation speed follows the movement speed
+### Uncommitted Changes
+art_source/ai/skins/hero/unlockable/hero_shadowgirl.png
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_193621
+### Commits
+5177a34 feat: legendary and prestige skins, shard icon, gold coin next to prices
+dced6ca feat: monster death poof and pop sound, skin rarities, progression tabs, shard icon mockups
+a12efe2 feat: portal shards, collection challenges and the skin shop (ADR 0023)
+0572495 feat: global seal unlock, drop the skippable-animations rule
+a32598b fix: coop select list scrolls so Next stays on screen, shop hides the run HUD
+51a5e57 fix: bomb flask floats at the bomb's size, coop select keeps a margin under the Next button
+91c882f feat: flattened arrival gate, smaller seal icons and details
+db15888 feat: compact seal screen, procedural vortex gate for the run arrival
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+81d3949 test: novice hunter run redrawn with the legs of her original walk sheet
+6ef368e test: novice hunter run redrawn by the AI over the code-animated leg cycle
+936ade8 test: novice hunter run with code-animated legs that alternate
+### Uncommitted Changes
+art_source/ai/skins/hero/unlockable/hero_shadowgirl.png
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_195807
+### Commits
+5177a34 feat: legendary and prestige skins, shard icon, gold coin next to prices
+dced6ca feat: monster death poof and pop sound, skin rarities, progression tabs, shard icon mockups
+a12efe2 feat: portal shards, collection challenges and the skin shop (ADR 0023)
+0572495 feat: global seal unlock, drop the skippable-animations rule
+a32598b fix: coop select list scrolls so Next stays on screen, shop hides the run HUD
+51a5e57 fix: bomb flask floats at the bomb's size, coop select keeps a margin under the Next button
+91c882f feat: flattened arrival gate, smaller seal icons and details
+db15888 feat: compact seal screen, procedural vortex gate for the run arrival
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+98771e4 feat: female assassin redesign (fitted bodysuit, scarf) with the alternating run
+### Uncommitted Changes
+art_source/ai/skins/hero/unlockable/hero_shadowgirl.png
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_201516
+### Commits
+1c2e038 feat: portal opens on the map and the hero walks out, hover tabs in progression
+c6fdb2a feat: coop drops belong to the player who made the kill; others can steal by touching
+5177a34 feat: legendary and prestige skins, shard icon, gold coin next to prices
+dced6ca feat: monster death poof and pop sound, skin rarities, progression tabs, shard icon mockups
+a12efe2 feat: portal shards, collection challenges and the skin shop (ADR 0023)
+0572495 feat: global seal unlock, drop the skippable-animations rule
+a32598b fix: coop select list scrolls so Next stays on screen, shop hides the run HUD
+51a5e57 fix: bomb flask floats at the bomb's size, coop select keeps a margin under the Next button
+91c882f feat: flattened arrival gate, smaller seal icons and details
+db15888 feat: compact seal screen, procedural vortex gate for the run arrival
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+0674899 fix: female assassin run keeps her round boots (pose guide built from her own legs)
+### Uncommitted Changes
+art_source/ai/skins/hero/unlockable/hero_shadowgirl.png
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_203831
+### Commits
+1c2e038 feat: portal opens on the map and the hero walks out, hover tabs in progression
+c6fdb2a feat: coop drops belong to the player who made the kill; others can steal by touching
+5177a34 feat: legendary and prestige skins, shard icon, gold coin next to prices
+dced6ca feat: monster death poof and pop sound, skin rarities, progression tabs, shard icon mockups
+a12efe2 feat: portal shards, collection challenges and the skin shop (ADR 0023)
+0572495 feat: global seal unlock, drop the skippable-animations rule
+a32598b fix: coop select list scrolls so Next stays on screen, shop hides the run HUD
+51a5e57 fix: bomb flask floats at the bomb's size, coop select keeps a margin under the Next button
+91c882f feat: flattened arrival gate, smaller seal icons and details
+db15888 feat: compact seal screen, procedural vortex gate for the run arrival
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+f3e09a6 feat: slim manga-style selection cards for every look, head crop found on the figure
+e94cda7 test: slim manga-style selection cards for the assassin, swordswoman and mage
+5cd257b fix: female assassin card redrawn in the chunky chibi proportions of the other cards
+### Uncommitted Changes
+art_source/ai/skins/hero/unlockable/hero_shadowgirl.png
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_212324
+### Commits
+6259bc4 feat: premium attack effects (feathered blade trails, additive glow layer, richer blasts)
+26cac7e feat: melee swings and beams follow the hero, gold amount then coin in the shop
+1c2e038 feat: portal opens on the map and the hero walks out, hover tabs in progression
+c6fdb2a feat: coop drops belong to the player who made the kill; others can steal by touching
+5177a34 feat: legendary and prestige skins, shard icon, gold coin next to prices
+dced6ca feat: monster death poof and pop sound, skin rarities, progression tabs, shard icon mockups
+a12efe2 feat: portal shards, collection challenges and the skin shop (ADR 0023)
+0572495 feat: global seal unlock, drop the skippable-animations rule
+a32598b fix: coop select list scrolls so Next stays on screen, shop hides the run HUD
+51a5e57 fix: bomb flask floats at the bomb's size, coop select keeps a margin under the Next button
+91c882f feat: flattened arrival gate, smaller seal icons and details
+db15888 feat: compact seal screen, procedural vortex gate for the run arrival
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+### Uncommitted Changes
+art_source/ai/skins/hero/unlockable/hero_shadowgirl.png
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_213031
+### Commits
+d1e8225 feat: UI re-theme mockup tool with three proposals
+6259bc4 feat: premium attack effects (feathered blade trails, additive glow layer, richer blasts)
+26cac7e feat: melee swings and beams follow the hero, gold amount then coin in the shop
+1c2e038 feat: portal opens on the map and the hero walks out, hover tabs in progression
+c6fdb2a feat: coop drops belong to the player who made the kill; others can steal by touching
+5177a34 feat: legendary and prestige skins, shard icon, gold coin next to prices
+dced6ca feat: monster death poof and pop sound, skin rarities, progression tabs, shard icon mockups
+a12efe2 feat: portal shards, collection challenges and the skin shop (ADR 0023)
+0572495 feat: global seal unlock, drop the skippable-animations rule
+a32598b fix: coop select list scrolls so Next stays on screen, shop hides the run HUD
+51a5e57 fix: bomb flask floats at the bomb's size, coop select keeps a margin under the Next button
+91c882f feat: flattened arrival gate, smaller seal icons and details
+db15888 feat: compact seal screen, procedural vortex gate for the run arrival
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+0bc2332 fix: clean cutout of the 14 selection cards, female assassin as slim as the others
+### Uncommitted Changes
+art_source/ai/skins/hero/unlockable/hero_shadowgirl.png
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_213041
+### Commits
+d1e8225 feat: UI re-theme mockup tool with three proposals
+6259bc4 feat: premium attack effects (feathered blade trails, additive glow layer, richer blasts)
+26cac7e feat: melee swings and beams follow the hero, gold amount then coin in the shop
+1c2e038 feat: portal opens on the map and the hero walks out, hover tabs in progression
+c6fdb2a feat: coop drops belong to the player who made the kill; others can steal by touching
+5177a34 feat: legendary and prestige skins, shard icon, gold coin next to prices
+dced6ca feat: monster death poof and pop sound, skin rarities, progression tabs, shard icon mockups
+a12efe2 feat: portal shards, collection challenges and the skin shop (ADR 0023)
+0572495 feat: global seal unlock, drop the skippable-animations rule
+a32598b fix: coop select list scrolls so Next stays on screen, shop hides the run HUD
+51a5e57 fix: bomb flask floats at the bomb's size, coop select keeps a margin under the Next button
+91c882f feat: flattened arrival gate, smaller seal icons and details
+db15888 feat: compact seal screen, procedural vortex gate for the run arrival
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+e412eb1 feat: assassin run with alternating legs (pose guide from his own legs)
+3409c19 test: platform width follows the lower body, not an assumed hero ranking
+e61f959 fix: selection platform sized on each hero's lower body so broad heroes fit on it
+### Uncommitted Changes
+art_source/ai/skins/hero/unlockable/hero_shadowgirl.png
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_220011
+### Commits
+ec25ecc feat: five UI theme proposals, run and meta sheets
+d1e8225 feat: UI re-theme mockup tool with three proposals
+6259bc4 feat: premium attack effects (feathered blade trails, additive glow layer, richer blasts)
+26cac7e feat: melee swings and beams follow the hero, gold amount then coin in the shop
+1c2e038 feat: portal opens on the map and the hero walks out, hover tabs in progression
+c6fdb2a feat: coop drops belong to the player who made the kill; others can steal by touching
+5177a34 feat: legendary and prestige skins, shard icon, gold coin next to prices
+dced6ca feat: monster death poof and pop sound, skin rarities, progression tabs, shard icon mockups
+a12efe2 feat: portal shards, collection challenges and the skin shop (ADR 0023)
+0572495 feat: global seal unlock, drop the skippable-animations rule
+a32598b fix: coop select list scrolls so Next stays on screen, shop hides the run HUD
+51a5e57 fix: bomb flask floats at the bomb's size, coop select keeps a margin under the Next button
+91c882f feat: flattened arrival gate, smaller seal icons and details
+db15888 feat: compact seal screen, procedural vortex gate for the run arrival
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+b48bdc1 fix: assassin legs start under the torso, not under the flying coat tails
+### Uncommitted Changes
+art_source/ai/skins/hero/unlockable/hero_shadowgirl.png
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_220902
+### Commits
+ec25ecc feat: five UI theme proposals, run and meta sheets
+d1e8225 feat: UI re-theme mockup tool with three proposals
+6259bc4 feat: premium attack effects (feathered blade trails, additive glow layer, richer blasts)
+26cac7e feat: melee swings and beams follow the hero, gold amount then coin in the shop
+1c2e038 feat: portal opens on the map and the hero walks out, hover tabs in progression
+c6fdb2a feat: coop drops belong to the player who made the kill; others can steal by touching
+5177a34 feat: legendary and prestige skins, shard icon, gold coin next to prices
+dced6ca feat: monster death poof and pop sound, skin rarities, progression tabs, shard icon mockups
+a12efe2 feat: portal shards, collection challenges and the skin shop (ADR 0023)
+0572495 feat: global seal unlock, drop the skippable-animations rule
+a32598b fix: coop select list scrolls so Next stays on screen, shop hides the run HUD
+51a5e57 fix: bomb flask floats at the bomb's size, coop select keeps a margin under the Next button
+91c882f feat: flattened arrival gate, smaller seal icons and details
+db15888 feat: compact seal screen, procedural vortex gate for the run arrival
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+8757655 docs: status D86 (slim selection cards, AI animations rule, next steps)
+f451520 feat: female assassin walk drawn in one generation on the swordswoman's gait
+12d49ad feat: assassin walk drawn in one generation on the swordswoman's gait
+### Uncommitted Changes
+art_source/ai/skins/hero/unlockable/hero_shadowgirl.png
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261008_222642
+### Commits
+ef88b07 docs: status D97 (AI UI theme mockups)
+ec25ecc feat: five UI theme proposals, run and meta sheets
+d1e8225 feat: UI re-theme mockup tool with three proposals
+6259bc4 feat: premium attack effects (feathered blade trails, additive glow layer, richer blasts)
+26cac7e feat: melee swings and beams follow the hero, gold amount then coin in the shop
+1c2e038 feat: portal opens on the map and the hero walks out, hover tabs in progression
+c6fdb2a feat: coop drops belong to the player who made the kill; others can steal by touching
+5177a34 feat: legendary and prestige skins, shard icon, gold coin next to prices
+dced6ca feat: monster death poof and pop sound, skin rarities, progression tabs, shard icon mockups
+a12efe2 feat: portal shards, collection challenges and the skin shop (ADR 0023)
+0572495 feat: global seal unlock, drop the skippable-animations rule
+a32598b fix: coop select list scrolls so Next stays on screen, shop hides the run HUD
+51a5e57 fix: bomb flask floats at the bomb's size, coop select keeps a margin under the Next button
+91c882f feat: flattened arrival gate, smaller seal icons and details
+db15888 feat: compact seal screen, procedural vortex gate for the run arrival
+324c51e feat: animated black-hole portal on the seal screen, wide-view arrival with a big gate and camera zoom-in
+218f011 feat: portal zoom after Play and hero drop-in at the start of a run
+76bf995 feat: gold wording and color, shop cards show the bonus of family items for the current build
+c82c648 feat: walk drawn in one generation for the 9 remaining appearances
+f011d46 feat: novice hunter walk drawn in one generation on the swordswoman's gait
+410dbb4 feat: novice huntress walk drawn in one generation on the swordswoman's gait
+### Uncommitted Changes
+art_source/ai/skins/hero/unlockable/hero_shadowgirl.png
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+

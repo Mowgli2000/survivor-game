@@ -1,5 +1,1 @@
-![  ](image-12.png)  Est-ce que tu ne trouves pas que la taille du katana et de la faux, par exemple, est plus petite que la hache et la lame unique ? Qu'en penses-tu ? Est-ce dû au design de base ou juste une question de proportions ? 
-
-Quand j'essaie de sélectionner le niveau de danger, il y a un petit bug pour passer d'Obsidienne à Astral. Avec la manette, quand je fais flèche droite ou que je utilise le joystick, il s'arrête à Obsidienne et je dois appuyer sur la flèche du bas pour aller à Astral. 
-
-L'animation de l'épéiste me convient parfaitement. Tu peux procéder à l'animation de tout le reste des personnages disponibles en jeu maintenant. 
+![alt text](image-21.png)  ![alt text](image-22.png)  Voilà deux nouvelles images de référence pour la UI de mon jeu. Recrée-moi cinq mockups de styles différents, de couleurs différentes que tu penses pourraient bien aller avec mon jeu Roguelite. Chaque mockup que tu me crées ne doit pas trop se ressembler (typographie, ornements, etc.) et je veux une cohérence visuelle entre chaque interface. Je veux que tu me fasses un mockup de toutes les interfaces de mon jeu.  Tu peux également t'inspirer de jeux comme Genshin Impact ou certains gacha pour le style visuel. 
