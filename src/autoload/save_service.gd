@@ -133,9 +133,16 @@ func collection_challenges() -> Array[ChallengeData]:
 	return list
 
 
+## False while the seal a (prestige) skin asks for has not been won by any hunter.
+func is_skin_available(skin: SkinData) -> bool:
+	return skin.required_seal < 0 or profile.best_difficulty() >= skin.required_seal
+
+
 ## Buys a skin with portal shards: false when unknown, already owned or too expensive.
 func buy_skin(skin: SkinData) -> bool:
-	if skin == null or profile.is_unlocked(&"skins", skin.id) or not profile.spend_shards(skin.price):
+	if skin == null or profile.is_unlocked(&"skins", skin.id) or not is_skin_available(skin):
+		return false
+	if not profile.spend_shards(skin.price):
 		return false
 	profile.unlock(&"skins", skin.id)
 	save_profile()

@@ -513,3 +513,9 @@ UI_SKIN_SHARDS,◆ %d portal shards,◆ %d éclats de portail
 UI_SHARDS_EARNED,Portal shards,Éclats de portail
 UI_SHARDS_FROM,from %d challenge(s),pour %d défi(s)
 UI_COLLECTION_HEADER,"Collection: %d / %d done (%d shards earned)","Collection : %d / %d réussis (%d éclats gagnés)"
+UI_TAB_PROGRESSION,Progression,Progression
+UI_TAB_COLLECTION,Collection,Collection
+UI_SKIN_RARITY_1,Classic palette,Palette classique
+UI_SKIN_RARITY_2,Rare,Rare
+UI_SKIN_RARITY_3,Prestige,Prestige
+UI_SKIN_NEEDS_SEAL,Win the %s first,Gagne d'abord le %s

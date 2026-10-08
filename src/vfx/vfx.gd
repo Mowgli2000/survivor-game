@@ -43,7 +43,7 @@ const BLAST_LOBES := 7
 const BLAST_SPARKS := 6
 const BLAST_SMOKE := 4
 ## Monster death "pop": flash and ring (no flying chunks: visual noise, playtest).
-const DEATH_LIFE := 0.24
+const DEATH_LIFE := 0.42
 
 var _kind := PackedInt32Array()
 var _a := PackedVector2Array()       # center / start
@@ -54,6 +54,7 @@ var _life := PackedFloat32Array()
 var _max_life := PackedFloat32Array()
 var _color := PackedColorArray()
 var _style := PackedInt32Array()     # slash style (WeaponData.SlashStyle)
+static var _puff_cache: ImageTexture
 var _count: int = 0
 var _drawn: bool = false
 var _seed: int = 0
@@ -490,15 +491,47 @@ func _draw_explosion(center: Vector2, radius: float, noise_seed: float, color: C
 
 ## Monster death "pop": a flash and a ring of its size. One per kill: plain
 ## circles and arcs only.
+## The monster "poofs": a white flash hides its sprite, then a few smoke puffs (inked
+## discs tinted by the monster's color) swell and fade. Puffs are one textured quad
+## each (a baked disc): a polygon circle per puff cost ~20 FPS in the stress test.
 func _draw_death(center: Vector2, radius: float, noise_seed: float, color: Color, t: float) -> void:
 	var age := 1.0 - t
 	var out := 1.0 - (1.0 - age) * (1.0 - age)  # ease out
-	if age < 0.45:
-		var flash := 1.0 - age / 0.45
-		draw_circle(center, radius * (0.8 + 0.4 * age), Color(1.0, 1.0, 1.0, 0.5 * flash))
-		# Pop ring in the monster's color.
-		draw_arc(center, radius * (0.7 + 0.9 * out), 0.0, TAU, 16, Color(INK, 0.8 * flash), 5.0)
-		draw_arc(center, radius * (0.7 + 0.9 * out), 0.0, TAU, 16, Color(color, flash), 2.5)
+	if age < 0.3:
+		_puff(center, radius * (0.75 + 0.5 * age / 0.3), Color(1.0, 1.0, 1.0, 0.8 * (1.0 - age / 0.3)))
+	var puff_color := Color(0.94, 0.91, 1.0).lerp(color, 0.22)
+	var fade := clampf(t * 1.6, 0.0, 1.0)
+	puff_color.a = 0.95 * fade
+	_puff(center, radius * (0.5 + 0.45 * out), puff_color)
+	var puffs := 4 if _count <= BUSY_COUNT else 2
+	for k in puffs:
+		var angle := noise_seed * TAU + k * TAU / puffs + sin(noise_seed * 40.0 + k) * 0.25
+		var spread := radius * (0.2 + 0.85 * out) * (0.85 + 0.3 * fposmod(noise_seed * 7.0 + k * 0.37, 1.0))
+		var at := center + Vector2.from_angle(angle) * spread + Vector2(0.0, -radius * 0.35 * out)
+		_puff(at, radius * (0.34 + 0.22 * out) * (1.0 - 0.45 * age), puff_color)
+
+
+## One disc of smoke centered on `at`, `radius` px, tinted `tint`.
+func _puff(at: Vector2, radius: float, tint: Color) -> void:
+	draw_texture_rect(_puff_texture(), Rect2(at - Vector2(radius, radius), Vector2(radius, radius) * 2.0), false, tint)
+
+
+## White disc with a soft ink outline, baked once and shared by every Vfx.
+static func _puff_texture() -> ImageTexture:
+	if _puff_cache != null:
+		return _puff_cache
+	const SIZE := 48
+	var image := Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
+	var half := SIZE * 0.5
+	for y in SIZE:
+		for x in SIZE:
+			var d := Vector2(x + 0.5 - half, y + 0.5 - half).length() / half
+			var inside := 1.0 - smoothstep(0.93, 1.0, d)
+			var ink := smoothstep(0.78, 0.84, d)
+			var rgb := Color(1.0, 1.0, 1.0).lerp(INK, ink)
+			image.set_pixel(x, y, Color(rgb, inside * lerpf(1.0, 0.6, ink)))
+	_puff_cache = ImageTexture.create_from_image(image)
+	return _puff_cache
 
 
 func _draw_hit(pos: Vector2, size: float, noise_seed: float, color: Color, t: float) -> void:

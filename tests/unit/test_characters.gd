@@ -90,8 +90,13 @@ func test_progression_screen_lists_every_challenge() -> void:
 	add_child_autofree(screen)
 	screen.open()
 	var groups := ProgressionScreen.grouped(SaveService.all_challenges())
-	# Progression rows, then the collection header and one row per collection challenge.
-	assert_eq(screen._rows.get_child_count(), groups.size() + 1 + SaveService.collection_challenges().size())
+	assert_eq(screen._rows.get_child_count(), groups.size())
+	# The collection has its own tab: a header and one row per collection challenge.
+	assert_eq(screen._collection_rows.get_child_count(), 1 + SaveService.collection_challenges().size())
+	assert_true(screen._rows.visible)
+	screen._tab_collection.pressed.emit()
+	assert_true(screen._collection_rows.visible)
+	assert_false(screen._rows.visible)
 	assert_lt(groups.size(), SaveService.all_challenges().size(), "the seal rewards are grouped")
 
 
