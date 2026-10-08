@@ -4,12 +4,12 @@ extends Control
 ## characters are shown greyed out with the challenge that unlocks them.
 ## Layout chosen by the dev (mockup C, 2026-10-08), three columns, nothing numbered:
 ## PERSONNAGES (list with the class names) -> the hero on a stone platform, his looks
-## on a turntable (left / right turn it) -> ARMES (weapon, then seal, then Play).
-## A moves to the next column, B back to the previous one.
+## on a turntable (left / right turn it) -> ARMES. A moves to the next column, B back.
+## The seal is chosen on its own screen once the weapon is validated (SealSelect,
+## dev's choice 2026-10-08: more room for the hero).
 ## Local coop (ADR 0017): CoopCharacterSelect shows one compact copy per half of the
-## screen (`split_index`): the list, then a column with the hero and the weapons under
-## him. Both players pick at once; player 1 also picks the seal and presses Play
-## without waiting: the run starts as soon as player 2 is ready.
+## screen (`split_index`): the heads, then a column with the hero and the weapons under
+## him. Both players pick at once; once both are ready the shared seal screen opens.
 ## Emits `started(setup)`; the main menu asks SceneRouter to start the run.
 
 signal started(setup: RunSetup)
@@ -25,28 +25,25 @@ enum Step { LIST, LOOK, WEAPON }
 const HEAD_REGION := Rect2(72.0, 8.0, 368.0, 368.0)
 const PREVIEW_HEIGHT := 170.0
 const LIST_WIDTH := 420.0
-const COMPACT_LIST_WIDTH := 280.0
+const COMPACT_LIST_WIDTH := 200.0
 const ROW_HEIGHT := 96.0
-const COMPACT_ROW_HEIGHT := 104.0
-const STAGE_SIZE := Vector2(700, 500)
-const COMPACT_STAGE_SIZE := Vector2(0, 360)
-const SEAL_SIZE := Vector2(176, 104)
-const COMPACT_SEAL_SIZE := Vector2(86, 80)
+## Half screen: a head with the name under it (dev's pick, coop mockup A).
+const COMPACT_ROW_HEIGHT := 124.0
+## The hero is shown big (dev: room for the looks and future skins).
+const STAGE_SIZE := Vector2(760, 600)
+const COMPACT_STAGE_SIZE := Vector2(0, 540)
+const ARMS_WIDTH := 560.0
+## Width the rule and bonus text wrap to in a half screen.
+const COMPACT_RULE_WIDTH := 440.0
 ## Stone platform; PLATFORM_TOP is the middle of its top surface (fractions of the image).
 const PLATFORM := preload("res://assets/ui/select/platform_stone.png")
 const PLATFORM_TOP := Vector2(0.52, 0.37)
-const RUNE_CIRCLE := preload("res://assets/ui/select/rune_circle.png")
+## Platform width for a hero height (the hero's art is mostly empty on the sides).
+const PLATFORM_PER_HERO := 0.78
 ## The look behind on the turntable: smaller, higher, darker (dev: "more behind than beside").
 const BACK_SCALE := 0.72
 const BACK_TINT := Color(0.3, 0.26, 0.45, 0.9)
-const ROMAN: Array[String] = ["I", "II", "III", "IV", "V", "VI"]
-const SKULL := "☠"
 const LOCK := "🔒"
-const REWARD_ICON := 30.0
-const COMPACT_REWARD_ICON := 20.0
-## Copper -> Astral: sea green, lime, yellow, orange, red, blood red.
-const SEAL_HEAT: Array[Color] = [Color("4de0b8"), Color("a6e34d"), Color("ffd84d"),
-		Color("ff9a3d"), Color("ff4a3d"), Color("c8102e")]
 ## Bar fill = stat / these values (a full bar is a strong class, not a maximum).
 const BAR_HP := 150.0
 const BAR_DAMAGE := 1.5
@@ -83,19 +80,17 @@ var _hero_rule: Label
 var _hero_chips: HFlowContainer
 var _hero_bars: Dictionary[StringName, ProgressBar] = {}
 var _hero_values: Dictionary[StringName, Label] = {}
+var _hero_deltas: Dictionary[StringName, Label] = {}
 var _hero_plate: VBoxContainer
 ## Hero shown in the middle column: the focused row (gamepad), else the chosen one.
 var _shown: CharacterData
 var _weapons: VBoxContainer
 var _weapon_title: Label
-var _dangers: GridContainer
-## Starts the run with the chosen seal (a seal press only selects it).
-var _launch: Button
-var _difficulty: DifficultyData
-var _danger_title: Label
-var _seal_info: Label
-var _seal_effects: Label
 var _weapon: WeaponData
+## Shown once a weapon is picked: validates it (dev's request: two steps, not one press).
+var _next: Button
+## Solo: the seal screen opened once the weapon is validated.
+var _seals: SealSelect
 var _back: Button
 var _chosen: CharacterData
 var _title: Label
@@ -107,10 +102,7 @@ var split_index: int = -1
 var is_ready: bool = false
 ## Split coop: "Ready, waiting for..." under the weapons.
 var _ready_label: Label
-## Split coop (player 1): the partner's character once picked, for the seals both have unlocked.
-var _partner: CharacterData
 var _compact: bool = false
-var _seal_size := SEAL_SIZE
 var _step: Step = Step.LIST
 ## Last key / gamepad event came from a gamepad: focusing a row picks that hero
 ## (with the keyboard or the mouse, only a click does).
@@ -131,8 +123,6 @@ class ContactShadow extends Control:
 
 func _init(p_compact: bool = false) -> void:
 	_compact = p_compact
-	if _compact:
-		_seal_size = COMPACT_SEAL_SIZE
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	theme = UiTheme.get_theme()
 	visible = false
@@ -180,11 +170,15 @@ func _init(p_compact: bool = false) -> void:
 		(_stage_panel.get_child(0) as VBoxContainer).add_child(arms)
 	else:
 		_arms_panel = _column(true)
-		_arms_panel.custom_minimum_size.x = SEAL_SIZE.x * 3 + 2 * 12 + 36
+		_arms_panel.custom_minimum_size.x = ARMS_WIDTH
 		_arms_panel.add_child(arms)
 		body.add_child(_arms_panel)
 	if not _compact:
 		add_child(ButtonHints.create([[&"A", "UI_HINT_CHOOSE"], [&"B", "UI_HINT_BACK"], [&"Y", "UI_HINT_SWITCH_LOOK"]]))
+		_seals = SealSelect.new()
+		_seals.chosen.connect(_start)
+		_seals.back.connect(_on_seals_back)
+		add_child(_seals)
 
 
 func _column(expand: bool) -> PanelContainer:
@@ -242,14 +236,6 @@ func _build_stage_column() -> Control:
 	_stage.clip_contents = true
 	_stage.resized.connect(_layout_stage)
 	stage_row.add_child(_stage)
-	var rune := TextureRect.new()
-	rune.texture = RUNE_CIRCLE
-	rune.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	rune.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	rune.set_anchors_preset(Control.PRESET_FULL_RECT)
-	rune.modulate = Color(UiTheme.VIOLET, 0.16)
-	rune.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_stage.add_child(rune)
 	_platform = _art_rect(PLATFORM)
 	_stage.add_child(_platform)
 	_back_art = _art_rect(null)
@@ -287,30 +273,31 @@ func _build_stage_column() -> Control:
 	_hero_name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_hero_plate.add_child(_hero_name)
 	_hero_rule = Label.new()
-	_hero_rule.add_theme_font_size_override("font_size", 20)
+	_hero_rule.add_theme_font_size_override("font_size", 16 if _compact else 20)
 	_hero_rule.add_theme_color_override("font_color", UiTheme.MUTED)
 	_hero_rule.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_hero_rule.custom_minimum_size = Vector2(STAGE_SIZE.x - 40.0, 52.0)
-	_hero_rule.visible = not _compact
+	# The class rule (passive) is shown in coop too (playtest: the berserker's was not).
+	_hero_rule.custom_minimum_size = Vector2(COMPACT_RULE_WIDTH if _compact else STAGE_SIZE.x - 40.0, 0.0)
 	_hero_plate.add_child(_hero_rule)
 	# Bonuses (green) and maluses (red) as plain text.
 	_hero_chips = HFlowContainer.new()
-	_hero_chips.add_theme_constant_override("h_separation", 26)
+	_hero_chips.add_theme_constant_override("h_separation", 14 if _compact else 26)
 	_hero_chips.add_theme_constant_override("v_separation", 2)
-	_hero_chips.custom_minimum_size = Vector2(STAGE_SIZE.x - 40.0, 0.0)
-	_hero_chips.visible = not _compact
+	_hero_chips.custom_minimum_size = Vector2(COMPACT_RULE_WIDTH if _compact else STAGE_SIZE.x - 40.0, 0.0)
 	_hero_plate.add_child(_hero_chips)
+	# Stats: name, bar (scaled on the roster: a full bar = the best class), the value and
+	# its difference with the base hero (+30 / -15).
 	var grid := GridContainer.new()
-	grid.columns = 4 if _compact else 3
-	grid.add_theme_constant_override("h_separation", 14)
-	grid.add_theme_constant_override("v_separation", 6)
+	grid.columns = 6 if _compact else 3
+	grid.add_theme_constant_override("h_separation", 10 if _compact else 14)
+	grid.add_theme_constant_override("v_separation", 4 if _compact else 8)
 	_hero_plate.add_child(grid)
-	for entry in [[StatIds.MAX_HP, "STAT_MAX_HP"], [StatIds.DAMAGE, "STAT_DAMAGE"],
-			[StatIds.MOVE_SPEED, "STAT_MOVE_SPEED"], [StatIds.RANGE, "STAT_RANGE"]]:
+	for entry in [[StatIds.MAX_HP, "STAT_MAX_HP", "STAT_SHORT_MAX_HP"], [StatIds.DAMAGE, "STAT_DAMAGE", "STAT_SHORT_DAMAGE"],
+			[StatIds.MOVE_SPEED, "STAT_MOVE_SPEED", "STAT_SHORT_MOVE_SPEED"], [StatIds.RANGE, "STAT_RANGE", "STAT_SHORT_RANGE"]]:
 		var stat: StringName = entry[0]
 		var name_label := Label.new()
-		name_label.text = entry[1]
-		name_label.add_theme_font_size_override("font_size", 14 if _compact else 20)
+		name_label.text = entry[2] if _compact else entry[1]
+		name_label.add_theme_font_size_override("font_size", 15 if _compact else 20)
 		name_label.add_theme_color_override("font_color", UiTheme.MUTED)
 		name_label.add_theme_constant_override("outline_size", 0)
 		name_label.custom_minimum_size.x = 0.0 if _compact else 230.0
@@ -318,23 +305,28 @@ func _build_stage_column() -> Control:
 		var bar := ProgressBar.new()
 		bar.max_value = 1.0
 		bar.show_percentage = false
-		bar.custom_minimum_size = Vector2(70 if _compact else 300, 12)
+		bar.custom_minimum_size = Vector2(56 if _compact else 260, 12)
 		bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		var styles := UiTheme.flat_bar_styles(STAT_COLORS[stat])
 		bar.add_theme_stylebox_override("background", styles[0])
 		bar.add_theme_stylebox_override("fill", styles[1])
 		grid.add_child(bar)
+		var numbers := HBoxContainer.new()
+		numbers.add_theme_constant_override("separation", 6)
+		numbers.custom_minimum_size.x = 96 if _compact else 170
+		grid.add_child(numbers)
 		var value_label := Label.new()
-		value_label.add_theme_font_size_override("font_size", 22)
+		value_label.add_theme_font_size_override("font_size", 16 if _compact else 22)
 		value_label.add_theme_color_override("font_color", STAT_COLORS[stat])
 		value_label.add_theme_constant_override("outline_size", 0)
-		value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		value_label.custom_minimum_size.x = 80.0
-		value_label.visible = not _compact
-		if not _compact:
-			grid.add_child(value_label)
+		numbers.add_child(value_label)
+		var delta_label := Label.new()
+		delta_label.add_theme_font_size_override("font_size", 13 if _compact else 18)
+		delta_label.add_theme_constant_override("outline_size", 0)
+		numbers.add_child(delta_label)
 		_hero_bars[stat] = bar
 		_hero_values[stat] = value_label
+		_hero_deltas[stat] = delta_label
 	return _stage_panel
 
 
@@ -370,7 +362,8 @@ func _arrow(text: String, direction: int) -> Button:
 	return button
 
 
-## ARMES: weapon cards, then the seals and Play.
+## ARMES: weapon cards (a press picks one), "Next" once one is picked, then "ready" in
+## split coop.
 func _build_arms() -> Control:
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 8 if _compact else 12)
@@ -379,38 +372,17 @@ func _build_arms() -> Control:
 	_weapons = VBoxContainer.new()
 	_weapons.add_theme_constant_override("separation", 8 if _compact else 12)
 	box.add_child(_weapons)
-	_danger_title = _section_label("UI_CHOOSE_DANGER", 22 if _compact else 26)
-	box.add_child(_danger_title)
-	_dangers = GridContainer.new()
-	_dangers.columns = 6 if _compact else 3
-	_dangers.add_theme_constant_override("h_separation", 8 if _compact else 12)
-	_dangers.add_theme_constant_override("v_separation", 8 if _compact else 12)
-	box.add_child(_dangers)
-	# Effects and place of the hovered / focused seal: two reserved lines, a long text
-	# wraps inside them instead of shifting the layout.
-	var info_width := _seal_size.x * _dangers.columns + 12 * (_dangers.columns - 1)
-	_seal_info = Label.new()
-	_seal_info.add_theme_font_size_override("font_size", 18 if _compact else 22)
-	_seal_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_seal_info.custom_minimum_size = Vector2(info_width, 26)
-	box.add_child(_seal_info)
-	_seal_effects = Label.new()
-	_seal_effects.add_theme_font_size_override("font_size", 15 if _compact else 17)
-	_seal_effects.add_theme_color_override("font_color", UiTheme.MUTED)
-	_seal_effects.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_seal_effects.custom_minimum_size = Vector2(info_width, 22)
-	box.add_child(_seal_effects)
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	box.add_child(spacer)
-	_launch = Button.new()
-	_launch.text = "UI_PLAY"
-	_launch.theme_type_variation = &"CtaButton"
-	_launch.custom_minimum_size = Vector2(280, 72) if _compact else Vector2(460, 100)
-	_launch.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	_launch.visible = false
-	_launch.pressed.connect(_start)
-	box.add_child(_launch)
+	_next = Button.new()
+	_next.text = "UI_NEXT"
+	_next.theme_type_variation = &"CtaButton"
+	_next.custom_minimum_size = Vector2(300, 76) if _compact else Vector2(440, 100)
+	_next.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_next.visible = false
+	_next.pressed.connect(_validate_weapon)
+	box.add_child(_next)
 	_ready_label = _section_label("UI_COOP_READY")
 	_ready_label.add_theme_color_override("font_color", UiTheme.GOOD)
 	_ready_label.visible = false
@@ -421,7 +393,6 @@ func _build_arms() -> Control:
 ## `p_split_index` >= 0: one half of the split coop pick (CoopCharacterSelect).
 func open(p_split_index: int = -1) -> void:
 	split_index = p_split_index
-	_partner = null
 	_set_ready(false)
 	_devices.visible = split_index >= 0
 	_devices.text = devices_hint(split_index, Input.get_connected_joypads().size())
@@ -440,7 +411,8 @@ func _begin_pick() -> void:
 	_chosen = null
 	_build_cards()
 	_show_weapons(false)
-	_show_dangers(false)
+	if _seals != null:
+		_seals.close()
 	visible = true
 	var first := first_card()
 	if first != null:
@@ -480,13 +452,25 @@ func close() -> void:
 ## Lights the column of `step`.
 func _set_step(step: Step) -> void:
 	_step = step
-	_list_panel.add_theme_stylebox_override("panel", UiTheme.column_style(step == Step.LIST))
-	_stage_panel.add_theme_stylebox_override("panel", UiTheme.column_style(
-		step == Step.LOOK or (_compact and step == Step.WEAPON)))
-	if _arms_panel != null:
-		_arms_panel.add_theme_stylebox_override("panel", UiTheme.column_style(step == Step.WEAPON))
+	_apply_focus_modes()
+	# No big frame around the active column (dev: it only said "we change screen"): the
+	# focus frame of the control being used is enough.
 	_arrow_left.modulate = Color.WHITE if step == Step.LOOK else Color(1, 1, 1, 0.55)
 	_arrow_right.modulate = _arrow_left.modulate
+
+
+## Only the controls of the current step can take the focus: the arrows never move it to
+## another column, a validation press changes the step (dev's request).
+func _apply_focus_modes() -> void:
+	var list_mode := Control.FOCUS_ALL if _step == Step.LIST else Control.FOCUS_NONE
+	for button in _character_buttons.values():
+		button.focus_mode = list_mode
+	_turn.focus_mode = Control.FOCUS_ALL if _step == Step.LOOK else Control.FOCUS_NONE
+	# Split coop, ready: nothing to focus until the choice is taken back (B).
+	var weapon_mode := Control.FOCUS_ALL if _step == Step.WEAPON and not is_ready else Control.FOCUS_NONE
+	for child in _weapons.get_children():
+		(child as Control).focus_mode = weapon_mode
+	_next.focus_mode = weapon_mode
 
 
 ## Remembers whether the player uses a gamepad (see _pad_focus).
@@ -498,6 +482,8 @@ func _input(event: InputEvent) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _seals != null and _seals.visible:
+		return
 	if visible and (event.is_action_pressed("cancel") or event.is_action_pressed("pause")):
 		get_viewport().set_input_as_handled()
 		_go_back()
@@ -523,18 +509,16 @@ func _on_turn_input(event: InputEvent) -> void:
 
 func _go_back() -> void:
 	if is_ready:
-		# Split coop: take the choice back (player 1: back to his seals and Play).
+		# Split coop: take the choice back, the weapons can be chosen again.
 		_set_ready(false)
 		unpicked.emit()
-		if _dangers.visible:
-			_launch.visible = true
-			_launch.grab_focus()
-		else:
-			_focus_weapon()
-	elif _dangers.visible:
-		_show_dangers(false)
+		_apply_focus_modes()
+		_next.grab_focus()
+	elif _step == Step.WEAPON and get_viewport().gui_get_focus_owner() == _next:
+		# B on "Next": back on the picked weapon.
 		_focus_weapon()
 	elif _step == Step.WEAPON:
+		_pick_weapon(null)
 		_set_step(Step.LOOK)
 		_turn.grab_focus()
 	elif _step == Step.LOOK:
@@ -545,7 +529,12 @@ func _go_back() -> void:
 		close()
 
 
+## Focuses the picked weapon's card, else the first one.
 func _focus_weapon() -> void:
+	for child in _weapons.get_children():
+		if child.get_meta(&"weapon") == _weapon:
+			(child as Button).grab_focus()
+			return
 	if _weapons.get_child_count() > 0:
 		(_weapons.get_child(0) as Button).grab_focus()
 
@@ -574,6 +563,7 @@ func _build_cards() -> void:
 		var button := _row(character)
 		_rows.add_child(button)
 		_character_buttons[character.id] = button
+	_apply_focus_modes()
 	_show_hero(_chosen)
 
 
@@ -590,20 +580,22 @@ func _row(character: CharacterData) -> Button:
 	button.add_theme_stylebox_override("pressed", UiTheme.card_style(UiTheme.ACCENT, 1.0))
 	button.add_theme_stylebox_override("disabled", UiTheme.card_style(character.color, 0.1))
 	button.add_theme_stylebox_override("focus", UiTheme.card_focus_style())
-	var line := HBoxContainer.new()
+	var line: BoxContainer = VBoxContainer.new() if _compact else HBoxContainer.new()
 	line.set_anchors_preset(Control.PRESET_FULL_RECT)
 	line.offset_left = 8.0
 	line.offset_right = -8.0
-	line.add_theme_constant_override("separation", 14)
+	line.offset_top = 4.0 if _compact else 0.0
+	line.add_theme_constant_override("separation", 0 if _compact else 14)
 	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	button.add_child(line)
-	# Half screen: smaller heads leave room for the longest class name on one line.
-	var head := _head(character, unlocked, look, 62.0 if _compact else height - 16.0)
+	# Half screen: the head on top, the name under it (coop mockup A).
+	var head := _head(character, unlocked, look, 86.0 if _compact else height - 16.0)
+	head.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	line.add_child(head)
 	_row_heads[character.id] = head as TextureRect if head is TextureRect else null
 	var name_label := Label.new()
 	name_label.text = character.name_key_for(look) if unlocked else LOCK + " ???"
-	name_label.add_theme_font_size_override("font_size", 20 if _compact else 28)
+	name_label.add_theme_font_size_override("font_size", 17 if _compact else 28)
 	name_label.add_theme_color_override("font_color", UiTheme.TEXT if unlocked else UiTheme.MUTED)
 	# Two lines at most, never a cut inside a word.
 	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD
@@ -611,6 +603,9 @@ func _row(character: CharacterData) -> Button:
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	name_label.size_flags_vertical = Control.SIZE_FILL
+	if _compact:
+		name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		name_label.max_lines_visible = 1
 	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	line.add_child(name_label)
 	if not unlocked:
@@ -698,9 +693,13 @@ func _show_hero(character: CharacterData) -> void:
 			_hero_chips.add_child(_chip(line))
 	var stats := stat_preview(character)
 	var values := stat_values(character)
+	var deltas := stat_deltas(character)
 	for stat in _hero_bars:
 		_hero_bars[stat].value = stats[stat] if unlocked else 0.0
 		_hero_values[stat].text = values[stat] if unlocked else ""
+		var delta: String = deltas[stat][0]
+		_hero_deltas[stat].text = delta if unlocked else ""
+		_hero_deltas[stat].add_theme_color_override("font_color", UiTheme.GOOD if deltas[stat][1] > 0.0 else UiTheme.BAD)
 	_layout_stage()
 
 
@@ -711,15 +710,18 @@ func _layout_stage() -> void:
 	var area := _stage.size
 	if area.x <= 0.0:
 		return
-	# The whole platform fits, dots under it; the hero fills the height above his feet.
+	# The hero fills the height above his feet; the platform is sized on him (a bit
+	# wider than the broadest hero, the male berserker), the dots under it.
 	var dots_room := 26.0
-	# One size for every class, wide enough for the broadest hero (the male berserker).
-	var platform_w := minf(area.x * 0.7, area.y * 0.84)
-	var platform_h := platform_w * PLATFORM.get_height() / float(PLATFORM.get_width())
+	var ratio := PLATFORM.get_height() / float(PLATFORM.get_width())
+	var below := (1.0 - PLATFORM_TOP.y) * ratio * PLATFORM_PER_HERO
+	var hero_h := (area.y - dots_room - 6.0) / (1.0 + below)
+	var platform_w := minf(hero_h * PLATFORM_PER_HERO, area.x * 0.8)
+	var platform_h := platform_w * ratio
 	var feet := Vector2(area.x * 0.5, area.y - dots_room - platform_h * (1.0 - PLATFORM_TOP.y))
+	hero_h = feet.y - 6.0
 	_platform.position = feet - Vector2(platform_w * PLATFORM_TOP.x, platform_h * PLATFORM_TOP.y)
 	_platform.size = Vector2(platform_w, platform_h)
-	var hero_h := feet.y - 6.0
 	_place_on_feet(_hero_art, feet, hero_h)
 	# Behind: up toward the back of the platform, off to the right of the hero's
 	# shoulder, so it reads as the next look waiting its turn.
@@ -826,7 +828,7 @@ func _chip(text: String) -> Label:
 	var bad := text.begins_with("-")
 	var label := Label.new()
 	label.text = ("▼ " if bad else "▲ ") + text
-	label.add_theme_font_size_override("font_size", 20)
+	label.add_theme_font_size_override("font_size", 16 if _compact else 20)
 	label.add_theme_color_override("font_color", UiTheme.BAD if bad else UiTheme.GOOD)
 	label.add_theme_constant_override("outline_size", 0)
 	return label
@@ -845,18 +847,52 @@ static func stat_values(character: CharacterData) -> Dictionary:
 	}
 
 
-## Bar fill (0..1) of the four stats shown for a class: its base stats and its
-## own modifiers (what the player starts with).
-static func stat_preview(character: CharacterData) -> Dictionary:
+const SHOWN_STATS: Array[StringName] = [StatIds.MAX_HP, StatIds.DAMAGE, StatIds.MOVE_SPEED, StatIds.RANGE]
+
+
+## The four stats shown for a class, as raw numbers (base stats and own modifiers).
+static func stat_numbers(character: CharacterData) -> Dictionary:
 	var block := StatBlock.from_defaults(character.stat_overrides)
 	for mod in character.modifiers:
 		block.add_modifier(mod)
-	return {
-		StatIds.MAX_HP: clampf(block.get_value(StatIds.MAX_HP) / BAR_HP, 0.0, 1.0),
-		StatIds.DAMAGE: clampf(block.get_value(StatIds.DAMAGE) / BAR_DAMAGE, 0.0, 1.0),
-		StatIds.MOVE_SPEED: clampf(block.get_value(StatIds.MOVE_SPEED) / BAR_SPEED, 0.0, 1.0),
-		StatIds.RANGE: clampf(block.get_value(StatIds.RANGE) / BAR_RANGE, 0.0, 1.0),
-	}
+	var result := {}
+	for stat: StringName in SHOWN_STATS:
+		result[stat] = block.get_value(stat)
+	return result
+
+
+## Bar fill (0..1) of the four stats of a class, scaled on the whole roster so the
+## bars tell the classes apart: the best class has a full bar, the weakest 25 %.
+static func stat_preview(character: CharacterData) -> Dictionary:
+	var mine := stat_numbers(character)
+	var low := {}
+	var high := {}
+	for other: CharacterData in ContentDB.get_all(&"characters"):
+		var numbers := stat_numbers(other)
+		for stat: StringName in SHOWN_STATS:
+			low[stat] = minf(low.get(stat, INF), numbers[stat])
+			high[stat] = maxf(high.get(stat, -INF), numbers[stat])
+	var result := {}
+	for stat: StringName in SHOWN_STATS:
+		var span: float = high[stat] - low[stat]
+		result[stat] = 1.0 if span <= 0.0001 else lerpf(0.25, 1.0, (mine[stat] - low[stat]) / span)
+	return result
+
+
+## Difference with the base hero (the stat defaults) for each shown stat:
+## [text such as "(+30)" or "(-15%)", signed amount]; an empty text when equal.
+static func stat_deltas(character: CharacterData) -> Dictionary:
+	var mine := stat_numbers(character)
+	var result := {}
+	for stat: StringName in SHOWN_STATS:
+		var amount: float = mine[stat] - float(StatIds.DEFAULTS[stat])
+		var as_percent := stat == StatIds.DAMAGE or stat == StatIds.RANGE
+		var shown := roundi(amount * 100.0) if as_percent else roundi(amount)
+		var text := ""
+		if shown != 0:
+			text = "(%s%d%s)" % ["+" if shown > 0 else "", shown, "%" if as_percent else ""]
+		result[stat] = [text, amount]
+	return result
 
 
 ## Card illustration when the character has one, else its animated sprite.
@@ -953,12 +989,9 @@ func _choose_character(character: CharacterData, confirm: bool = true) -> void:
 	# Feedback: the hunter's first weapon rings out.
 	if confirm and not character.starting_weapons.is_empty() and character.starting_weapons[0].fire_sound != null:
 		Audio.play(character.starting_weapons[0].fire_sound, -4.0)
-	# The previous character's weapon and seals belong to him: forget them.
+	# The previous character's weapon belongs to him: forget it.
 	_weapon = null
-	for child in _dangers.get_children():
-		_dangers.remove_child(child)
-		child.queue_free()
-	_show_dangers(false)
+	_next.visible = false
 	for child in _weapons.get_children():
 		_weapons.remove_child(child)
 		child.queue_free()
@@ -970,6 +1003,7 @@ func _choose_character(character: CharacterData, confirm: bool = true) -> void:
 		choices.append(character.starting_weapon)
 	for weapon in choices:
 		_weapons.add_child(_weapon_card(weapon))
+	_apply_focus_modes()
 	_show_weapons(true)
 	if confirm:
 		_set_step(Step.LOOK)
@@ -1023,6 +1057,7 @@ func _weapon_card(weapon: WeaponData) -> Button:
 		texts.add_child(description)
 	else:
 		button.tooltip_text = weapon.description_key
+	button.set_meta(&"weapon", weapon)
 	button.pressed.connect(_choose_weapon.bind(weapon))
 	button.focus_entered.connect(func() -> void:
 		if _step != Step.WEAPON:
@@ -1037,34 +1072,54 @@ func _show_weapons(on: bool) -> void:
 	_weapon_title.visible = on or not _compact
 
 
+## A weapon card is pressed: it is the picked one, "Next" shows and takes the focus.
 func _choose_weapon(weapon: WeaponData) -> void:
-	_weapon = weapon
 	_set_step(Step.WEAPON)
 	if weapon.fire_sound != null:
 		Audio.play(weapon.fire_sound, weapon.fire_volume_db)
-	if split_index == 1:
-		# Split coop, player 2: done (player 1 picks the seal).
+	_pick_weapon(weapon)
+	_next.grab_focus()
+
+
+## Marks `weapon` as picked (its card lit; null: none) and shows "Next" with it.
+func _pick_weapon(weapon: WeaponData) -> void:
+	_weapon = weapon
+	_next.visible = weapon != null
+	for child in _weapons.get_children():
+		var picked_card: bool = weapon != null and child.get_meta(&"weapon") == weapon
+		(child as Button).add_theme_stylebox_override("normal",
+			UiTheme.card_style(UiTheme.ACCENT if picked_card else Tiers.color(1), 1.0 if picked_card else 0.4))
+
+
+## "Next": the weapon is validated. Split coop, this player is ready (the shared seal
+## screen opens once both are); solo, the seal screen opens.
+func _validate_weapon() -> void:
+	if _weapon == null:
+		return
+	Audio.play(Sounds.UI_SELECT, -6.0)
+	if split_index >= 0:
 		_set_ready(true)
+		_apply_focus_modes()
 		picked.emit()
 		return
-	_show_seal_row()
+	_seals.open([_chosen] as Array[CharacterData])
 
 
-## Split coop, player 1's half: player 2's character (null: not picked yet). The seal
-## row shown keeps its locks; CoopCharacterSelect lowers the seal at launch if needed.
-func set_partner(partner: CharacterData) -> void:
-	_partner = partner
+## Back from the seal screen: the weapons can be chosen again.
+func _on_seals_back() -> void:
+	_set_step(Step.WEAPON)
+	_next.grab_focus()
+
+
+## Split coop: back from the shared seal screen (CoopCharacterSelect), weapons again.
+func unready() -> void:
+	if is_ready:
+		_go_back()
 
 
 func _set_ready(on: bool) -> void:
 	is_ready = on
 	_ready_label.visible = on
-	_ready_label.text = "UI_COOP_WAIT_P2" if split_index == 0 else "UI_COOP_READY"
-
-
-## Seal picked by player 1 (split coop).
-func chosen_difficulty() -> DifficultyData:
-	return _difficulty
 
 
 ## Character, weapon and look picked in this half (split coop).
@@ -1080,216 +1135,11 @@ func chosen_variant() -> int:
 	return variant_of(_chosen) if _chosen != null else 0
 
 
-func _show_seal_row() -> void:
-	for child in _dangers.get_children():
-		_dangers.remove_child(child)
-		child.queue_free()
-	var allowed := SaveService.profile.max_difficulty(_chosen.id)
-	if _partner != null:
-		allowed = mini(allowed, SaveService.profile.max_difficulty(_partner.id))
-	var levels: Array[DifficultyData] = []
-	levels.assign(ContentDB.get_all(&"difficulties"))
-	levels.sort_custom(func(a: DifficultyData, b: DifficultyData) -> bool: return a.level < b.level)
-	for difficulty in levels:
-		var button := _seal_button(difficulty, difficulty.level <= allowed)
-		button.pressed.connect(_select_seal.bind(difficulty))
-		var info := _seal_info_text(difficulty, levels, difficulty.level <= allowed)
-		button.focus_entered.connect(_show_seal_info.bind(info))
-		button.mouse_entered.connect(_show_seal_info.bind(info))
-		_dangers.add_child(button)
-	_show_dangers(true)
-	# The hardest seal the player may take is selected; "Play" starts the run.
-	var last := mini(allowed, _dangers.get_child_count() - 1)
-	if last >= 0:
-		_select_seal(levels[last], false)
-		(_dangers.get_child(last) as Button).grab_focus()
-		_show_seal_info(_seal_info_text(levels[last], levels, true))
-
-
-## Seal button: big roman numeral and skulls in the seal's heat color, the rewards
-## under them. Locked seals are greyed out with a padlock.
-func _seal_button(difficulty: DifficultyData, unlocked: bool) -> Button:
-	var heat := seal_heat(difficulty.level)
-	var button := Button.new()
-	button.custom_minimum_size = _seal_size
-	button.disabled = not unlocked
-	button.add_theme_stylebox_override("normal", UiTheme.card_style(heat, 0.6))
-	button.add_theme_stylebox_override("hover", UiTheme.card_style(heat, 1.0))
-	button.add_theme_stylebox_override("pressed", UiTheme.card_style(heat, 1.0))
-	button.add_theme_stylebox_override("disabled", UiTheme.card_style(UiTheme.MUTED, 0.1))
-	button.add_theme_stylebox_override("focus", UiTheme.card_focus_style())
-	var box := VBoxContainer.new()
-	box.set_anchors_preset(Control.PRESET_FULL_RECT)
-	box.alignment = BoxContainer.ALIGNMENT_CENTER
-	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_theme_constant_override("separation", 0)
-	button.add_child(box)
-	var numeral := _seal_label(ROMAN[difficulty.level], 30 if _compact else 40, heat if unlocked else UiTheme.MUTED)
-	numeral.add_theme_font_override("font", UiTheme.BANGERS)
-	box.add_child(numeral)
-	# Locked: a padlock instead of the skulls. Copper (0 skulls) keeps an empty line.
-	var marks := LOCK if not unlocked else SKULL.repeat(difficulty.level)
-	box.add_child(_seal_label(marks if marks != "" else " ", 14 if _compact else 18, heat if unlocked else UiTheme.MUTED))
-	# The seal's rewards: silhouettes until won, in color once unlocked.
-	var rewards := HBoxContainer.new()
-	rewards.alignment = BoxContainer.ALIGNMENT_CENTER
-	rewards.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	rewards.add_theme_constant_override("separation", 4 if _compact else 6)
-	var reward_icon := COMPACT_REWARD_ICON if _compact else REWARD_ICON
-	for target in seal_rewards(difficulty.level):
-		var icon := TextureRect.new()
-		icon.texture = target.get(&"icon")
-		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon.custom_minimum_size = Vector2(reward_icon, reward_icon)
-		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		var category: StringName = &"weapons" if target is WeaponData else &"items"
-		if not SaveService.is_unlocked(category, target):
-			icon.material = _silhouette_material()
-		rewards.add_child(icon)
-	box.add_child(rewards)
-	return button
-
-
-## Weapon and items unlocked by winning seal `level` (WIN_SEAL challenges).
-static func seal_rewards(level: int) -> Array[Resource]:
-	var list: Array[Resource] = []
-	for challenge in SaveService.all_challenges():
-		if challenge.kind == ChallengeData.Kind.WIN_SEAL and challenge.threshold == level:
-			var target := ContentDB.get_def(challenge.unlock_category, challenge.unlock_id)
-			if target != null:
-				list.append(target)
-	return list
-
-
-static var _silhouette: ShaderMaterial
-
-
-## Flat shape of an icon (a mystery reward): its alpha, one muted color.
-static func _silhouette_material() -> ShaderMaterial:
-	if _silhouette == null:
-		var shader := Shader.new()
-		shader.code = "shader_type canvas_item;
-uniform vec4 tint : source_color = vec4(0.32, 0.27, 0.45, 0.9);
-void fragment() { COLOR = vec4(tint.rgb, texture(TEXTURE, UV).a * tint.a); }"
-		_silhouette = ShaderMaterial.new()
-		_silhouette.shader = shader
-	return _silhouette
-
-
-func _seal_label(text: String, size: int, color: Color) -> Label:
-	var label := Label.new()
-	label.text = text
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	label.add_theme_font_size_override("font_size", size)
-	label.add_theme_color_override("font_color", color)
-	return label
-
-
-## Seal color that "heats up" from sea green (Copper) to blood red (Astral).
-static func seal_heat(level: int) -> Color:
-	return SEAL_HEAT[clampi(level, 0, SEAL_HEAT.size() - 1)]
-
-
-## "<seal> · <place>" then, on a second line, its effects (a seal stacks the ones below it).
-## A seal sharing a lower seal's place has no place of its own yet.
-func _seal_info_text(difficulty: DifficultyData, levels: Array[DifficultyData], unlocked: bool) -> String:
-	var place := tr("BIOME_DUNGEON") if difficulty.biome == null else tr(difficulty.biome.name_key)
-	for other in levels:
-		if other.level < difficulty.level and other.biome == difficulty.biome:
-			place = tr("SEAL_PLACE_COMING")
-			break
-	var effects: Array[String] = []
-	if difficulty.steady_elite_chance > 0.0:
-		effects.append(tr("SEAL_FX_ELITES") % roundi(difficulty.steady_elite_chance * 100.0))
-	if difficulty.hp_multiplier > 1.0:
-		effects.append(tr("SEAL_FX_HP_DAMAGE") % roundi((difficulty.hp_multiplier - 1.0) * 100.0))
-	if difficulty.spawn_rate_multiplier > 1.0 or difficulty.group_size_bonus > 0:
-		effects.append(tr("SEAL_FX_SPAWN") % roundi((difficulty.spawn_rate_multiplier - 1.0) * 100.0))
-	if difficulty.double_final_boss:
-		effects.append(tr("SEAL_FX_DOUBLE_BOSS"))
-	if effects.is_empty():
-		effects.append(tr("SEAL_FX_NONE"))
-	# Line 1: seal, place, reward still to win (and how to unlock it); line 2: its effects.
-	var text := "%s · %s" % [tr(difficulty.name_key), place]
-	if not unlocked:
-		text += " — " + tr("SEAL_LOCKED_HINT")
-	return text + "
-" + " · ".join(effects)
-
-
-## "Reward: <weapon> + N items" still locked behind winning seal `level`, or "".
-func seal_reward_text(level: int) -> String:
-	var first := ""
-	var others := 0
-	for challenge in SaveService.all_challenges():
-		if challenge.kind != ChallengeData.Kind.WIN_SEAL or challenge.threshold != level:
-			continue
-		var target := ContentDB.get_def(challenge.unlock_category, challenge.unlock_id)
-		if target == null or SaveService.is_unlocked(challenge.unlock_category, target):
-			continue
-		if first == "" and challenge.unlock_category == &"weapons":
-			first = tr(target.get(&"name_key"))
-		else:
-			others += 1
-	if first == "" and others == 0:
-		return ""
-	if first == "":
-		return tr("SEAL_REWARD") % (tr("SEAL_REWARD_MORE") % ["", others]).trim_prefix(" + ")
-	return tr("SEAL_REWARD") % (tr("SEAL_REWARD_MORE") % [first, others] if others > 0 else first)
-
-
-func _show_seal_info(text: String) -> void:
-	var lines := text.split("
-", true, 1)
-	_seal_info.text = lines[0]
-	_seal_effects.text = lines[1] if lines.size() > 1 else ""
-
-
-## Marks `difficulty` as the seal to play (bright frame) and moves the focus to "Play".
-func _select_seal(difficulty: DifficultyData, focus_launch: bool = true) -> void:
-	_difficulty = difficulty
-	for i in _dangers.get_child_count():
-		var button := _dangers.get_child(i) as Button
-		var chosen := i == difficulty.level
-		var style := UiTheme.card_style(seal_heat(i), 1.0 if chosen else 0.6)
-		if chosen:
-			style.border_color = Color.WHITE
-			style.set_border_width_all(4)
-		button.add_theme_stylebox_override("normal", style)
-	if focus_launch:
-		Audio.play(Sounds.UI_SELECT, -6.0)
-		if _launch.visible:
-			_launch.grab_focus()
-
-
-func _show_dangers(on: bool) -> void:
-	_launch.visible = on
-	_dangers.visible = on
-	_danger_title.visible = on
-	_seal_info.visible = on
-	_seal_effects.visible = on
-	if on:
-		_ready_label.visible = is_ready
-		# Over the title: the columns and the seals stay visible.
-		HintBanner.show_once(self, &"seals", HintBanner.TOP_CENTER, Vector2(0.0, 4.0), 1500.0)
-
-
-func _start() -> void:
-	if _difficulty == null:
-		return
-	if split_index == 0:
-		# Split coop: player 1 is done too; CoopCharacterSelect starts once both are.
-		Audio.play(Sounds.UI_SELECT, -6.0)
-		_launch.visible = false
-		_set_ready(true)
-		(_dangers.get_child(_difficulty.level) as Button).grab_focus()
-		picked.emit()
-		return
+## Solo: the seal is chosen, the run starts.
+func _start(difficulty: DifficultyData) -> void:
 	Audio.play(Sounds.PORTAL_OPEN, -4.0)
 	var setup := RunSetup.new()
-	setup.difficulty = _difficulty
+	setup.difficulty = difficulty
 	setup.character = _chosen
 	setup.weapon = _weapon
 	setup.variant = variant_of(_chosen)

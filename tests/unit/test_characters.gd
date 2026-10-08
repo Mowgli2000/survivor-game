@@ -75,9 +75,10 @@ func test_character_select_flow() -> void:
 	assert_true(screen._weapons.visible)
 	var first: Button = screen._weapons.get_child(0)
 	first.pressed.emit()
-	(screen._dangers.get_child(0) as Button).pressed.emit()
-	assert_signal_not_emitted(screen, "started", "a seal only selects it")
-	screen._launch.pressed.emit()
+	screen._next.pressed.emit()
+	assert_true(screen._seals.visible, "the weapon opens the seal screen")
+	assert_signal_not_emitted(screen, "started", "the seal is still to choose")
+	screen._seals._launch.pressed.emit()
 	assert_signal_emitted(screen, "started")
 	var setup: RunSetup = get_signal_parameters(screen, "started")[0]
 	assert_eq(setup.character.id, &"drifter")

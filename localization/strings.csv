@@ -13,6 +13,10 @@ UI_TIME_SURVIVED,Time survived:,Temps survécu :
 UI_KILLS,Kills:,Ennemis vaincus :
 UI_DEATHS,Deaths:,Morts :
 STAT_MAX_HP,Max HP,PV max
+STAT_SHORT_MAX_HP,HP,PV
+STAT_SHORT_DAMAGE,Damage,Dégâts
+STAT_SHORT_MOVE_SPEED,Speed,Vitesse
+STAT_SHORT_RANGE,Range,Portée
 STAT_HP_REGEN,HP regeneration,Régénération
 STAT_ARMOR,Armor,Armure
 STAT_MOVE_SPEED,Move speed,Vitesse de déplacement
@@ -424,3 +428,13 @@ UI_RECAP_DAMAGE,Damage by weapon,Dégâts par arme
 UI_RECAP_ITEMS,Item effects,Effets d'objets
 UI_RECAP_BURN,Burning,Brûlure
 WSTAT_BLAST,Blast,Explosion
+DANGER_0_SHORT,Copper,Cuivre
+DANGER_1_SHORT,Iron,Fer
+DANGER_2_SHORT,Silver,Argent
+DANGER_3_SHORT,Gold,Or
+DANGER_4_SHORT,Obsidian,Obsidienne
+DANGER_5_SHORT,Astral,Astral
+SEAL_PLACE,Place: %s,Lieu : %s
+SEAL_TO_WIN,To win,À gagner
+SEAL_WON,Won,Obtenues
+UI_NEXT,Next,Suivant

@@ -71,15 +71,17 @@ func _ready() -> void:
 					half._choose_character(ContentDB.get_def(&"characters", StringName(character_id)))
 					if danger >= 0:
 						(half._weapons.get_child(0) as Button).pressed.emit()
+						half._next.pressed.emit()
 			elif character_id != "":
 				menu._character_select._choose_character(ContentDB.get_def(&"characters", StringName(character_id)))
-				# With --danger=N too: pick the first weapon to show the seals row.
+				# With --danger=N too: pick the first weapon, which opens the seal screen.
 				if danger >= 0:
 					(menu._character_select._weapons.get_child(0) as Button).pressed.emit()
-					# ...and hover seal N to show its effects line.
-					var seals := menu._character_select._dangers
-					if danger < seals.get_child_count():
-						seals.get_child(danger).mouse_entered.emit()
+					menu._character_select._next.pressed.emit()
+					# ...and point at seal N on the seal screen.
+					var buttons := menu._character_select._seals.seal_buttons()
+					if danger < buttons.size():
+						buttons[danger].grab_focus()
 		elif _mode == "--progression":
 			menu._open_progression()
 			# The seal rewards are at the bottom of the list.

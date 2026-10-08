@@ -1,10 +1,13 @@
 extends GutTest
-## Seal row of the selection screen: numerals, effects line, places to come.
+## Seal screen (SealSelect): the six seals, effects, places to come, locks, rewards.
+
+var _chosen: DifficultyData
 
 
 func before_each() -> void:
 	SafeFile.remove(SaveService.TEST_PATH)
 	SaveService.load_profile()
+	_chosen = null
 
 
 func after_each() -> void:
@@ -12,54 +15,79 @@ func after_each() -> void:
 	SaveService.load_profile()
 
 
-func _levels() -> Array[DifficultyData]:
-	var levels: Array[DifficultyData] = []
-	levels.assign(ContentDB.get_all(&"difficulties"))
-	levels.sort_custom(func(a: DifficultyData, b: DifficultyData) -> bool: return a.level < b.level)
-	return levels
-
-
-func test_heat_goes_from_cold_to_red() -> void:
-	assert_gt(CharacterSelect.seal_heat(0).g, CharacterSelect.seal_heat(0).r, "Copper is green-blue")
-	assert_gt(CharacterSelect.seal_heat(5).r, CharacterSelect.seal_heat(5).g, "Astral is red")
-	assert_eq(CharacterSelect.seal_heat(99), CharacterSelect.seal_heat(5))
-
-
-func test_info_lists_stacked_effects_and_place() -> void:
-	var screen := CharacterSelect.new()
+func _open(ids: Array[StringName]) -> SealSelect:
+	var screen := SealSelect.new()
 	add_child_autofree(screen)
-	var levels := _levels()
-	var copper := screen._seal_info_text(levels[0], levels, true)
-	assert_string_contains(copper, tr("BIOME_DUNGEON"))
-	assert_string_contains(copper, tr("SEAL_FX_NONE"))
-	var iron := screen._seal_info_text(levels[1], levels, true)
-	assert_string_contains(iron, tr("BIOME_TEMPLE"))
-	var astral := screen._seal_info_text(levels[5], levels, false)
+	screen.chosen.connect(func(difficulty: DifficultyData) -> void: _chosen = difficulty)
+	var hunters: Array[CharacterData] = []
+	for id in ids:
+		hunters.append(ContentDB.get_def(&"characters", id) as CharacterData)
+	screen.open(hunters)
+	return screen
+
+
+func test_effects_stack_and_places_are_named() -> void:
+	var levels := SealSelect.all_levels()
+	assert_string_contains(SealSelect.seal_effects(levels[0]), tr("SEAL_FX_NONE"))
+	assert_eq(SealSelect.seal_place(levels[0], levels), tr("BIOME_DUNGEON"))
+	assert_eq(SealSelect.seal_place(levels[1], levels), tr("BIOME_TEMPLE"))
+	var astral := SealSelect.seal_effects(levels[5])
 	assert_string_contains(astral, tr("SEAL_FX_DOUBLE_BOSS"))
 	assert_string_contains(astral, tr("SEAL_FX_HP_DAMAGE") % roundi((levels[5].hp_multiplier - 1.0) * 100.0))
-	assert_string_contains(astral, tr("SEAL_LOCKED_HINT"))
 
 
 func test_seal_reusing_a_lower_place_says_place_to_come() -> void:
-	var screen := CharacterSelect.new()
-	add_child_autofree(screen)
-	var levels := _levels()
+	var levels := SealSelect.all_levels()
 	for difficulty in levels:
 		var shared := false
 		for other in levels:
 			shared = shared or (other.level < difficulty.level and other.biome == difficulty.biome)
-		var text := screen._seal_info_text(difficulty, levels, true)
-		assert_eq(text.contains(tr("SEAL_PLACE_COMING")), shared, String(difficulty.id))
+		var place := SealSelect.seal_place(difficulty, levels)
+		assert_eq(place == tr("SEAL_PLACE_COMING"), shared, String(difficulty.id))
 
 
-func test_locked_seals_are_disabled_and_show_the_row_info() -> void:
-	var screen := CharacterSelect.new()
-	add_child_autofree(screen)
-	screen.open()
-	screen._character_buttons[&"drifter"].pressed.emit()
-	(screen._weapons.get_child(0) as Button).pressed.emit()
-	assert_eq(screen._dangers.get_child_count(), 6)
-	assert_false((screen._dangers.get_child(0) as Button).disabled)
-	assert_true((screen._dangers.get_child(5) as Button).disabled)
-	assert_true(screen._seal_info.visible)
-	assert_string_contains(screen._seal_info.text, tr("DANGER_0"))
+func test_six_seals_the_locked_ones_marked() -> void:
+	var screen := _open([&"drifter"])
+	var buttons := screen.seal_buttons()
+	assert_eq(buttons.size(), 6)
+	assert_false(buttons[0].get_meta(&"locked"))
+	assert_true(buttons[5].get_meta(&"locked"))
+	assert_eq(screen.chosen_difficulty().level, 0, "the hardest open seal is picked")
+	assert_string_contains(screen._name.text, tr("DANGER_0"))
+
+
+func test_a_locked_seal_shows_its_info_but_is_not_picked() -> void:
+	var screen := _open([&"drifter"])
+	var locked := screen.seal_buttons()[5]
+	assert_false(locked.disabled, "not disabled: it can be hovered")
+	locked.grab_focus()
+	assert_string_contains(screen._name.text, tr("DANGER_5"))
+	assert_string_contains(screen._place.text, tr("SEAL_LOCKED_HINT"))
+	assert_eq(screen.chosen_difficulty().level, 0, "the seal to play does not change")
+	locked.pressed.emit()
+	assert_null(_chosen, "pressing a locked seal starts nothing")
+
+
+func test_pressing_a_seal_moves_to_play_and_play_confirms_it() -> void:
+	var screen := _open([&"drifter"])
+	screen.seal_buttons()[0].pressed.emit()
+	assert_null(_chosen, "a seal press never launches")
+	assert_true(screen._launch.has_focus())
+	screen._launch.pressed.emit()
+	assert_eq(_chosen.level, 0)
+
+
+func test_a_seal_is_open_only_when_every_hunter_won_the_one_below() -> void:
+	SaveService.profile.best_difficulty_by_character[&"drifter"] = 1
+	assert_eq(SealSelect.allowed_level([ContentDB.get_def(&"characters", &"drifter")] as Array[CharacterData]), 2)
+	var screen := _open([&"drifter", &"hero"])
+	assert_true(screen.seal_buttons()[1].get_meta(&"locked"), "the other hunter has not won Copper")
+	assert_eq(screen.chosen_difficulty().level, 0)
+
+
+func test_rewards_to_win_are_silhouettes() -> void:
+	var screen := _open([&"drifter"])
+	assert_eq(screen._rewards.get_child_count(), SealSelect.seal_rewards(0).size())
+	assert_eq(screen._rewards_title.text, tr("SEAL_TO_WIN"))
+	var art := screen._rewards.get_child(0).get_child(0) as TextureRect
+	assert_eq(art.material, SealSelect.silhouette_material())

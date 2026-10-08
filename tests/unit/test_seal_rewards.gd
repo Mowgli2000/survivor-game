@@ -65,13 +65,16 @@ func test_a_lost_run_unlocks_nothing() -> void:
 		assert_false(SaveService.is_unlocked(challenge.unlock_category, target))
 
 
-func test_seal_info_announces_the_reward_until_it_is_won() -> void:
-	var screen := CharacterSelect.new()
+func test_seal_screen_shows_rewards_to_win_until_won() -> void:
+	var screen := SealSelect.new()
 	add_child_autofree(screen)
-	assert_ne(screen.seal_reward_text(0), "", "Copper reward announced")
+	var drifter: Array[CharacterData] = [ContentDB.get_def(&"characters", &"drifter")]
+	screen.open(drifter)
+	screen._point(0)
+	assert_eq(screen._rewards_title.text, tr("SEAL_TO_WIN"), "Copper rewards announced")
 	_win(0)
-	assert_eq(screen.seal_reward_text(0), "", "nothing left to win at Copper")
-	assert_ne(screen.seal_reward_text(1), "")
+	screen._point(0)
+	assert_eq(screen._rewards_title.text, tr("SEAL_WON"), "nothing left to win at Copper")
 
 
 func test_seals_won_before_the_rewards_existed_grant_them_at_load() -> void:
