@@ -29,10 +29,10 @@ const LIST_WIDTH := 420.0
 const COMPACT_LIST_WIDTH := 200.0
 const ROW_HEIGHT := 96.0
 ## Half screen: a head with the name under it (dev's pick, coop mockup A).
-const COMPACT_ROW_HEIGHT := 110.0
+const COMPACT_ROW_HEIGHT := 124.0
 ## The hero is shown big (dev: room for the looks and future skins).
 const STAGE_SIZE := Vector2(760, 600)
-const COMPACT_STAGE_SIZE := Vector2(0, 540)
+const COMPACT_STAGE_SIZE := Vector2(0, 430)
 const ARMS_WIDTH := 560.0
 ## Width the rule and bonus text wrap to in a half screen.
 const COMPACT_RULE_WIDTH := 440.0
@@ -231,7 +231,19 @@ func _build_list_column() -> Control:
 	box.add_child(_column_title("UI_SELECT_CHARACTERS"))
 	_rows = VBoxContainer.new()
 	_rows.add_theme_constant_override("separation", 10 if _compact else 12)
-	box.add_child(_rows)
+	if _compact:
+		# Half screen: seven tall rows do not fit under the title; the list scrolls with
+		# the focus instead of stretching the page (which pushed "Next" off the screen).
+		var scroll := ScrollContainer.new()
+		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
+		scroll.follow_focus = true
+		scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		_rows.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		scroll.add_child(_rows)
+		box.add_child(scroll)
+	else:
+		box.add_child(_rows)
 	return _list_panel
 
 
