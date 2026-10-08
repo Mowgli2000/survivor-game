@@ -12,6 +12,8 @@ var character: CharacterData
 var variant: int = 0
 var player: Player
 var input: PlayerInput
+## Seconds to the next heartbeat while this player is on low health (Run).
+var heartbeat_timer: float = 0.0
 var progression: Progression
 var wallet: Wallet
 var inventory: Inventory

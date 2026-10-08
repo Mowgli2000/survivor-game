@@ -28,10 +28,12 @@ var coop_scale: float = 1.0
 const INK := Color(0.05, 0.04, 0.1)
 ## Gate color: monsters step out of violet portals (art bible).
 const PORTAL_COLOR := Color(0.64, 0.35, 1.0)
-const SLASH_LIFE := 0.2
-const SLASH_LIFE_SLOW := 0.28
+const SLASH_LIFE := 0.26
+const SLASH_LIFE_SLOW := 0.36
 ## Share of a slash's life spent sweeping across its arc.
-const SWEEP := 0.45
+const SWEEP := 0.4
+## Sparks flying off the blade's tip while it sweeps, and the small star where it ends.
+const TIP_SPARKS := 4
 const SLASH_POINTS := 18
 ## Explosion: fire lobes around the blast, debris sparks, smoke puffs.
 ## See-through so the monsters stay readable under the blast (playtest).
@@ -89,6 +91,14 @@ func slash(center: Vector2, angle: float, radius: float, half_angle: float, colo
 	var life := SLASH_LIFE_SLOW if style == WeaponData.SlashStyle.HEAVY or style == WeaponData.SlashStyle.SMASH 		else SLASH_LIFE
 	_add(Kind.SLASH, center, Vector2.from_angle(angle), shown_size(radius, SLASH_FULL), half_angle,
 		color, life, style)
+	# The weapon winds up first: the streak starts when its strike does.
+	if _count > 0:
+		_life[_count - 1] += WeaponVisuals.strike_delay(style)
+	# Heavy blows shake the screen a little (more when they smash).
+	if style == WeaponData.SlashStyle.SMASH:
+		shake_requested.emit(0.1)
+	elif style == WeaponData.SlashStyle.HEAVY:
+		shake_requested.emit(0.06)
 
 
 func beam(from: Vector2, to: Vector2, width: float, color: Color) -> void:
@@ -130,11 +140,13 @@ func portal(center: Vector2, radius: float, boss: bool = false) -> void:
 
 ## Boss telegraph: a ring that fills up during `life` seconds.
 func warning_circle(center: Vector2, radius: float, color: Color, life: float) -> void:
+	Audio.play(Sounds.WARNING, -10.0, 0.04)
 	_add(Kind.WARN_CIRCLE, center, Vector2.ZERO, radius, 0.0, color, life)
 
 
 ## Boss telegraph: a band showing a dash path or an aimed shot.
 func warning_line(from: Vector2, to: Vector2, width: float, color: Color, life: float) -> void:
+	Audio.play(Sounds.WARNING, -10.0, 0.04, 1.15)
 	_add(Kind.WARN_LINE, from, to, width, 0.0, color, life)
 
 
@@ -190,6 +202,8 @@ func _remove(i: int) -> void:
 func _draw() -> void:
 	for i in _count:
 		var t := _life[i] / _max_life[i]  # 1 -> 0
+		if t > 1.0:
+			continue  # waiting for the weapon's wind-up to end
 		var color := _color[i]
 		match _kind[i]:
 			Kind.SLASH:
@@ -218,12 +232,18 @@ func _draw() -> void:
 func _draw_slash(center: Vector2, angle: float, radius: float, half: float, color: Color, t: float,
 		style: int) -> void:
 	var age := 1.0 - t
-	var head := clampf(age / SWEEP, 0.0, 1.0)            # how far the blade has swept
+	# Fast start, soft landing: the blade whips across then settles (ease-out).
+	var head := 1.0 - pow(1.0 - clampf(age / SWEEP, 0.0, 1.0), 2.4)
 	var fade := clampf(t / (1.0 - SWEEP), 0.0, 1.0)      # trail thins once the sweep is done
 	var light := color.lerp(Color.WHITE, 0.75)
+	if style != WeaponData.SlashStyle.THRUST:
+		# The white-hot smear right behind the edge, then sparks and an impact star.
+		_draw_smear(center, angle, radius, half, head, fade)
+		_draw_tip_sparks(center, angle, radius, half, head, fade, age, light)
 	match style:
 		WeaponData.SlashStyle.THRUST:
 			_draw_thrust(center, angle, radius, color, light, head, fade)
+			_draw_thrust_burst(center, angle, radius, head, fade, light)
 			return
 		WeaponData.SlashStyle.THIN:
 			_draw_crescent(center, angle, radius, half, radius * 0.07, color, light, head, fade, 0.6)
@@ -253,6 +273,60 @@ func _draw_slash(center: Vector2, angle: float, radius: float, half: float, colo
 			_draw_arc_lightning(center, angle, radius * 0.88, half, head, fade, age)
 		_:
 			_draw_crescent(center, angle, radius, half, radius * 0.2, color, light, head, fade, 0.4)
+
+
+## A thin white crescent hugging the leading edge: the "speed smear" of the blow.
+func _draw_smear(center: Vector2, angle: float, radius: float, half: float, head: float, fade: float) -> void:
+	var span := half * 2.0 * head
+	if fade <= 0.0 or span * radius < 6.0:
+		return
+	var from := angle - half + half * 2.0 * maxf(head - 0.35, 0.0)
+	_outline.resize(SLASH_POINTS)
+	for k in SLASH_POINTS:
+		var u := float(k) / (SLASH_POINTS - 1)
+		_outline[k] = center + Vector2.from_angle(lerpf(from, angle - half + span, u)) * radius * 1.02
+	draw_polyline(_outline, Color(1.0, 1.0, 1.0, 0.85 * fade), 3.5)
+
+
+## Small sparks leaving the tip while the blade sweeps, and a four-point star where
+## the sweep ends (the moment of impact). All deterministic from the age: no allocation.
+func _draw_tip_sparks(center: Vector2, angle: float, radius: float, half: float, head: float,
+		fade: float, age: float, light: Color) -> void:
+	if fade <= 0.0:
+		return
+	var tip_angle := angle - half + half * 2.0 * head
+	var tip := center + Vector2.from_angle(tip_angle) * radius
+	var outward := Vector2.from_angle(tip_angle)
+	var along := outward.orthogonal()
+	if head < 1.0:
+		for k in TIP_SPARKS:
+			var lag := 0.05 + 0.05 * k
+			var back := tip - along * radius * lag * 1.5 + outward * radius * (0.03 + 0.03 * k)
+			var size := (5.0 - k) * fade
+			draw_circle(back, maxf(size, 1.0), Color(light, 0.85 * fade))
+	else:
+		# Impact star, quick pop that shrinks away.
+		var pop := clampf((age - SWEEP) / 0.12, 0.0, 1.0)
+		var star := radius * 0.16 * (1.0 - pop) * fade
+		if star > 1.0:
+			for k in 2:
+				var dir := Vector2.from_angle(tip_angle + k * PI * 0.5)
+				draw_line(tip - dir * star, tip + dir * star, Color(INK, 0.8 * fade), 7.0)
+				draw_line(tip - dir * star, tip + dir * star, Color(1.0, 1.0, 1.0, fade), 3.5)
+
+
+## Speed lines and a flash at the tip of a thrust.
+func _draw_thrust_burst(center: Vector2, angle: float, radius: float, head: float, fade: float,
+		light: Color) -> void:
+	if head < 0.7 or fade <= 0.0:
+		return
+	var dir := Vector2.from_angle(angle)
+	var tip := center + dir * radius
+	var star := radius * 0.12 * fade
+	for k in 2:
+		var d := Vector2.from_angle(angle + k * PI * 0.5 + 0.4)
+		draw_line(tip - d * star, tip + d * star, Color(INK, 0.8 * fade), 6.0)
+		draw_line(tip - d * star, tip + d * star, Color(light, fade), 3.0)
 
 
 ## Tapered crescent from angle - half to the blade's current position (`head`),
