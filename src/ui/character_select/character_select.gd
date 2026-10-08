@@ -21,8 +21,9 @@ signal unpicked
 ## Steps (the lit column).
 enum Step { LIST, LOOK, WEAPON }
 
-## Head and shoulders of a card illustration (512x768): the square shown in a head tile.
-const HEAD_REGION := Rect2(72.0, 8.0, 368.0, 368.0)
+## Head and shoulders of a card illustration: a square of this share of the figure's
+## height, found on the figure itself (see head_region).
+const HEAD_SHARE := 0.27
 const PREVIEW_HEIGHT := 170.0
 const LIST_WIDTH := 420.0
 const COMPACT_LIST_WIDTH := 200.0
@@ -39,7 +40,7 @@ const COMPACT_RULE_WIDTH := 440.0
 const PLATFORM := preload("res://assets/ui/select/platform_stone.png")
 const PLATFORM_TOP := Vector2(0.52, 0.37)
 ## Platform width for a hero height (the hero's art is mostly empty on the sides).
-const PLATFORM_PER_HERO := 0.78
+const PLATFORM_PER_HERO := 0.62
 ## The look behind on the turntable: smaller, higher, darker (dev: "more behind than beside").
 const BACK_SCALE := 0.72
 const BACK_TINT := Color(0.3, 0.26, 0.45, 0.9)
@@ -56,6 +57,8 @@ const STAT_COLORS: Dictionary[StringName, Color] = {
 
 ## Where the feet are in a card illustration (fractions of its size), measured once.
 static var _feet_cache: Dictionary = {}
+## Head square of each card (see head_region).
+static var _head_cache: Dictionary = {}
 
 ## One row per class (name and head), by id.
 var _character_buttons: Dictionary[StringName, Button] = {}
@@ -654,9 +657,39 @@ func _head(character: CharacterData, unlocked: bool, look: int, side: float) -> 
 static func _head_texture(card_art: Texture2D) -> AtlasTexture:
 	var atlas := AtlasTexture.new()
 	atlas.atlas = card_art
-	var scale := card_art.get_width() / 512.0
-	atlas.region = Rect2(HEAD_REGION.position * scale, HEAD_REGION.size * scale)
+	atlas.region = head_region(card_art)
 	return atlas
+
+
+## Square around the head and shoulders of the figure of a card, in card pixels: the cards
+## differ in framing and proportions, so it is found on the figure (the top of the figure,
+## centered on the hair and face band). Measured once per texture.
+static func head_region(card_art: Texture2D) -> Rect2:
+	if _head_cache.has(card_art):
+		return _head_cache[card_art]
+	var region := Rect2(0.0, 0.0, card_art.get_width(), card_art.get_width())
+	var image := card_art.get_image()
+	if image != null:
+		if image.is_compressed():
+			image.decompress()
+		region = _head_of(image)
+	_head_cache[card_art] = region
+	return region
+
+
+static func _head_of(image: Image) -> Rect2:
+	var used := image.get_used_rect()
+	var side := float(used.size.y) * HEAD_SHARE
+	var x_sum := 0.0
+	var count := 0
+	for y in range(used.position.y + roundi(used.size.y * 0.06), used.position.y + roundi(used.size.y * 0.2), 3):
+		for x in range(used.position.x, used.end.x, 2):
+			if image.get_pixel(x, y).a > 0.5:
+				x_sum += x
+				count += 1
+	var center: float = x_sum / count if count > 0 else float(used.get_center().x)
+	var left := clampf(center - side * 0.5, 0.0, maxf(image.get_width() - side, 0.0))
+	return Rect2(left, maxf(used.position.y - side * 0.04, 0.0), side, side)
 
 
 ## Fills the middle column with `character` (focused row, else the chosen one).

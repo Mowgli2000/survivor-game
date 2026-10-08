@@ -204,3 +204,14 @@ func test_validating_a_weapon_opens_the_seals_and_back_returns_to_the_weapons() 
 	assert_false(screen._seals.visible)
 	assert_eq(screen._step, CharacterSelect.Step.WEAPON, "B: back to the weapons")
 	assert_eq((screen._weapons.get_child(0) as Control).focus_mode, Control.FOCUS_ALL)
+
+
+func test_head_square_is_found_on_the_figure_of_each_card() -> void:
+	for character: CharacterData in ContentDB.get_all(&"characters"):
+		for look in 2:
+			var art := character.card_art_for(look)
+			if art == null:
+				continue
+			var region := CharacterSelect.head_region(art)
+			assert_gt(region.size.x, 0.0, "%s look %d" % [character.id, look])
+			assert_true(Rect2(Vector2.ZERO, art.get_size()).encloses(region), "%s look %d inside its card" % [character.id, look])
