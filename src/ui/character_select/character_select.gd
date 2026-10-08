@@ -29,7 +29,7 @@ const LIST_WIDTH := 420.0
 const COMPACT_LIST_WIDTH := 200.0
 const ROW_HEIGHT := 96.0
 ## Half screen: a head with the name under it (dev's pick, coop mockup A).
-const COMPACT_ROW_HEIGHT := 124.0
+const COMPACT_ROW_HEIGHT := 110.0
 ## The hero is shown big (dev: room for the looks and future skins).
 const STAGE_SIZE := Vector2(760, 600)
 const COMPACT_STAGE_SIZE := Vector2(0, 540)
@@ -150,7 +150,7 @@ func _init(p_compact: bool = false) -> void:
 	for side in ["left", "right"]:
 		margin.add_theme_constant_override("margin_" + side, 20 if _compact else 40)
 	margin.add_theme_constant_override("margin_top", 18 if _compact else 26)
-	margin.add_theme_constant_override("margin_bottom", 20 if _compact else 90)
+	margin.add_theme_constant_override("margin_bottom", 56 if _compact else 90)
 	add_child(margin)
 	var page := VBoxContainer.new()
 	page.add_theme_constant_override("separation", 12)
