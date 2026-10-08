@@ -32,5 +32,5 @@ func fire(slot: WeaponSlot, ctx: WeaponContext) -> bool:
 		ctx.enemies.damage_along_segment(origin, end, width * 0.5, ctx.hit_damage(s, crit), crit,
 			knockback, s.status, s.status_chance)
 		if ctx.vfx != null:
-			ctx.vfx.beam(origin, end, width, s.color)
+			ctx.vfx.beam(origin, end, width, s.color, ctx.owner)
 	return true

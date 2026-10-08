@@ -37,5 +37,5 @@ func fire(slot: WeaponSlot, ctx: WeaponContext) -> bool:
 		ctx.enemies.damage_in_radius(origin, radius, ctx.hit_damage(s, crit), crit, knockback,
 			s.status, s.status_chance, slash_dir, min_dot)
 		if ctx.vfx != null:
-			ctx.vfx.slash(origin, slash_dir.angle(), radius, half_angle, s.color, slot.data.slash_style)
+			ctx.vfx.slash(origin, slash_dir.angle(), radius, half_angle, s.color, slot.data.slash_style, ctx.owner)
 	return true
