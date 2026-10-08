@@ -17,6 +17,28 @@ const PLAYER_HURT := preload("res://assets/audio/sfx/player_hurt.ogg")
 const PICKUP := preload("res://assets/audio/sfx/pickup.ogg")
 const LEVEL_UP := preload("res://assets/audio/sfx/level_up.ogg")
 
+## Combat cues (Kenney "Impact Sounds", CC0; heartbeat synthesized). Every interaction has
+## its own sound so the player hears what happens: hit, crit, kill, hurt, low HP...
+## Five punchy body thuds (Kenney "impactPunch_medium"): noisy and short, nothing tonal
+## (the first set rang like a xylophone, the metal ring too: dev's feedback).
+const KILL_THUD: Array[AudioStream] = [
+	preload("res://assets/audio/sfx/combat/kill_thud_1.ogg"),
+	preload("res://assets/audio/sfx/combat/kill_thud_2.ogg"),
+	preload("res://assets/audio/sfx/combat/kill_thud_3.ogg"),
+	preload("res://assets/audio/sfx/combat/kill_thud_4.ogg"),
+	preload("res://assets/audio/sfx/combat/kill_thud_5.ogg")]
+const HIT_CRIT := preload("res://assets/audio/sfx/combat/hit_crit.ogg")
+## Low thump layered under the player's hurt sound (louder with the damage).
+const PLAYER_HIT_HEAVY := preload("res://assets/audio/sfx/combat/player_hit_heavy.ogg")
+const HEARTBEAT := preload("res://assets/audio/sfx/combat/heartbeat.wav")
+## Telegraph of a boss attack or a kamikaze blast.
+const WARNING := preload("res://assets/audio/sfx/combat/warning.ogg")
+const BOSS_ALERT := preload("res://assets/audio/sfx/combat/boss_alert.ogg")
+## Wave countdown (last seconds) and kamikaze fuse.
+const TICK := preload("res://assets/audio/sfx/combat/tick.ogg")
+const FUSE := preload("res://assets/audio/sfx/combat/fuse.ogg")
+const ENEMY_SHOT := preload("res://assets/audio/sfx/combat/enemy_shot.ogg")
+
 const WAVE_START := preload("res://assets/audio/sfx/wave_start.ogg")
 const WAVE_END := preload("res://assets/audio/sfx/wave_end.ogg")
 const VICTORY := preload("res://assets/audio/sfx/victory.ogg")

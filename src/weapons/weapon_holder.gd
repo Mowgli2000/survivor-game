@@ -17,6 +17,8 @@ var off_family_scale: float = 1.0
 
 ## Share of its cooldown a new copy of an owned weapon waits before its first attack, per
 ## copy already owned (golden ratio: any number of copies spread evenly).
+## Every weapon sound a little lower (playtest: swings drowned the hits).
+const WEAPON_SOUND_TRIM_DB := -3.0
 const COPY_PHASE := 0.618
 
 var _ctx: WeaponContext
@@ -131,7 +133,7 @@ func _physics_process(delta: float) -> void:
 		if slot.data.behavior.fire(slot, _ctx):
 			slot.attacks += 1
 			weapon_fired.emit(i)
-			Audio.play(slot.data.fire_sound, slot.data.fire_volume_db)
+			Audio.play(slot.data.fire_sound, slot.data.fire_volume_db + WEAPON_SOUND_TRIM_DB)
 			# Keep the remainder so the fire rate does not depend on the frame rate.
 			slot.cooldown = maxf(slot.cooldown + slot.stats.cooldown, 0.0)
 		else:

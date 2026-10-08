@@ -45,5 +45,5 @@ fire_sound = ExtResource("9_sound")
 fire_volume_db = 2.0
 color = Color(1.0, 0.6, 0.25, 1)
 icon = ExtResource("icon_tex")
-float_scale = 0.72
+float_scale = 0.56
 families = Array[StringName]([&"explosive"])

@@ -66,6 +66,14 @@ var _query: Array[int] = []
 ## Physics frame of the last hit / death sound request (hundreds of hits per frame).
 var _hit_sound_frame: int = -1
 var _death_sound_frame: int = -1
+## Hit sounds: at most one per HIT_SOUND_GAP_MS (a horde is hit hundreds of times a
+## second), the volume follows the hit strength.
+const HIT_SOUND_GAP_MS := 35
+## Pitch variation of hit and kill sounds: almost none (dev: the sound of a mob taking
+## damage must stay the same, never higher or lower; variety comes from the variants).
+const HIT_PITCH_VARIATION := 0.015
+var _next_hit_sound_ms: int = 0
+var _last_hit_variant: int = -1
 
 
 func setup(party: Party, arena: Rect2, prewarm: int, rng: RandomNumberGenerator = null,
@@ -171,7 +179,7 @@ func damage_enemy(index: int, amount: float, crit: bool, direction: Vector2, kno
 	enemy.set_flash(Enemy.FLASH_TIME)
 	enemy.knockback += direction * knockback_force * enemy.data.knockback_taken
 	enemy_damaged.emit(enemy.position, damage, crit)
-	_lose_hp(enemy, damage)
+	_lose_hp(enemy, damage, crit)
 	if status != null and _rng.randf() < status_chance:
 		_apply_status(index, status, amount)
 
@@ -287,14 +295,13 @@ func clear_all() -> void:
 	grid.rebuild(_positions, 0)
 
 
-func _lose_hp(enemy: Enemy, amount: float) -> void:
+## `crit`: the hit was critical (its own sound). `silent`: damage over time (no hit sound).
+func _lose_hp(enemy: Enemy, amount: float, crit: bool = false, silent: bool = false) -> void:
 	_record_damage(minf(amount, maxf(enemy.hp, 0.0)))
 	enemy.hp -= amount
 	if enemy.is_alive():
-		var frame := Engine.get_physics_frames()
-		if frame != _hit_sound_frame:
-			_hit_sound_frame = frame
-			Audio.play(Sounds.ENEMY_HIT, -10.0)
+		if not silent:
+			_play_hit(amount, crit, enemy.data.boss)
 		return
 	enemy.visible = false
 	if _vfx != null:
@@ -305,8 +312,34 @@ func _lose_hp(enemy: Enemy, amount: float) -> void:
 		var frame := Engine.get_physics_frames()
 		if frame != _death_sound_frame:
 			_death_sound_frame = frame
-			Audio.play(Sounds.ENEMY_DEATH, -8.0)
+			Audio.play(_next_thud(), -3.0, HIT_PITCH_VARIATION)
 	enemy_killed.emit(enemy.data, enemy.position, enemy.elite)
+
+
+## Hit sound: only critical hits and boss hits make one (every weapon already has its
+## own attack sound; the reward of a normal hit is the kill thud). Boss hits are a
+## quieter thud.
+func _play_hit(amount: float, crit: bool, boss: bool) -> void:
+	if not crit and not boss:
+		return
+	var now := Time.get_ticks_msec()
+	if now < _next_hit_sound_ms:
+		return
+	_next_hit_sound_ms = now + HIT_SOUND_GAP_MS
+	var strength := clampf(amount / 40.0, 0.0, 1.0)
+	if crit:
+		Audio.play(Sounds.HIT_CRIT, 1.0 + strength * 2.0, HIT_PITCH_VARIATION)
+		return
+	Audio.play(_next_thud(), -2.0 + strength * 3.0, HIT_PITCH_VARIATION)
+
+
+## Next body thud: variants in turn (never the same one twice in a row), same pitch.
+func _next_thud() -> AudioStream:
+	var pick := randi() % (Sounds.KILL_THUD.size() - 1)
+	if pick >= _last_hit_variant:
+		pick += 1
+	_last_hit_variant = pick
+	return Sounds.KILL_THUD[pick]
 
 
 func _apply_status(index: int, status: StatusData, hit_damage: float) -> void:
@@ -508,6 +541,7 @@ func _update_kamikaze(enemy: Enemy, distance: float, delta: float) -> bool:
 			enemy.special_timer = data.fuse_time
 			enemy.forced_velocity = Vector2.ZERO
 			enemy.forced_time = data.fuse_time + 1.0
+			Audio.play(Sounds.FUSE, -8.0, 0.04, 1.4)
 			if _vfx != null:
 				_vfx.warning_circle(enemy.position, data.blast_radius, data.color, data.fuse_time)
 		return false
@@ -554,7 +588,7 @@ func _tick_burn(enemy: Enemy, delta: float) -> void:
 		enemy.burn_pending = 0.0
 	if enemy.burn_time <= 0.0:
 		enemy.end_burn()
-	_lose_hp(enemy, damage)
+	_lose_hp(enemy, damage, false, true)
 
 
 func _remove_dead() -> void:

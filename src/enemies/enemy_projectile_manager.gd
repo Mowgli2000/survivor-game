@@ -28,6 +28,7 @@ func _ready() -> void:
 func spawn(pos: Vector2, velocity: Vector2, damage: float, radius: float,
 		style: WeaponData.ProjectileStyle = WeaponData.ProjectileStyle.ENEMY_ORB) -> void:
 	var projectile: Projectile = _pool.acquire()
+	Audio.play(Sounds.ENEMY_SHOT, -14.0, 0.1)
 	projectile.reset_basic(pos, velocity, damage, radius, LIFETIME, COLOR, style)
 	_active.append(projectile)
 

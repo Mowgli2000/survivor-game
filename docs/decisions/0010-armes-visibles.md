@@ -10,7 +10,7 @@ Le dev veut voir les armes équipées autour du personnage, comme dans Brotato, 
 2. **Points de montage** (`WeaponLayout`) : cercle de rayon 50 px centré sur la poitrine du perso (`BODY_CENTER`), positions réparties, recalculées par `WeaponHolder` à chaque changement d'armes (`WeaponSlot.mount_offset`).
 3. **Origine des tirs au canon** : projectiles et rayons partent de `WeaponContext.muzzle()` (montage + 28 px dans la direction visée). La **cible** reste choisie depuis le centre du perso : la portée n'a pas changé, pas de rééquilibrage. L'arc du katana reste centré sur le perso.
 4. **Rendu** : un seul nœud `WeaponVisuals` (enfant du `Player`) dessine toutes les armes dans un `_draw`. Chaque arme vise l'ennemi le plus proche de son montage (sinon la direction de marche), avec une rotation lissée. Elle est retournée verticalement quand elle vise à gauche. Attaque (signal `WeaponHolder.weapon_fired`) : recul et éclair de bouche pour les armes à distance, coup en arc pour la mêlée. Les éclairs sont dessinés par un nœud enfant en mode additif.
-5. **Liseré de rang** : shader `weapon_outline.gdshader`. L'image n'est pas teintée ; le contour prend la couleur de dessin (couleur du rang).
+5. **Liseré de rang** : retiré (D86, retour du dev : plus réaliste sans) ; l'icône est dessinée telle quelle.
 6. **Interface** : composant `IconTile` (icône sur fond sombre, cadre de la couleur du rang, badge de quantité). Utilisé sur les cartes de boutique, dans la rangée d'objets possédés et dans le HUD. Les boutons d'armes possédées affichent aussi l'icône.
 
 ## Mesures (stress test, 7 armes, alterné 4 × 15 s avec le commit précédent)
