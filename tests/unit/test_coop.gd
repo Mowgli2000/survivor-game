@@ -170,3 +170,61 @@ func test_burn_ticks_belong_to_the_player_who_set_it() -> void:
 	enemies.damage_source = 0
 	await wait_physics_frames(2)
 	assert_eq(enemies.damage_source, 1, "burn ticks are player 2's damage")
+
+
+# --- Pickups belong to the killer ---------------------------------------------
+
+func _coop_pickups(range_a: float, range_b: float) -> Dictionary:
+	var a := _player_at(Vector2(-200, 0), 0)
+	var b := _player_at(Vector2(200, 0), 1)
+	a.stats.set_base(StatIds.PICKUP_RANGE, range_a)
+	b.stats.set_base(StatIds.PICKUP_RANGE, range_b)
+	var party := Party.new()
+	party.add(a)
+	party.add(b)
+	var pickups := PickupManager.new()
+	pickups.setup(party, 50)
+	add_child_autofree(pickups)
+	watch_signals(pickups)
+	return {"a": a, "b": b, "pickups": pickups}
+
+
+func test_a_big_pickup_range_cannot_vacuum_the_other_players_drops() -> void:
+	var setup := _coop_pickups(1000.0, 60.0)
+	var pickups: PickupManager = setup["pickups"]
+	# Player 2 killed it, close to player 2; player 1 has a huge range and is nearer than 1000 px.
+	pickups.spawn_xp(Vector2(150, 0), 5, 1)
+	await wait_physics_frames(60)
+	var emitted: Array = get_signal_parameters(pickups, "xp_collected")
+	assert_eq(emitted[1], 1, "collected by its owner, not by the big-range player")
+
+
+func test_a_drop_can_be_stolen_by_touching_it() -> void:
+	var setup := _coop_pickups(60.0, 60.0)
+	var pickups: PickupManager = setup["pickups"]
+	var a: Player = setup["a"]
+	# Owned by player 2, but it lies on player 1.
+	pickups.spawn_xp(a.global_position, 5, 1)
+	await wait_physics_frames(3)
+	var emitted: Array = get_signal_parameters(pickups, "xp_collected")
+	assert_eq(emitted[1], 0, "touched by player 1: taken")
+
+
+func test_a_dead_owner_frees_the_drop_for_the_nearest_player() -> void:
+	var setup := _coop_pickups(500.0, 500.0)
+	var pickups: PickupManager = setup["pickups"]
+	var b: Player = setup["b"]
+	b.is_dead = true
+	pickups.spawn_xp(Vector2(150, 0), 5, 1)
+	await wait_physics_frames(60)
+	var emitted: Array = get_signal_parameters(pickups, "xp_collected")
+	assert_eq(emitted[1], 0, "the survivor takes it")
+
+
+func test_owned_pickups_are_tinted_in_coop_only() -> void:
+	var setup := _coop_pickups(60.0, 60.0)
+	var pickups: PickupManager = setup["pickups"]
+	var b: Player = setup["b"]
+	b.tag_color = Color(1.0, 0.4, 0.7)
+	assert_ne(pickups._owner_tint(1), Color.WHITE)
+	assert_eq(pickups._owner_tint(-1), Color.WHITE, "unowned")
