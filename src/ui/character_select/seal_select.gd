@@ -27,8 +27,8 @@ const SEAL_FACE: Array[Color] = [Color("8a4a24"), Color("5a6270"), Color("9aa4b4
 const PORTAL_CENTER := Vector2(0.508, 0.39)
 const ENTER_SECONDS := 1.4
 const ENTER_ZOOM := 9.0
-const MEDAL_SIZE := Vector2(170, 170)
-const REWARD_BOX := 80.0
+const MEDAL_SIZE := Vector2(150, 150)
+const REWARD_BOX := 70.0
 
 static var _silhouette: ShaderMaterial
 
@@ -163,7 +163,7 @@ func _init() -> void:
 	balance.custom_minimum_size = Vector2(190, 0)
 	top.add_child(balance)
 	var spacer := Control.new()
-	spacer.custom_minimum_size = Vector2(0, 175)
+	spacer.custom_minimum_size = Vector2(0, 225)
 	page.add_child(spacer)
 	_row = HBoxContainer.new()
 	_row.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -186,7 +186,7 @@ func _init() -> void:
 ## Details of the focused seal: name, effects, place; the rewards at right.
 func _build_panel() -> Control:
 	_panel = PanelContainer.new()
-	_panel.custom_minimum_size = Vector2(960, 0)
+	_panel.custom_minimum_size = Vector2(880, 0)
 	_panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	var line := HBoxContainer.new()
 	line.add_theme_constant_override("separation", 30)
@@ -197,14 +197,14 @@ func _build_panel() -> Control:
 	line.add_child(texts)
 	_name = Label.new()
 	_name.theme_type_variation = &"TitleLabel"
-	_name.add_theme_font_size_override("font_size", 42)
+	_name.add_theme_font_size_override("font_size", 36)
 	texts.add_child(_name)
 	_effects = Label.new()
-	_effects.add_theme_font_size_override("font_size", 21)
+	_effects.add_theme_font_size_override("font_size", 18)
 	_effects.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	texts.add_child(_effects)
 	_place = Label.new()
-	_place.add_theme_font_size_override("font_size", 19)
+	_place.add_theme_font_size_override("font_size", 16)
 	_place.add_theme_color_override("font_color", UiTheme.MUTED)
 	_place.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	texts.add_child(_place)
@@ -213,7 +213,7 @@ func _build_panel() -> Control:
 	right.alignment = BoxContainer.ALIGNMENT_CENTER
 	line.add_child(right)
 	_rewards_title = Label.new()
-	_rewards_title.add_theme_font_size_override("font_size", 19)
+	_rewards_title.add_theme_font_size_override("font_size", 16)
 	_rewards_title.add_theme_color_override("font_color", UiTheme.GOLD)
 	_rewards_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	right.add_child(_rewards_title)
@@ -298,12 +298,12 @@ func _seal_button(difficulty: DifficultyData) -> Button:
 	var label := Label.new()
 	label.text = seal_short_name(level) if is_open(level) else "???"
 	label.theme_type_variation = &"SubtitleLabel"
-	label.add_theme_font_size_override("font_size", 25)
+	label.add_theme_font_size_override("font_size", 22)
 	label.add_theme_color_override("font_color", SEAL_RIM[level] if is_open(level) else UiTheme.MUTED)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(label)
-	button.custom_minimum_size = MEDAL_SIZE + Vector2(0, 38)
+	button.custom_minimum_size = MEDAL_SIZE + Vector2(0, 34)
 	button.focus_entered.connect(_point.bind(level))
 	button.mouse_entered.connect(button.grab_focus)
 	button.pressed.connect(func() -> void:
@@ -374,7 +374,7 @@ func _reward_box(icon: Texture2D, won: bool) -> Control:
 		var mark := Label.new()
 		mark.text = "?"
 		mark.theme_type_variation = &"TitleLabel"
-		mark.add_theme_font_size_override("font_size", 30)
+		mark.add_theme_font_size_override("font_size", 26)
 		mark.add_theme_color_override("font_color", UiTheme.GOLD)
 		mark.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		mark.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
