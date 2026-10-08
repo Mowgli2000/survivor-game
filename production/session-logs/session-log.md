@@ -5142,3 +5142,457 @@ tests/unit/test_coop_character_select.gd
 tests/unit/test_shop_screen.gd
 ---
 
+## Session End: 20261007_185953
+### Commits
+e7ba36a chore: import files of the screenshots
+af740ed chore: playtest screenshots referenced by notes.md, tools
+ec8abda docs: status D84 (visual/selection-perso) and playtest notes
+e6f921a feat: Venom fangs daggers for the assassin, per-weapon float scale, crossbow icon horizontal
+ccc74d2 feat: character select in three columns with a turntable of looks on a stone platform
+07e83ec docs: visual work goes to its own branch
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+---
+
+## Session End: 20261007_190244
+### Commits
+e7ba36a chore: import files of the screenshots
+af740ed chore: playtest screenshots referenced by notes.md, tools
+ec8abda docs: status D84 (visual/selection-perso) and playtest notes
+e6f921a feat: Venom fangs daggers for the assassin, per-weapon float scale, crossbow icon horizontal
+ccc74d2 feat: character select in three columns with a turntable of looks on a stone platform
+07e83ec docs: visual work goes to its own branch
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+### Uncommitted Changes
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+---
+
+## Session End: 20261007_211518
+### Commits
+e7ba36a chore: import files of the screenshots
+af740ed chore: playtest screenshots referenced by notes.md, tools
+ec8abda docs: status D84 (visual/selection-perso) and playtest notes
+e6f921a feat: Venom fangs daggers for the assassin, per-weapon float scale, crossbow icon horizontal
+ccc74d2 feat: character select in three columns with a turntable of looks on a stone platform
+07e83ec docs: visual work goes to its own branch
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+### Uncommitted Changes
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/ui/character_select/character_select.gd
+---
+
+## Session End: 20261007_213633
+### Commits
+e7ba36a chore: import files of the screenshots
+af740ed chore: playtest screenshots referenced by notes.md, tools
+ec8abda docs: status D84 (visual/selection-perso) and playtest notes
+e6f921a feat: Venom fangs daggers for the assassin, per-weapon float scale, crossbow icon horizontal
+ccc74d2 feat: character select in three columns with a turntable of looks on a stone platform
+07e83ec docs: visual work goes to its own branch
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+### Uncommitted Changes
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/ui/character_select/character_select.gd
+tests/unit/test_coop_character_select.gd
+---
+
+## Session End: 20261007_222822
+### Commits
+e7ba36a chore: import files of the screenshots
+af740ed chore: playtest screenshots referenced by notes.md, tools
+ec8abda docs: status D84 (visual/selection-perso) and playtest notes
+e6f921a feat: Venom fangs daggers for the assassin, per-weapon float scale, crossbow icon horizontal
+ccc74d2 feat: character select in three columns with a turntable of looks on a stone platform
+07e83ec docs: visual work goes to its own branch
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+### Uncommitted Changes
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/run/run.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/shop/shop_screen.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_shop_screen.gd
+---
+
+## Session End: 20261007_224118
+### Commits
+e7ba36a chore: import files of the screenshots
+af740ed chore: playtest screenshots referenced by notes.md, tools
+ec8abda docs: status D84 (visual/selection-perso) and playtest notes
+e6f921a feat: Venom fangs daggers for the assassin, per-weapon float scale, crossbow icon horizontal
+ccc74d2 feat: character select in three columns with a turntable of looks on a stone platform
+07e83ec docs: visual work goes to its own branch
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+### Uncommitted Changes
+assets/CREDITS.md
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/audio/sounds.gd
+src/enemies/enemy_manager.gd
+src/enemies/enemy_projectile_manager.gd
+src/run/run.gd
+src/run/run_player.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/shop/shop_screen.gd
+src/vfx/vfx.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_shop_screen.gd
+---
+
+## Session End: 20261007_235415
+### Commits
+e7ba36a chore: import files of the screenshots
+af740ed chore: playtest screenshots referenced by notes.md, tools
+ec8abda docs: status D84 (visual/selection-perso) and playtest notes
+e6f921a feat: Venom fangs daggers for the assassin, per-weapon float scale, crossbow icon horizontal
+ccc74d2 feat: character select in three columns with a turntable of looks on a stone platform
+07e83ec docs: visual work goes to its own branch
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+### Uncommitted Changes
+assets/CREDITS.md
+data/weapons/venom_fangs.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/audio/sounds.gd
+src/enemies/enemy_manager.gd
+src/enemies/enemy_projectile_manager.gd
+src/run/run.gd
+src/run/run_player.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/shop/shop_screen.gd
+src/vfx/vfx.gd
+src/weapons/weapon_holder.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_shop_screen.gd
+---
+
+## Session End: 20261008_000420
+### Commits
+e7ba36a chore: import files of the screenshots
+af740ed chore: playtest screenshots referenced by notes.md, tools
+ec8abda docs: status D84 (visual/selection-perso) and playtest notes
+e6f921a feat: Venom fangs daggers for the assassin, per-weapon float scale, crossbow icon horizontal
+ccc74d2 feat: character select in three columns with a turntable of looks on a stone platform
+07e83ec docs: visual work goes to its own branch
+6477495 docs: session 10 status (D77-D83) and playtest notes
+e6392ec feat: new other-sex looks for six classes (same palette, own hair and outfit)
+af93bef feat: weapon art v3 with diagonal UI icons, new katana, metallic melee sounds
+567c871 feat: melee reach from Range, real-size slashes, monsters sized to the hero
+b922088 perf: cheaper projectile hit queries (stress test 93 -> 111 FPS)
+6da410a feat: shop, HUD and menu fixes from playtest
+56501df fix: coop split-screen halves and simultaneous character pick
+### Uncommitted Changes
+assets/CREDITS.md
+data/weapons/venom_fangs.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/audio/sounds.gd
+src/enemies/enemy_manager.gd
+src/enemies/enemy_projectile_manager.gd
+src/run/run.gd
+src/run/run_player.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/shop/shop_screen.gd
+src/vfx/vfx.gd
+src/weapons/weapon_holder.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_danger_per_character.gd
+tests/unit/test_modes.gd
+tests/unit/test_seal_select.gd
+tests/unit/test_shop_screen.gd
+---
+
+## Session End: 20261008_001957
+### Commits
+e7ba36a chore: import files of the screenshots
+af740ed chore: playtest screenshots referenced by notes.md, tools
+ec8abda docs: status D84 (visual/selection-perso) and playtest notes
+e6f921a feat: Venom fangs daggers for the assassin, per-weapon float scale, crossbow icon horizontal
+ccc74d2 feat: character select in three columns with a turntable of looks on a stone platform
+### Uncommitted Changes
+assets/CREDITS.md
+data/weapons/venom_fangs.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/session-log.md
+src/audio/sounds.gd
+src/enemies/enemy_manager.gd
+src/enemies/enemy_projectile_manager.gd
+src/run/run.gd
+src/run/run_player.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/shop/shop_screen.gd
+src/vfx/vfx.gd
+src/weapons/weapon_holder.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_danger_per_character.gd
+tests/unit/test_modes.gd
+tests/unit/test_seal_select.gd
+tests/unit/test_shop_screen.gd
+---
+
+## Session End: 20261008_002923
+### Commits
+e7ba36a chore: import files of the screenshots
+af740ed chore: playtest screenshots referenced by notes.md, tools
+ec8abda docs: status D84 (visual/selection-perso) and playtest notes
+e6f921a feat: Venom fangs daggers for the assassin, per-weapon float scale, crossbow icon horizontal
+ccc74d2 feat: character select in three columns with a turntable of looks on a stone platform
+### Uncommitted Changes
+assets/CREDITS.md
+data/weapons/venom_fangs.tres
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+src/audio/sounds.gd
+src/enemies/enemy_manager.gd
+src/enemies/enemy_projectile_manager.gd
+src/run/run.gd
+src/run/run_player.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/shop/shop_screen.gd
+src/vfx/vfx.gd
+src/weapons/weapon_holder.gd
+src/weapons/weapon_visuals.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_danger_per_character.gd
+tests/unit/test_modes.gd
+tests/unit/test_seal_select.gd
+tests/unit/test_shop_screen.gd
+---
+
+## Session End: 20261008_003800
+### Commits
+e7ba36a chore: import files of the screenshots
+af740ed chore: playtest screenshots referenced by notes.md, tools
+ec8abda docs: status D84 (visual/selection-perso) and playtest notes
+e6f921a feat: Venom fangs daggers for the assassin, per-weapon float scale, crossbow icon horizontal
+ccc74d2 feat: character select in three columns with a turntable of looks on a stone platform
+### Uncommitted Changes
+assets/CREDITS.md
+data/weapons/bomb.tres
+data/weapons/frag_grenade.tres
+data/weapons/venom_fangs.tres
+docs/decisions/0010-armes-visibles.md
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+src/audio/sounds.gd
+src/enemies/enemy_manager.gd
+src/enemies/enemy_projectile_manager.gd
+src/run/run.gd
+src/run/run_player.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/hud.gd
+src/ui/shop/shop_screen.gd
+src/vfx/vfx.gd
+src/weapons/weapon_holder.gd
+src/weapons/weapon_outline.gdshader.uid
+src/weapons/weapon_visuals.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_danger_per_character.gd
+tests/unit/test_modes.gd
+tests/unit/test_seal_select.gd
+tests/unit/test_shop_screen.gd
+---
+
+## Session End: 20261008_011751
+### Commits
+e7ba36a chore: import files of the screenshots
+af740ed chore: playtest screenshots referenced by notes.md, tools
+ec8abda docs: status D84 (visual/selection-perso) and playtest notes
+e6f921a feat: Venom fangs daggers for the assassin, per-weapon float scale, crossbow icon horizontal
+ccc74d2 feat: character select in three columns with a turntable of looks on a stone platform
+### Uncommitted Changes
+assets/CREDITS.md
+data/weapons/bomb.tres
+data/weapons/frag_grenade.tres
+data/weapons/venom_fangs.tres
+docs/decisions/0010-armes-visibles.md
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+src/audio/sounds.gd
+src/enemies/enemy_manager.gd
+src/enemies/enemy_projectile_manager.gd
+src/run/run.gd
+src/run/run_player.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/boss_bar.gd
+src/ui/hud/hud.gd
+src/ui/shop/shop_screen.gd
+src/vfx/vfx.gd
+src/weapons/weapon_holder.gd
+src/weapons/weapon_outline.gdshader.uid
+src/weapons/weapon_visuals.gd
+tests/unit/test_boss.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_danger_per_character.gd
+tests/unit/test_modes.gd
+tests/unit/test_seal_select.gd
+tests/unit/test_shop_screen.gd
+---
+
+## Session End: 20261008_013956
+### Commits
+e7ba36a chore: import files of the screenshots
+af740ed chore: playtest screenshots referenced by notes.md, tools
+ec8abda docs: status D84 (visual/selection-perso) and playtest notes
+e6f921a feat: Venom fangs daggers for the assassin, per-weapon float scale, crossbow icon horizontal
+ccc74d2 feat: character select in three columns with a turntable of looks on a stone platform
+### Uncommitted Changes
+assets/CREDITS.md
+data/weapons/bomb.tres
+data/weapons/frag_grenade.tres
+data/weapons/venom_fangs.tres
+docs/decisions/0010-armes-visibles.md
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+src/audio/sounds.gd
+src/debug/ui_mockup.gd
+src/enemies/enemy_manager.gd
+src/enemies/enemy_projectile_manager.gd
+src/run/run.gd
+src/run/run_player.gd
+src/ui/character_select/character_select.gd
+src/ui/hud/boss_bar.gd
+src/ui/hud/hud.gd
+src/ui/shop/shop_screen.gd
+src/vfx/vfx.gd
+src/weapons/weapon_holder.gd
+src/weapons/weapon_outline.gdshader.uid
+src/weapons/weapon_visuals.gd
+tests/unit/test_boss.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_danger_per_character.gd
+tests/unit/test_modes.gd
+tests/unit/test_seal_select.gd
+tests/unit/test_shop_screen.gd
+---
+
+## Session End: 20261008_021036
+### Commits
+e7ba36a chore: import files of the screenshots
+af740ed chore: playtest screenshots referenced by notes.md, tools
+ec8abda docs: status D84 (visual/selection-perso) and playtest notes
+e6f921a feat: Venom fangs daggers for the assassin, per-weapon float scale, crossbow icon horizontal
+ccc74d2 feat: character select in three columns with a turntable of looks on a stone platform
+### Uncommitted Changes
+assets/CREDITS.md
+assets/sprites/atlas.png
+assets/sprites/ronin_pc_m.tres
+data/characters/ronin.tres
+data/weapons/bomb.tres
+data/weapons/frag_grenade.tres
+data/weapons/venom_fangs.tres
+docs/decisions/0010-armes-visibles.md
+localization/strings.csv
+notes.md
+production/session-logs/.session-end.hash
+production/session-logs/compaction-log.txt
+production/session-logs/session-log.md
+src/audio/sounds.gd
+src/debug/capture.gd
+src/debug/ui_mockup.gd
+src/enemies/enemy_manager.gd
+src/enemies/enemy_projectile_manager.gd
+src/run/run.gd
+src/run/run_player.gd
+src/ui/character_select/character_select.gd
+src/ui/character_select/coop_character_select.gd
+src/ui/hud/boss_bar.gd
+src/ui/hud/hud.gd
+src/ui/progression/progression_screen.gd
+src/ui/shop/shop_screen.gd
+src/vfx/vfx.gd
+src/weapons/weapon_holder.gd
+src/weapons/weapon_outline.gdshader.uid
+src/weapons/weapon_visuals.gd
+tests/unit/test_boss.gd
+tests/unit/test_characters.gd
+tests/unit/test_coop_character_select.gd
+tests/unit/test_danger_per_character.gd
+tests/unit/test_modes.gd
+tests/unit/test_seal_rewards.gd
+tests/unit/test_seal_select.gd
+tests/unit/test_shop_screen.gd
+tools/art/prepare_ai_sprite.gd
+tools/sprites/atlas_layout.json
+tools/sprites/sprites.json
+---
+
