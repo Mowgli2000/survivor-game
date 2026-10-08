@@ -21,6 +21,15 @@ func on_acquired(effects: ItemEffects) -> void:
 	_update()
 
 
+func preview_modifiers(stats: StatBlock, _weapons: WeaponHolder) -> Array[StatModifier]:
+	var steps := floorf(maxf(stats.get_value(source_stat) - stats.get_base(source_stat), 0.0) / step)
+	var mod := StatModifier.new()
+	mod.stat = target_stat
+	mod.percent = percent_per_step * steps
+	mod.flat = flat_per_step * steps
+	return [mod]
+
+
 func validate() -> PackedStringArray:
 	var problems := PackedStringArray()
 	if source_stat == target_stat:

@@ -290,3 +290,17 @@ func test_mergeable_weapons_get_a_gold_ring() -> void:
 		var style := (_screen._controls[key] as Button).get_theme_stylebox("normal") as StyleBoxFlat
 		assert_eq(style.border_color, UiTheme.GOLD, "%s: gold ring" % key)
 		assert_gte(style.border_width_left, ShopScreen.MERGE_RING)
+
+
+func test_family_item_card_shows_the_bonus_for_the_current_build() -> void:
+	var holder := WeaponHolder.new()
+	holder.max_slots = 6
+	autofree(holder)
+	holder.add_weapon(ContentDB.get_def(&"weapons", &"katana"))
+	holder.add_weapon(ContentDB.get_def(&"weapons", &"shuriken"))
+	var offer := ShopOffer.new()
+	offer.item = ContentDB.get_def(&"items", &"blade_oil")
+	offer.tier = 2
+	var texts := ShopScreen.describe(offer, 0, StatBlock.from_defaults(), holder)
+	assert_true(texts[2].contains("Now: +8% Damage"), texts[2])
+	assert_false(ShopScreen.describe(offer)[2].contains("Now:"), "no build given: no line")

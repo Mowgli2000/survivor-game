@@ -99,7 +99,7 @@ WEAPON_STRESS,Stress test gun,Arme de test
 UI_WAVE,Wave,Vague
 UI_WAVE_CLEARED,Wave %d cleared!,Vague %d terminée !
 UI_NEXT_WAVE,Next wave,Vague suivante
-UI_MATERIALS,Materials,Matériaux
+UI_MATERIALS,Gold,Or
 UI_VICTORY,Victory!,Victoire !
 UI_WAVE_REACHED,Wave reached:,Vague atteinte :
 ITEM_SHARPENED_EDGE,Whetstone,Pierre à aiguiser
@@ -147,7 +147,7 @@ ITEM_NANO_LEECH,Vampire fang,Croc de vampire
 ITEM_GHOST_CLOAK,Phantom cloak,Cape fantôme
 ITEM_MANEKI_NEON,Golden clover,Trèfle doré
 ITEM_HYDROPONIC_FARM,Mana herb pot,Pot d'herbe de mana
-ITEM_CREDIT_CHIP_EFFECT,End of wave: +10% of your materials (max 25),Fin de vague : +10 % de vos matériaux (max 25)
+ITEM_CREDIT_CHIP_EFFECT,End of wave: +10% of your gold (max 25),Fin de vague : +10 % de votre or (max 25)
 ITEM_CREDIT_CHIP,Smuggler's purse,Bourse du contrebandier
 ITEM_IRON_WILL_EFFECT,+1% Damage per bonus armor point,+1 % de dégâts par point d'armure bonus
 ITEM_IRON_WILL,Iron will,Volonté de fer
@@ -175,7 +175,7 @@ ITEM_ARCANE_TOME_EFFECT,+5% damage per Magic weapon,+5 % de dégâts par arme de
 ITEM_MANA_PENDANT,Mana pendant,Pendentif de mana
 ITEM_SWIFT_RUNE,Swift rune,Rune de célérité
 ITEM_MERCHANT_SCALE,Merchant's scale,Balance du marchand
-ITEM_MERCHANT_SCALE_EFFECT,End of wave: +5% of your materials (max 15),Fin de vague : +5 % de tes matériaux (max 15)
+ITEM_MERCHANT_SCALE_EFFECT,End of wave: +5% of your gold (max 15),Fin de vague : +5 % de ton or (max 15)
 ITEM_GOLDEN_TOOTH,Golden tooth,Dent en or
 ITEM_GOLDEN_TOOTH_EFFECT,"5% chance: killed enemies give 1 material (less in late waves)","5 % de chance : les ennemis tués donnent 1 matériau (moins en fin de partie)"
 ITEM_LUCKY_COIN,Lucky coin,Pièce porte-bonheur
@@ -234,13 +234,13 @@ CHARACTER_GUNSLINGER_ALT,Archer,Archer
 CHARACTER_GUNSLINGER_RULE,Ranged weapons only. +3% damage per 10% bonus range.,Armes à distance uniquement. +3 % de dégâts par 10 % de portée bonus.
 CHARACTER_MERCHANT,Gate Smuggler,Contrebandière
 CHARACTER_MERCHANT_ALT,Gate Smuggler,Contrebandier
-CHARACTER_MERCHANT_RULE,"Black market: shop prices -20%, rerolls +50%. End of wave: +10% of your materials (max 25).","Marché noir : prix de la boutique -20 %, relances +50 %. Fin de vague : +10 % de tes matériaux (max 25)."
+CHARACTER_MERCHANT_RULE,"Black market: shop prices -20%, rerolls +50%. End of wave: +10% of your gold (max 25).","Marché noir : prix de la boutique -20 %, relances +50 %. Fin de vague : +10 % de ton or (max 25)."
 CHALLENGE_WIN_DRIFTER,Novice's road,La route du novice
 CHALLENGE_WIN_DRIFTER_DESC,Win a run with the Novice Hunter,Gagner une partie avec le Chasseur novice
 CHALLENGE_KILLS_2000,Sharpshooter,Tireur d'élite
 CHALLENGE_KILLS_2000_DESC,Kill 2000 enemies (all runs),Tuer 2 000 ennemis (toutes parties)
 CHALLENGE_MATERIALS_300,Hoarder,Thésauriseur
-CHALLENGE_MATERIALS_300_DESC,Hold 300 materials at once,Détenir 300 matériaux en même temps
+CHALLENGE_MATERIALS_300_DESC,Hold 300 gold at once,Détenir 300 pièces d'or en même temps
 CHALLENGE_REACH_WAVE_10,Halfway there,À mi-chemin
 CHALLENGE_REACH_WAVE_10_DESC,Reach wave 10,Atteindre la vague 10
 CHALLENGE_KILL_RONIN,Serpent slayer,Tueur de serpent
@@ -410,11 +410,12 @@ SEAL_REWARD,Reward: %s,Récompense : %s
 SEAL_REWARD_MORE,%s + %d items,%s + %d objets
 SET_SHOW_HINTS,Show tips,Afficher les astuces
 SET_PLAYER_HP_BAR,HP bar above the hero,Barre de vie au-dessus du héros
-HINT_MOVE,"Move with WASD or the arrow keys: your weapons attack on their own. Pick up what monsters drop: experience and materials.","Déplace-toi avec ZQSD ou les flèches : tes armes attaquent toutes seules. Ramasse ce que lâchent les monstres : expérience et matériaux."
+HINT_MOVE,"Move with WASD or the arrow keys: your weapons attack on their own. Pick up what monsters drop: experience and gold.","Déplace-toi avec ZQSD ou les flèches : tes armes attaquent toutes seules. Ramasse ce que lâchent les monstres : expérience et or."
 HINT_STATS,Hold Tab to see your stats.,Maintiens Tab pour voir tes statistiques.
 HINT_LEVEL_UP,"Level up! Pick an upgrade: it lasts for the whole run.","Niveau supérieur ! Choisis une amélioration : elle dure toute la partie."
-HINT_SHOP,"Spend your materials between waves. Click one of your weapons to sell it, or to merge it with an identical weapon of the same tier. Lock an offer to keep it for the next shop.","Dépense tes matériaux entre les vagues. Clique sur une de tes armes pour la vendre ou la fusionner avec une arme identique du même rang. Verrouille un article pour le garder à la prochaine boutique."
+HINT_SHOP,"Spend your gold between waves. Click one of your weapons to sell it, or to merge it with an identical weapon of the same tier. Lock an offer to keep it for the next shop.","Dépense ton or entre les vagues. Clique sur une de tes armes pour la vendre ou la fusionner avec une arme identique du même rang. Verrouille un article pour le garder à la prochaine boutique."
 HINT_SEALS,"Win a run to open the next seal. Each seal you beat unlocks a weapon and two items.","Gagne une partie pour ouvrir le sceau suivant. Chaque sceau vaincu débloque une arme et deux objets."
+UI_SHOP_ITEM_NOW,Now: %s,Actuellement : %s
 UI_SHOP_OWNED_MAX,Owned: %d/%d,Possédés : %d/%d
 UI_STAT_MAXED,(max),(max)
 UPGRADE_REGENERATION,Regeneration,Régénération

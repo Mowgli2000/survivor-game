@@ -22,6 +22,12 @@ func on_tick(_effects: ItemEffects, _delta: float) -> void:
 	pass
 
 
+## Bonus a copy bought now would give with the current build (shown on shop
+## cards), or empty when the effect has no such readable bonus. Never mutates.
+func preview_modifiers(_stats: StatBlock, _weapons: WeaponHolder) -> Array[StatModifier]:
+	return []
+
+
 ## Problems with the data (empty when valid). Checked by the content tests.
 func validate() -> PackedStringArray:
 	return PackedStringArray()

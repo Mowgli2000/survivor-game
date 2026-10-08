@@ -138,7 +138,7 @@ func _init(p_compact: bool = false) -> void:
 	header.add_child(_player_tag)
 	_title = _label(46 if _compact else 64, UiTheme.ACCENT, &"TitleLabel")
 	header.add_child(_title)
-	_materials = _label(30 if _compact else 40, UiTheme.GOOD, &"ValueLabel")
+	_materials = _label(30 if _compact else 40, UiTheme.GOLD, &"ValueLabel")
 	header.add_child(_materials)
 
 	_cards = HBoxContainer.new()
@@ -279,8 +279,9 @@ static func name_color(offer: ShopOffer) -> Color:
 
 ## Card texts: [type · tier, name, effects]. `owned`: copies of the item already
 ## owned (shown as "owned n/max" for limited items); `stats`: marks capped bonuses.
-static func describe(offer: ShopOffer, owned: int = 0, stats: StatBlock = null) -> PackedStringArray:
-	var parts := describe_parts(offer, owned, stats)
+static func describe(offer: ShopOffer, owned: int = 0, stats: StatBlock = null,
+		weapons: WeaponHolder = null) -> PackedStringArray:
+	var parts := describe_parts(offer, owned, stats, weapons)
 	var effects := parts[2]
 	for extra in [parts[3], parts[4]]:
 		if extra != "":
@@ -291,7 +292,8 @@ static func describe(offer: ShopOffer, owned: int = 0, stats: StatBlock = null) 
 ## Card texts in pieces: [tag, name, stat lines, effect description, limit line]. The stat
 ## lines are what the player buys the item for; the half-screen card keeps them whole
 ## and trims the effect description (the full text is in the popup).
-static func describe_parts(offer: ShopOffer, owned: int = 0, stats: StatBlock = null) -> PackedStringArray:
+static func describe_parts(offer: ShopOffer, owned: int = 0, stats: StatBlock = null,
+		weapons: WeaponHolder = null) -> PackedStringArray:
 	var kind := "UI_SHOP_WEAPON" if offer.is_weapon() else "UI_SHOP_ITEM"
 	var tag := "%s · %s" % [TranslationServer.translate(kind), Tiers.roman(offer.tier)]
 	if offer.is_weapon():
@@ -303,12 +305,30 @@ static func describe_parts(offer: ShopOffer, owned: int = 0, stats: StatBlock = 
 			"", TranslationServer.translate(offer.weapon.description_key), ""])
 	var lines := LevelUpScreen.describe_modifiers(offer.item.modifiers, stats)
 	var effect: String = TranslationServer.translate(offer.item.effect_key) if offer.item.effect_key != "" else ""
+	if stats != null:
+		var now := _current_bonus_line(offer.item, stats, weapons)
+		if now != "":
+			effect = (effect + "
+" + now).strip_edges()
 	var limit := ""
 	if offer.item.max_count == 1:
 		limit = TranslationServer.translate("UI_SHOP_UNIQUE")
 	elif offer.item.max_count > 1:
 		limit = TranslationServer.translate("UI_SHOP_OWNED_MAX") % [owned, offer.item.max_count]
 	return PackedStringArray([tag, TranslationServer.translate(offer.item.name_key), lines, effect, limit])
+
+
+## "Now: +8% Damage": what the item would give with the current build, for the
+## effects that scale with it (weapons of a family, armor, ...).
+static func _current_bonus_line(item: ItemData, stats: StatBlock, weapons: WeaponHolder) -> String:
+	var mods: Array[StatModifier] = []
+	for effect in item.effects:
+		mods.append_array(effect.preview_modifiers(stats, weapons))
+	var text := LevelUpScreen.describe_modifiers(mods)
+	if text == "":
+		return ""
+	return TranslationServer.translate("UI_SHOP_ITEM_NOW") % text.replace("
+", ", ")
 
 
 ## Hover text of an item owned `count` times: name, effect of one copy and,
@@ -430,7 +450,7 @@ func _make_card(index: int, offer: ShopOffer) -> Control:
 		sold.text = "UI_SHOP_SOLD"
 		box.add_child(sold)
 		return panel
-	var texts := describe(offer, 0 if offer.is_weapon() else _inventory.count(offer.item), _stats)
+	var texts := describe(offer, 0 if offer.is_weapon() else _inventory.count(offer.item), _stats, _weapons)
 	var icon := IconTile.create(offer.weapon.icon if offer.is_weapon() else offer.item.icon,
 		offer.tier, COMPACT_CARD_ICON if _compact else CARD_ICON)
 	icon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
@@ -452,7 +472,7 @@ func _make_card(index: int, offer: ShopOffer) -> Control:
 	if _compact:
 		# Half screen: the stat lines whole, the effect description trimmed (3 lines
 		# at most, "..." then), the limit on one line; the popup has the full text.
-		var parts := describe_parts(offer, 0 if offer.is_weapon() else _inventory.count(offer.item), _stats)
+		var parts := describe_parts(offer, 0 if offer.is_weapon() else _inventory.count(offer.item), _stats, _weapons)
 		if parts[2] != "":
 			box.add_child(_card_text(parts[2], 16, TEXT_COLOR, 0))
 		var effect := _card_text(parts[3], 14, TEXT_COLOR, 3)
