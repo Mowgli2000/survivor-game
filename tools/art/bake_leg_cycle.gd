@@ -11,7 +11,9 @@ extends SceneTree
 ## --leg: leg length (hip joint to sole) as a share of the upper body height; --hip-in:
 ## how far up inside the shorts the hip joints are; --spread: distance between the two
 ## hips as a share of the shorts width; --swing / --knee: largest hip and knee angles;
-## --thick: width of the pieces against their length (chunky chibi legs).
+## --thick: width of the pieces against their length (chunky chibi legs);
+## --hip-x=hem|torso: where the hips are horizontally: under the middle of the hem (a
+## short top) or under the middle of the torso (a long coat whose tails fly backward).
 
 const SLICE := preload("res://tools/art/slice_ai_sheet.gd")
 const PREPARE := preload("res://tools/art/prepare_ai_sprite.gd")
@@ -35,7 +37,7 @@ class Piece:
 
 func _initialize() -> void:
 	var opts := {"upper": "", "parts": "", "frames": "8", "out": "", "leg": "0.62", "hip-in": "0.08",
-		"spread": "0.26", "swing": "34", "knee": "95", "thick": "1.6"}
+		"spread": "0.26", "swing": "34", "knee": "95", "thick": "1.6", "hip-x": "hem"}
 	for arg in OS.get_cmdline_user_args():
 		var kv := arg.trim_prefix("--").split("=", true, 1)
 		if kv.size() == 2 and opts.has(kv[0]):
@@ -74,7 +76,8 @@ func _initialize() -> void:
 		var body := bodies[i]
 		var used := body.get_used_rect()
 		var hem := _hem(body, used)
-		var hip := Vector2(hem.x, used.end.y - body_h * float(opts["hip-in"]))
+		var hip_x := hem.x if opts["hip-x"] == "hem" else _torso_center(body, used)
+		var hip := Vector2(hip_x, used.end.y - body_h * float(opts["hip-in"]))
 		var width := _hem_width(body, used)
 		var near_hip := hip + Vector2(-width * float(opts.spread) * 0.5, 0.0)
 		var far_hip := hip + Vector2(width * float(opts.spread) * 0.5, -body_h * 0.02)
@@ -215,6 +218,20 @@ static func _band_center(img: Image, y: int) -> float:
 				first = x
 			last = x
 	return (first + last) * 0.5 if first >= 0 else img.get_width() * 0.5
+
+
+## Middle x of the torso: the figure's opaque pixels between 40 % and 60 % of its height,
+## without its outermost fifth on each side (arms and flying cloth).
+static func _torso_center(body: Image, used: Rect2i) -> float:
+	var xs: Array[int] = []
+	for y in range(used.position.y + roundi(used.size.y * 0.4), used.position.y + roundi(used.size.y * 0.6), 2):
+		for x in range(used.position.x, used.end.x):
+			if body.get_pixel(x, y).a > 0.5:
+				xs.append(x)
+	if xs.is_empty():
+		return used.get_center().x
+	xs.sort()
+	return float(xs[roundi((xs.size() - 1) * 0.5)])
 
 
 ## Middle of the shorts' hem (bottom rows of the upper body).
