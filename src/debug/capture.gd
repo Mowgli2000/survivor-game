@@ -1,7 +1,7 @@
 extends Node
 ## Plays a run with a bot and saves a screenshot, so visuals can be checked
 ## without a human at the keyboard (used by Claude Code).
-## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--boss=shogun|ronin] [--coop] [--arrival] [--character=<id>]
+## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--boss=shogun|ronin] [--coop] [--arrival] [--pickweapon] [--character=<id>]
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
 const MENU_SCENE := preload("res://src/ui/main_menu/main_menu.tscn")
@@ -29,6 +29,7 @@ func _ready() -> void:
 	var variant := 0
 	var show_pickups := false
 	var arrival := false
+	var pick_weapon := false
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--time="):
 			_capture_at = arg.trim_prefix("--time=").to_float()
@@ -50,6 +51,8 @@ func _ready() -> void:
 			variant = arg.trim_prefix("--variant=").to_int()
 		elif arg == "--arrival":
 			arrival = true
+		elif arg == "--pickweapon":
+			pick_weapon = true
 		elif arg == "--pickups":
 			show_pickups = true
 		elif arg == "--allweapons":
@@ -72,8 +75,9 @@ func _ready() -> void:
 				for i in 2:
 					var half := menu._coop_select.select_of(i)
 					half._choose_character(ContentDB.get_def(&"characters", StringName(character_id)))
-					if danger >= 0:
+					if pick_weapon or danger >= 0:
 						(half._weapons.get_child(0) as Button).pressed.emit()
+					if danger >= 0:
 						half._next.pressed.emit()
 			elif character_id != "":
 				menu._character_select._choose_character(ContentDB.get_def(&"characters", StringName(character_id)))

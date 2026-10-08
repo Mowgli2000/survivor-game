@@ -678,6 +678,8 @@ func _on_level_ups_resolved(rp: RunPlayer) -> void:
 		_on_shop_done(rp)
 		return
 	wave_end_screen.close()
+	# The shop has its own header (wave, gold): the run HUD would show through the dim.
+	hud.visible = false
 	rp.shop_screen.open()
 
 
@@ -699,6 +701,7 @@ func _on_shop_done(rp: RunPlayer) -> void:
 
 
 func _start_next_wave() -> void:
+	hud.visible = true
 	wave_end_screen.close()
 	for rp in players:
 		rp.shop_screen.close()
