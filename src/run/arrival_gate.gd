@@ -10,6 +10,9 @@ const CLOSE_SECONDS := 0.7
 ## The shader shows this many gate radii from the center to the quad's edge.
 const VIEW_RADII := 1.6
 const TEXTURE_SIZE := 4
+## Height of the gate against its width: seen from above at an angle, the heroes fall
+## onto a gate that is a little flattened, not a full circle.
+const SQUASH := 0.68
 
 var _stay: float = 1.0
 var _time: float = 0.0
@@ -26,7 +29,7 @@ func setup(radius: float, stay: float) -> void:
 	texture.height = TEXTURE_SIZE
 	_sprite = Sprite2D.new()
 	_sprite.texture = texture
-	_sprite.scale = Vector2.ONE * (2.0 * VIEW_RADII * radius / TEXTURE_SIZE)
+	_sprite.scale = Vector2(1.0, SQUASH) * (2.0 * VIEW_RADII * radius / TEXTURE_SIZE)
 	_material = ShaderMaterial.new()
 	_material.shader = SHADER
 	_material.set_shader_parameter(&"open", 0.0)
