@@ -39,11 +39,15 @@ func _init() -> void:
 	title.theme_type_variation = &"SubtitleLabel"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
+	var balance := HBoxContainer.new()
+	balance.alignment = BoxContainer.ALIGNMENT_CENTER
+	balance.add_theme_constant_override("separation", 10)
+	box.add_child(balance)
+	balance.add_child(UiIcons.tile(UiIcons.shard(), 44.0))
 	_shards = Label.new()
 	_shards.theme_type_variation = &"ValueLabel"
 	_shards.add_theme_color_override("font_color", UiTheme.VIOLET)
-	_shards.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.add_child(_shards)
+	balance.add_child(_shards)
 	_tabs = HBoxContainer.new()
 	_tabs.alignment = BoxContainer.ALIGNMENT_CENTER
 	_tabs.add_theme_constant_override("separation", 10)
@@ -102,7 +106,12 @@ func buy_buttons() -> Array[Button]:
 	return buttons
 
 
-## Skins of a class, cheapest first.
+## Card color of a rarity: item tier colors for the shop rarities, gold for prestige.
+static func rarity_color(rarity: int) -> Color:
+	return UiTheme.GOLD if rarity >= 4 else Tiers.color(rarity)
+
+
+## Skins of a class, shop skins cheapest first, prestige last.
 static func skins_of(character_id: StringName) -> Array[SkinData]:
 	var skins: Array[SkinData] = []
 	for def in ContentDB.get_all(&"skins"):
@@ -110,6 +119,8 @@ static func skins_of(character_id: StringName) -> Array[SkinData]:
 		if skin != null and skin.character_id == character_id:
 			skins.append(skin)
 	skins.sort_custom(func(a: SkinData, b: SkinData) -> bool:
+		if a.is_prestige() != b.is_prestige():
+			return b.is_prestige()
 		return a.price < b.price or (a.price == b.price and a.id < b.id))
 	return skins
 
@@ -151,14 +162,15 @@ func _show_class(character_id: StringName) -> void:
 func _card(skin: SkinData) -> Control:
 	var owned := SaveService.profile.is_unlocked(&"skins", skin.id)
 	var panel := PanelContainer.new()
-	panel.add_theme_stylebox_override("panel", UiTheme.card_style(Tiers.color(skin.rarity)))
+	var accent := rarity_color(skin.rarity)
+	panel.add_theme_stylebox_override("panel", UiTheme.card_style(accent))
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 10)
 	panel.add_child(box)
 	var rarity := Label.new()
 	rarity.text = "UI_SKIN_RARITY_%d" % skin.rarity
 	rarity.theme_type_variation = &"SmallLabel"
-	rarity.add_theme_color_override("font_color", Tiers.color(skin.rarity))
+	rarity.add_theme_color_override("font_color", accent)
 	rarity.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(rarity)
 	var art := TextureRect.new()
@@ -178,11 +190,12 @@ func _card(skin: SkinData) -> Control:
 	if owned:
 		buy.text = "UI_SKIN_OWNED"
 		buy.disabled = true
-	elif not SaveService.is_skin_available(skin):
-		buy.text = tr("UI_SKIN_NEEDS_SEAL") % tr("DANGER_%d" % skin.required_seal)
+	elif skin.is_prestige():
+		buy.text = tr("UI_SKIN_PRESTIGE_HINT") % tr("DANGER_%d" % skin.prestige_seal)
 		buy.disabled = true
 	else:
 		buy.text = tr("UI_SKIN_BUY") % skin.price
+		UiIcons.put_after_text(buy, UiIcons.shard())
 		if SaveService.profile.shards < skin.price:
 			buy.add_theme_color_override("font_color", UiTheme.BAD)
 		buy.pressed.connect(_buy.bind(skin))

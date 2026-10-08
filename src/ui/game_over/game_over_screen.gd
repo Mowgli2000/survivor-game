@@ -278,13 +278,17 @@ func _shards_card(shards: int, challenges: int) -> Control:
 	box.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.add_theme_constant_override("separation", 6)
 	card.add_child(box)
+	var line := HBoxContainer.new()
+	line.alignment = BoxContainer.ALIGNMENT_CENTER
+	line.add_theme_constant_override("separation", 8)
+	box.add_child(line)
+	line.add_child(UiIcons.tile(UiIcons.shard(), 58.0))
 	var amount := Label.new()
-	amount.text = "◆ +%d" % shards
+	amount.text = "+%d" % shards
 	amount.theme_type_variation = &"TitleLabel"
 	amount.add_theme_font_size_override("font_size", 48)
 	amount.add_theme_color_override("font_color", UiTheme.VIOLET)
-	amount.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	box.add_child(amount)
+	line.add_child(amount)
 	var name_label := Label.new()
 	name_label.text = "UI_SHARDS_EARNED"
 	name_label.theme_type_variation = &"SubtitleLabel"

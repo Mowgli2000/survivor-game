@@ -304,3 +304,11 @@ func test_family_item_card_shows_the_bonus_for_the_current_build() -> void:
 	var texts := ShopScreen.describe(offer, 0, StatBlock.from_defaults(), holder)
 	assert_true(texts[2].contains("Now: +8% Damage"), texts[2])
 	assert_false(ShopScreen.describe(offer)[2].contains("Now:"), "no build given: no line")
+
+
+func test_prices_show_the_gold_coin() -> void:
+	var screen := ShopScreen.new()
+	add_child_autofree(screen)
+	assert_not_null(screen._reroll.icon, "reroll price")
+	assert_eq(screen._reroll.icon.get_height(), UiIcons.BUTTON_ICON)
+	assert_gt(screen._reroll.get_minimum_size().x, 60.0, "the icon takes room in the button")

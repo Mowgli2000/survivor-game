@@ -169,9 +169,12 @@ func _collection_row(challenge: ChallengeData, profile: Profile) -> Control:
 	details.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	text.add_child(details)
 	var reward := Label.new()
-	reward.text = "◆ %d" % challenge.shards
+	reward.text = "%d" % challenge.shards
 	reward.add_theme_color_override("font_color", UiTheme.VIOLET if not done else UiTheme.MUTED)
 	row.add_child(reward)
+	var icon := UiIcons.tile(UiIcons.shard(), 30.0)
+	icon.modulate = Color.WHITE if not done else Color(1, 1, 1, 0.5)
+	row.add_child(icon)
 	return row
 
 

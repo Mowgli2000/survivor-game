@@ -147,6 +147,7 @@ func _init(p_compact: bool = false) -> void:
 	box.add_child(_cards)
 
 	_reroll = _button("", 28)
+	UiIcons.put_after_text(_reroll, UiIcons.coin())
 	_reroll.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_reroll.pressed.connect(_on_reroll)
 	box.add_child(_reroll)
@@ -489,6 +490,7 @@ func _make_card(index: int, offer: ShopOffer) -> Control:
 		effects.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		box.add_child(effects)
 	var buy := _button(tr("UI_SHOP_BUY") % offer.price, 20 if _compact else 24)
+	UiIcons.put_after_text(buy, UiIcons.coin(), 22 if _compact else 28)
 	UiFx.hover_lift(buy)
 	buy.disabled = not _shop.can_buy(index)
 	if not _wallet.can_afford(offer.price):
@@ -556,6 +558,7 @@ func _rebuild_weapons() -> void:
 	if _selected_weapon < 0:
 		return
 	var sell := _button(tr("UI_SHOP_SELL") % _shop.sell_price(_selected_weapon), 22)
+	UiIcons.put_after_text(sell, UiIcons.coin(), 24)
 	sell.disabled = not _shop.can_sell(_selected_weapon)
 	sell.pressed.connect(_on_sell)
 	_weapon_actions.add_child(sell)
