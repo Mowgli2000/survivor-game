@@ -2,12 +2,12 @@
 	"assassin": [
 		0,
 		608,
-		127,
+		152,
 		208,
 		"res://assets/sprites/atlas.png"
 	],
 	"assassin_f": [
-		1270,
+		1824,
 		608,
 		131,
 		208,
