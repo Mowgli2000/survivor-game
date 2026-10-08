@@ -91,6 +91,9 @@ var _weapon: WeaponData
 var _next: Button
 ## Solo: the seal screen opened once the weapon is validated.
 var _seals: SealSelect
+## Everything but the seal screen: hidden while it is open, so the gamepad focus cannot
+## wander onto the hidden weapons behind it (playtest: right stopped at Obsidian).
+var _page: Control
 var _back: Button
 var _chosen: CharacterData
 var _title: Label
@@ -131,6 +134,7 @@ func _init(p_compact: bool = false) -> void:
 	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(backdrop)
 	var margin := MarginContainer.new()
+	_page = margin
 	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
 	for side in ["left", "right"]:
 		margin.add_theme_constant_override("margin_" + side, 20 if _compact else 40)
@@ -413,6 +417,7 @@ func _begin_pick() -> void:
 	_show_weapons(false)
 	if _seals != null:
 		_seals.close()
+	_page.visible = true
 	visible = true
 	var first := first_card()
 	if first != null:
@@ -1102,11 +1107,13 @@ func _validate_weapon() -> void:
 		_apply_focus_modes()
 		picked.emit()
 		return
+	_page.visible = false
 	_seals.open([_chosen] as Array[CharacterData])
 
 
 ## Back from the seal screen: the weapons can be chosen again.
 func _on_seals_back() -> void:
+	_page.visible = true
 	_set_step(Step.WEAPON)
 	_next.grab_focus()
 
