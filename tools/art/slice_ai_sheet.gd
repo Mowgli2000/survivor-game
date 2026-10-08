@@ -96,7 +96,7 @@ func _initialize() -> void:
 const HOLE_MIN := 120
 
 
-func _remove_enclosed_white(img: Image) -> void:
+static func _remove_enclosed_white(img: Image) -> void:
 	var w := img.get_width()
 	var h := img.get_height()
 	var seen := PackedByteArray()
@@ -123,14 +123,14 @@ func _remove_enclosed_white(img: Image) -> void:
 				img.set_pixel(idx % w, idx / w, Color(0, 0, 0, 0))
 
 
-func _is_paper(c: Color) -> bool:
+static func _is_paper(c: Color) -> bool:
 	return c.a > 0.5 and minf(c.r, minf(c.g, c.b)) >= 0.96
 
 
 ## One full-height image per pose holding only its pixels, left to right: the `count`
 ## biggest islands are the poses, every smaller island (a strand of hair, a buckle) goes
 ## to the pose whose center is closest. Empty when the poses touch each other.
-func _split_by_islands(img: Image, count: int) -> Array[Image]:
+static func _split_by_islands(img: Image, count: int) -> Array[Image]:
 	var w := img.get_width()
 	var h := img.get_height()
 	var label := PackedInt32Array()
@@ -196,7 +196,7 @@ func _split_by_islands(img: Image, count: int) -> Array[Image]:
 
 ## [start x, end x) of each pose: runs of columns holding opaque pixels, merged
 ## (closest gap first) down to `count`; equal slices when fewer runs are found.
-func _find_poses(img: Image, count: int) -> Array[Vector2i]:
+static func _find_poses(img: Image, count: int) -> Array[Vector2i]:
 	var w := img.get_width()
 	var runs: Array[Vector2i] = []
 	var start := -1
@@ -233,7 +233,7 @@ func _find_poses(img: Image, count: int) -> Array[Vector2i]:
 ## transparent area (the white fringe, twice to peel two layers), then every island of
 ## pixels except the biggest one (the figure) and the big ones not touching the left or
 ## right side (a separate bit of the figure; touching a side = a neighbouring pose).
-func _clean(img: Image) -> void:
+static func _clean(img: Image) -> void:
 	var w := img.get_width()
 	var h := img.get_height()
 	for _pass in 2:
@@ -287,14 +287,14 @@ func _clean(img: Image) -> void:
 			img.set_pixel(idx % w, idx / w, Color(0, 0, 0, 0))
 
 
-func _is_light(c: Color) -> bool:
+static func _is_light(c: Color) -> bool:
 	var hi := maxf(c.r, maxf(c.g, c.b))
 	var lo := minf(c.r, minf(c.g, c.b))
 	return c.get_luminance() >= 0.6 and hi - lo < 0.18
 
 
 ## Mean x of the opaque pixels between 35 % and 60 % of the height (the torso).
-func _torso_x(img: Image) -> float:
+static func _torso_x(img: Image) -> float:
 	var sum := 0.0
 	var n := 0
 	for y in range(roundi(img.get_height() * 0.35), roundi(img.get_height() * 0.6), 2):
@@ -306,7 +306,7 @@ func _torso_x(img: Image) -> float:
 
 
 ## Soft dark ellipse on the ground under the feet.
-func _shadow(canvas: Image, center: Vector2, rx: float) -> void:
+static func _shadow(canvas: Image, center: Vector2, rx: float) -> void:
 	var ry := rx * 0.22
 	for y in range(roundi(center.y - ry) - 1, mini(canvas.get_height(), roundi(center.y + ry) + 2)):
 		for x in range(roundi(center.x - rx) - 1, roundi(center.x + rx) + 2):
