@@ -154,7 +154,7 @@ func _ready() -> void:
 	add_child(vfx)
 	add_child(damage_numbers)
 	if setup != null and setup.portal_intro:
-		_play_portal_arrival()
+		_play_portal_arrival(arena_rect)
 
 	var weapon_pool: Array[WeaponData] = []
 	weapon_pool.assign(_unlocked(&"weapons"))
@@ -284,14 +284,18 @@ func _ready() -> void:
 
 
 ## Two players: chosen in the menu (setup.character_2) or forced by player_count.
-## A gate opens above the screen's top edge and the heroes drop out of it onto
-## their start spot (the arena's own gates are too far to see).
-func _play_portal_arrival() -> void:
+## Wide view of the arena's top gate, the heroes drop out of it onto their start
+## spot, then the camera zooms in to the play view.
+func _play_portal_arrival(arena_rect: Rect2) -> void:
 	add_child(PortalArrival.new())
+	var gate_center := Vector2(arena_rect.get_center().x, arena_rect.position.y - ArenaGates.OFFSET)
+	var gate := ArrivalGate.new()
+	gate.position = gate_center
+	gate.setup(PortalArrival.GATE_RADIUS, PortalArrival.FALL_SECONDS)
+	add_child(gate)
+	camera.play_intro(gate_center, PortalArrival.FALL_SECONDS, PortalArrival.ZOOM_SECONDS)
 	for rp in players:
-		var gate: Vector2 = rp.player.global_position + Vector2(0.0, -PortalArrival.DROP_HEIGHT)
-		vfx.portal(gate, ArenaGates.RADIUS, true)
-		rp.player.enter_from(gate)
+		rp.player.enter_from(gate_center, PortalArrival.FALL_SECONDS)
 		rp.player.landed.connect(_on_player_landed.bind(rp.player))
 
 
