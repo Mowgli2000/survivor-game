@@ -217,14 +217,16 @@ func test_head_square_is_found_on_the_figure_of_each_card() -> void:
 			assert_true(Rect2(Vector2.ZERO, art.get_size()).encloses(region), "%s look %d inside its card" % [character.id, look])
 
 
-func test_platform_is_wider_for_a_broad_hero_than_for_a_slim_one() -> void:
+func test_platform_follows_the_width_of_the_lower_body() -> void:
 	var berserker := ContentDB.get_def(&"characters", &"berserker") as CharacterData
-	var mage := ContentDB.get_def(&"characters", &"mage") as CharacterData
-	var broad := CharacterSelect.platform_per_hero(berserker.card_art_for(1), berserker.card_art_for(0))
-	var slim := CharacterSelect.platform_per_hero(mage.card_art_for(0), null)
-	assert_between(slim, CharacterSelect.PLATFORM_PER_HERO_MIN, CharacterSelect.PLATFORM_PER_HERO_MAX)
-	assert_between(broad, CharacterSelect.PLATFORM_PER_HERO_MIN, CharacterSelect.PLATFORM_PER_HERO_MAX)
-	assert_gt(broad, slim, "the broad hero gets the wider platform")
+	var art := berserker.card_art_for(1)
+	var share := CharacterSelect.platform_per_hero(art, null)
+	var expected := clampf(CharacterSelect.feet_band_share(art) * CharacterSelect.PLATFORM_MARGIN,
+			CharacterSelect.PLATFORM_PER_HERO_MIN, CharacterSelect.PLATFORM_PER_HERO_MAX)
+	assert_almost_eq(share, expected, 0.001)
+	var wider := CharacterSelect.platform_per_hero(art, berserker.card_art_for(0))
+	assert_gte(wider, share, "the platform fits the broader of the two looks")
+
 
 func test_platform_shares_of_every_look_stay_in_range() -> void:
 	for character: CharacterData in ContentDB.get_all(&"characters"):
