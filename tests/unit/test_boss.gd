@@ -163,10 +163,23 @@ func test_boss_bar_follows_the_director() -> void:
 	assert_true(bar.visible)
 	boss.hp = 25.0
 	bar._process(0.0)
-	assert_almost_eq(bar._bar.value, 25.0, 0.01)
+	assert_almost_eq(bar._rows[0].bar.value, 25.0, 0.01)
 	_enemies.damage_enemy(0, 100.0, false, Vector2.ZERO, 0.0)
 	_director.update(0.01)
 	assert_false(bar.visible)
+
+
+func test_boss_bar_shows_one_row_per_boss() -> void:
+	var bar := BossBar.new()
+	add_child_autofree(bar)
+	bar.setup(_director)
+	_enemies.spawn(_boss([_radial(4)]), Vector2(300, 0))
+	_enemies.spawn(_boss([_radial(4)]), Vector2(-300, 0))
+	assert_eq(bar._rows.size(), 2)
+	_enemies.damage_enemy(0, 100000.0, false, Vector2.ZERO, 0.0)
+	_director.update(0.01)
+	assert_eq(bar._rows.size(), 1, "second boss keeps its bar")
+	assert_true(bar.visible)
 
 
 func test_reward_is_an_item_of_the_minimum_tier_that_can_be_owned() -> void:

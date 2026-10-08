@@ -237,23 +237,6 @@ func test_lock_sits_under_buy_in_coop() -> void:
 	assert_gt(lock.get_index(), buy.get_index(), "lock under buy")
 
 
-func test_coop_shop_shows_stats_while_share_is_held() -> void:
-	_open_screen(100)
-	var stats := StatBlock.from_defaults()
-	var screen := ShopScreen.new(true)
-	add_child_autofree(screen)
-	screen.setup(_shop, _wallet, Inventory.new(stats), _weapons, stats)
-	screen.open()
-	assert_false(screen.stats_panel.visible)
-	var event := InputEventAction.new()
-	event.action = &"show_stats"
-	event.pressed = true
-	screen._input(event)
-	assert_true(screen.stats_panel.visible)
-	event.pressed = false
-	screen._input(event)
-	assert_false(screen.stats_panel.visible)
-
 
 func test_reroll_shortcut_rerolls_the_offers() -> void:
 	_open_screen(100)
@@ -272,3 +255,38 @@ func test_owned_weapon_keeps_its_card_shape_on_hover() -> void:
 	for state in ["hover", "pressed"]:
 		var style := button.get_theme_stylebox(state) as StyleBoxFlat
 		assert_eq(style.corner_radius_top_left, normal.corner_radius_top_left, "%s: same corners" % state)
+
+
+func test_card_type_and_tier_sit_above_the_icon() -> void:
+	_open_screen(100)
+	var card := _screen._cards.get_child(0) as PanelContainer
+	var box := card.get_child(0) as VBoxContainer
+	assert_true(box.get_child(0) is Label, "the tag comes first")
+	assert_true(box.get_child(1) is IconTile, "then the icon")
+	assert_true(box.get_child(2) is Label, "then the name")
+
+
+func test_owned_items_can_take_the_focus_and_show_their_details() -> void:
+	_open_screen(100)
+	var inventory := Inventory.new(StatBlock.from_defaults())
+	inventory.add(ContentDB.get_def(&"items", &"magnet_glove"))
+	_screen._inventory = inventory
+	_screen._rebuild_items()
+	var tile: Control = _screen._controls["item:0"]
+	assert_eq(tile.focus_mode, Control.FOCUS_ALL)
+	tile.grab_focus()
+	assert_true(_screen._item_popup.visible, "details popup on focus")
+	assert_ne(_screen._item_popup_label.text, "")
+
+
+func test_right_stick_scrolls_the_item_list() -> void:
+	_open_screen(100)
+	assert_eq(ShopScreen.right_stick_y(-1), 0.0, "no gamepad: no scroll")
+
+
+func test_mergeable_weapons_get_a_gold_ring() -> void:
+	_open_screen(100)  # two pulses of the same tier
+	for key in ["weapon:0", "weapon:1"]:
+		var style := (_screen._controls[key] as Button).get_theme_stylebox("normal") as StyleBoxFlat
+		assert_eq(style.border_color, UiTheme.GOLD, "%s: gold ring" % key)
+		assert_gte(style.border_width_left, ShopScreen.MERGE_RING)

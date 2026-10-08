@@ -16,6 +16,10 @@ const COMPACT_ITEMS_WIDTH := 800.0
 ## Height kept free at the bottom for the pinned "Next wave" button (solo / coop).
 const NEXT_AREA := 140.0
 const COMPACT_NEXT_AREA := 110.0
+const SCROLL_SPEED := 700.0
+## Width of the gold ring around two weapons that can be merged.
+const MERGE_RING := 4
+const SCROLL_DEADZONE := 0.25
 const CARD_ICON := 96.0
 ## Coop: smaller icon, room for the card's text.
 const COMPACT_CARD_ICON := 64.0
@@ -63,6 +67,10 @@ var _accept_after: int = 0
 var _controls: Dictionary[String, Control] = {}
 ## Cards appear one after the other only when the shop opens, not on every rebuild.
 var _animate_cards: bool = false
+## Gamepad whose right stick scrolls the items: its id, -1 none, -2 any (solo).
+var scroll_device: int = -2
+var _item_popup: PanelContainer
+var _item_popup_label: Label
 ## Card bought just now (bounces once rebuilt), -1 if none.
 var _bought_index: int = -1
 var _shown_materials: int = -1
@@ -117,16 +125,9 @@ func _init(p_compact: bool = false) -> void:
 	stats_panel = StatsPanel.new()
 	stats_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	stats_panel.set_dense()
+	# Solo: the stats sit beside the shop. Coop: no room, Share shows them (StatsOverlay).
 	stats_panel.visible = not _compact
-	if _compact:
-		# Coop: no room beside the shop; shown over it while show_stats is held
-		# (Share / Tab of this half's player, see _input).
-		stats_panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-		stats_panel.grow_horizontal = Control.GROW_DIRECTION_BOTH
-		stats_panel.grow_vertical = Control.GROW_DIRECTION_BOTH
-		root.add_child(stats_panel)
-	else:
-		row.add_child(stats_panel)
+	row.add_child(stats_panel)
 
 	var header := HBoxContainer.new()
 	header.add_theme_constant_override("separation", 48)
@@ -178,6 +179,7 @@ func _init(p_compact: bool = false) -> void:
 	# "Next wave" below the screen (playtest bug, wave 19, 33 items).
 	_items_scroll = ScrollContainer.new()
 	_items_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_items_scroll.follow_focus = true
 	_items_scroll.custom_minimum_size = Vector2(_items_width + 16.0, items_height(0, _items_width))
 	items_box.add_child(_items_scroll)
 	_items_row = HFlowContainer.new()
@@ -200,15 +202,20 @@ func _init(p_compact: bool = false) -> void:
 	if not _compact:
 		_next.offset_right = -60.0
 	root.add_child(_next)
+	# Popup of the focused owned item (gamepad has no mouse tooltip).
+	_item_popup = PanelContainer.new()
+	_item_popup.add_theme_stylebox_override("panel", UiTheme.panel_style(UiTheme.ACCENT, 0.5, 14))
+	_item_popup.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_item_popup.visible = false
+	_item_popup.z_index = 50
+	_item_popup_label = _label(20, TEXT_COLOR)
+	_item_popup_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_item_popup_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_item_popup_label.custom_minimum_size.x = 380.0
+	_item_popup.add_child(_item_popup_label)
+	root.add_child(_item_popup)
 	if not _compact:
 		root.add_child(ButtonHints.create([[&"A", "UI_HINT_BUY"], [&"X", "UI_SHOP_MERGE"], [&"Y", "UI_HINT_REROLL"]]))
-
-
-## Coop: holding show_stats shows the stats over this half. The events reach the
-## half's viewport only from its player's devices (CoopScreens).
-func _input(event: InputEvent) -> void:
-	if visible and _compact and event.is_action("show_stats"):
-		stats_panel.visible = event.is_pressed()
 
 
 ## merge_weapon (gamepad Square / X, key F) on an owned weapon merges it at once;
@@ -255,8 +262,6 @@ func open() -> void:
 
 func close() -> void:
 	visible = false
-	if _compact:
-		stats_panel.visible = false
 
 
 ## Coop: shows whose turn it is; an empty text hides the tag (solo).
@@ -275,6 +280,18 @@ static func name_color(offer: ShopOffer) -> Color:
 ## Card texts: [type · tier, name, effects]. `owned`: copies of the item already
 ## owned (shown as "owned n/max" for limited items); `stats`: marks capped bonuses.
 static func describe(offer: ShopOffer, owned: int = 0, stats: StatBlock = null) -> PackedStringArray:
+	var parts := describe_parts(offer, owned, stats)
+	var effects := parts[2]
+	for extra in [parts[3], parts[4]]:
+		if extra != "":
+			effects = (effects + "\n" + extra).strip_edges()
+	return PackedStringArray([parts[0], parts[1], effects])
+
+
+## Card texts in pieces: [tag, name, stat lines, effect description, limit line]. The stat
+## lines are what the player buys the item for; the half-screen card keeps them whole
+## and trims the effect description (the full text is in the popup).
+static func describe_parts(offer: ShopOffer, owned: int = 0, stats: StatBlock = null) -> PackedStringArray:
 	var kind := "UI_SHOP_WEAPON" if offer.is_weapon() else "UI_SHOP_ITEM"
 	var tag := "%s · %s" % [TranslationServer.translate(kind), Tiers.roman(offer.tier)]
 	if offer.is_weapon():
@@ -283,18 +300,15 @@ static func describe(offer: ShopOffer, owned: int = 0, stats: StatBlock = null) 
 			if family != null:
 				tag += " · " + TranslationServer.translate(family.name_key)
 		return PackedStringArray([tag, TranslationServer.translate(offer.weapon.name_key),
-			TranslationServer.translate(offer.weapon.description_key)])
-	var effects := LevelUpScreen.describe_modifiers(offer.item.modifiers, stats)
-	if offer.item.effect_key != "":
-		effects = "
-".join(PackedStringArray([effects, TranslationServer.translate(offer.item.effect_key)])).strip_edges()
+			"", TranslationServer.translate(offer.weapon.description_key), ""])
+	var lines := LevelUpScreen.describe_modifiers(offer.item.modifiers, stats)
+	var effect: String = TranslationServer.translate(offer.item.effect_key) if offer.item.effect_key != "" else ""
+	var limit := ""
 	if offer.item.max_count == 1:
-		effects += "
-" + TranslationServer.translate("UI_SHOP_UNIQUE")
+		limit = TranslationServer.translate("UI_SHOP_UNIQUE")
 	elif offer.item.max_count > 1:
-		effects += "
-" + TranslationServer.translate("UI_SHOP_OWNED_MAX") % [owned, offer.item.max_count]
-	return PackedStringArray([tag, TranslationServer.translate(offer.item.name_key), effects])
+		limit = TranslationServer.translate("UI_SHOP_OWNED_MAX") % [owned, offer.item.max_count]
+	return PackedStringArray([tag, TranslationServer.translate(offer.item.name_key), lines, effect, limit])
 
 
 ## Hover text of an item owned `count` times: name, effect of one copy and,
@@ -423,36 +437,48 @@ func _make_card(index: int, offer: ShopOffer) -> Control:
 	if not offer.is_weapon():
 		# Hover: total bonus with this copy added to the ones already owned.
 		panel.tooltip_text = item_tooltip(offer.item, _inventory.count(offer.item) + 1)
-	box.add_child(icon)
+	# Type and tier above the icon, the name stays under it (dev's request).
 	var tag := _label(13 if _compact else 17, accent, &"SmallLabel")
 	tag.text = texts[0].to_upper()
 	tag.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	tag.custom_minimum_size.x = _card_size.x - 24.0
 	box.add_child(tag)
+	box.add_child(icon)
 	var name_label := _label(23 if _compact else 30, name_color(offer), &"SubtitleLabel")
 	name_label.text = texts[1]
 	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	name_label.custom_minimum_size.x = _card_size.x - 24.0
 	box.add_child(name_label)
-	var effects := _label(16 if _compact else 19, TEXT_COLOR)
-	effects.text = texts[2]
-	effects.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	effects.custom_minimum_size.x = _card_size.x - 24.0
-	effects.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	if _compact:
-		# Coop: a long text must not make the card taller (it pushed "Next wave" off the
-		# screen): it fills the card's free height, ends with "…", full text on hover.
-		effects.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		# Half screen: the stat lines whole, the effect description trimmed (3 lines
+		# at most, "..." then), the limit on one line; the popup has the full text.
+		var parts := describe_parts(offer, 0 if offer.is_weapon() else _inventory.count(offer.item), _stats)
+		if parts[2] != "":
+			box.add_child(_card_text(parts[2], 16, TEXT_COLOR, 0))
+		var effect := _card_text(parts[3], 14, TEXT_COLOR, 3)
+		effect.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		box.add_child(effect)
+		if parts[4] != "":
+			box.add_child(_card_text(parts[4], 14, TEXT_COLOR, 1))
 		name_label.max_lines_visible = 2
-		if offer.is_weapon():
-			panel.tooltip_text = "%s\n%s" % [texts[1], texts[2]]
-	box.add_child(effects)
+	else:
+		var effects := _label(19, TEXT_COLOR)
+		effects.text = texts[2]
+		effects.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		effects.custom_minimum_size.x = _card_size.x - 24.0
+		effects.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		box.add_child(effects)
 	var buy := _button(tr("UI_SHOP_BUY") % offer.price, 20 if _compact else 24)
 	UiFx.hover_lift(buy)
 	buy.disabled = not _shop.can_buy(index)
 	if not _wallet.can_afford(offer.price):
 		buy.add_theme_color_override("font_disabled_color", TOO_EXPENSIVE)
 	buy.pressed.connect(_on_buy.bind(index))
+	if _compact:
+		# Gamepad / keyboard: the full card text while the buy button is focused.
+		var full := texts[1] + "\n" + texts[2]
+		buy.focus_entered.connect(func() -> void: _show_item_popup(panel, full))
+		buy.focus_exited.connect(func() -> void: _item_popup.visible = false)
 	box.add_child(buy)
 	_controls["buy:%d" % index] = buy
 	# A padlock icon instead of the word: closed when the offer is locked, open otherwise.
@@ -479,15 +505,21 @@ func _rebuild_weapons() -> void:
 		var button := _button("%s %s" % [tr(slot.data.name_key), Tiers.roman(slot.level)], 22)
 		var tier_color := Tiers.color(slot.level)
 		var mergeable := _shop.can_merge(i)
-		# A mergeable pair gets a gold frame.
+		# A mergeable pair gets a gold ring around its outline (clearly visible, not only a glow).
 		var normal := UiTheme.card_style(UiTheme.GOLD if mergeable else tier_color,
 			1.0 if mergeable or i == _selected_weapon else 0.45)
 		normal.set_content_margin_all(10)
+		if mergeable:
+			normal.border_color = UiTheme.GOLD
+			normal.set_border_width_all(MERGE_RING)
 		button.add_theme_stylebox_override("normal", normal)
 		button.add_theme_stylebox_override("focus", UiTheme.card_focus_style())
 		# Hover / press keep the card shape (the theme's pill read as another button).
 		var lit := UiTheme.card_style(UiTheme.GOLD if mergeable else tier_color, 1.0)
 		lit.set_content_margin_all(10)
+		if mergeable:
+			lit.border_color = UiTheme.GOLD
+			lit.set_border_width_all(MERGE_RING)
 		button.add_theme_stylebox_override("hover", lit)
 		button.add_theme_stylebox_override("pressed", lit)
 		button.add_theme_color_override("font_color", tier_color)
@@ -520,8 +552,7 @@ static func weapon_details(slot: WeaponSlot) -> String:
 	var lines: PackedStringArray = ["%s %s" % [TranslationServer.translate(slot.data.name_key), Tiers.roman(slot.level)],
 		TranslationServer.translate(slot.data.description_key)]
 	lines.append_array(weapon_stat_lines(slot.stats))
-	return "
-".join(lines)
+	return "\n".join(lines)
 
 
 ## The weapon's own numbers at its tier (before the player's stats).
@@ -554,15 +585,76 @@ func _rebuild_items() -> void:
 	var count_items := _inventory.get_items().size()
 	var icon_size := item_icon_size(count_items)
 	_items_scroll.custom_minimum_size.y = items_height(count_items, _items_width)
+	var number := 0
 	for item in _inventory.get_items():
 		var count := _inventory.count(item)
 		var tile := IconTile.create(item.icon, item.tier, icon_size, "×%d" % count if count > 1 else "")
-		tile.tooltip_text = item_tooltip(item, count)
+		var details := item_tooltip(item, count)
+		tile.tooltip_text = details
+		_make_item_focusable(tile, details)
+		_controls["item:%d" % number] = tile
+		number += 1
 		_items_row.add_child(tile)
 	if _inventory.get_items().is_empty():
 		var none := _label(22, UiTheme.MUTED)
 		none.text = "—"
 		_items_row.add_child(none)
+
+
+## An owned item can take the focus (gamepad / keyboard): a frame shows it and its
+## details appear in a popup, as the mouse tooltip does.
+func _make_item_focusable(tile: IconTile, details: String) -> void:
+	tile.focus_mode = Control.FOCUS_ALL
+	var frame := Panel.new()
+	frame.set_anchors_preset(Control.PRESET_FULL_RECT)
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.add_theme_stylebox_override("panel", UiTheme.focus_style(UiTheme.ACCENT, 10))
+	frame.visible = false
+	tile.add_child(frame)
+	tile.focus_entered.connect(func() -> void:
+		frame.visible = true
+		_show_item_popup(tile, details))
+	tile.focus_exited.connect(func() -> void:
+		frame.visible = false
+		_item_popup.visible = false)
+
+
+## Details of the focused item, above its tile (kept inside the screen).
+func _show_item_popup(tile: Control, details: String) -> void:
+	_item_popup_label.text = details
+	_item_popup.visible = true
+	_item_popup.reset_size()
+	var screen := get_viewport().get_visible_rect().size
+	var at := tile.get_global_rect().position + Vector2(0.0, -_item_popup.size.y - 10.0)
+	at.x = clampf(at.x, 8.0, screen.x - _item_popup.size.x - 8.0)
+	at.y = maxf(at.y, 8.0)
+	_item_popup.position = at
+
+
+## Right stick of the shop's player scrolls the item list (a scroll bar cannot be
+## reached with a gamepad). `scroll_device`: gamepad id, -1 none, -2 any gamepad.
+func _process(delta: float) -> void:
+	if not visible or _items_scroll == null:
+		return
+	var axis := right_stick_y(scroll_device)
+	if absf(axis) > SCROLL_DEADZONE:
+		_items_scroll.scroll_vertical += roundi(axis * SCROLL_SPEED * delta)
+
+
+static func right_stick_y(device: int) -> float:
+	if device == -1:
+		return 0.0
+	var best := 0.0
+	var devices: Array[int] = []
+	if device >= 0:
+		devices.append(device)
+	else:
+		devices.assign(Input.get_connected_joypads())
+	for id in devices:
+		var value := Input.get_joy_axis(id, JOY_AXIS_RIGHT_Y)
+		if absf(value) > absf(best):
+			best = value
+	return best
 
 
 static func item_icon_size(count: int) -> float:
@@ -648,6 +740,18 @@ func _on_next() -> void:
 
 func _play(stream: AudioStream) -> void:
 	Audio.play(stream, -6.0, 0.0)
+
+
+## Wrapped card text; `max_lines` > 0 trims with "..." past that many lines.
+func _card_text(text: String, size: int, color: Color, max_lines: int) -> Label:
+	var label := _label(size, color)
+	label.text = text
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.custom_minimum_size.x = _card_size.x - 24.0
+	if max_lines > 0:
+		label.max_lines_visible = max_lines
+		label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	return label
 
 
 func _label(size: int, color: Color, variation: StringName = &"") -> Label:
