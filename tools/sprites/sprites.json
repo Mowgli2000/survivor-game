@@ -1,7 +1,7 @@
 {
   "height": 128,
   "sprites": {
-    "drifter":    { "src": "assets_src/ai/ai_drifter_legs",    "anims": { "idle": "idle:4:5", "walk": "walk:8:15" }, "glow": "#00000000", "height": 192 },
+    "drifter":    { "src": "assets_src/ai/ai_drifter_guided",    "anims": { "idle": "idle:4:5", "walk": "walk:8:15" }, "glow": "#00000000", "height": 192 },
     "drifter_m":    { "src": "assets_src/ai/ai_drifter_m_anim",    "anims": { "idle": "idle:4:5", "walk": "walk:6:10" }, "glow": "#00000000", "height": 192 },
     "ronin_pc":   { "src": "assets_src/ai/ai_ronin_anim2",   "anims": { "idle": "idle:4:5", "walk": "walk:6:10" }, "glow": "#00000000", "height": 192 },
     "ronin_pc_m":   { "src": "assets_src/ai/ai_ronin_pc_m_anim",   "anims": { "idle": "idle:4:5", "walk": "walk:6:10" }, "glow": "#00000000", "height": 192 },
