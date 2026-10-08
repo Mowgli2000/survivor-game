@@ -18,10 +18,10 @@ func after_each() -> void:
 func _dangers_for(screen: CharacterSelect, character: StringName) -> Array[bool]:
 	screen._character_buttons[character].pressed.emit()
 	(screen._weapons.get_child(0) as Button).pressed.emit()
+	screen._next.pressed.emit()
 	var enabled: Array[bool] = []
-	for child in screen._dangers.get_children():
-		if not child.is_queued_for_deletion():
-			enabled.append(not (child as Button).disabled)
+	for button in screen._seals.seal_buttons():
+		enabled.append(not button.get_meta(&"locked"))
 	return enabled
 
 
@@ -31,6 +31,7 @@ func test_switching_character_keeps_its_own_dangers() -> void:
 	screen.open()
 	var drifter := _dangers_for(screen, &"drifter")
 	assert_true(drifter[1], "Drifter: Danger 1 unlocked")
+	screen._seals._go_back()
 	screen._go_back()
 	screen._go_back()
 	var ronin := _dangers_for(screen, &"ronin")
@@ -67,15 +68,14 @@ func test_picking_another_character_directly_resets_weapon_and_dangers() -> void
 	add_child_autofree(screen)
 	screen.open()
 	_dangers_for(screen, &"drifter")
-	assert_true(screen._dangers.visible)
-	# No "back": the dev clicks another character card while the Dangers row is shown.
+	assert_true(screen._seals.visible)
+	screen._seals._go_back()
 	screen._character_buttons[&"ronin"].pressed.emit()
-	assert_false(screen._dangers.visible, "the Drifter's dangers must not stay on screen")
+	assert_false(screen._seals.visible, "the Drifter's seals must not stay on screen")
 	var ronin := _dangers_for(screen, &"ronin")
 	assert_false(ronin[1], "Ronin: Danger 1 still locked")
 	watch_signals(screen)
-	(screen._dangers.get_child(0) as Button).pressed.emit()
-	screen._launch.pressed.emit()
+	screen._seals._launch.pressed.emit()
 	var setup: RunSetup = get_signal_parameters(screen, "started")[0]
 	assert_eq(setup.character.id, &"ronin")
 	assert_true(setup.character.starting_weapons.has(setup.weapon), "a Ronin weapon, not the Drifter's")

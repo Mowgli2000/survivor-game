@@ -5,7 +5,7 @@ extends Node
 ## Usage: Godot.exe --path . res://src/debug/ui_mockup.tscn -- --screen=<name> --out=<png>
 ## Screens: menu_a, menu_b, menu_c1, menu_c2, menu_c3, select, select_seals, shop, pause, settings, levelup,
 ## select_v2_a, select_v2_b, select_v2_c, select_v3, select_v3_coop, select_v4, select_v4_coop, select_v5_dalles,
-## select_v6
+## select_v6, select_v7_solo, select_v7_coop_a, select_v7_coop_b, danger_a, danger_b, danger_c, danger_coop
 
 const W := 1920.0
 const H := 1080.0
@@ -1257,3 +1257,285 @@ func _screen_select_v6() -> void:
 			2:
 				_v6_arrows_c(c + Vector2(0, 60), 175.0)
 		_label(names[k], 26, TEXT, Vector2(c.x - 300, 1030), 600, HORIZONTAL_ALIGNMENT_CENTER)
+
+
+# --- character select v7 + danger screen (2026-10-08) --------------------------------
+# Dev's notes: no violet rune behind the hero, the hero much bigger; the seal moves to
+# its own screen once every player has picked a character.
+
+const GATE_BG := "res://art_tests/interface/danger/bg_gate.png"
+## Seal metals, Copper to Astral: [rim, face].
+const SEAL_METAL := [[Color("d9874a"), Color("8a4a24")], [Color("b8c0cc"), Color("5a6270")],
+	[Color("eef2f8"), Color("9aa4b4")], [Color("ffd84d"), Color("b8860b")], [Color("b86bff"), Color("241a3a")],
+	[Color("8fe9ff"), Color("2b5c8a")]]
+const SEAL_NAMES := ["Cuivre", "Fer", "Argent", "Or", "Obsidienne", "Astral"]
+const SEAL_FULL := ["Sceau de Cuivre", "Sceau de Fer", "Sceau d'Argent", "Sceau d'Or", "Sceau d'Obsidienne", "Sceau Astral"]
+const SEAL_FX := ["La partie normale", "Élites : 6 %", "Ennemis +15 % PV et dégâts", "+20 % d'ennemis, groupes plus gros",
+	"Ennemis +30 % PV et dégâts", "Deux boss finaux"]
+const SEAL_PLACES := ["Donjon de pierre", "Temple englouti", "Forêt gelée", "Citadelle infernale", "Ruche souterraine",
+	"Antre du dragon"]
+## Socket centers of the six seals on the generated gate (1536x1024 image coordinates),
+## in order: up the left side of the arch, then down the right side.
+const GATE_SOCKETS := [Vector2(565, 418), Vector2(578, 288), Vector2(661, 190), Vector2(866, 190), Vector2(951, 288),
+	Vector2(965, 418)]
+
+
+## Hero standing on the stone platform (real anchor of the game: middle between the feet).
+func _v7_hero(feet: Vector2, height: float, card: String, back: String = "") -> void:
+	var platform := load("res://assets/ui/select/platform_stone.png") as Texture2D
+	var pw := height * 0.78
+	var ph := pw * platform.get_height() / float(platform.get_width())
+	_tex("res://assets/ui/select/platform_stone.png",
+		Rect2(feet - Vector2(pw * CharacterSelect.PLATFORM_TOP.x, ph * CharacterSelect.PLATFORM_TOP.y), Vector2(pw, ph)))
+	if back != "":
+		var bt := load(back) as Texture2D
+		var bw := height * 0.8 * bt.get_width() / float(bt.get_height())
+		_tex(back, Rect2(feet + Vector2(pw * 0.08, -height * 0.86), Vector2(bw, height * 0.8)), Rect2(),
+			Color(0.32, 0.27, 0.48, 0.85))
+	var texture := load(card) as Texture2D
+	var anchor := CharacterSelect.feet_anchor(texture)
+	var w := height * texture.get_width() / float(texture.get_height())
+	_tex(card, Rect2(feet - Vector2(w * anchor.x, height * anchor.y), Vector2(w, height)))
+	for side in [-1.0, 1.0]:
+		var p := feet + Vector2(side * pw * 0.62, -height * 0.45)
+		_label("❮" if side < 0.0 else "❯", 64, Color(CYAN, 0.25), p - Vector2(36, 56), 72, HORIZONTAL_ALIGNMENT_CENTER)
+		_label("❮" if side < 0.0 else "❯", 54, CYAN, p - Vector2(30, 46), 60, HORIZONTAL_ALIGNMENT_CENTER)
+	for d in 2:
+		_ring(feet + Vector2((d - 0.5) * 26.0, ph * 0.72), 7.0, BORDER, 2.0, 0.0, TAU, CYAN if d == 0 else Color(MUTED, 0.5))
+
+
+func _v7_info(pos: Vector2, width: float, index: int, size: int) -> void:
+	_label(HEROES[index][1].to_upper(), size, CYAN, pos, 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+	_label(HEROES[index][2], int(size * 0.42), TEXT, pos + Vector2(0, size * 1.15), width)
+	var names := ["PV", "Dégâts", "Vitesse", "Portée"]
+	var colors := [Color("ff6673"), Color("ffb347"), Color("66f2ff"), Color("b86bff")]
+	var values := [0.55, 0.7, 0.62, 0.78]
+	var y0 := pos.y + size * 2.4
+	for k in 4:
+		var x := pos.x + (k % 2) * width * 0.5
+		var y := y0 + (k / 2) * size * 0.7
+		_label(names[k], int(size * 0.38), MUTED, Vector2(x, y))
+		_panel(Rect2(x + width * 0.17, y + size * 0.1, width * 0.25, size * 0.24), PANEL_DARK, BORDER, 2, 7)
+		_panel(Rect2(x + width * 0.17, y + size * 0.1, width * 0.25 * values[k], size * 0.24), colors[k], BORDER, 2, 7)
+
+
+## Solo: the middle column only holds the hero (bigger, no rune behind); weapons at
+## right, then "Valider" opens the seal screen.
+func _screen_select_v7_solo() -> void:
+	_gradient()
+	_v2_back()
+	_label("CHOISIS TON PERSONNAGE", 56, CYAN, Vector2(240, 30), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+	_v3_column(Rect2(40, 120, 420, 860), "PERSONNAGES", false)
+	_v3_column(Rect2(490, 120, 800, 860), "", false)
+	_v3_column(Rect2(1320, 120, 560, 860), "ARMES", true)
+	for n in 7:
+		_v4_row(Rect2(60, 180 + n * 110.0, 380, 96), n, n == 3, n == 5)
+	_v7_hero(Vector2(890, 660), 520.0, _card_path(3), _alt_path(3))
+	_v7_info(Vector2(530, 760), 720, 3, 50)
+	_v2_weapon_card(Rect2(1340, 190, 520, 104), ["steel_katana", "Katana d'acier", "Taillade rapide devant soi."], true)
+	_v2_weapon_card(Rect2(1340, 306, 520, 104), ["spear", "Lance", "Estoc à longue portée."], false)
+	_button(Rect2(1380, 780, 440, 104), "VALIDER", "cta", 48)
+	_label("Le sceau se choisit à l'écran suivant", 22, MUTED, Vector2(1340, 900), 520, HORIZONTAL_ALIGNMENT_CENTER)
+	_hints([["A", "Choisir", GO], ["B", "Retour", BAD], ["◀ ▶", "Apparence", GOLD]])
+
+
+## Coop A: list at left of each half, the hero fills the rest, weapons under the info.
+func _screen_select_v7_coop_a() -> void:
+	_gradient()
+	for p in 2:
+		var x0 := 960.0 * p
+		var chosen := 3 if p == 0 else 1
+		_label("JOUEUR %d" % (p + 1), 44, RunPlayer.COLORS[p], Vector2(x0 + 30, 22), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+		_v3_column(Rect2(x0 + 20, 90, 220, 960), "", false)
+		for n in 7:
+			var row := Rect2(x0 + 30, 104 + n * 134.0, 200, 122)
+			_panel(row, Color("4a2a86") if n == chosen else Color(PANEL, 0.9), CYAN if n == chosen else BORDER,
+				4, 16)
+			_tex(_card_path(n), Rect2(row.position + Vector2(50, 6), Vector2(100, 84)), Rect2(72, 8, 368, 310),
+				Color(0.18, 0.15, 0.3, 1) if n == 5 else Color.WHITE)
+			_label(HEROES[n][1] if n != 5 else "🔒 ???", 20, TEXT if n != 5 else MUTED, row.position + Vector2(0, 90),
+				200, HORIZONTAL_ALIGNMENT_CENTER)
+		_v3_column(Rect2(x0 + 256, 90, 684, 960), "", false)
+		_v7_hero(Vector2(x0 + 598, 520), 400.0, _card_path(chosen), _alt_path(chosen))
+		_v7_info(Vector2(x0 + 286, 610), 620, chosen, 40)
+		if p == 0:
+			_v2_weapon_card(Rect2(x0 + 280, 812, 636, 88), ["steel_katana", "Katana d'acier", "Taillade rapide."], true)
+			_v2_weapon_card(Rect2(x0 + 280, 910, 636, 88), ["spear", "Lance", "Estoc à longue portée."], false)
+		else:
+			_panel(Rect2(x0 + 280, 830, 636, 150), Color("1f6b3a"), GO, 5, 24)
+			_label("PRÊT ✔", 56, Color.WHITE, Vector2(x0 + 280, 860), 636, HORIZONTAL_ALIGNMENT_CENTER, true)
+	_line(Vector2(960, 0), Vector2(960, H), Color(BORDER, 0.9), 6.0)
+
+
+## Coop B: heads in a strip at the top of each half, the hero huge at left, info and
+## weapons at right.
+func _screen_select_v7_coop_b() -> void:
+	_gradient()
+	for p in 2:
+		var x0 := 960.0 * p
+		var chosen := 3 if p == 0 else 1
+		_label("JOUEUR %d" % (p + 1), 40, RunPlayer.COLORS[p], Vector2(x0 + 30, 18), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+		for n in 7:
+			var r := Rect2(x0 + 30 + n * 130.0, 80, 118, 118)
+			_panel(r, Color("4a2a86") if n == chosen else Color(PANEL, 0.9), CYAN if n == chosen else BORDER,
+				5 if n == chosen else 3, 16)
+			_tex(_card_path(n), r.grow(-8), Rect2(72, 8, 368, 368),
+				Color(0.18, 0.15, 0.3, 1) if n == 5 else Color.WHITE)
+		_v3_column(Rect2(x0 + 20, 216, 920, 834), "", false)
+		_v7_hero(Vector2(x0 + 270, 800), 480.0, _card_path(chosen), _alt_path(chosen))
+		_v7_info(Vector2(x0 + 520, 250), 400, chosen, 40)
+		_label("ARMES", 30, CYAN, Vector2(x0 + 520, 470), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+		if p == 0:
+			_v2_weapon_card(Rect2(x0 + 520, 516, 400, 96), ["steel_katana", "Katana d'acier", "Taillade rapide."], true)
+			_v2_weapon_card(Rect2(x0 + 520, 624, 400, 96), ["spear", "Lance", "Estoc."], false)
+		else:
+			_v2_weapon_card(Rect2(x0 + 520, 516, 400, 96), ["rapier", "Rapière", "Estocs rapides."], false)
+			_panel(Rect2(x0 + 520, 860, 400, 130), Color("1f6b3a"), GO, 5, 24)
+			_label("PRÊT ✔", 52, Color.WHITE, Vector2(x0 + 520, 884), 400, HORIZONTAL_ALIGNMENT_CENTER, true)
+	_line(Vector2(960, 0), Vector2(960, H), Color(BORDER, 0.9), 6.0)
+
+
+## Round seal medallion: metal rim, numeral; `state`: "", "selected", "locked".
+func _seal(center: Vector2, radius: float, level: int, state: String) -> void:
+	var rim: Color = SEAL_METAL[level][0]
+	var face: Color = SEAL_METAL[level][1]
+	if state == "locked":
+		_ring(center, radius, BORDER, 6.0, 0.0, TAU, Color("1a1430"))
+		_ring(center, radius * 0.82, Color(MUTED, 0.25), 3.0)
+		_label("🔒", int(radius * 0.7), Color(MUTED, 0.7), center - Vector2(radius, radius * 0.5), radius * 2.0,
+			HORIZONTAL_ALIGNMENT_CENTER)
+		return
+	if state == "selected":
+		for k in 3:
+			_ring(center, radius * (1.18 + k * 0.12), Color(rim, 0.35 - k * 0.1), 8.0)
+	_ring(center, radius, BORDER, 6.0, 0.0, TAU, rim)
+	_ring(center, radius * 0.8, BORDER, 4.0, 0.0, TAU, face)
+	_label(["I", "II", "III", "IV", "V", "VI"][level], int(radius * 0.72), rim,
+		center - Vector2(radius, radius * 0.55), radius * 2.0, HORIZONTAL_ALIGNMENT_CENTER, true)
+
+
+func _gate_bg(dim: float = 0.0) -> void:
+	_tex(GATE_BG, Rect2(0, -100, W, 1280))
+	if dim > 0.0:
+		var c := ColorRect.new()
+		c.color = Color(0.03, 0.02, 0.08, dim)
+		c.size = Vector2(W, H)
+		_root.add_child(c)
+
+
+func _gate_socket(index: int) -> Vector2:
+	return GATE_SOCKETS[index] * 1.25 - Vector2(0, 100)
+
+
+## Seal details: name in its metal, effect, place, reward.
+func _seal_panel(rect: Rect2, level: int, silhouettes: bool = false) -> void:
+	_panel(rect, Color(PANEL_DARK, 0.92), SEAL_METAL[level][0], 5, 24)
+	var x := rect.position.x + 32
+	_label(SEAL_FULL[level].to_upper(), 52, SEAL_METAL[level][0], Vector2(x, rect.position.y + 18), 0.0,
+		HORIZONTAL_ALIGNMENT_LEFT, true)
+	_label("☠ " + SEAL_FX[level], 28, TEXT, Vector2(x, rect.position.y + 92))
+	_label("Lieu : " + SEAL_PLACES[level], 26, MUTED, Vector2(x, rect.position.y + 134))
+	if not silhouettes:
+		_label("Récompense : Coffre doré + 2 objets", 26, GOLD, Vector2(x, rect.position.y + 172))
+		return
+	# Rewards still to win: dark silhouettes of their icons (the game's own shader).
+	_label("À gagner", 24, GOLD, Vector2(rect.end.x - 330, rect.position.y + 26), 300, HORIZONTAL_ALIGNMENT_CENTER)
+	var rewards := SealSelect.seal_rewards(level)
+	var paths: Array[String] = []
+	for target in rewards:
+		paths.append((target.get(&"icon") as Texture2D).resource_path)
+	if paths.is_empty():
+		paths = ["res://assets/icons/weapons/warhammer.png", "res://assets/icons/weapons/scythe.png",
+			"res://assets/icons/weapons/meteor_grimoire.png"]
+	for k in mini(paths.size(), 3):
+		var box := Rect2(rect.end.x - 340 + k * 104.0, rect.position.y + 70, 96, 96)
+		_panel(box, Color(0.06, 0.04, 0.14, 0.9), Color(GOLD, 0.6), 3, 14)
+		var icon := _tex(paths[k], box.grow(-10))
+		icon.material = SealSelect.silhouette_material()
+		_label("?", 34, Color(GOLD, 0.9), box.position + Vector2(0, 20), box.size.x, HORIZONTAL_ALIGNMENT_CENTER, true)
+
+
+func _ready_tags(coop: bool) -> void:
+	var heroes := [3, 1] if coop else [3]
+	for p in heroes.size():
+		var x := 40.0 if p == 0 else W - 300.0
+		var r := Rect2(x, H - 250, 260, 150)
+		_panel(r, Color(PANEL_DARK, 0.9), RunPlayer.COLORS[p] if coop else CYAN, 4, 18)
+		_tex(_card_path(heroes[p]), Rect2(r.position + Vector2(10, 10), Vector2(130, 130)), Rect2(72, 8, 368, 368))
+		_label(HEROES[heroes[p]][1], 22, TEXT, r.position + Vector2(146, 30), 110)
+		_label("PRÊT ✔", 24, GOOD, r.position + Vector2(146, 96))
+
+
+## A: the seals sit in the six sockets of the gate (diegetic), details below.
+func _screen_danger_a() -> void:
+	_gate_bg()
+	_v2_back()
+	_label("CHOISIS TON SCEAU", 56, CYAN, Vector2(240, 30), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+	for i in 6:
+		_seal(_gate_socket(i), 54.0, i, "selected" if i == 3 else ("locked" if i > 3 else ""))
+	_seal_panel(Rect2(560, 770, 800, 230), 3)
+	_button(Rect2(1440, 820, 400, 120), "JOUER", "cta", 56)
+	_ready_tags(false)
+	_hints([["A", "Jouer", GO], ["B", "Retour", BAD], ["◀ ▶", "Sceau", GOLD]])
+
+
+## B: a row of six big seals in front of the gate (dimmed), details under them.
+func _screen_danger_b() -> void:
+	_tex("res://art_tests/interface/danger/bg_gate_v2.png", Rect2(0, -100, W, 1280))
+	var dim := ColorRect.new()
+	dim.color = Color(0.03, 0.02, 0.08, 0.4)
+	dim.size = Vector2(W, H)
+	_root.add_child(dim)
+	_v2_back()
+	_title("CHOISIS TON SCEAU", 26, 64)
+	for i in 6:
+		var c := Vector2(360 + i * 240.0, 470)
+		var state := "selected" if i == 3 else ("locked" if i > 3 else "")
+		_seal(c, 96.0 if i == 3 else 80.0, i, state)
+		_label(SEAL_NAMES[i] if i <= 3 else "???", 30, SEAL_METAL[i][0] if i <= 3 else MUTED, c + Vector2(-120, 112), 240,
+			HORIZONTAL_ALIGNMENT_CENTER, true)
+	_seal_panel(Rect2(410, 680, 1100, 230), 3, true)
+	_button(Rect2(760, 930, 400, 100), "JOUER", "cta", 50)
+	_hints([["A", "Jouer", GO], ["B", "Retour", BAD], ["◀ ▶", "Sceau", GOLD]])
+
+
+## C: list of seal cards at left, the gate at right with the chosen seal glowing big.
+func _screen_danger_c() -> void:
+	_gate_bg()
+	var shade := ColorRect.new()
+	shade.color = Color(0.03, 0.02, 0.08, 0.85)
+	shade.size = Vector2(760, H)
+	_root.add_child(shade)
+	_v2_back()
+	_label("CHOISIS TON SCEAU", 52, CYAN, Vector2(240, 32), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+	for i in 6:
+		var r := Rect2(40, 130 + i * 136.0, 680, 120)
+		var locked := i > 3
+		_panel(r, Color("4a2a86") if i == 3 else Color(PANEL, 0.92), SEAL_METAL[i][0] if i == 3 else BORDER,
+			5 if i == 3 else 3, 18)
+		_seal(r.position + Vector2(64, 60), 44.0, i, "locked" if locked else "")
+		_label(SEAL_FULL[i] if not locked else "Sceau verrouillé", 32,
+			SEAL_METAL[i][0] if not locked else MUTED, r.position + Vector2(130, 14), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+		_label(SEAL_FX[i] if not locked else "Gagne le sceau précédent avec ce chasseur", 22,
+			TEXT if not locked else MUTED, r.position + Vector2(130, 70), 540)
+	_seal(Vector2(1340, 420), 130.0, 3, "selected")
+	_label("Citadelle infernale", 40, SEAL_METAL[3][0], Vector2(940, 600), 800, HORIZONTAL_ALIGNMENT_CENTER, true)
+	_label("Récompense : Coffre doré + 2 objets", 28, GOLD, Vector2(940, 660), 800, HORIZONTAL_ALIGNMENT_CENTER)
+	_button(Rect2(1140, 860, 400, 110), "JOUER", "cta", 52)
+	_hints([["A", "Jouer", GO], ["B", "Retour", BAD], ["▲ ▼", "Sceau", GOLD]])
+
+
+## Coop (on A): one shared screen, full width; player 1 picks, both heroes shown ready;
+## seals above what player 2's hunter has won are locked with the reason.
+func _screen_danger_coop() -> void:
+	_gate_bg()
+	_v2_back()
+	_label("CHOISISSEZ VOTRE SCEAU", 56, CYAN, Vector2(240, 30), 0.0, HORIZONTAL_ALIGNMENT_LEFT, true)
+	for i in 6:
+		_seal(_gate_socket(i), 54.0, i, "selected" if i == 2 else ("locked" if i > 2 else ""))
+	_seal_panel(Rect2(560, 740, 800, 230), 2)
+	_label("Sceau suivant : à gagner par la Mage (joueur 2)", 22, MUTED, Vector2(560, 984), 800,
+		HORIZONTAL_ALIGNMENT_CENTER)
+	_ready_tags(true)
+	_button(Rect2(1440, 560, 400, 110), "JOUER", "cta", 52)
+	_label("Joueur 1 choisit", 22, RunPlayer.COLORS[0], Vector2(1440, 680), 400, HORIZONTAL_ALIGNMENT_CENTER)

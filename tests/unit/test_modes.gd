@@ -135,12 +135,12 @@ func test_character_select_offers_unlocked_dangers_only() -> void:
 	screen.open()
 	screen._character_buttons[&"drifter"].pressed.emit()
 	(screen._weapons.get_child(0) as Button).pressed.emit()
-	assert_true(screen._dangers.visible)
-	assert_false((screen._dangers.get_child(0) as Button).disabled)
-	assert_true((screen._dangers.get_child(1) as Button).disabled, "Danger 1 needs a win at Danger 0")
+	screen._next.pressed.emit()
+	assert_true(screen._seals.visible)
+	assert_false(screen._seals.seal_buttons()[0].get_meta(&"locked"))
+	assert_true(screen._seals.seal_buttons()[1].get_meta(&"locked"), "Danger 1 needs a win at Danger 0")
 	watch_signals(screen)
-	(screen._dangers.get_child(0) as Button).pressed.emit()
-	screen._launch.pressed.emit()
+	screen._seals._launch.pressed.emit()
 	var setup: RunSetup = get_signal_parameters(screen, "started")[0]
 	assert_eq(setup.difficulty.level, 0)
 

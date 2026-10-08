@@ -165,7 +165,7 @@ func _row(group: Array, profile: Profile) -> Control:
 		rect.custom_minimum_size = Vector2(REWARD_ICON, REWARD_ICON)
 		rect.tooltip_text = names[group.find(member)]
 		if not profile.completed.has(member.id):
-			rect.material = CharacterSelect._silhouette_material()
+			rect.material = SealSelect.silhouette_material()
 		rewards.add_child(rect)
 	row.add_child(rewards)
 	return row

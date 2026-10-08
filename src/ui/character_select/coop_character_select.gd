@@ -2,21 +2,26 @@ class_name CoopCharacterSelect
 extends Control
 ## Local coop pick (ADR 0017, split screen like ADR 0021): one compact CharacterSelect
 ## per half of the screen (CoopScreens routes each player's devices to his half), so
-## both players pick a character and a weapon at the same time; player 1 also picks
-## the seal and presses Play. The run starts as soon as both are ready, with the seal
-## lowered to what player 2's character has unlocked if needed.
+## both players pick a character and a weapon at the same time. Once both are ready,
+## the shared seal screen (SealSelect) opens full screen: a seal is open when both
+## hunters have won the one below it; either player picks it and the run starts.
 
 signal started(setup: RunSetup)
 signal closed
 
 var _halves: CoopScreens
 var _selects: Array[CharacterSelect] = []
+var _seals: SealSelect
 
 
 func _init() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	visible = false
+	_seals = SealSelect.new()
+	_seals.chosen.connect(_start)
+	_seals.back.connect(_on_seals_back)
+	add_child(_seals)
 
 
 func open() -> void:
@@ -32,7 +37,6 @@ func open() -> void:
 		layer.add_child(select)
 		_halves.add_screen(i, layer)
 		select.picked.connect(_on_picked)
-		select.unpicked.connect(_on_unpicked)
 		select.closed.connect(close)
 		_selects.append(select)
 		select.open(i)
@@ -59,25 +63,43 @@ func halves() -> CoopScreens:
 
 func _free_halves() -> void:
 	_selects.clear()
+	if _seals.visible:
+		_seals.close()
 	if _halves != null:
 		_halves.queue_free()
 		_halves = null
 
 
-## A player is done: player 1's seal row learns player 2's character; both done: start.
+## Both players ready: the halves hide (their input routing stops with them) and the
+## shared seal screen opens.
 func _on_picked() -> void:
-	var first := _selects[0]
-	var second := _selects[1]
-	first.set_partner(second.chosen_character() if second.is_ready else null)
-	if first.is_ready and second.is_ready:
-		_start()
+	if not (_selects[0].is_ready and _selects[1].is_ready):
+		return
+	_show_halves(false)
+	_seals.open([_selects[0].chosen_character(), _selects[1].chosen_character()] as Array[CharacterData])
 
 
-func _on_unpicked() -> void:
-	_selects[0].set_partner(_selects[1].chosen_character() if _selects[1].is_ready else null)
+## Back from the seals: both players are back on their weapons.
+func _on_seals_back() -> void:
+	_show_halves(true)
+	for select in _selects:
+		select.unready()
 
 
-func _start() -> void:
+func _show_halves(on: bool) -> void:
+	for i in _selects.size():
+		(_selects[i].get_parent() as CanvasLayer).visible = on
+	if on and _halves != null:
+		for i in _selects.size():
+			_halves.remember_focus(i, _selects[i].get_viewport().gui_get_focus_owner())
+
+
+## The seal screen (tests and the capture tool).
+func seals() -> SealSelect:
+	return _seals
+
+
+func _start(difficulty: DifficultyData) -> void:
 	var first := _selects[0]
 	var second := _selects[1]
 	var setup := RunSetup.new()
@@ -87,17 +109,6 @@ func _start() -> void:
 	setup.character_2 = second.chosen_character()
 	setup.weapon_2 = second.chosen_weapon()
 	setup.variant_2 = second.chosen_variant()
-	setup.difficulty = shared_difficulty(first.chosen_difficulty(), second.chosen_character())
+	setup.difficulty = difficulty
 	Audio.play(Sounds.PORTAL_OPEN, -4.0)
 	started.emit(setup)
-
-
-## `wanted`, or the hardest seal `partner` has unlocked if that is lower.
-static func shared_difficulty(wanted: DifficultyData, partner: CharacterData) -> DifficultyData:
-	var allowed := SaveService.profile.max_difficulty(partner.id)
-	if wanted.level <= allowed:
-		return wanted
-	for def in ContentDB.get_all(&"difficulties"):
-		if (def as DifficultyData).level == allowed:
-			return def
-	return wanted
