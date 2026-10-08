@@ -5,6 +5,7 @@
     "drifter_m":    { "src": "assets_src/ai/ai_drifter_m",    "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#00000000", "height": 192 },
     "ronin_pc":   { "src": "assets_src/ai/ai_ronin",   "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#00000000", "height": 192 },
     "ronin_pc_m":   { "src": "assets_src/ai/ai_ronin_pc_m",   "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#00000000", "height": 192 },
+    "ronin_pc_anim": { "src": "assets_src/ai/ai_ronin_anim", "anims": { "idle": "idle:4:5", "walk": "walk:6:10" }, "glow": "#00000000", "height": 192 },
     "gunslinger": { "src": "assets_src/ai/ai_gunslinger", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#00000000", "height": 192 },
     "gunslinger_m": { "src": "assets_src/ai/ai_gunslinger_m", "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#00000000", "height": 192 },
     "merchant":   { "src": "assets_src/ai/ai_merchant",   "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#00000000", "height": 192 },

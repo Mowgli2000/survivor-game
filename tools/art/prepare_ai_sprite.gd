@@ -71,7 +71,7 @@ func _initialize() -> void:
 
 ## Flood fill from every border pixel through light, unsaturated pixels -> transparent.
 ## Pixels next to the removed area get a partial alpha (soft edge, no white fringe).
-func _remove_background(img: Image, luma_min: float) -> void:
+static func _remove_background(img: Image, luma_min: float) -> void:
 	var w := img.get_width()
 	var h := img.get_height()
 	var removed := PackedByteArray()
@@ -112,7 +112,7 @@ func _remove_background(img: Image, luma_min: float) -> void:
 				img.set_pixel(x, y, Color(c.r, c.g, c.b, keep))
 
 
-func _is_background(c: Color, luma_min: float) -> bool:
+static func _is_background(c: Color, luma_min: float) -> bool:
 	var hi := maxf(c.r, maxf(c.g, c.b))
 	var lo := minf(c.r, minf(c.g, c.b))
 	return c.get_luminance() >= luma_min and hi - lo < 0.12

@@ -594,8 +594,15 @@
 		208,
 		"res://assets/sprites/atlas.png"
 	],
-	"ronin_pc_m": [
+	"ronin_pc_anim": [
 		0,
+		2064,
+		126,
+		208,
+		"res://assets/sprites/atlas.png"
+	],
+	"ronin_pc_m": [
+		1260,
 		2064,
 		121,
 		208,
