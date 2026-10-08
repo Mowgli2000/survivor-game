@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ChallengeData" format=3]
+
+[ext_resource type="Script" path="res://src/meta/challenge_data.gd" id="1_challenge"]
+
+[resource]
+script = ExtResource("1_challenge")
+id = &"collect_win_drifter"
+name_key = "COLLECT_WIN_DRIFTER"
+description_key = "COLLECT_WIN_DRIFTER_DESC"
+kind = 0
+character_id = &"drifter"
+unlock_id = &""
+shards = 100

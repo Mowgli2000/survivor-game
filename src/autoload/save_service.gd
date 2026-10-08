@@ -28,6 +28,7 @@ func load_profile() -> void:
 		else:
 			profile = Profile.from_dict(saved)
 	_grant_past_seal_rewards()
+	_grant_past_collection()
 	profile_changed.emit()
 
 
@@ -47,6 +48,20 @@ func _grant_past_seal_rewards() -> void:
 			continue
 		profile.completed.append(challenge.id)
 		profile.unlock(challenge.unlock_category, challenge.unlock_id)
+		granted = true
+	if granted:
+		save_profile()
+
+
+## Collection challenges came after some runs were played: the statistics already
+## kept pay the ones they meet (shards only, nothing is unlocked).
+func _grant_past_collection() -> void:
+	var granted := false
+	for challenge in collection_challenges():
+		if profile.completed.has(challenge.id) or not challenge.is_met_by_profile(profile):
+			continue
+		profile.completed.append(challenge.id)
+		profile.add_shards(challenge.shards)
 		granted = true
 	if granted:
 		save_profile()
@@ -80,6 +95,7 @@ func is_unlocked(category: StringName, def: Resource) -> bool:
 func record_run(result: RunResult, challenges: Array[ChallengeData] = []) -> Array[ChallengeData]:
 	if challenges.is_empty():
 		challenges = all_challenges()
+		challenges.append_array(collection_challenges())
 	profile.runs_played += 1
 	profile.total_kills += result.kills
 	profile.best_wave = maxi(profile.best_wave, result.wave)
@@ -93,7 +109,9 @@ func record_run(result: RunResult, challenges: Array[ChallengeData] = []) -> Arr
 		if profile.completed.has(challenge.id) or not challenge.is_met(profile, result):
 			continue
 		profile.completed.append(challenge.id)
-		profile.unlock(challenge.unlock_category, challenge.unlock_id)
+		if challenge.unlock_id != &"":
+			profile.unlock(challenge.unlock_category, challenge.unlock_id)
+		profile.add_shards(challenge.shards)
 		done.append(challenge)
 	save_profile()
 	profile_changed.emit()
@@ -108,6 +126,24 @@ func record_endless(character_id: StringName, wave: int) -> void:
 	profile_changed.emit()
 
 
+## Collection challenges (data/collection/): they pay portal shards for the skin shop.
+func collection_challenges() -> Array[ChallengeData]:
+	var list: Array[ChallengeData] = []
+	list.assign(ContentDB.get_all(&"collection"))
+	return list
+
+
+## Buys a skin with portal shards: false when unknown, already owned or too expensive.
+func buy_skin(skin: SkinData) -> bool:
+	if skin == null or profile.is_unlocked(&"skins", skin.id) or not profile.spend_shards(skin.price):
+		return false
+	profile.unlock(&"skins", skin.id)
+	save_profile()
+	profile_changed.emit()
+	return true
+
+
+## Progression challenges (data/challenges/): they unlock content.
 func all_challenges() -> Array[ChallengeData]:
 	var list: Array[ChallengeData] = []
 	list.assign(ContentDB.get_all(&"challenges"))

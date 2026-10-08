@@ -64,20 +64,65 @@ func has_alt_look() -> bool:
 	return alt_sprite_id != &""
 
 
-## `variant` 0 = the character itself, 1 = its second look (when it has one).
+## Skins of this class the player bought (ADR 0023), cheapest first: the looks
+## after the class's own one or two.
+func owned_skins() -> Array[SkinData]:
+	var skins: Array[SkinData] = []
+	for def in ContentDB.get_all(&"skins"):
+		var skin := def as SkinData
+		if skin != null and skin.character_id == id and SaveService.profile.is_unlocked(&"skins", skin.id):
+			skins.append(skin)
+	skins.sort_custom(func(a: SkinData, b: SkinData) -> bool:
+		return a.price < b.price or (a.price == b.price and a.id < b.id))
+	return skins
+
+
+## Looks that come with the class: the character and, if any, its second look.
+func base_look_count() -> int:
+	return 2 if has_alt_look() else 1
+
+
+## Looks on the turntable: the base ones then the bought skins.
+func look_count() -> int:
+	return base_look_count() + owned_skins().size()
+
+
+## The bought skin a `variant` index points at (null for the class's own looks).
+func skin_for(variant: int) -> SkinData:
+	var index := variant - base_look_count()
+	if index < 0:
+		return null
+	var skins := owned_skins()
+	return skins[index] if index < skins.size() else null
+
+
+## `variant` 0 = the character itself, 1 = its second look (when it has one), then
+## the bought skins.
 func name_key_for(variant: int) -> String:
+	var skin := skin_for(variant)
+	if skin != null:
+		return skin.name_key
 	return alt_name_key if variant == 1 and has_alt_look() and alt_name_key != "" else name_key
 
 
 func sprite_id_for(variant: int) -> StringName:
+	var skin := skin_for(variant)
+	if skin != null and skin.sprite_id != &"":
+		return skin.sprite_id
 	return alt_sprite_id if variant == 1 and has_alt_look() else sprite_id
 
 
 func sprite_scale_for(variant: int) -> float:
+	var skin := skin_for(variant)
+	if skin != null:
+		return skin.sprite_scale
 	return alt_sprite_scale if variant == 1 and has_alt_look() else sprite_scale
 
 
 func card_art_for(variant: int) -> Texture2D:
+	var skin := skin_for(variant)
+	if skin != null and skin.card_art != null:
+		return skin.card_art
 	return alt_card_art if variant == 1 and has_alt_look() and alt_card_art != null else card_art
 
 

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ChallengeData" format=3]
+
+[ext_resource type="Script" path="res://src/meta/challenge_data.gd" id="1_challenge"]
+
+[resource]
+script = ExtResource("1_challenge")
+id = &"collect_kills_10000"
+name_key = "COLLECT_KILLS_10000"
+description_key = "COLLECT_KILLS_10000_DESC"
+kind = 2
+threshold = 10000
+unlock_id = &""
+shards = 100

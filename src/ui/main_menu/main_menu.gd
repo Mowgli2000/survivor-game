@@ -33,10 +33,12 @@ var _settings_button: Button
 var _quit: Button
 var _settings: SettingsScreen
 var _progression_button: Button
+var _skins_button: Button
 var _character_select: CharacterSelect
 ## Local coop: split-screen pick, both players at once.
 var _coop_select: CoopCharacterSelect
 var _progression: ProgressionScreen
+var _skin_shop: SkinShopScreen
 
 
 func _ready() -> void:
@@ -91,6 +93,7 @@ func _ready() -> void:
 	_play = _button("UI_PLAY", _open_character_select.bind(false))
 	_coop = _button("UI_COOP", _open_character_select.bind(true))
 	_progression_button = _button("UI_PROGRESSION", _open_progression)
+	_skins_button = _button("UI_SKIN_SHOP", _open_skin_shop)
 	_settings_button = _button("UI_SETTINGS", _open_settings)
 	_quit = _button("UI_QUIT", SceneRouter.quit)
 
@@ -119,6 +122,9 @@ func _ready() -> void:
 	_progression = ProgressionScreen.new()
 	_progression.closed.connect(_on_overlay_closed.bind(_progression_button))
 	root.add_child(_progression)
+	_skin_shop = SkinShopScreen.new()
+	_skin_shop.closed.connect(_on_overlay_closed.bind(_skins_button))
+	root.add_child(_skin_shop)
 
 	_hints = ButtonHints.create([[&"A", "UI_HINT_CONFIRM"], [&"B", "UI_HINT_BACK"]])
 	root.add_child(_hints)
@@ -187,6 +193,12 @@ func _open_progression() -> void:
 	_buttons.visible = false
 	_hints.visible = false
 	_progression.open()
+
+
+func _open_skin_shop() -> void:
+	_buttons.visible = false
+	_hints.visible = false
+	_skin_shop.open()
 
 
 func _on_overlay_closed(focus: Button) -> void:

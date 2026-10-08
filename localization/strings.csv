@@ -439,3 +439,77 @@ SEAL_PLACE,Place: %s,Lieu : %s
 SEAL_TO_WIN,To win,À gagner
 SEAL_WON,Won,Obtenues
 UI_NEXT,Next,Suivant
+COLLECT_WIN_DRIFTER,Victory: Novice Huntress,Victoire : Chasseuse novice
+COLLECT_WIN_DRIFTER_DESC,Win a run as the Novice Huntress,Gagner une partie avec Chasseuse novice
+COLLECT_WIN_RONIN,Victory: Swordswoman,Victoire : Épéiste
+COLLECT_WIN_RONIN_DESC,Win a run as the Swordswoman,Gagner une partie avec Épéiste
+COLLECT_WIN_GUNSLINGER,Victory: Archeress,Victoire : Archère
+COLLECT_WIN_GUNSLINGER_DESC,Win a run as the Archeress,Gagner une partie avec Archère
+COLLECT_WIN_MERCHANT,Victory: Gate Smuggler,Victoire : Contrebandière
+COLLECT_WIN_MERCHANT_DESC,Win a run as the Gate Smuggler,Gagner une partie avec Contrebandière
+COLLECT_WIN_MAGE,Victory: Mage,Victoire : Mage
+COLLECT_WIN_MAGE_DESC,Win a run as the Mage,Gagner une partie avec Mage
+COLLECT_WIN_BERSERKER,Victory: Berserker,Victoire : Berserkeuse
+COLLECT_WIN_BERSERKER_DESC,Win a run as the Berserker,Gagner une partie avec Berserkeuse
+COLLECT_WIN_HERO,Victory: Assassin,Victoire : Assassin
+COLLECT_WIN_HERO_DESC,Win a run as the Assassin,Gagner une partie avec Assassin
+COLLECT_SEAL_0,Copper seal conquered,Sceau de Cuivre vaincu
+COLLECT_SEAL_0_DESC,Win a run at the Copper seal or higher,Gagner une partie au sceau de Cuivre ou plus
+COLLECT_SEAL_1,Iron seal conquered,Sceau de Fer vaincu
+COLLECT_SEAL_1_DESC,Win a run at the Iron seal or higher,Gagner une partie au sceau de Fer ou plus
+COLLECT_SEAL_2,Silver seal conquered,Sceau d'Argent vaincu
+COLLECT_SEAL_2_DESC,Win a run at the Silver seal or higher,Gagner une partie au sceau d'Argent ou plus
+COLLECT_SEAL_3,Gold seal conquered,Sceau d'Or vaincu
+COLLECT_SEAL_3_DESC,Win a run at the Gold seal or higher,Gagner une partie au sceau d'Or ou plus
+COLLECT_SEAL_4,Obsidian seal conquered,Sceau d'Obsidienne vaincu
+COLLECT_SEAL_4_DESC,Win a run at the Obsidian seal or higher,Gagner une partie au sceau d'Obsidienne ou plus
+COLLECT_SEAL_5,Astral seal conquered,Sceau d'Astral vaincu
+COLLECT_SEAL_5_DESC,Win a run at the Astral seal or higher,Gagner une partie au sceau d'Astral ou plus
+COLLECT_DRIFTER_SEAL2,Silver seal: Novice Huntress,Sceau d'Argent : Chasseuse novice
+COLLECT_DRIFTER_SEAL2_DESC,Win at the Silver seal or higher as the Novice Huntress,Gagner au sceau d'Argent ou plus avec Chasseuse novice
+COLLECT_RONIN_SEAL2,Silver seal: Swordswoman,Sceau d'Argent : Épéiste
+COLLECT_RONIN_SEAL2_DESC,Win at the Silver seal or higher as the Swordswoman,Gagner au sceau d'Argent ou plus avec Épéiste
+COLLECT_GUNSLINGER_SEAL2,Silver seal: Archeress,Sceau d'Argent : Archère
+COLLECT_GUNSLINGER_SEAL2_DESC,Win at the Silver seal or higher as the Archeress,Gagner au sceau d'Argent ou plus avec Archère
+COLLECT_MERCHANT_SEAL2,Silver seal: Gate Smuggler,Sceau d'Argent : Contrebandière
+COLLECT_MERCHANT_SEAL2_DESC,Win at the Silver seal or higher as the Gate Smuggler,Gagner au sceau d'Argent ou plus avec Contrebandière
+COLLECT_MAGE_SEAL2,Silver seal: Mage,Sceau d'Argent : Mage
+COLLECT_MAGE_SEAL2_DESC,Win at the Silver seal or higher as the Mage,Gagner au sceau d'Argent ou plus avec Mage
+COLLECT_BERSERKER_SEAL2,Silver seal: Berserker,Sceau d'Argent : Berserkeuse
+COLLECT_BERSERKER_SEAL2_DESC,Win at the Silver seal or higher as the Berserker,Gagner au sceau d'Argent ou plus avec Berserkeuse
+COLLECT_HERO_SEAL2,Silver seal: Assassin,Sceau d'Argent : Assassin
+COLLECT_HERO_SEAL2_DESC,Win at the Silver seal or higher as the Assassin,Gagner au sceau d'Argent ou plus avec Assassin
+COLLECT_DRIFTER_SEAL5,Astral seal: Novice Huntress,Sceau Astral : Chasseuse novice
+COLLECT_DRIFTER_SEAL5_DESC,Win at the Astral seal as the Novice Huntress,Gagner au sceau Astral avec Chasseuse novice
+COLLECT_RONIN_SEAL5,Astral seal: Swordswoman,Sceau Astral : Épéiste
+COLLECT_RONIN_SEAL5_DESC,Win at the Astral seal as the Swordswoman,Gagner au sceau Astral avec Épéiste
+COLLECT_GUNSLINGER_SEAL5,Astral seal: Archeress,Sceau Astral : Archère
+COLLECT_GUNSLINGER_SEAL5_DESC,Win at the Astral seal as the Archeress,Gagner au sceau Astral avec Archère
+COLLECT_MERCHANT_SEAL5,Astral seal: Gate Smuggler,Sceau Astral : Contrebandière
+COLLECT_MERCHANT_SEAL5_DESC,Win at the Astral seal as the Gate Smuggler,Gagner au sceau Astral avec Contrebandière
+COLLECT_MAGE_SEAL5,Astral seal: Mage,Sceau Astral : Mage
+COLLECT_MAGE_SEAL5_DESC,Win at the Astral seal as the Mage,Gagner au sceau Astral avec Mage
+COLLECT_BERSERKER_SEAL5,Astral seal: Berserker,Sceau Astral : Berserkeuse
+COLLECT_BERSERKER_SEAL5_DESC,Win at the Astral seal as the Berserker,Gagner au sceau Astral avec Berserkeuse
+COLLECT_HERO_SEAL5,Astral seal: Assassin,Sceau Astral : Assassin
+COLLECT_HERO_SEAL5_DESC,Win at the Astral seal as the Assassin,Gagner au sceau Astral avec Assassin
+COLLECT_WAVE_5,Survivor: wave 5,Survivant : vague 5
+COLLECT_WAVE_5_DESC,Reach wave 5 in a single run,Atteindre la vague 5 en une seule partie
+COLLECT_WAVE_10,Survivor: wave 10,Survivant : vague 10
+COLLECT_WAVE_10_DESC,Reach wave 10 in a single run,Atteindre la vague 10 en une seule partie
+COLLECT_WAVE_15,Survivor: wave 15,Survivant : vague 15
+COLLECT_WAVE_15_DESC,Reach wave 15 in a single run,Atteindre la vague 15 en une seule partie
+COLLECT_KILLS_1000,Slayer: 1 000 kills,Pourfendeur : 1 000 victimes
+COLLECT_KILLS_1000_DESC,Defeat 1 000 monsters in total,Vaincre 1 000 monstres au total
+COLLECT_KILLS_10000,Slayer: 10 000 kills,Pourfendeur : 10 000 victimes
+COLLECT_KILLS_10000_DESC,Defeat 10 000 monsters in total,Vaincre 10 000 monstres au total
+COLLECT_KILLS_25000,Slayer: 25 000 kills,Pourfendeur : 25 000 victimes
+COLLECT_KILLS_25000_DESC,Defeat 25 000 monsters in total,Vaincre 25 000 monstres au total
+UI_SKIN_SHOP,Skin shop,Boutique de skins
+UI_SKIN_SHOP_EMPTY,No skin for this class yet,Aucun skin pour cette classe pour l'instant
+UI_SKIN_OWNED,Owned,Possédé
+UI_SKIN_BUY,Buy — %d,Acheter — %d
+UI_SKIN_SHARDS,◆ %d portal shards,◆ %d éclats de portail
+UI_SHARDS_EARNED,Portal shards,Éclats de portail
+UI_SHARDS_FROM,from %d challenge(s),pour %d défi(s)
+UI_COLLECTION_HEADER,"Collection: %d / %d done (%d shards earned)","Collection : %d / %d réussis (%d éclats gagnés)"
