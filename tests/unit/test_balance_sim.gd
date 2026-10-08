@@ -31,7 +31,7 @@ func test_simulated_runs_never_touch_the_profile() -> void:
 	add_child_autofree(run)
 	run._record_run(true)
 	get_tree().paused = false
-	assert_eq(SaveService.profile.max_difficulty(&"ronin"), 0, "no seal unlocked by a simulation")
+	assert_eq(SaveService.profile.max_difficulty(), 0, "no seal unlocked by a simulation")
 
 
 func test_unlock_all_offers_locked_content() -> void:

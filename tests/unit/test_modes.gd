@@ -81,18 +81,18 @@ func test_wave_director_does_not_win_in_endless() -> void:
 	assert_signal_not_emitted(waves, "run_won")
 
 
-func test_difficulty_unlocks_per_character() -> void:
+func test_difficulty_unlocks_globally() -> void:
 	var profile := Profile.new()
-	assert_eq(profile.max_difficulty(&"drifter"), 0)
+	assert_eq(profile.max_difficulty(), 0)
 	var result := RunResult.new()
 	result.character_id = &"drifter"
 	result.won = true
 	result.difficulty = 0
 	SaveService.record_run(result)
-	assert_eq(SaveService.profile.max_difficulty(&"drifter"), 1)
-	assert_eq(SaveService.profile.max_difficulty(&"ronin"), 0, "per character")
+	assert_eq(SaveService.profile.max_difficulty(), 1)
+	assert_eq(SaveService.profile.best_difficulty_by_character.get(&"ronin", -1), -1, "record kept per character")
 	var back := Profile.from_dict(SaveService.profile.to_dict())
-	assert_eq(back.max_difficulty(&"drifter"), 1)
+	assert_eq(back.max_difficulty(), 1)
 
 
 func test_endless_record_is_kept_per_character() -> void:

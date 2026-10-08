@@ -250,12 +250,9 @@ func close() -> void:
 	visible = false
 
 
-## Highest seal every hunter of the party has opened.
+## Highest seal open: one above the best win of any hunter (global unlock).
 static func allowed_level(hunters: Array[CharacterData]) -> int:
-	var allowed := 999
-	for hunter in hunters:
-		allowed = mini(allowed, SaveService.profile.max_difficulty(hunter.id))
-	return 0 if hunters.is_empty() else allowed
+	return 0 if hunters.is_empty() else SaveService.profile.max_difficulty()
 
 
 static func all_levels() -> Array[DifficultyData]:
