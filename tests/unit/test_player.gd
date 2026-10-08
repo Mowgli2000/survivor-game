@@ -63,3 +63,10 @@ func test_player_sprite_faces_movement() -> void:
 	await wait_physics_frames(3)
 	assert_eq(player.animator.facing, -1.0)
 	assert_eq(player.animator.animation, &"walk")
+
+
+func test_walk_cycle_follows_the_movement_speed() -> void:
+	assert_almost_eq(Player.walk_anim_rate(Player.WALK_ANIM_SPEED), 1.0, 0.001, "drawn speed at the base speed")
+	assert_gt(Player.walk_anim_rate(450.0), 1.0, "a faster hunter steps faster")
+	assert_eq(Player.walk_anim_rate(5000.0), Player.WALK_RATE_MAX, "never frantic")
+	assert_eq(Player.walk_anim_rate(10.0), Player.WALK_RATE_MIN)
