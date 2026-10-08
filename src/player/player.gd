@@ -23,7 +23,7 @@ const WALK_RATE_MAX := 1.8
 const SPRITE_FOOT := 0.8
 ## Opacity of a dead player waiting for the next wave (coop).
 const GHOST_ALPHA := 0.3
-## Seconds of the drop out of the portal (enter_from).
+## Default seconds of the drop out of the portal (enter_from).
 const ARRIVAL_SECONDS := 0.85
 const SPRITE_SHADER := preload("res://src/player/player_sprite.gdshader")
 
@@ -64,6 +64,7 @@ var _arena: Rect2
 var _invulnerable: float = 0.0
 var _last_max_hp: float = 0.0
 var _arrival_left: float = 0.0
+var _arrival_total: float = ARRIVAL_SECONDS
 ## Where the drop starts, relative to the landing spot.
 var _arrival_offset: Vector2 = Vector2.ZERO
 
@@ -123,9 +124,10 @@ func _ready() -> void:
 
 ## The hero falls from `origin` (global) to where it stands, small and transparent
 ## at first; controls, weapons and damage wait for the landing.
-func enter_from(origin: Vector2) -> void:
+func enter_from(origin: Vector2, seconds: float = ARRIVAL_SECONDS) -> void:
 	_arrival_offset = origin - global_position
-	_arrival_left = ARRIVAL_SECONDS
+	_arrival_total = seconds
+	_arrival_left = seconds
 	weapon_visuals.visible = false
 	if health_bar != null:
 		# modulate, not visible: the "HP bar above the hero" setting owns that flag.
@@ -314,7 +316,7 @@ func _draw_sprite() -> void:
 	var tint := Color.WHITE
 	if _arrival_left > 0.0:
 		# Gravity: slow at the gate, fast at the ground.
-		var t := 1.0 - _arrival_left / ARRIVAL_SECONDS
+		var t := 1.0 - _arrival_left / _arrival_total
 		var shadow := Transform2D(0.0, Vector2(1.0, 0.35), 0.0, feet)
 		draw_set_transform_matrix(shadow)
 		draw_circle(Vector2.ZERO, radius * 1.7 * t, Color(0.05, 0.03, 0.12, 0.35 * t))

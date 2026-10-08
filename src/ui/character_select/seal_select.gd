@@ -14,6 +14,7 @@ signal chosen(difficulty: DifficultyData)
 signal back
 
 const BACKGROUND := preload("res://assets/ui/select/seal_gate.png")
+const SWIRL_SHADER := preload("res://src/ui/character_select/portal_swirl.gdshader")
 const ROMAN: Array[String] = ["I", "II", "III", "IV", "V", "VI"]
 const SKULL := "☠"
 const LOCK := "🔒"
@@ -24,7 +25,7 @@ const SEAL_FACE: Array[Color] = [Color("8a4a24"), Color("5a6270"), Color("9aa4b4
 		Color("241a3a"), Color("2b5c8a")]
 ## Where the gate's swirl sits in seal_gate.png (share of width, of height).
 const PORTAL_CENTER := Vector2(0.508, 0.39)
-const ENTER_SECONDS := 1.15
+const ENTER_SECONDS := 1.4
 const ENTER_ZOOM := 9.0
 const MEDAL_SIZE := Vector2(200, 200)
 const REWARD_BOX := 96.0
@@ -117,6 +118,10 @@ func _init() -> void:
 	var background := TextureRect.new()
 	_background = background
 	background.texture = BACKGROUND
+	# The picture's own portal turns like a black hole (same picture, same portal).
+	var swirl := ShaderMaterial.new()
+	swirl.shader = SWIRL_SHADER
+	background.material = swirl
 	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	background.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -404,9 +409,13 @@ func _enter_portal() -> void:
 	var tween := create_tween().set_parallel(true)
 	tween.tween_property(_page, "modulate:a", 0.0, ENTER_SECONDS * 0.3)
 	tween.tween_property(_background, "scale", Vector2.ONE * ENTER_ZOOM, ENTER_SECONDS) 		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-	tween.tween_property(_background, "rotation", 0.35, ENTER_SECONDS) 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tween.tween_method(_set_pull, 0.0, 1.0, ENTER_SECONDS * 0.8)
 	tween.tween_property(flash, "modulate:a", 1.0, ENTER_SECONDS * 0.35).set_delay(ENTER_SECONDS * 0.65)
 	tween.chain().tween_callback(_finish_enter)
+
+
+func _set_pull(value: float) -> void:
+	(_background.material as ShaderMaterial).set_shader_parameter(&"pull", value)
 
 
 ## The violet cover stays up: the scene changes right after "chosen".

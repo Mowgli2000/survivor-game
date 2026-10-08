@@ -6,8 +6,10 @@ extends CanvasLayer
 
 const COLOR := Color(0.36, 0.2, 0.85)
 const CLEAR_SECONDS := 0.6
-## The gate opens this far above the landing spot (about half the screen).
-const DROP_HEIGHT := 520.0
+## Seconds the heroes fall, then the camera zooms in to the play view.
+const FALL_SECONDS := 1.5
+const ZOOM_SECONDS := 1.0
+const GATE_RADIUS := 260.0
 
 
 func _ready() -> void:
