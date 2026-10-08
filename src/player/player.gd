@@ -8,6 +8,8 @@ signal damaged(amount: float)
 signal died
 ## A hit was avoided (dodge stat).
 signal dodged
+## The drop out of the gate at the start of a run ended (enter_from).
+signal landed
 
 ## Sprite height in px per px of collision radius.
 const SPRITE_HEIGHT_PER_RADIUS := 6.4
@@ -21,6 +23,8 @@ const WALK_RATE_MAX := 1.8
 const SPRITE_FOOT := 0.8
 ## Opacity of a dead player waiting for the next wave (coop).
 const GHOST_ALPHA := 0.3
+## Seconds of the drop out of the portal (enter_from).
+const ARRIVAL_SECONDS := 0.85
 const SPRITE_SHADER := preload("res://src/player/player_sprite.gdshader")
 
 var stats: StatBlock
@@ -59,6 +63,9 @@ var _variant: int = 0
 var _arena: Rect2
 var _invulnerable: float = 0.0
 var _last_max_hp: float = 0.0
+var _arrival_left: float = 0.0
+## Where the drop starts, relative to the landing spot.
+var _arrival_offset: Vector2 = Vector2.ZERO
 
 
 
@@ -114,11 +121,32 @@ func _ready() -> void:
 		health_bar.setup(self, head_height())
 
 
+## The hero falls from `origin` (global) to where it stands, small and transparent
+## at first; controls, weapons and damage wait for the landing.
+func enter_from(origin: Vector2) -> void:
+	_arrival_offset = origin - global_position
+	_arrival_left = ARRIVAL_SECONDS
+	weapon_visuals.visible = false
+	if health_bar != null:
+		# modulate, not visible: the "HP bar above the hero" setting owns that flag.
+		health_bar.modulate.a = 0.0
+
+
 func _physics_process(delta: float) -> void:
 	if rig != null:
 		rig.flash = motion.flash
 		rig.animate(delta, 0.0 if is_dead else motion.speed_ratio, motion.flash)
 		_place_rig()
+	if _arrival_left > 0.0:
+		_arrival_left -= delta
+		animator.advance(delta, &"idle", 1.0)
+		if _arrival_left <= 0.0:
+			weapon_visuals.visible = true
+			if health_bar != null:
+				health_bar.modulate.a = 1.0
+			landed.emit()
+		queue_redraw()
+		return
 	if is_dead:
 		return
 	var direction: Vector2
@@ -151,7 +179,7 @@ func _physics_process(delta: float) -> void:
 
 
 func take_damage(amount: float) -> void:
-	if is_dead or invincible or _invulnerable > 0.0:
+	if is_dead or invincible or _invulnerable > 0.0 or _arrival_left > 0.0:
 		return
 	if rng.randf() < stats.get_value(StatIds.DODGE):
 		dodged.emit()
@@ -283,6 +311,15 @@ func _draw_sprite() -> void:
 	_draw_dust(feet)
 
 	var body := Transform2D(motion.lean, motion.body_scale(), 0.0, feet) * Transform2D(0.0, -feet)
+	var tint := Color.WHITE
+	if _arrival_left > 0.0:
+		# Gravity: slow at the gate, fast at the ground.
+		var t := 1.0 - _arrival_left / ARRIVAL_SECONDS
+		var shadow := Transform2D(0.0, Vector2(1.0, 0.35), 0.0, feet)
+		draw_set_transform_matrix(shadow)
+		draw_circle(Vector2.ZERO, radius * 1.7 * t, Color(0.05, 0.03, 0.12, 0.35 * t))
+		body = Transform2D(0.0, Vector2.ONE * lerpf(0.3, 1.0, t), 0.0, _arrival_offset * (1.0 - t * t)) * body
+		tint.a = clampf(t * 4.0, 0.0, 1.0)
 	draw_set_transform_matrix(body)
-	sheet.draw(self, animator.frame, height, foot, 1.0, Color.WHITE)
+	sheet.draw(self, animator.frame, height, foot, 1.0, tint)
 	draw_set_transform_matrix(Transform2D.IDENTITY)

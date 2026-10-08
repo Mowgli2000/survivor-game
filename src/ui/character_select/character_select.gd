@@ -1221,8 +1221,8 @@ func chosen_variant() -> int:
 
 ## Solo: the seal is chosen, the run starts.
 func _start(difficulty: DifficultyData) -> void:
-	Audio.play(Sounds.PORTAL_OPEN, -4.0)
 	var setup := RunSetup.new()
+	setup.portal_intro = true
 	setup.difficulty = difficulty
 	setup.character = _chosen
 	setup.weapon = _weapon

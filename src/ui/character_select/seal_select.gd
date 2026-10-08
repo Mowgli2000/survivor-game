@@ -22,6 +22,10 @@ const SEAL_RIM: Array[Color] = [Color("d9874a"), Color("b8c0cc"), Color("eef2f8"
 		Color("b86bff"), Color("8fe9ff")]
 const SEAL_FACE: Array[Color] = [Color("8a4a24"), Color("5a6270"), Color("9aa4b4"), Color("b8860b"),
 		Color("241a3a"), Color("2b5c8a")]
+## Where the gate's swirl sits in seal_gate.png (share of width, of height).
+const PORTAL_CENTER := Vector2(0.508, 0.39)
+const ENTER_SECONDS := 1.15
+const ENTER_ZOOM := 9.0
 const MEDAL_SIZE := Vector2(200, 200)
 const REWARD_BOX := 96.0
 
@@ -41,6 +45,9 @@ var _place: Label
 var _rewards_title: Label
 var _rewards: HBoxContainer
 var _launch: Button
+var _background: TextureRect
+var _page: Control
+var _entering: bool = false
 
 
 ## Round seal: metal rim, face, numeral; glowing rings when picked, dark with a padlock
@@ -108,6 +115,7 @@ func _init() -> void:
 	floor_color.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(floor_color)
 	var background := TextureRect.new()
+	_background = background
 	background.texture = BACKGROUND
 	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
@@ -126,6 +134,7 @@ func _init() -> void:
 	margin.add_theme_constant_override("margin_top", 26)
 	margin.add_theme_constant_override("margin_bottom", 90)
 	add_child(margin)
+	_page = margin
 	var page := VBoxContainer.new()
 	page.add_theme_constant_override("separation", 18)
 	margin.add_child(page)
@@ -369,8 +378,39 @@ func _reward_box(icon: Texture2D, won: bool) -> Control:
 
 
 func _confirm() -> void:
-	if _difficulty == null or not visible:
+	if _difficulty == null or not visible or _entering:
 		return
+	if DisplayServer.get_name() == "headless":
+		chosen.emit(_difficulty)
+		return
+	_enter_portal()
+
+
+## Only the gate moves: the picture zooms and turns into the swirl while the menu
+## fades, then the run starts with a violet screen (PortalArrival) that clears.
+func _enter_portal() -> void:
+	_entering = true
+	Audio.play(Sounds.PORTAL_OPEN, -4.0)
+	# Scale around the swirl: where it lies on screen once the picture is "covered".
+	var cover := maxf(size.x / BACKGROUND.get_width(), size.y / BACKGROUND.get_height())
+	var drawn := Vector2(BACKGROUND.get_size()) * cover
+	_background.pivot_offset = (size - drawn) * 0.5 + drawn * PORTAL_CENTER
+	var flash := ColorRect.new()
+	flash.color = PortalArrival.COLOR
+	flash.modulate.a = 0.0
+	flash.set_anchors_preset(Control.PRESET_FULL_RECT)
+	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(flash)
+	var tween := create_tween().set_parallel(true)
+	tween.tween_property(_page, "modulate:a", 0.0, ENTER_SECONDS * 0.3)
+	tween.tween_property(_background, "scale", Vector2.ONE * ENTER_ZOOM, ENTER_SECONDS) 		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	tween.tween_property(_background, "rotation", 0.35, ENTER_SECONDS) 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tween.tween_property(flash, "modulate:a", 1.0, ENTER_SECONDS * 0.35).set_delay(ENTER_SECONDS * 0.65)
+	tween.chain().tween_callback(_finish_enter)
+
+
+## The violet cover stays up: the scene changes right after "chosen".
+func _finish_enter() -> void:
 	chosen.emit(_difficulty)
 
 

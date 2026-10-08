@@ -70,3 +70,19 @@ func test_walk_cycle_follows_the_movement_speed() -> void:
 	assert_gt(Player.walk_anim_rate(450.0), 1.0, "a faster hunter steps faster")
 	assert_eq(Player.walk_anim_rate(5000.0), Player.WALK_RATE_MAX, "never frantic")
 	assert_eq(Player.walk_anim_rate(10.0), Player.WALK_RATE_MIN)
+
+
+func test_arrival_from_the_gate_blocks_hits_and_movement_until_it_lands() -> void:
+	watch_signals(_player)
+	_player.bot_input = func() -> Vector2: return Vector2.RIGHT
+	_player.enter_from(Vector2(0.0, -400.0))
+	_player.take_damage(10.0)
+	assert_eq(_player.hp, 50.0, "no damage while dropping")
+	await wait_physics_frames(3)
+	assert_eq(_player.position, Vector2.ZERO, "no walking while dropping")
+	assert_false(_player.weapon_visuals.visible)
+	await wait_seconds(Player.ARRIVAL_SECONDS + 0.2)
+	assert_signal_emitted(_player, "landed")
+	assert_true(_player.weapon_visuals.visible)
+	_player.take_damage(10.0)
+	assert_eq(_player.hp, 40.0, "hits count again once landed")

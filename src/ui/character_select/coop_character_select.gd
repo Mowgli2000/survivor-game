@@ -110,5 +110,5 @@ func _start(difficulty: DifficultyData) -> void:
 	setup.weapon_2 = second.chosen_weapon()
 	setup.variant_2 = second.chosen_variant()
 	setup.difficulty = difficulty
-	Audio.play(Sounds.PORTAL_OPEN, -4.0)
+	setup.portal_intro = true
 	started.emit(setup)
