@@ -39,8 +39,14 @@ const COMPACT_RULE_WIDTH := 440.0
 ## Stone platform; PLATFORM_TOP is the middle of its top surface (fractions of the image).
 const PLATFORM := preload("res://assets/ui/select/platform_stone.png")
 const PLATFORM_TOP := Vector2(0.52, 0.37)
-## Platform width for a hero height (the hero's art is mostly empty on the sides).
-const PLATFORM_PER_HERO := 0.62
+## Platform width for a hero height: the width of his feet band times PLATFORM_MARGIN, kept
+## between PLATFORM_PER_HERO_MIN and _MAX (a slim hero gets a compact platform, a broad one
+## a wide platform his feet do not overhang).
+const PLATFORM_MARGIN := 1.55
+const PLATFORM_PER_HERO_MIN := 0.6
+const PLATFORM_PER_HERO_MAX := 0.85
+## Bottom share of a figure taken as its feet band.
+const FEET_BAND := 0.22
 ## The look behind on the turntable: smaller, higher, darker (dev: "more behind than beside").
 const BACK_SCALE := 0.72
 const BACK_TINT := Color(0.3, 0.26, 0.45, 0.9)
@@ -59,6 +65,8 @@ const STAT_COLORS: Dictionary[StringName, Color] = {
 static var _feet_cache: Dictionary = {}
 ## Head square of each card (see head_region).
 static var _head_cache: Dictionary = {}
+## Feet band width of each card (see feet_band_share).
+static var _band_cache: Dictionary = {}
 
 ## One row per class (name and head), by id.
 var _character_buttons: Dictionary[StringName, Button] = {}
@@ -748,13 +756,14 @@ func _layout_stage() -> void:
 	var area := _stage.size
 	if area.x <= 0.0:
 		return
-	# The hero fills the height above his feet; the platform is sized on him (a bit
-	# wider than the broadest hero, the male berserker), the dots under it.
+	# The hero fills the height above his feet; the platform is sized on his feet (the wider
+	# of his two looks, so it does not change when the turntable turns), the dots under it.
 	var dots_room := 26.0
 	var ratio := PLATFORM.get_height() / float(PLATFORM.get_width())
-	var below := (1.0 - PLATFORM_TOP.y) * ratio * PLATFORM_PER_HERO
+	var per_hero := platform_per_hero(_hero_art.texture, _back_art.texture)
+	var below := (1.0 - PLATFORM_TOP.y) * ratio * per_hero
 	var hero_h := (area.y - dots_room - 6.0) / (1.0 + below)
-	var platform_w := minf(hero_h * PLATFORM_PER_HERO, area.x * 0.8)
+	var platform_w := minf(hero_h * per_hero, area.x * 0.8)
 	var platform_h := platform_w * ratio
 	var feet := Vector2(area.x * 0.5, area.y - dots_room - platform_h * (1.0 - PLATFORM_TOP.y))
 	hero_h = feet.y - 6.0
@@ -781,6 +790,41 @@ func _place_on_feet(rect: TextureRect, feet: Vector2, height: float) -> void:
 	var anchor := feet_anchor(rect.texture)
 	rect.size = Vector2(width, height)
 	rect.position = feet - Vector2(width * anchor.x, height * anchor.y)
+
+
+## Platform width, as a share of the hero's displayed height, for the looks `front` and
+## `back` (null: none): the widest feet band of the two (see PLATFORM_MARGIN).
+static func platform_per_hero(front: Texture2D, back: Texture2D) -> float:
+	var share := 0.0
+	for texture in [front, back]:
+		if texture != null:
+			share = maxf(share, feet_band_share(texture))
+	return clampf(share * PLATFORM_MARGIN, PLATFORM_PER_HERO_MIN, PLATFORM_PER_HERO_MAX)
+
+
+## Width of the figure of a card in its feet band, as a share of the card's height.
+## Measured once per texture.
+static func feet_band_share(texture: Texture2D) -> float:
+	if _band_cache.has(texture):
+		return _band_cache[texture]
+	var share := 0.0
+	var image := texture.get_image()
+	if image != null:
+		if image.is_compressed():
+			image.decompress()
+		var used := image.get_used_rect()
+		var top := used.end.y - maxi(roundi(used.size.y * FEET_BAND), 1)
+		var left := image.get_width()
+		var right := 0
+		for y in range(top, used.end.y, 2):
+			for x in range(used.position.x, used.end.x):
+				if image.get_pixel(x, y).a > 0.5:
+					left = mini(left, x)
+					right = maxi(right, x)
+		if right > left:
+			share = float(right - left) / image.get_height()
+	_band_cache[texture] = share
+	return share
 
 
 ## Where the hero stands in a card illustration, as fractions of its size: the middle
