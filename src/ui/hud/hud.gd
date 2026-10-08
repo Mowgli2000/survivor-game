@@ -201,7 +201,7 @@ func _init() -> void:
 	box.add_child(_level_label)
 
 	_materials_label = _make_label(&"ValueLabel", 28)
-	_materials_label.add_theme_color_override("font_color", UiTheme.GOOD)
+	_materials_label.add_theme_color_override("font_color", UiTheme.GOLD)
 	box.add_child(_materials_label)
 
 	_wave_label = _make_label(&"SubtitleLabel", 30)

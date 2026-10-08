@@ -16,6 +16,15 @@ func on_acquired(effects: ItemEffects) -> void:
 	_update()
 
 
+func preview_modifiers(_stats: StatBlock, weapons: WeaponHolder) -> Array[StatModifier]:
+	var count := 0
+	if weapons != null:
+		for slot in weapons.get_slots():
+			if family in slot.data.families:
+				count += 1
+	return [_scaled(modifier, count)] if modifier != null else []
+
+
 func applied_count() -> int:
 	return _applied.size()
 
@@ -28,6 +37,14 @@ func _update() -> void:
 		if family in slot.data.families:
 			_player.stats.add_modifier(modifier)
 			_applied.append(modifier)
+
+
+static func _scaled(mod: StatModifier, factor: float) -> StatModifier:
+	var scaled := StatModifier.new()
+	scaled.stat = mod.stat
+	scaled.flat = mod.flat * factor
+	scaled.percent = mod.percent * factor
+	return scaled
 
 
 func validate() -> PackedStringArray:
