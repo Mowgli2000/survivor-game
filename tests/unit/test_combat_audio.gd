@@ -51,10 +51,22 @@ func test_a_normal_hit_is_silent() -> void:
 	assert_eq(Audio.voices(Sounds.HIT_CRIT), 0)
 
 
-func test_a_kill_makes_a_thud() -> void:
+func _pop_voices() -> int:
+	var count := 0
+	for stream in Sounds.KILL_POP:
+		count += Audio.voices(stream)
+	return count
+
+
+func test_a_kill_makes_a_pop() -> void:
 	var index := _tough_enemy()
 	_enemies.damage_enemy(index, 2000.0, false, Vector2.RIGHT, 0.0)
-	assert_eq(_flesh_voices(), 1)
+	assert_eq(_pop_voices(), 1)
+	assert_eq(_flesh_voices(), 0, "the body thud is for boss hits now")
+
+
+func test_six_pop_variants_exist() -> void:
+	assert_eq(Sounds.KILL_POP.size(), 6)
 
 
 func test_a_boss_hit_makes_a_thud() -> void:

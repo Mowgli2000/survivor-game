@@ -12,6 +12,10 @@ const REWARD_ICON := 52.0
 
 var _stats: Label
 var _rows: VBoxContainer
+## Collection tab (ADR 0023): its own list, shown instead of `_rows`.
+var _collection_rows: VBoxContainer
+var _tab_progression: Button
+var _tab_collection: Button
 var _back: Button
 ## The rows are not focusable (read-only): up / down scroll the list instead (playtest:
 ## the list could not be scrolled with a gamepad).
@@ -43,15 +47,30 @@ func _init() -> void:
 	_stats.theme_type_variation = &"SmallLabel"
 	_stats.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(_stats)
+	var tabs := HBoxContainer.new()
+	tabs.alignment = BoxContainer.ALIGNMENT_CENTER
+	tabs.add_theme_constant_override("separation", 12)
+	box.add_child(tabs)
+	_tab_progression = _tab_button("UI_TAB_PROGRESSION", tabs)
+	_tab_collection = _tab_button("UI_TAB_COLLECTION", tabs)
+	_tab_progression.pressed.connect(_show_tab.bind(false))
+	_tab_collection.pressed.connect(_show_tab.bind(true))
 	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(900, 480)
+	scroll.custom_minimum_size = Vector2(900, 440)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	box.add_child(scroll)
 	_scroll = scroll
 	_rows = VBoxContainer.new()
 	_rows.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_rows.add_theme_constant_override("separation", 10)
-	scroll.add_child(_rows)
+	var lists := VBoxContainer.new()
+	lists.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(lists)
+	lists.add_child(_rows)
+	_collection_rows = VBoxContainer.new()
+	_collection_rows.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_collection_rows.add_theme_constant_override("separation", 10)
+	lists.add_child(_collection_rows)
 	_back = Button.new()
 	_back.text = "UI_BACK"
 	_back.custom_minimum_size = Vector2(260, 64)
@@ -64,9 +83,10 @@ func open() -> void:
 	var profile := SaveService.profile
 	_stats.text = tr("UI_PROFILE_STATS") % [profile.runs_played, profile.runs_won, profile.best_wave,
 		profile.total_kills]
-	for child in _rows.get_children():
-		_rows.remove_child(child)
-		child.queue_free()
+	for list in [_rows, _collection_rows]:
+		for child in list.get_children():
+			list.remove_child(child)
+			child.queue_free()
 	# Other challenges first, then the seal rewards from Copper to Astral.
 	var challenges := SaveService.all_challenges()
 	challenges.sort_custom(func(a: ChallengeData, b: ChallengeData) -> bool:
@@ -81,9 +101,28 @@ func open() -> void:
 	for group in grouped(challenges):
 		_rows.add_child(_row(group, profile))
 	_add_collection(profile)
+	_show_tab(false)
 	visible = true
-	_scroll.scroll_vertical = 0
 	_back.grab_focus()
+
+
+func _tab_button(text: String, parent: Control) -> Button:
+	var button := Button.new()
+	button.text = text
+	button.toggle_mode = true
+	button.custom_minimum_size = Vector2(300, 56)
+	parent.add_child(button)
+	return button
+
+
+## The two kinds of challenge live apart: progression (unlocks content) and
+## collection (pays portal shards).
+func _show_tab(collection: bool) -> void:
+	_rows.visible = not collection
+	_collection_rows.visible = collection
+	_tab_progression.button_pressed = not collection
+	_tab_collection.button_pressed = collection
+	_scroll.scroll_vertical = 0
 
 
 ## Collection challenges: they pay portal shards for the skin shop (ADR 0023).
@@ -103,9 +142,9 @@ func _add_collection(profile: Profile) -> void:
 	header.text = tr("UI_COLLECTION_HEADER") % [done_count, collection.size(), earned]
 	header.theme_type_variation = &"SubtitleLabel"
 	header.add_theme_color_override("font_color", UiTheme.VIOLET)
-	_rows.add_child(header)
+	_collection_rows.add_child(header)
 	for challenge in collection:
-		_rows.add_child(_collection_row(challenge, profile))
+		_collection_rows.add_child(_collection_row(challenge, profile))
 
 
 func _collection_row(challenge: ChallengeData, profile: Profile) -> Control:

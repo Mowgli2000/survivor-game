@@ -27,6 +27,15 @@ const KILL_THUD: Array[AudioStream] = [
 	preload("res://assets/audio/sfx/combat/kill_thud_3.ogg"),
 	preload("res://assets/audio/sfx/combat/kill_thud_4.ogg"),
 	preload("res://assets/audio/sfx/combat/kill_thud_5.ogg")]
+## Monster death: a soft "pop" with a puff of smoke, six pitches (synthesized by
+## tools/audio/make_kill_pops.py). Replaces the body thuds for normal kills.
+const KILL_POP: Array[AudioStream] = [
+	preload("res://assets/audio/sfx/combat/kill_pop_1.wav"),
+	preload("res://assets/audio/sfx/combat/kill_pop_2.wav"),
+	preload("res://assets/audio/sfx/combat/kill_pop_3.wav"),
+	preload("res://assets/audio/sfx/combat/kill_pop_4.wav"),
+	preload("res://assets/audio/sfx/combat/kill_pop_5.wav"),
+	preload("res://assets/audio/sfx/combat/kill_pop_6.wav")]
 const HIT_CRIT := preload("res://assets/audio/sfx/combat/hit_crit.ogg")
 ## Low thump layered under the player's hurt sound (louder with the damage).
 const PLAYER_HIT_HEAVY := preload("res://assets/audio/sfx/combat/player_hit_heavy.ogg")

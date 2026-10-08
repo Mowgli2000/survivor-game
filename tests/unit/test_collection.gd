@@ -106,3 +106,22 @@ func test_past_statistics_pay_the_collection_at_load() -> void:
 	var paid := profile.shards
 	SaveService.load_profile()
 	assert_eq(SaveService.profile.shards, paid, "paid once")
+
+
+func test_a_prestige_skin_waits_for_the_astral_seal() -> void:
+	var skin := _skin(700)
+	skin.rarity = 3
+	skin.required_seal = 5
+	SaveService.profile.add_shards(1000)
+	assert_false(SaveService.is_skin_available(skin))
+	assert_false(SaveService.buy_skin(skin), "Astral seal not won yet")
+	assert_eq(SaveService.profile.shards, 1000, "nothing spent")
+	SaveService.profile.best_difficulty_by_character[&"mage"] = 5
+	assert_true(SaveService.buy_skin(skin), "won by any hunter")
+	assert_eq(SaveService.profile.shards, 300)
+
+
+func test_skin_rarity_must_be_one_to_three() -> void:
+	var skin := _skin(100)
+	skin.rarity = 4
+	assert_gt(skin.validate().size(), 0)

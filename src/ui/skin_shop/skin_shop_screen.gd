@@ -151,10 +151,16 @@ func _show_class(character_id: StringName) -> void:
 func _card(skin: SkinData) -> Control:
 	var owned := SaveService.profile.is_unlocked(&"skins", skin.id)
 	var panel := PanelContainer.new()
-	panel.add_theme_stylebox_override("panel", UiTheme.card_style(UiTheme.VIOLET))
+	panel.add_theme_stylebox_override("panel", UiTheme.card_style(Tiers.color(skin.rarity)))
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 10)
 	panel.add_child(box)
+	var rarity := Label.new()
+	rarity.text = "UI_SKIN_RARITY_%d" % skin.rarity
+	rarity.theme_type_variation = &"SmallLabel"
+	rarity.add_theme_color_override("font_color", Tiers.color(skin.rarity))
+	rarity.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(rarity)
 	var art := TextureRect.new()
 	art.texture = skin.card_art
 	art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -171,6 +177,9 @@ func _card(skin: SkinData) -> Control:
 	buy.custom_minimum_size = Vector2(0, 60)
 	if owned:
 		buy.text = "UI_SKIN_OWNED"
+		buy.disabled = true
+	elif not SaveService.is_skin_available(skin):
+		buy.text = tr("UI_SKIN_NEEDS_SEAL") % tr("DANGER_%d" % skin.required_seal)
 		buy.disabled = true
 	else:
 		buy.text = tr("UI_SKIN_BUY") % skin.price

@@ -66,6 +66,7 @@ var _query: Array[int] = []
 ## Physics frame of the last hit / death sound request (hundreds of hits per frame).
 var _hit_sound_frame: int = -1
 var _death_sound_frame: int = -1
+var _last_pop_variant: int = 0
 ## Hit sounds: at most one per HIT_SOUND_GAP_MS (a horde is hit hundreds of times a
 ## second), the volume follows the hit strength.
 const HIT_SOUND_GAP_MS := 35
@@ -312,7 +313,7 @@ func _lose_hp(enemy: Enemy, amount: float, crit: bool = false, silent: bool = fa
 		var frame := Engine.get_physics_frames()
 		if frame != _death_sound_frame:
 			_death_sound_frame = frame
-			Audio.play(_next_thud(), -3.0, HIT_PITCH_VARIATION)
+			Audio.play(_next_pop(), -4.0, HIT_PITCH_VARIATION)
 	enemy_killed.emit(enemy.data, enemy.position, enemy.elite)
 
 
@@ -331,6 +332,15 @@ func _play_hit(amount: float, crit: bool, boss: bool) -> void:
 		Audio.play(Sounds.HIT_CRIT, 1.0 + strength * 2.0, HIT_PITCH_VARIATION)
 		return
 	Audio.play(_next_thud(), -2.0 + strength * 3.0, HIT_PITCH_VARIATION)
+
+
+## Next death pop: never the same pitch twice in a row.
+func _next_pop() -> AudioStream:
+	var pick := randi() % (Sounds.KILL_POP.size() - 1)
+	if pick >= _last_pop_variant:
+		pick += 1
+	_last_pop_variant = pick
+	return Sounds.KILL_POP[pick]
 
 
 ## Next body thud: variants in turn (never the same one twice in a row), same pitch.
