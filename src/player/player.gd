@@ -11,6 +11,12 @@ signal dodged
 
 ## Sprite height in px per px of collision radius.
 const SPRITE_HEIGHT_PER_RADIUS := 6.4
+## The walk cycle plays at its drawn speed at this movement speed (the base speed) and
+## faster or slower with the real one, so the feet do not slide as much (playtest: a
+## fast hunter seemed to walk backward). Kept within WALK_RATE_MIN..WALK_RATE_MAX.
+const WALK_ANIM_SPEED := 300.0
+const WALK_RATE_MIN := 0.6
+const WALK_RATE_MAX := 1.8
 ## Feet sit this fraction of the radius below the player center.
 const SPRITE_FOOT := 0.8
 ## Opacity of a dead player waiting for the next wave (coop).
@@ -53,6 +59,12 @@ var _variant: int = 0
 var _arena: Rect2
 var _invulnerable: float = 0.0
 var _last_max_hp: float = 0.0
+
+
+
+## Walk animation speed factor for a movement speed (see WALK_ANIM_SPEED).
+static func walk_anim_rate(speed: float) -> float:
+	return clampf(speed / WALK_ANIM_SPEED, WALK_RATE_MIN, WALK_RATE_MAX)
 
 
 func setup(data: CharacterData, arena: Rect2, variant: int = 0) -> void:
@@ -120,7 +132,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	position = position.clamp(_arena.position, _arena.end)
 	var anim := &"walk" if velocity.length_squared() > 4.0 else &"idle"
-	animator.advance(delta, anim, velocity.x)
+	animator.advance(delta * walk_anim_rate(velocity.length()) if anim == &"walk" else delta, anim, velocity.x)
 	motion.update(delta, global_position, velocity, stats.get_value(StatIds.MOVE_SPEED))
 	_update_sprite_material()
 	# Redrawn every frame (lean, dust): one or two players only.
