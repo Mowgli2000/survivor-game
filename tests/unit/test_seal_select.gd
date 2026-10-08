@@ -77,12 +77,12 @@ func test_pressing_a_seal_moves_to_play_and_play_confirms_it() -> void:
 	assert_eq(_chosen.level, 0)
 
 
-func test_a_seal_is_open_only_when_every_hunter_won_the_one_below() -> void:
+func test_a_seal_won_by_any_hunter_is_open_for_the_whole_party() -> void:
 	SaveService.profile.best_difficulty_by_character[&"drifter"] = 1
 	assert_eq(SealSelect.allowed_level([ContentDB.get_def(&"characters", &"drifter")] as Array[CharacterData]), 2)
 	var screen := _open([&"drifter", &"hero"])
-	assert_true(screen.seal_buttons()[1].get_meta(&"locked"), "the other hunter has not won Copper")
-	assert_eq(screen.chosen_difficulty().level, 0)
+	assert_false(screen.seal_buttons()[2].get_meta(&"locked"), "the party's best win opens Silver for both")
+	assert_true(screen.seal_buttons()[3].get_meta(&"locked"))
 
 
 func test_rewards_to_win_are_silhouettes() -> void:

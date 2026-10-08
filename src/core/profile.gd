@@ -23,9 +23,19 @@ var best_endless_wave_by_character: Dictionary[StringName, int] = {}
 var seen_hints: Array[StringName] = []
 
 
-## Highest difficulty level `character` may pick: one above its best win.
-func max_difficulty(character: StringName) -> int:
-	return mini(best_difficulty_by_character.get(character, -1) + 1, MAX_DIFFICULTY)
+## Highest difficulty level won with any character (-1: none yet).
+func best_difficulty() -> int:
+	var best := -1
+	for level in best_difficulty_by_character.values():
+		best = maxi(best, level)
+	return best
+
+
+## Highest difficulty level anyone may pick: one above the best win of any character
+## (global unlock, dev's decision 2026-10-08). The per-character record is kept for
+## statistics and challenges.
+func max_difficulty() -> int:
+	return mini(best_difficulty() + 1, MAX_DIFFICULTY)
 
 
 func is_unlocked(category: StringName, id: StringName) -> bool:

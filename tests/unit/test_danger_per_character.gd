@@ -1,6 +1,6 @@
 extends GutTest
-## Regression: Danger levels are unlocked per character, even after switching
-## characters in the selection screen (bug reported by the dev).
+## Danger levels (seals) unlock globally: a win with any hunter opens the next seal
+## for every hunter (dev's decision 2026-10-08, replaces the per-character rule).
 
 
 func before_each() -> void:
@@ -25,28 +25,28 @@ func _dangers_for(screen: CharacterSelect, character: StringName) -> Array[bool]
 	return enabled
 
 
-func test_switching_character_keeps_its_own_dangers() -> void:
+func test_another_hunter_gets_the_seal_a_win_opened() -> void:
 	var screen := CharacterSelect.new()
 	add_child_autofree(screen)
 	screen.open()
 	var drifter := _dangers_for(screen, &"drifter")
-	assert_true(drifter[1], "Drifter: Danger 1 unlocked")
+	assert_true(drifter[1], "Danger 1 open after a Drifter win")
 	screen._seals._go_back()
 	screen._go_back()
 	screen._go_back()
 	var ronin := _dangers_for(screen, &"ronin")
-	assert_false(ronin[1], "Ronin: Danger 1 still locked")
+	assert_true(ronin[1], "Danger 1 open for the Ronin too")
+	assert_false(ronin[2], "Danger 2 still locked")
 
 
-func test_a_drifter_run_does_not_unlock_dangers_for_others() -> void:
+func test_a_win_with_any_hunter_opens_the_next_seal_for_all() -> void:
 	var result := RunResult.new()
 	result.character_id = &"drifter"
 	result.won = true
 	result.difficulty = 1
 	SaveService.record_run(result)
-	assert_eq(SaveService.profile.max_difficulty(&"drifter"), 2)
-	assert_eq(SaveService.profile.max_difficulty(&"ronin"), 0)
-	assert_eq(SaveService.profile.max_difficulty(&"gunslinger"), 0)
+	assert_eq(SaveService.profile.max_difficulty(), 2)
+	assert_eq(SaveService.profile.best_difficulty_by_character.get(&"ronin", -1), -1, "record stays per character")
 
 
 func test_a_run_started_from_the_menu_records_its_own_character() -> void:
@@ -59,11 +59,11 @@ func test_a_run_started_from_the_menu_records_its_own_character() -> void:
 	add_child_autofree(run)
 	run._record_run(true)
 	get_tree().paused = false
-	assert_eq(SaveService.profile.max_difficulty(&"ronin"), 1)
-	assert_eq(SaveService.profile.max_difficulty(&"gunslinger"), 0)
+	assert_eq(SaveService.profile.best_difficulty_by_character.get(&"ronin", -1), 0)
+	assert_eq(SaveService.profile.max_difficulty(), 1)
 
 
-func test_picking_another_character_directly_resets_weapon_and_dangers() -> void:
+func test_picking_another_character_directly_resets_weapon() -> void:
 	var screen := CharacterSelect.new()
 	add_child_autofree(screen)
 	screen.open()
@@ -72,8 +72,7 @@ func test_picking_another_character_directly_resets_weapon_and_dangers() -> void
 	screen._seals._go_back()
 	screen._character_buttons[&"ronin"].pressed.emit()
 	assert_false(screen._seals.visible, "the Drifter's seals must not stay on screen")
-	var ronin := _dangers_for(screen, &"ronin")
-	assert_false(ronin[1], "Ronin: Danger 1 still locked")
+	_dangers_for(screen, &"ronin")
 	watch_signals(screen)
 	screen._seals._launch.pressed.emit()
 	var setup: RunSetup = get_signal_parameters(screen, "started")[0]
