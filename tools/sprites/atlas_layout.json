@@ -161,8 +161,8 @@
 		"res://assets/sprites/atlas.png"
 	],
 	"drifter_m": [
-		0,
-		1024,
+		2650,
+		816,
 		127,
 		208,
 		"res://assets/sprites/atlas.png"
@@ -294,14 +294,14 @@
 		"res://assets/sprites/atlas.png"
 	],
 	"gunslinger": [
-		1270,
+		0,
 		1024,
 		127,
 		208,
 		"res://assets/sprites/atlas.png"
 	],
 	"gunslinger_m": [
-		2540,
+		1270,
 		1024,
 		127,
 		208,
