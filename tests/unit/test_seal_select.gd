@@ -91,3 +91,27 @@ func test_rewards_to_win_are_silhouettes() -> void:
 	assert_eq(screen._rewards_title.text, tr("SEAL_TO_WIN"))
 	var art := screen._rewards.get_child(0).get_child(0) as TextureRect
 	assert_eq(art.material, SealSelect.silhouette_material())
+
+
+func test_right_moves_through_every_seal() -> void:
+	var screen := _open([&"drifter"])
+	await wait_frames(3)
+	var buttons := screen.seal_buttons()
+	for i in buttons.size() - 1:
+		var right := buttons[i].find_valid_focus_neighbor(SIDE_RIGHT)
+		assert_eq(buttons.find(right), i + 1, "right from seal %d" % i)
+
+
+func test_hidden_weapons_cannot_take_the_focus_behind_the_seals() -> void:
+	# Playtest: right from Obsidian went onto a weapon card hidden behind the seal screen.
+	var screen := CharacterSelect.new()
+	add_child_autofree(screen)
+	screen.open()
+	screen._character_buttons[&"drifter"].pressed.emit()
+	(screen._weapons.get_child(0) as Button).pressed.emit()
+	screen._next.pressed.emit()
+	assert_true(screen._seals.visible)
+	assert_false((screen._weapons.get_child(0) as Control).is_visible_in_tree())
+	assert_false(screen._next.is_visible_in_tree())
+	screen._seals._go_back()
+	assert_true(screen._next.is_visible_in_tree(), "back: the weapons are there again")
