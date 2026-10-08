@@ -26,10 +26,6 @@ var base_zoom: float = 1.0
 ## Followed group; null = the camera stays where its parent puts it.
 var party: Party
 
-var _intro_clock: float = -1.0
-var _intro_fall: float = 0.0
-var _intro_zoom_seconds: float = 0.0
-var _intro_gate: Vector2 = Vector2.ZERO
 var _trauma: float = 0.0
 var _time: float = 0.0
 ## Visual only: never use the run RNG here, it would change gameplay rolls.
@@ -56,44 +52,8 @@ func follow(p_party: Party, p_base_zoom: float) -> void:
 	reset_smoothing()
 
 
-## Run start: wide view of the gate above the arena while the heroes fall (`fall`
-## seconds), then zooms in to the play view over `zoom_seconds`.
-func play_intro(gate: Vector2, fall: float, zoom_seconds: float) -> void:
-	_intro_gate = gate
-	_intro_fall = fall
-	_intro_zoom_seconds = zoom_seconds
-	_intro_clock = 0.0
-	position_smoothing_enabled = false
-	_apply_intro(0.0)
-
-
-func is_intro_playing() -> bool:
-	return _intro_clock >= 0.0
-
-
-func _apply_intro(delta: float) -> void:
-	_intro_clock += delta
-	var center := party.center()
-	var view := get_viewport_rect().size
-	var wide := clampf(view.y / (center.y - _intro_gate.y + 520.0), 0.2, base_zoom)
-	var play_zoom := base_zoom
-	if party.size() > 1:
-		play_zoom = fit_zoom(party, view, base_zoom)
-	var p := clampf((_intro_clock - _intro_fall) / maxf(_intro_zoom_seconds, 0.01), 0.0, 1.0)
-	p = p * p * (3.0 - 2.0 * p)
-	global_position = ((_intro_gate + center) * 0.5).lerp(center, p)
-	zoom = Vector2.ONE * lerpf(wide, play_zoom, p)
-	if _intro_clock >= _intro_fall + _intro_zoom_seconds:
-		_intro_clock = -1.0
-		position_smoothing_enabled = true
-		reset_smoothing()
-
-
 func _physics_process(delta: float) -> void:
 	if party == null:
-		return
-	if _intro_clock >= 0.0:
-		_apply_intro(delta)
 		return
 	global_position = party.center()
 	var target := base_zoom

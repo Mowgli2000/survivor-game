@@ -1,17 +1,20 @@
 shader_type canvas_item;
-// The gate the heroes drop out of at the start of a run: a procedural vortex.
-// Spiral arms of two colors turning at different speeds with turbulence, a black
-// core ringed by a hot accretion circle, a bright rim, a rune ring turning the other
-// way and a soft halo. One quad, no textures. Target: Compatibility renderer, one
+// The gate the heroes walk out of at the start of a run: a procedural vortex inspired
+// by two references (a blue whirlpool with a white-hot heart, a red one made of
+// concentric ripples with dark debris and cracks of lightning). Spiral bands turning,
+// ripple rings, a white core, wisps of lightning near the rim, dark flying shards, a
+// glowing rim and a halo. One quad, no texture. Target: Compatibility renderer, one
 // short fragment shader (a few noise lookups), a single instance on screen.
 
+// 0 = closed, 1 = fully open (the portal grows from its center).
 uniform float open : hint_range(0.0, 1.0) = 1.0;
-uniform vec3 violet : source_color = vec3(0.55, 0.22, 1.0);
-uniform vec3 blue : source_color = vec3(0.25, 0.65, 1.0);
-uniform vec3 deep : source_color = vec3(0.03, 0.0, 0.10);
+// Palette: bright middle bands, outer body, deepest shade (blue by default; red for the
+// last seal).
+uniform vec3 mid : source_color = vec3(0.35, 0.9, 1.0);
+uniform vec3 outer : source_color = vec3(0.22, 0.35, 1.0);
+uniform vec3 deep : source_color = vec3(0.02, 0.03, 0.18);
 // The sprite shows this many gate radii from the center to its edge.
-const float VIEW_RADII = 1.6;
-const float ARMS = 5.0;
+const float VIEW_RADII = 1.7;
 
 float hash(vec2 p) {
 	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -31,36 +34,41 @@ void fragment() {
 	float a = atan(p.y, p.x);
 	float t = TIME;
 
-	// Turbulence follows the spiral so the arms look like flowing matter.
-	float n = noise(vec2(a * 1.5 + t * 0.25, r * 3.5 - t * 0.9));
-	float spin1 = sin(ARMS * a + 7.0 * sqrt(r) - t * 2.2 + n * 2.4);
-	float spin2 = sin((ARMS + 2.0) * a - 11.0 * sqrt(r) + t * 3.1 + n * 3.0);
-	float arm1 = smoothstep(0.15, 0.95, 0.5 + 0.5 * spin1);
-	float arm2 = smoothstep(0.35, 1.0, 0.5 + 0.5 * spin2);
+	// Spiral bands: a logarithmic spiral, bent by turbulence that follows the flow.
+	float n = noise(vec2(cos(a) * r * 2.0, sin(a) * r * 2.0 + t * 0.4) * 2.2);
+	float band_a = 0.5 + 0.5 * sin(2.0 * a + 5.5 * log(r + 0.06) - t * 1.7 + n * 2.2);
+	float band_b = 0.5 + 0.5 * sin(3.0 * a - 4.0 * log(r + 0.06) + t * 2.5 + n * 3.0);
+	float ripple = 0.5 + 0.5 * sin(r * 30.0 - t * 5.5 + n * 2.0);
 
-	float body = smoothstep(0.06, 0.4, r) * (1.0 - smoothstep(0.88, 1.0, r));
-	vec3 col = deep;
-	col = mix(col, violet, arm1 * body);
-	col = mix(col, blue, arm2 * body * 0.85);
-	col += vec3(1.0, 0.9, 1.0) * pow(arm1 * arm2, 2.0) * body * 0.6;
+	float inside_mask = 1.0 - smoothstep(0.9, 1.0, r);
+	vec3 col = mix(deep, outer, 0.3 + 0.7 * band_a);
+	col = mix(col, mid, band_b * smoothstep(0.0, 0.85, 1.0 - r * 0.85) * 0.95);
+	// Concentric ripples, stronger toward the rim.
+	col += mid * ripple * 0.14 * smoothstep(0.25, 1.0, r);
+	// White streaks where both bands peak, then the white-hot core.
+	col += vec3(1.0) * pow(band_a * band_b, 2.0) * 0.55 * (1.0 - r * 0.7);
+	float heart = exp(-r * r * 7.0);
+	col = mix(col, vec3(1.0), clamp(heart * 1.5, 0.0, 1.0));
 
-	// Black core and its hot ring.
-	col *= smoothstep(0.05, 0.3, r);
-	float ring_hot = exp(-pow((r - 0.3) * 16.0, 2.0));
-	col += mix(violet, vec3(1.0), 0.6) * ring_hot * (0.7 + 0.3 * sin(t * 5.0));
+	// Wisps of lightning crawling near the rim.
+	float bolt_noise = noise(vec2(a * 3.2 + t * 2.6, r * 7.0 - t * 1.3));
+	float bolt = smoothstep(0.035, 0.0, abs(bolt_noise - 0.5)) * smoothstep(0.5, 0.92, r);
+	col += mix(mid, vec3(1.0), 0.65) * bolt * 1.1 * inside_mask;
 
-	// Bright rim and the rune ring turning the other way.
-	float rim = exp(-pow((r - 1.0) * 22.0, 2.0));
-	col += mix(violet, vec3(1.0), 0.5) * rim * 1.4;
-	float runes_zone = smoothstep(1.08, 1.11, r) * (1.0 - smoothstep(1.15, 1.18, r));
-	float seg = a * 28.0 / 6.2831853 - t * 0.2;
-	float runes = smoothstep(0.3, 0.4, fract(seg)) * (1.0 - smoothstep(0.6, 0.7, fract(seg))) * step(0.4, hash(vec2(floor(seg), 3.0)));
+	// Dark shards drifting outward.
+	vec2 q = p * 4.5 + vec2(0.0, t * 0.5);
+	vec2 cell = floor(q);
+	float shard = step(0.88, hash(cell)) * (1.0 - smoothstep(0.1, 0.24, length(fract(q) - 0.5)));
+	col = mix(col, deep * 0.35, shard * smoothstep(0.3, 0.8, r) * inside_mask);
+
+	// Bright rim.
+	float rim = exp(-pow((r - 1.0) * 20.0, 2.0));
+	col += mix(mid, vec3(1.0), 0.6) * rim * 1.6;
 
 	// Halo outside the rim, fading to nothing before the sprite's edge.
-	float halo = exp(-(r - 1.0) * 3.2) * (1.0 - smoothstep(1.35, VIEW_RADII, r)) * step(1.0, r);
+	float halo = exp(-(r - 1.0) * 3.0) * (1.0 - smoothstep(1.3, VIEW_RADII, r)) * step(1.0, r);
 	float inside = 1.0 - smoothstep(0.985, 1.02, r);
-	float alpha = max(inside, halo * 0.55 + runes_zone * runes * 0.7);
-	alpha *= smoothstep(0.0, 0.05, open);
-	vec3 out_col = r > 1.0 ? mix(violet, blue, 0.3) * halo * 0.9 + blue * runes_zone * runes * 0.8 : col;
+	float alpha = max(inside, halo * 0.6) * smoothstep(0.0, 0.05, open);
+	vec3 out_col = r > 1.0 ? mix(outer, mid, 0.35) * halo : col;
 	COLOR = vec4(max(out_col, vec3(0.0)), clamp(alpha, 0.0, 1.0));
 }
