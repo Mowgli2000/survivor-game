@@ -140,6 +140,8 @@ func _init(p_compact: bool = false) -> void:
 	header.add_child(_title)
 	_materials = _label(30 if _compact else 40, UiTheme.GOLD, &"ValueLabel")
 	header.add_child(_materials)
+	# The amount first, then the gold coin ("41 (coin)").
+	header.add_child(UiIcons.tile(UiIcons.coin(), 34.0 if _compact else 44.0))
 
 	_cards = HBoxContainer.new()
 	_cards.add_theme_constant_override("separation", 10 if _compact else 24)
@@ -366,7 +368,7 @@ func _rebuild() -> void:
 	_focus_forced = false
 	_controls.clear()
 	_title.text = tr("UI_SHOP_TITLE") % _shop.wave
-	var materials_format := tr("UI_MATERIALS") + " %d"
+	var materials_format := "%d"
 	if _shown_materials < 0:
 		_materials.text = materials_format % _wallet.amount
 	elif _shown_materials != _wallet.amount:

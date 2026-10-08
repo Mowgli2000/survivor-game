@@ -54,6 +54,10 @@ var _life := PackedFloat32Array()
 var _max_life := PackedFloat32Array()
 var _color := PackedColorArray()
 var _style := PackedInt32Array()     # slash style (WeaponData.SlashStyle)
+## Node an effect follows while it lasts (a melee swing or a beam moves with its owner:
+## the hero keeps walking), and where that node was last frame. Null = stays in place.
+var _follow: Array[Node2D] = []
+var _follow_last := PackedVector2Array()
 static var _puff_cache: ImageTexture
 var _count: int = 0
 var _drawn: bool = false
@@ -79,6 +83,8 @@ func _init() -> void:
 	_max_life.resize(CAPACITY)
 	_color.resize(CAPACITY)
 	_style.resize(CAPACITY)
+	_follow_last.resize(CAPACITY)
+	_follow.resize(CAPACITY)
 
 
 func active_count() -> int:
@@ -88,10 +94,10 @@ func active_count() -> int:
 ## Melee hit drawn in the weapon's style (WeaponData.SlashStyle): the blade
 ## sweeps across the arc, then the trail thins and fades.
 func slash(center: Vector2, angle: float, radius: float, half_angle: float, color: Color,
-		style: int = 0) -> void:
+		style: int = 0, follower: Node2D = null) -> void:
 	var life := SLASH_LIFE_SLOW if style == WeaponData.SlashStyle.HEAVY or style == WeaponData.SlashStyle.SMASH 		else SLASH_LIFE
 	_add(Kind.SLASH, center, Vector2.from_angle(angle), shown_size(radius, SLASH_FULL), half_angle,
-		color, life, style)
+		color, life, style, follower)
 	# The weapon winds up first: the streak starts when its strike does.
 	if _count > 0:
 		_life[_count - 1] += WeaponVisuals.strike_delay(style)
@@ -102,8 +108,8 @@ func slash(center: Vector2, angle: float, radius: float, half_angle: float, colo
 		shake_requested.emit(0.06)
 
 
-func beam(from: Vector2, to: Vector2, width: float, color: Color) -> void:
-	_add(Kind.BEAM, from, to, minf(shown_size(width, BEAM_FULL), BEAM_MAX), 0.0, color, 0.14)
+func beam(from: Vector2, to: Vector2, width: float, color: Color, follower: Node2D = null) -> void:
+	_add(Kind.BEAM, from, to, minf(shown_size(width, BEAM_FULL), BEAM_MAX), 0.0, color, 0.14, 0, follower)
 
 
 func explosion(center: Vector2, radius: float, color: Color, shake: bool) -> void:
@@ -152,7 +158,7 @@ func warning_line(from: Vector2, to: Vector2, width: float, color: Color, life: 
 
 
 func _add(kind: Kind, a: Vector2, b: Vector2, size: float, extra: float, color: Color, life: float,
-		style: int = 0) -> void:
+		style: int = 0, follower: Node2D = null) -> void:
 	if _count >= CAPACITY:
 		return  # Dropping a cosmetic effect is better than a frame spike.
 	if _count > BUSY_COUNT and (kind == Kind.SLASH or kind == Kind.EXPLOSION or kind == Kind.BEAM):
@@ -167,6 +173,9 @@ func _add(kind: Kind, a: Vector2, b: Vector2, size: float, extra: float, color: 
 	_max_life[i] = life
 	_color[i] = color
 	_style[i] = style
+	_follow[i] = follower
+	if follower != null:
+		_follow_last[i] = follower.global_position
 	_count += 1
 
 
@@ -182,6 +191,17 @@ func _process(delta: float) -> void:
 		_life[i] -= delta
 		if _life[i] <= 0.0:
 			_remove(i)
+			continue
+		var follower := _follow[i]
+		if follower != null:
+			if is_instance_valid(follower):
+				var moved := follower.global_position - _follow_last[i]
+				_a[i] += moved
+				if _kind[i] == Kind.BEAM:
+					_b[i] += moved  # a slash's _b is a direction: it stays
+				_follow_last[i] = follower.global_position
+			else:
+				_follow[i] = null
 	_drawn = _count > 0
 	queue_redraw()
 
@@ -197,6 +217,9 @@ func _remove(i: int) -> void:
 	_max_life[i] = _max_life[last]
 	_color[i] = _color[last]
 	_style[i] = _style[last]
+	_follow[i] = _follow[last]
+	_follow_last[i] = _follow_last[last]
+	_follow[last] = null
 	_count = last
 
 
