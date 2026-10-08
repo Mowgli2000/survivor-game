@@ -15,3 +15,6 @@ var character_2: CharacterData
 ## Player 2's starting weapon; null = the character's default.
 var weapon_2: WeaponData
 var variant_2: int = 0
+## The seal screen's portal zoom just played: the run opens with the heroes
+## dropping out of the gate (PortalArrival).
+var portal_intro: bool = false

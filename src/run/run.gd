@@ -153,6 +153,8 @@ func _ready() -> void:
 	add_child(enemy_projectiles)
 	add_child(vfx)
 	add_child(damage_numbers)
+	if setup != null and setup.portal_intro:
+		_play_portal_arrival()
 
 	var weapon_pool: Array[WeaponData] = []
 	weapon_pool.assign(_unlocked(&"weapons"))
@@ -282,6 +284,23 @@ func _ready() -> void:
 
 
 ## Two players: chosen in the menu (setup.character_2) or forced by player_count.
+## A gate opens above the screen's top edge and the heroes drop out of it onto
+## their start spot (the arena's own gates are too far to see).
+func _play_portal_arrival() -> void:
+	add_child(PortalArrival.new())
+	for rp in players:
+		var gate: Vector2 = rp.player.global_position + Vector2(0.0, -PortalArrival.DROP_HEIGHT)
+		vfx.portal(gate, ArenaGates.RADIUS, true)
+		rp.player.enter_from(gate)
+		rp.player.landed.connect(_on_player_landed.bind(rp.player))
+
+
+func _on_player_landed(landed: Player) -> void:
+	camera.add_trauma(0.3)
+	vfx.explosion(landed.global_position + Vector2(0.0, landed.radius * Player.SPRITE_FOOT), 60.0,
+		PortalArrival.COLOR.lightened(0.4), false)
+
+
 func is_coop() -> bool:
 	return player_count > 1 or (setup != null and setup.character_2 != null)
 
