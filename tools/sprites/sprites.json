@@ -11,7 +11,7 @@
     "merchant_m":   { "src": "assets_src/ai/ai_merchant_m_anim",   "anims": { "idle": "idle:4:5", "walk": "walk:6:10" }, "glow": "#00000000", "height": 192 },
     "hayate":     { "svg": "assets_src/drawn/hayate",     "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#ff4d5e", "height": 192 },
     "assassin":   { "src": "assets_src/ai/ai_assassin_anim",   "anims": { "idle": "idle:4:5", "walk": "walk:6:10" }, "glow": "#00000000", "height": 192 },
-    "assassin_f":   { "src": "assets_src/ai/ai_assassin_f_anim",   "anims": { "idle": "idle:4:5", "walk": "walk:6:10" }, "glow": "#00000000", "height": 192 },
+    "assassin_f":   { "src": "assets_src/ai/ai_assassin_f_b",   "anims": { "idle": "idle:4:5", "walk": "walk:8:15" }, "glow": "#00000000", "height": 192 },
     "grunt":      { "src": "assets_src/ai/ai_grunt",      "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#00000000", "elite": true },
     "runner":     { "src": "assets_src/ai/ai_runner",     "anims": { "walk": "walk:8:14" }, "glow": "#00000000", "elite": true },
     "shooter":    { "src": "assets_src/ai/ai_shooter",    "anims": { "idle": "idle:6:8", "walk": "walk:8:12" }, "glow": "#00000000", "elite": true },
