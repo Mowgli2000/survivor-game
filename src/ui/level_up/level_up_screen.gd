@@ -83,6 +83,7 @@ func _init(p_compact: bool = false) -> void:
 
 	_reroll = Button.new()
 	_reroll.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	UiIcons.put_after_text(_reroll, UiIcons.coin())
 	_reroll.pressed.connect(func() -> void: reroll_requested.emit())
 	box.add_child(_reroll)
 	if not _compact:

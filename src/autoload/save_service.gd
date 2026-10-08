@@ -29,6 +29,7 @@ func load_profile() -> void:
 			profile = Profile.from_dict(saved)
 	_grant_past_seal_rewards()
 	_grant_past_collection()
+	_grant_prestige_skins()
 	profile_changed.emit()
 
 
@@ -65,6 +66,27 @@ func _grant_past_collection() -> void:
 		granted = true
 	if granted:
 		save_profile()
+
+
+## Prestige skins (ADR 0023): winning at the skin's seal with its class gives it, for
+## good. `result` null = read the best seal won per class from the profile (load).
+func _grant_prestige_skins(result: RunResult = null) -> bool:
+	var granted := false
+	for def in ContentDB.get_all(&"skins"):
+		var skin := def as SkinData
+		if skin == null or not skin.is_prestige() or profile.is_unlocked(&"skins", skin.id):
+			continue
+		var won := false
+		if result != null:
+			won = result.won and result.character_id == skin.character_id and result.difficulty >= skin.prestige_seal
+		else:
+			won = profile.best_difficulty_by_character.get(skin.character_id, -1) >= skin.prestige_seal
+		if won:
+			profile.unlock(&"skins", skin.id)
+			granted = true
+	if granted and result == null:
+		save_profile()
+	return granted
 
 
 func save_profile() -> void:
@@ -113,6 +135,7 @@ func record_run(result: RunResult, challenges: Array[ChallengeData] = []) -> Arr
 			profile.unlock(challenge.unlock_category, challenge.unlock_id)
 		profile.add_shards(challenge.shards)
 		done.append(challenge)
+	_grant_prestige_skins(result)
 	save_profile()
 	profile_changed.emit()
 	return done
@@ -133,14 +156,10 @@ func collection_challenges() -> Array[ChallengeData]:
 	return list
 
 
-## False while the seal a (prestige) skin asks for has not been won by any hunter.
-func is_skin_available(skin: SkinData) -> bool:
-	return skin.required_seal < 0 or profile.best_difficulty() >= skin.required_seal
-
-
-## Buys a skin with portal shards: false when unknown, already owned or too expensive.
+## Buys a skin with portal shards: false when unknown, already owned, prestige (not
+## sold) or too expensive.
 func buy_skin(skin: SkinData) -> bool:
-	if skin == null or profile.is_unlocked(&"skins", skin.id) or not is_skin_available(skin):
+	if skin == null or skin.is_prestige() or profile.is_unlocked(&"skins", skin.id):
 		return false
 	if not profile.spend_shards(skin.price):
 		return false

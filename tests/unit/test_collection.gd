@@ -8,6 +8,7 @@ func before_each() -> void:
 
 
 func after_each() -> void:
+	ContentDB.reload()
 	SafeFile.remove(SaveService.TEST_PATH)
 	SaveService.load_profile()
 
@@ -108,20 +109,44 @@ func test_past_statistics_pay_the_collection_at_load() -> void:
 	assert_eq(SaveService.profile.shards, paid, "paid once")
 
 
-func test_a_prestige_skin_waits_for_the_astral_seal() -> void:
-	var skin := _skin(700)
-	skin.rarity = 3
-	skin.required_seal = 5
-	SaveService.profile.add_shards(1000)
-	assert_false(SaveService.is_skin_available(skin))
-	assert_false(SaveService.buy_skin(skin), "Astral seal not won yet")
-	assert_eq(SaveService.profile.shards, 1000, "nothing spent")
-	SaveService.profile.best_difficulty_by_character[&"mage"] = 5
-	assert_true(SaveService.buy_skin(skin), "won by any hunter")
-	assert_eq(SaveService.profile.shards, 300)
-
-
-func test_skin_rarity_must_be_one_to_three() -> void:
-	var skin := _skin(100)
+func _prestige(character: StringName) -> SkinData:
+	var skin := _skin(0)
+	skin.id = StringName("prestige_%s" % character)
+	skin.character_id = character
 	skin.rarity = 4
+	skin.prestige_seal = 5
+	return skin
+
+
+func test_a_prestige_skin_is_never_sold() -> void:
+	var skin := _prestige(&"ronin")
+	SaveService.profile.add_shards(5000)
+	assert_false(SaveService.buy_skin(skin))
+	assert_eq(SaveService.profile.shards, 5000, "nothing spent")
+	assert_true(skin.is_prestige())
+
+
+func test_winning_the_astral_seal_gives_that_class_its_prestige_skin() -> void:
+	var ronin := _prestige(&"ronin")
+	var mage := _prestige(&"mage")
+	ContentDB._defs[&"skins"] = {ronin.id: ronin, mage.id: mage}
+	SaveService.record_run(_win(&"ronin", 4))
+	assert_false(SaveService.profile.is_unlocked(&"skins", ronin.id), "seal V is not enough")
+	SaveService.record_run(_win(&"ronin", 5))
+	assert_true(SaveService.profile.is_unlocked(&"skins", ronin.id))
+	assert_false(SaveService.profile.is_unlocked(&"skins", mage.id), "another class: not won")
+
+
+func test_past_astral_wins_give_the_prestige_skin_at_load() -> void:
+	var ronin := _prestige(&"ronin")
+	ContentDB._defs[&"skins"] = {ronin.id: ronin}
+	SaveService.profile.best_difficulty_by_character[&"ronin"] = 5
+	SaveService.save_profile()
+	SaveService.load_profile()
+	assert_true(SaveService.profile.is_unlocked(&"skins", ronin.id))
+
+
+func test_skin_rarity_must_be_one_to_four() -> void:
+	var skin := _skin(100)
+	skin.rarity = 5
 	assert_gt(skin.validate().size(), 0)
