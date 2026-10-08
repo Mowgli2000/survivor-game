@@ -2,14 +2,14 @@
 	"assassin": [
 		0,
 		608,
-		111,
+		127,
 		208,
 		"res://assets/sprites/atlas.png"
 	],
 	"assassin_f": [
-		1554,
+		1270,
 		608,
-		111,
+		127,
 		208,
 		"res://assets/sprites/atlas.png"
 	],
@@ -126,44 +126,44 @@
 		"res://assets/sprites/atlas_astral.png"
 	],
 	"berserker": [
-		0,
-		816,
-		124,
+		2540,
+		608,
+		127,
 		208,
 		"res://assets/sprites/atlas.png"
 	],
 	"berserker_m": [
-		1736,
+		0,
 		816,
-		131,
+		133,
 		208,
 		"res://assets/sprites/atlas.png"
 	],
 	"charger": [
 		0,
-		3008,
+		2592,
 		141,
 		144,
 		"res://assets/sprites/atlas.png"
 	],
 	"charger_elite": [
 		1974,
-		3008,
+		2592,
 		141,
 		144,
 		"res://assets/sprites/atlas.png"
 	],
 	"drifter": [
-		0,
-		1024,
-		122,
+		1330,
+		816,
+		132,
 		208,
 		"res://assets/sprites/atlas.png"
 	],
 	"drifter_m": [
-		1708,
-		1024,
-		133,
+		2650,
+		816,
+		127,
 		208,
 		"res://assets/sprites/atlas.png"
 	],
@@ -281,35 +281,35 @@
 	],
 	"grunt": [
 		0,
-		3152,
+		2736,
 		125,
 		144,
 		"res://assets/sprites/atlas.png"
 	],
 	"grunt_elite": [
 		1750,
-		3152,
+		2736,
 		125,
 		144,
 		"res://assets/sprites/atlas.png"
 	],
 	"gunslinger": [
 		0,
-		1232,
-		122,
+		1024,
+		127,
 		208,
 		"res://assets/sprites/atlas.png"
 	],
 	"gunslinger_m": [
-		1708,
-		1232,
-		104,
+		1270,
+		1024,
+		127,
 		208,
 		"res://assets/sprites/atlas.png"
 	],
 	"hayate": [
 		0,
-		1440,
+		1232,
 		163,
 		208,
 		"res://assets/sprites/atlas.png"
@@ -428,43 +428,43 @@
 	],
 	"kamikaze": [
 		0,
-		3296,
+		2880,
 		131,
 		144,
 		"res://assets/sprites/atlas.png"
 	],
 	"kamikaze_elite": [
 		1834,
-		3296,
+		2880,
 		131,
 		144,
 		"res://assets/sprites/atlas.png"
 	],
 	"mage": [
 		2282,
-		1440,
-		120,
+		1232,
+		127,
 		208,
 		"res://assets/sprites/atlas.png"
 	],
 	"mage_m": [
 		0,
-		1648,
-		112,
+		1440,
+		127,
 		208,
 		"res://assets/sprites/atlas.png"
 	],
 	"merchant": [
-		1568,
-		1648,
-		107,
+		1270,
+		1440,
+		127,
 		208,
 		"res://assets/sprites/atlas.png"
 	],
 	"merchant_m": [
-		0,
-		1856,
-		109,
+		2540,
+		1440,
+		127,
 		208,
 		"res://assets/sprites/atlas.png"
 	],
@@ -588,36 +588,29 @@
 		"res://assets/sprites/atlas.png"
 	],
 	"ronin_pc": [
-		1526,
-		1856,
-		105,
-		208,
-		"res://assets/sprites/atlas.png"
-	],
-	"ronin_pc_anim": [
 		0,
-		2064,
-		126,
+		1648,
+		128,
 		208,
 		"res://assets/sprites/atlas.png"
 	],
 	"ronin_pc_m": [
-		1260,
-		2064,
-		121,
+		1280,
+		1648,
+		127,
 		208,
 		"res://assets/sprites/atlas.png"
 	],
 	"runner": [
 		0,
-		3440,
+		3024,
 		139,
 		144,
 		"res://assets/sprites/atlas.png"
 	],
 	"runner_elite": [
 		1112,
-		3440,
+		3024,
 		139,
 		144,
 		"res://assets/sprites/atlas.png"
@@ -631,14 +624,14 @@
 	],
 	"shooter": [
 		0,
-		3584,
+		3168,
 		137,
 		144,
 		"res://assets/sprites/atlas.png"
 	],
 	"shooter_elite": [
 		1918,
-		3584,
+		3168,
 		137,
 		144,
 		"res://assets/sprites/atlas.png"
@@ -757,28 +750,28 @@
 	],
 	"spawner": [
 		0,
-		2272,
+		1856,
 		173,
 		184,
 		"res://assets/sprites/atlas.png"
 	],
 	"spawner_elite": [
 		0,
-		2456,
+		2040,
 		173,
 		184,
 		"res://assets/sprites/atlas.png"
 	],
 	"tank": [
 		0,
-		2640,
+		2224,
 		170,
 		184,
 		"res://assets/sprites/atlas.png"
 	],
 	"tank_elite": [
 		0,
-		2824,
+		2408,
 		170,
 		184,
 		"res://assets/sprites/atlas.png"

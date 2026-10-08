@@ -3,7 +3,9 @@ extends SceneTree
 ## see art_tests/animation_ia/) into the frames the sprite baker expects, for frame-by-
 ## frame animation instead of the procedural one of prepare_ai_sprite.gd:
 ##   - background removed (same flood fill as prepare_ai_sprite.gd);
-##   - the poses found by the empty columns between them (equal slices if that fails);
+##   - the poses found as separate islands of pixels (each pose keeps only its own
+##     pixels, so a hand touching the next pose's hair is not cut); when poses touch,
+##     by the empty columns between them (equal slices if that fails too);
 ##   - one scale for every pose and their vertical place kept (the body bob drawn by
 ##     the artist stays), each pose centered on its torso (the middle band of the
 ##     figure: legs, arms and hair swinging do not shift it);
@@ -48,26 +50,32 @@ func _initialize() -> void:
 		return
 	sheet.convert(Image.FORMAT_RGBA8)
 	PREPARE._remove_background(sheet, bg_luma)
-	var spans := _find_poses(sheet, count)
+	_remove_enclosed_white(sheet)
+	var columns := _split_by_islands(sheet, count)
+	if columns.is_empty():
+		for span in _find_poses(sheet, count):
+			columns.append(sheet.get_region(Rect2i(span.x, 0, span.y - span.x, sheet.get_height())))
 	# Common vertical range and scale: the bob between poses is kept.
 	var top := sheet.get_height()
 	var bottom := 0
-	for span in spans:
-		var used := sheet.get_region(Rect2i(span.x, 0, span.y - span.x, sheet.get_height())).get_used_rect()
+	for column in columns:
+		var used := column.get_used_rect()
 		top = mini(top, used.position.y)
 		bottom = maxi(bottom, used.end.y)
 	var scale := MASTER_HEIGHT / float(bottom - top)
 	var poses: Array[Image] = []
 	var centers: Array[float] = []
 	var widest := 0
-	for span in spans:
-		var pose := sheet.get_region(Rect2i(span.x, top, span.y - span.x, bottom - top))
+	for column in columns:
+		var pose := column.get_region(Rect2i(0, top, column.get_width(), bottom - top))
 		_clean(pose)
 		pose.resize(maxi(1, roundi(pose.get_width() * scale)), MASTER_HEIGHT, Image.INTERPOLATE_LANCZOS)
 		poses.append(pose)
 		centers.append(_torso_x(pose))
 		widest = maxi(widest, pose.get_width())
-	var cw := roundi(widest * 1.1)
+	# One canvas size for every strip of a look: the baker crops all its frames (idle and
+	# walk) to one union rect, so they must share the same frame of reference.
+	var cw := maxi(MASTER_HEIGHT, roundi(widest * 1.2))
 	var ch := roundi(MASTER_HEIGHT * 1.12)
 	var feet_y := ch - roundi(MASTER_HEIGHT * 0.04)
 	var out_dir := ProjectSettings.globalize_path("res://assets_src/ai/" + id)
@@ -80,6 +88,110 @@ func _initialize() -> void:
 		canvas.save_png(out_dir.path_join("%s_%d.png" % [anim, i]))
 	print("sliced %d %s frames into %s" % [poses.size(), anim, out_dir])
 	quit(0)
+
+
+## Background enclosed by the figure (between an arm and the hip) is not reached by the
+## border flood fill: pure white regions of HOLE_MIN pixels or more become transparent.
+## Pure white only (every channel >= 0.96): costume whites are shaded or creamy.
+const HOLE_MIN := 120
+
+
+func _remove_enclosed_white(img: Image) -> void:
+	var w := img.get_width()
+	var h := img.get_height()
+	var seen := PackedByteArray()
+	seen.resize(w * h)
+	for start in w * h:
+		if seen[start] == 1 or not _is_paper(img.get_pixel(start % w, start / w)):
+			continue
+		var region := PackedInt32Array()
+		var stack := PackedInt32Array([start])
+		seen[start] = 1
+		while not stack.is_empty():
+			var idx := stack[stack.size() - 1]
+			stack.resize(stack.size() - 1)
+			region.append(idx)
+			var x := idx % w
+			var y := idx / w
+			for n: int in [idx - 1 if x > 0 else -1, idx + 1 if x < w - 1 else -1, idx - w if y > 0 else -1,
+					idx + w if y < h - 1 else -1]:
+				if n >= 0 and seen[n] == 0 and _is_paper(img.get_pixel(n % w, n / w)):
+					seen[n] = 1
+					stack.append(n)
+		if region.size() >= HOLE_MIN:
+			for idx in region:
+				img.set_pixel(idx % w, idx / w, Color(0, 0, 0, 0))
+
+
+func _is_paper(c: Color) -> bool:
+	return c.a > 0.5 and minf(c.r, minf(c.g, c.b)) >= 0.96
+
+
+## One full-height image per pose holding only its pixels, left to right: the `count`
+## biggest islands are the poses, every smaller island (a strand of hair, a buckle) goes
+## to the pose whose center is closest. Empty when the poses touch each other.
+func _split_by_islands(img: Image, count: int) -> Array[Image]:
+	var w := img.get_width()
+	var h := img.get_height()
+	var label := PackedInt32Array()
+	label.resize(w * h)
+	label.fill(-1)
+	var sizes: Array[int] = []
+	var boxes: Array[Rect2i] = []
+	for start in w * h:
+		if label[start] >= 0 or img.get_pixel(start % w, start / w).a < 0.08:
+			continue
+		var id := sizes.size()
+		var count_px := 0
+		var box := Rect2i(start % w, start / w, 1, 1)
+		var stack := PackedInt32Array([start])
+		label[start] = id
+		while not stack.is_empty():
+			var idx := stack[stack.size() - 1]
+			stack.resize(stack.size() - 1)
+			count_px += 1
+			var x := idx % w
+			var y := idx / w
+			box = box.expand(Vector2i(x, y))
+			for n: int in [idx - 1 if x > 0 else -1, idx + 1 if x < w - 1 else -1, idx - w if y > 0 else -1,
+					idx + w if y < h - 1 else -1]:
+				if n >= 0 and label[n] < 0 and img.get_pixel(n % w, n / w).a >= 0.08:
+					label[n] = id
+					stack.append(n)
+		sizes.append(count_px)
+		boxes.append(box.grow_individual(0, 0, 1, 1))
+	var order: Array[int] = []
+	for i in sizes.size():
+		order.append(i)
+	order.sort_custom(func(a: int, b: int) -> bool: return sizes[a] > sizes[b])
+	if order.size() < count:
+		return []
+	var poses: Array[int] = order.slice(0, count)
+	# A pose is a big island: the last one must not be a crumb (two poses touching).
+	if sizes[poses[count - 1]] < sizes[poses[0]] * 0.4:
+		return []
+	poses.sort_custom(func(a: int, b: int) -> bool: return boxes[a].get_center().x < boxes[b].get_center().x)
+	var owner := {}
+	for i in sizes.size():
+		var best := 0
+		for k in count:
+			if absf(boxes[i].get_center().x - boxes[poses[k]].get_center().x) 					< absf(boxes[i].get_center().x - boxes[poses[best]].get_center().x):
+				best = k
+		owner[i] = best
+	var result: Array[Image] = []
+	for k in count:
+		var span := boxes[poses[k]]
+		for i in sizes.size():
+			if owner[i] == k and sizes[i] >= 20:
+				span = span.merge(boxes[i])
+		var pose := Image.create(span.size.x, h, false, Image.FORMAT_RGBA8)
+		for y in h:
+			for x in range(span.position.x, span.end.x):
+				var id := label[y * w + x]
+				if id >= 0 and owner[id] == k and (id == poses[k] or sizes[id] >= 20):
+					pose.set_pixel(x - span.position.x, y, img.get_pixel(x, y))
+		result.append(pose)
+	return result
 
 
 ## [start x, end x) of each pose: runs of columns holding opaque pixels, merged
