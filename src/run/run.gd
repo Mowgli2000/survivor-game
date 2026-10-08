@@ -153,8 +153,9 @@ func _ready() -> void:
 	add_child(enemy_projectiles)
 	add_child(vfx)
 	add_child(damage_numbers)
-	if setup != null and setup.portal_intro:
-		_play_portal_arrival(arena_rect)
+	var arrival := setup != null and setup.portal_intro
+	if arrival:
+		_play_portal_arrival()
 
 	var weapon_pool: Array[WeaponData] = []
 	weapon_pool.assign(_unlocked(&"weapons"))
@@ -280,29 +281,28 @@ func _ready() -> void:
 			Audio.play_music(Sounds.MUSIC_RUN))
 	if not auto_choose_upgrades:
 		waves.wave_started.connect(_show_wave_hint)
-	waves.start_wave(1)
+	if arrival:
+		# The first wave waits for the gate to close.
+		get_tree().create_timer(PortalArrival.start_delay()).timeout.connect(func() -> void:
+			if not state.is_over:
+				waves.start_wave(1))
+	else:
+		waves.start_wave(1)
 
 
 ## Two players: chosen in the menu (setup.character_2) or forced by player_count.
-## Wide view of the arena's top gate, the heroes drop out of it onto their start
-## spot, then the camera zooms in to the play view.
-func _play_portal_arrival(arena_rect: Rect2) -> void:
+## A gate appears and grows on the map, up and to the left of the start spot, seen
+## three-quarter face; the heroes walk out of it, it closes, then the first wave starts
+## (red gate for the last seal).
+func _play_portal_arrival() -> void:
 	add_child(PortalArrival.new())
-	var gate_center := Vector2(arena_rect.get_center().x, arena_rect.position.y - ArenaGates.OFFSET)
 	var gate := ArrivalGate.new()
-	gate.position = gate_center
-	gate.setup(PortalArrival.GATE_RADIUS, PortalArrival.FALL_SECONDS)
+	gate.position = party.center() + PortalArrival.GATE_OFFSET
+	var open_for := PortalArrival.WALK_START + PortalArrival.WALK_SECONDS - ArrivalGate.OPEN_SECONDS
+	gate.setup(PortalArrival.GATE_RADIUS, open_for, setup.difficulty != null and setup.difficulty.level >= 5)
 	add_child(gate)
-	camera.play_intro(gate_center, PortalArrival.FALL_SECONDS, PortalArrival.ZOOM_SECONDS)
 	for rp in players:
-		rp.player.enter_from(gate_center, PortalArrival.FALL_SECONDS)
-		rp.player.landed.connect(_on_player_landed.bind(rp.player))
-
-
-func _on_player_landed(landed: Player) -> void:
-	camera.add_trauma(0.3)
-	vfx.explosion(landed.global_position + Vector2(0.0, landed.radius * Player.SPRITE_FOOT), 60.0,
-		PortalArrival.COLOR.lightened(0.4), false)
+		rp.player.enter_from(gate.position, PortalArrival.WALK_SECONDS, PortalArrival.WALK_START)
 
 
 func is_coop() -> bool:

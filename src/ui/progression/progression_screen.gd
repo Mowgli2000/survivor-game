@@ -53,8 +53,10 @@ func _init() -> void:
 	box.add_child(tabs)
 	_tab_progression = _tab_button("UI_TAB_PROGRESSION", tabs)
 	_tab_collection = _tab_button("UI_TAB_COLLECTION", tabs)
-	_tab_progression.pressed.connect(_show_tab.bind(false))
-	_tab_collection.pressed.connect(_show_tab.bind(true))
+	# Hovering (or focusing, gamepad) a title is enough to switch the page (dev's request).
+	for signal_name in [&"pressed", &"mouse_entered", &"focus_entered"]:
+		_tab_progression.connect(signal_name, _show_tab.bind(false))
+		_tab_collection.connect(signal_name, _show_tab.bind(true))
 	var scroll := ScrollContainer.new()
 	scroll.custom_minimum_size = Vector2(900, 440)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED

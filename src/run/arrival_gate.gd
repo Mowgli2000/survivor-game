@@ -1,49 +1,91 @@
 class_name ArrivalGate
 extends Node2D
-## The big gate the heroes drop out of when a run starts (after the seal screen's
-## portal zoom): a procedural vortex (arrival_gate.gdshader) on one quad. It opens,
-## stays while the heroes fall and closes behind them, then frees itself.
+## The gate the heroes walk out of when a run starts (after the seal screen's portal
+## zoom). Seen three-quarter face: an upright vortex (arrival_gate.gdshader) squeezed
+## into a tall ellipse, a glow on the floor under it. It appears, grows, stays while
+## the heroes walk out, then closes and frees itself. Blue; red for the last seal.
 
 const SHADER := preload("res://src/run/arrival_gate.gdshader")
-const OPEN_SECONDS := 0.5
-const CLOSE_SECONDS := 0.7
+const OPEN_SECONDS := 0.9
+const CLOSE_SECONDS := 0.6
 ## The shader shows this many gate radii from the center to the quad's edge.
-const VIEW_RADII := 1.6
+const VIEW_RADII := 1.7
 const TEXTURE_SIZE := 4
-## Height of the gate against its width: seen from above at an angle, the heroes fall
-## onto a gate that is a little flattened, not a full circle.
-const SQUASH := 0.68
+## Width of the gate against its height: turned three-quarters toward the camera.
+const WIDTH_SHARE := 0.62
+## Slight lean so it does not look stamped on the screen.
+const LEAN := -0.1
+
+## Shader palettes: bright bands, outer body, deepest shade.
+const BLUE := [Color(0.35, 0.9, 1.0), Color(0.22, 0.35, 1.0), Color(0.02, 0.03, 0.18)]
+const RED := [Color(1.0, 0.4, 0.45), Color(0.85, 0.08, 0.25), Color(0.12, 0.0, 0.05)]
 
 var _stay: float = 1.0
 var _time: float = 0.0
-var _sprite: Sprite2D
+var _radius: float = 130.0
 var _material: ShaderMaterial
+var _glow: Sprite2D
+var _glow_color := Color(0.3, 0.8, 1.0)
 
 
-## `radius` in px; `stay`: seconds it stays fully open after opening.
-func setup(radius: float, stay: float) -> void:
+## `radius` in px (half the gate's height); `stay`: seconds it stays fully open once opened;
+## `red`: the last seal's palette.
+func setup(radius: float, stay: float, red: bool = false) -> void:
+	_radius = radius
 	_stay = stay
 	z_index = 1
+	var palette: Array = RED if red else BLUE
+	_glow_color = palette[0]
+	_glow = Sprite2D.new()
+	var gradient := Gradient.new()
+	gradient.set_color(0, Color(_glow_color, 0.55))
+	gradient.set_color(1, Color(_glow_color, 0.0))
+	var glow_texture := GradientTexture2D.new()
+	glow_texture.gradient = gradient
+	glow_texture.fill = GradientTexture2D.FILL_RADIAL
+	glow_texture.fill_from = Vector2(0.5, 0.5)
+	glow_texture.fill_to = Vector2(0.5, 0.0)
+	glow_texture.width = 64
+	glow_texture.height = 64
+	_glow.texture = glow_texture
+	var add := CanvasItemMaterial.new()
+	add.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	_glow.material = add
+	# A wide flat pool of light on the floor under the gate.
+	_glow.position = Vector2(0.0, radius * 0.92)
+	_glow.scale = Vector2(radius * 2.6 / 64.0, radius * 0.9 / 64.0)
+	_glow.modulate.a = 0.0
+	add_child(_glow)
 	var texture := GradientTexture2D.new()
 	texture.width = TEXTURE_SIZE
 	texture.height = TEXTURE_SIZE
-	_sprite = Sprite2D.new()
-	_sprite.texture = texture
-	_sprite.scale = Vector2(1.0, SQUASH) * (2.0 * VIEW_RADII * radius / TEXTURE_SIZE)
+	var sprite := Sprite2D.new()
+	sprite.texture = texture
+	sprite.scale = Vector2(WIDTH_SHARE, 1.0) * (2.0 * VIEW_RADII * radius / TEXTURE_SIZE)
+	sprite.rotation = LEAN
 	_material = ShaderMaterial.new()
 	_material.shader = SHADER
 	_material.set_shader_parameter(&"open", 0.0)
-	_sprite.material = _material
-	add_child(_sprite)
+	_material.set_shader_parameter(&"mid", Vector3(palette[0].r, palette[0].g, palette[0].b))
+	_material.set_shader_parameter(&"outer", Vector3(palette[1].r, palette[1].g, palette[1].b))
+	_material.set_shader_parameter(&"deep", Vector3(palette[2].r, palette[2].g, palette[2].b))
+	sprite.material = _material
+	add_child(sprite)
+
+
+## Seconds from the start until the gate is gone.
+static func total_seconds(stay: float) -> float:
+	return OPEN_SECONDS + stay + CLOSE_SECONDS
 
 
 func _process(delta: float) -> void:
 	_time += delta
-	if _time > OPEN_SECONDS + _stay + CLOSE_SECONDS:
+	if _time > total_seconds(_stay):
 		queue_free()
 		return
 	var opening := clampf(_time / OPEN_SECONDS, 0.0, 1.0)
 	var closing := clampf((_time - OPEN_SECONDS - _stay) / CLOSE_SECONDS, 0.0, 1.0)
-	# Quick start, soft landing on both ends.
+	# It appears (a quick bloom) and grows; at the end it shrinks back into itself.
 	var open := (1.0 - pow(1.0 - opening, 3.0)) * (1.0 - closing * closing)
 	_material.set_shader_parameter(&"open", open)
+	_glow.modulate.a = open * (0.75 + 0.25 * sin(_time * 7.0))

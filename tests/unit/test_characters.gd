@@ -94,6 +94,10 @@ func test_progression_screen_lists_every_challenge() -> void:
 	# The collection has its own tab: a header and one row per collection challenge.
 	assert_eq(screen._collection_rows.get_child_count(), 1 + SaveService.collection_challenges().size())
 	assert_true(screen._rows.visible)
+	screen._tab_collection.mouse_entered.emit()  # hovering the title is enough
+	assert_true(screen._collection_rows.visible)
+	screen._tab_progression.mouse_entered.emit()
+	assert_true(screen._rows.visible)
 	screen._tab_collection.pressed.emit()
 	assert_true(screen._collection_rows.visible)
 	assert_false(screen._rows.visible)

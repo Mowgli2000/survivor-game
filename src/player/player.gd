@@ -8,7 +8,7 @@ signal damaged(amount: float)
 signal died
 ## A hit was avoided (dodge stat).
 signal dodged
-## The drop out of the gate at the start of a run ended (enter_from).
+## The walk out of the gate at the start of a run ended (enter_from).
 signal landed
 
 ## Sprite height in px per px of collision radius.
@@ -23,8 +23,8 @@ const WALK_RATE_MAX := 1.8
 const SPRITE_FOOT := 0.8
 ## Opacity of a dead player waiting for the next wave (coop).
 const GHOST_ALPHA := 0.3
-## Default seconds of the drop out of the portal (enter_from).
-const ARRIVAL_SECONDS := 0.85
+## Default seconds of the walk out of the portal (enter_from).
+const ARRIVAL_SECONDS := 1.3
 const SPRITE_SHADER := preload("res://src/player/player_sprite.gdshader")
 
 var stats: StatBlock
@@ -65,6 +65,8 @@ var _invulnerable: float = 0.0
 var _last_max_hp: float = 0.0
 var _arrival_left: float = 0.0
 var _arrival_total: float = ARRIVAL_SECONDS
+## Seconds the hero stays hidden in the gate before it steps out.
+var _arrival_wait: float = 0.0
 ## Where the drop starts, relative to the landing spot.
 var _arrival_offset: Vector2 = Vector2.ZERO
 
@@ -122,12 +124,13 @@ func _ready() -> void:
 		health_bar.setup(self, head_height())
 
 
-## The hero falls from `origin` (global) to where it stands, small and transparent
-## at first; controls, weapons and damage wait for the landing.
-func enter_from(origin: Vector2, seconds: float = ARRIVAL_SECONDS) -> void:
+## The hero steps out of a gate at `origin` (global) and walks to where it stands, after
+## `wait` seconds hidden inside; controls, weapons and damage wait until it arrives.
+func enter_from(origin: Vector2, seconds: float = ARRIVAL_SECONDS, wait: float = 0.0) -> void:
 	_arrival_offset = origin - global_position
 	_arrival_total = seconds
 	_arrival_left = seconds
+	_arrival_wait = wait
 	weapon_visuals.visible = false
 	if health_bar != null:
 		# modulate, not visible: the "HP bar above the hero" setting owns that flag.
@@ -140,8 +143,14 @@ func _physics_process(delta: float) -> void:
 		rig.animate(delta, 0.0 if is_dead else motion.speed_ratio, motion.flash)
 		_place_rig()
 	if _arrival_left > 0.0:
+		if _arrival_wait > 0.0:
+			_arrival_wait -= delta
+			queue_redraw()
+			return
 		_arrival_left -= delta
-		animator.advance(delta, &"idle", 1.0)
+		# Walking toward its spot, facing the way it goes.
+		var step := -_arrival_offset / _arrival_total
+		animator.advance(delta * walk_anim_rate(step.length()), &"walk", step.x)
 		if _arrival_left <= 0.0:
 			weapon_visuals.visible = true
 			if health_bar != null:
@@ -315,13 +324,15 @@ func _draw_sprite() -> void:
 	var body := Transform2D(motion.lean, motion.body_scale(), 0.0, feet) * Transform2D(0.0, -feet)
 	var tint := Color.WHITE
 	if _arrival_left > 0.0:
-		# Gravity: slow at the gate, fast at the ground.
-		var t := 1.0 - _arrival_left / _arrival_total
-		var shadow := Transform2D(0.0, Vector2(1.0, 0.35), 0.0, feet)
+		# Steps out of the gate: small and faint inside it, full size on arrival.
+		var t := 1.0 - _arrival_left / _arrival_total if _arrival_wait <= 0.0 else 0.0
+		var scale := lerpf(0.55, 1.0, smoothstep(0.0, 0.45, t))
+		var shadow := Transform2D(0.0, Vector2(1.0, 0.35), 0.0, feet + _arrival_offset * (1.0 - t))
 		draw_set_transform_matrix(shadow)
-		draw_circle(Vector2.ZERO, radius * 1.7 * t, Color(0.05, 0.03, 0.12, 0.35 * t))
-		body = Transform2D(0.0, Vector2.ONE * lerpf(0.3, 1.0, t), 0.0, _arrival_offset * (1.0 - t * t)) * body
-		tint.a = clampf(t * 4.0, 0.0, 1.0)
+		draw_circle(Vector2.ZERO, radius * 1.7 * scale, Color(0.05, 0.03, 0.12, 0.35 * smoothstep(0.0, 0.3, t)))
+		var at := Transform2D(0.0, Vector2.ONE * scale, 0.0, _arrival_offset * (1.0 - t))
+		body = at * body
+		tint.a = smoothstep(0.0, 0.3, t)
 	draw_set_transform_matrix(body)
 	sheet.draw(self, animator.frame, height, foot, 1.0, tint)
 	draw_set_transform_matrix(Transform2D.IDENTITY)
