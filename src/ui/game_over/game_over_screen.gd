@@ -240,7 +240,12 @@ func show_unlocks(challenges: Array[ChallengeData]) -> void:
 		_unlocks.remove_child(child)
 		child.queue_free()
 	var delay := 0.3
+	var shards := 0
+	var collected := 0
 	for challenge in challenges:
+		if challenge.shards > 0:
+			shards += challenge.shards
+			collected += 1
 		var def := ContentDB.get_def(challenge.unlock_category, challenge.unlock_id)
 		if def == null:
 			continue
@@ -248,6 +253,10 @@ func show_unlocks(challenges: Array[ChallengeData]) -> void:
 		_unlocks.add_child(card)
 		UiFx.pop_in(card, delay)
 		delay += 0.12
+	if shards > 0:
+		var card := _shards_card(shards, collected)
+		_unlocks.add_child(card)
+		UiFx.pop_in(card, delay)
 	_unlocks.visible = _unlocks.get_child_count() > 0
 
 
@@ -257,6 +266,37 @@ func unlock_names() -> PackedStringArray:
 	for card in _unlocks.get_children():
 		names.append(card.get_meta(&"name_key"))
 	return names
+
+
+## One card for the portal shards the collection challenges of this run paid.
+func _shards_card(shards: int, challenges: int) -> Control:
+	var card := PanelContainer.new()
+	card.custom_minimum_size = Vector2(190, 0)
+	card.add_theme_stylebox_override("panel", UiTheme.card_style(UiTheme.VIOLET, 0.9))
+	card.set_meta(&"name_key", "UI_SHARDS_EARNED")
+	var box := VBoxContainer.new()
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_theme_constant_override("separation", 6)
+	card.add_child(box)
+	var amount := Label.new()
+	amount.text = "◆ +%d" % shards
+	amount.theme_type_variation = &"TitleLabel"
+	amount.add_theme_font_size_override("font_size", 48)
+	amount.add_theme_color_override("font_color", UiTheme.VIOLET)
+	amount.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(amount)
+	var name_label := Label.new()
+	name_label.text = "UI_SHARDS_EARNED"
+	name_label.theme_type_variation = &"SubtitleLabel"
+	name_label.add_theme_font_size_override("font_size", 22)
+	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(name_label)
+	var count := Label.new()
+	count.text = tr("UI_SHARDS_FROM") % challenges
+	count.theme_type_variation = &"SmallLabel"
+	count.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(count)
+	return card
 
 
 func _unlock_card(def: Resource) -> Control:

@@ -80,9 +80,60 @@ func open() -> void:
 	# One row per condition: the three rewards of a seal are one challenge to the player.
 	for group in grouped(challenges):
 		_rows.add_child(_row(group, profile))
+	_add_collection(profile)
 	visible = true
 	_scroll.scroll_vertical = 0
 	_back.grab_focus()
+
+
+## Collection challenges: they pay portal shards for the skin shop (ADR 0023).
+func _add_collection(profile: Profile) -> void:
+	var collection := SaveService.collection_challenges()
+	if collection.is_empty():
+		return
+	collection.sort_custom(func(a: ChallengeData, b: ChallengeData) -> bool:
+		return a.shards < b.shards or (a.shards == b.shards and String(a.id) < String(b.id)))
+	var done_count := 0
+	var earned := 0
+	for challenge in collection:
+		if profile.completed.has(challenge.id):
+			done_count += 1
+			earned += challenge.shards
+	var header := Label.new()
+	header.text = tr("UI_COLLECTION_HEADER") % [done_count, collection.size(), earned]
+	header.theme_type_variation = &"SubtitleLabel"
+	header.add_theme_color_override("font_color", UiTheme.VIOLET)
+	_rows.add_child(header)
+	for challenge in collection:
+		_rows.add_child(_collection_row(challenge, profile))
+
+
+func _collection_row(challenge: ChallengeData, profile: Profile) -> Control:
+	var done := profile.completed.has(challenge.id)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 16)
+	var mark := Label.new()
+	mark.text = "✔" if done else "·"
+	mark.custom_minimum_size = Vector2(32, 0)
+	mark.add_theme_color_override("font_color", UiTheme.GOOD if done else UiTheme.MUTED)
+	row.add_child(mark)
+	var text := VBoxContainer.new()
+	text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(text)
+	var name_label := Label.new()
+	name_label.text = challenge.name_key
+	name_label.add_theme_color_override("font_color", UiTheme.TEXT if done else UiTheme.MUTED)
+	text.add_child(name_label)
+	var details := Label.new()
+	details.text = challenge.description_key
+	details.theme_type_variation = &"SmallLabel"
+	details.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	text.add_child(details)
+	var reward := Label.new()
+	reward.text = "◆ %d" % challenge.shards
+	reward.add_theme_color_override("font_color", UiTheme.VIOLET if not done else UiTheme.MUTED)
+	row.add_child(reward)
+	return row
 
 
 func _process(delta: float) -> void:

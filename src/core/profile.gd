@@ -19,6 +19,9 @@ var wins_by_character: Dictionary[StringName, int] = {}
 var best_difficulty_by_character: Dictionary[StringName, int] = {}
 ## Best wave reached in endless mode with each character.
 var best_endless_wave_by_character: Dictionary[StringName, int] = {}
+## Portal shards: the currency of the skin shop, earned only by collection
+## challenges (ADR 0023). Skins owned live in `unlocked[&"skins"]`.
+var shards: int = 0
 ## First-time tips already shown (HintBanner keys).
 var seen_hints: Array[StringName] = []
 
@@ -36,6 +39,19 @@ func best_difficulty() -> int:
 ## statistics and challenges.
 func max_difficulty() -> int:
 	return mini(best_difficulty() + 1, MAX_DIFFICULTY)
+
+
+## Pays `amount` shards (never negative).
+func add_shards(amount: int) -> void:
+	shards += maxi(amount, 0)
+
+
+## Spends `amount` shards; false (nothing spent) when there are not enough.
+func spend_shards(amount: int) -> bool:
+	if amount < 0 or amount > shards:
+		return false
+	shards -= amount
+	return true
 
 
 func is_unlocked(category: StringName, id: StringName) -> bool:
@@ -77,6 +93,7 @@ func to_dict() -> Dictionary:
 		"best_difficulty_by_character": _id_ints(best_difficulty_by_character),
 		"best_endless_wave_by_character": _id_ints(best_endless_wave_by_character),
 		"seen_hints": hints,
+		"shards": shards,
 	}
 
 
@@ -104,6 +121,7 @@ static func from_dict(d: Dictionary) -> Profile:
 	profile.runs_won = _int(d, "runs_won")
 	profile.best_wave = _int(d, "best_wave")
 	profile.total_kills = _int(d, "total_kills")
+	profile.shards = _int(d, "shards")
 	var wins: Variant = d.get("wins_by_character")
 	if wins is Dictionary:
 		for character: Variant in wins:

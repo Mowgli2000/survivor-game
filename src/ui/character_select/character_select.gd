@@ -1020,12 +1020,12 @@ static func character_sheet(character: CharacterData, look: int = 0) -> SpriteSh
 
 ## Look picked for `character` (0 = the character itself).
 func variant_of(character: CharacterData) -> int:
-	return _variants.get(character.id, 0) if character.has_alt_look() else 0
+	return mini(_variants.get(character.id, 0), character.look_count() - 1)
 
 
-## Looks on the turntable: the character and its second look (skins later).
+## Looks on the turntable: the character, its second look and the skins bought.
 static func look_count(character: CharacterData) -> int:
-	return 2 if character.has_alt_look() else 1
+	return character.look_count()
 
 
 ## Turns the turntable of the chosen class by `direction` looks.
