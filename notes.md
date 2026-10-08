@@ -1,3 +1,5 @@
-Dans la sélection des personnages en mode co-op, on ne voit pas les statistiques de bonus/malus pour les personnages. 
+![  ](image-12.png)  Est-ce que tu ne trouves pas que la taille du katana et de la faux, par exemple, est plus petite que la hache et la lame unique ? Qu'en penses-tu ? Est-ce dû au design de base ou juste une question de proportions ? 
 
-Peux-tu également me donner une description des statistiques en jeu ? Parce que pour les armes de mêlée, des fois, je ne comprends pas la statistique « zone », par exemple, ou « portée », ou « fait récolte », chance, etc. Puis-je avoir un récap de tout ça ? Est-ce que les statistiques s'appliquent à toutes les armes ou non ? J'imagine que projectile ne sert à rien pour une arme de mêlée. 
+Quand j'essaie de sélectionner le niveau de danger, il y a un petit bug pour passer d'Obsidienne à Astral. Avec la manette, quand je fais flèche droite ou que je utilise le joystick, il s'arrête à Obsidienne et je dois appuyer sur la flèche du bas pour aller à Astral. 
+
+L'animation de l'épéiste me convient parfaitement. Tu peux procéder à l'animation de tout le reste des personnages disponibles en jeu maintenant. 
