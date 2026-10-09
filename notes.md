@@ -1,1 +1,16 @@
-![alt text](image-21.png)  ![alt text](image-22.png)  Voilà deux nouvelles images de référence pour la UI de mon jeu. Recrée-moi cinq mockups de styles différents, de couleurs différentes que tu penses pourraient bien aller avec mon jeu Roguelite. Chaque mockup que tu me crées ne doit pas trop se ressembler (typographie, ornements, etc.) et je veux une cohérence visuelle entre chaque interface. Je veux que tu me fasses un mockup de toutes les interfaces de mon jeu.  Tu peux également t'inspirer de jeux comme Genshin Impact ou certains gacha pour le style visuel. 
+
+Une fois que j'ai cliqué avec ma souris pour valider mon personnage dans l'écran de sélection coop, le hover pour sélectionner l'arme ne fonctionne pas. 
+ 
+![alt text](image-48.png)  Le contour bleu qui encadre la valeur de la statistique est cassé à gauche et à droite aux extrémités. Elle n'est pas continue. 
+
+
+
+
+
+
+
+
+
+
+
+
