@@ -4,7 +4,9 @@ extends RefCounted
 ## Solo runs have one; Run's legacy fields (player, progression, shop...) point to players[0].
 
 ## Player colors (tags on the screens between waves, HUD), by index.
-const COLORS: Array[Color] = [Color(0.3, 0.9, 1.0), Color(1.0, 0.45, 0.75)]
+## Hunter colors, the same on every screen: cyan (hunter 1) and amber (hunter 2), the colors of
+## the seals of the coop character select.
+const COLORS: Array[Color] = [Color("4fc3ff"), Color("ffb030")]
 
 var index: int = 0
 var character: CharacterData

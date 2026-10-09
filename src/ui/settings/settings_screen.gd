@@ -17,6 +17,8 @@ var _sliders: Dictionary[StringName, HSlider] = {}
 var _slider_values: Dictionary[StringName, Label] = {}
 var _checks: Dictionary[StringName, CheckButton] = {}
 var _language: OptionButton
+## Background of the character select screens (SelectBackdrops).
+var _background: BackdropPicker
 var _back: Button
 var _panel: PanelContainer
 var _grid: GridContainer
@@ -68,6 +70,9 @@ func _init() -> void:
 	_language.item_selected.connect(func(index: int) -> void:
 		Settings.set_value(&"locale", SettingsData.LOCALES[index]))
 	_grid.add_child(_language)
+	_row_label("SET_SELECT_BACKGROUND")
+	_background = BackdropPicker.new()
+	_grid.add_child(_background)
 
 	_back = Button.new()
 	_back.text = "UI_BACK"
@@ -85,6 +90,7 @@ func open() -> void:
 	for key in _checks:
 		_checks[key].set_pressed_no_signal(Settings.data.get(key))
 	_language.select(maxi(SettingsData.LOCALES.find(Settings.data.locale), 0))
+	_background.refresh()
 	visible = true
 	UiFx.pop_in(_panel)
 	_sliders[VOLUMES[0]].grab_focus()

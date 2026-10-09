@@ -39,6 +39,23 @@ uniform float period = 6.0;
 // The picture is 1536 x 1024: a share of its height is this many shares of its width.
 const float HEIGHT_TO_WIDTH = 0.6667;
 
+// The six medallions of the arch (SealSelect.MEDALLIONS) and the radius, in shares of the picture's
+// width, of the metal ring with its spikes: the light spilling on the stones never reaches them
+// (a bit of the portal color showed on the ring of the I, dev 2026-10-09).
+const vec2 MEDALLIONS[6] = vec2[6](vec2(0.369, 0.405), vec2(0.382, 0.288), vec2(0.430, 0.180),
+		vec2(0.570, 0.180), vec2(0.617, 0.285), vec2(0.630, 0.408));
+const float MEDALLION_CLEAR = 0.04;
+
+// 0 on a medallion, 1 away from them.
+float medallion_free(vec2 q) {
+	float free_of = 1.0;
+	for (int i = 0; i < 6; i++) {
+		vec2 delta = (q - MEDALLIONS[i]) * vec2(1.0, HEIGHT_TO_WIDTH);
+		free_of = min(free_of, smoothstep(MEDALLION_CLEAR - 0.006, MEDALLION_CLEAR, length(delta)));
+	}
+	return free_of;
+}
+
 // Signed depth inside the arch (positive inside), in shares of the picture's width.
 float arch_depth(vec2 q) {
 	float dx = q.x - arch_center_x;
@@ -96,6 +113,6 @@ void fragment() {
 	float glow = exp(-outside * 34.0) * (1.0 - inside) * spill * (0.85 + 0.15 * sin(TIME * 2.0));
 	float below = 1.0 - smoothstep(arch_bottom, arch_bottom + 0.02, q.y);
 	vec3 spill_col = mix(mid, outer, 0.4);
-	float alpha = max(inside, clamp(glow * 0.55, 0.0, 0.7)) * below;
+	float alpha = max(inside, clamp(glow * 0.55 * medallion_free(q), 0.0, 0.7)) * below;
 	COLOR = vec4(mix(spill_col, col, inside), clamp(alpha, 0.0, 1.0));
 }

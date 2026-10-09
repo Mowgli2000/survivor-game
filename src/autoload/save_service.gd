@@ -126,6 +126,7 @@ func record_run(result: RunResult, challenges: Array[ChallengeData] = []) -> Arr
 		profile.wins_by_character[result.character_id] = profile.wins_by_character.get(result.character_id, 0) + 1
 		profile.best_difficulty_by_character[result.character_id] = maxi(
 			profile.best_difficulty_by_character.get(result.character_id, -1), result.difficulty)
+		profile.record_danger_win(result.difficulty)
 	var done: Array[ChallengeData] = []
 	for challenge in challenges:
 		if profile.completed.has(challenge.id) or not challenge.is_met(profile, result):
