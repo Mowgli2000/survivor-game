@@ -3,9 +3,11 @@ extends Node2D
 ## The gate the heroes walk out of when a run starts (after the seal screen's portal
 ## zoom). Seen three-quarter face: an upright vortex (arrival_gate.gdshader) squeezed
 ## into a tall ellipse, a glow on the floor under it. It appears, grows, stays while
-## the heroes walk out, then closes and frees itself. Blue; red for the last seal.
+## the heroes walk out, then closes and frees itself. In the color of the chosen seal (heat gradient, red for the last).
 
 const SHADER := preload("res://src/run/arrival_gate.gdshader")
+## The picture whose painted portal is read (the same one as the seal screen shows).
+const PORTAL_PICTURE := preload("res://assets/ui/select/seal_gate_v3.png")
 const OPEN_SECONDS := 0.9
 const CLOSE_SECONDS := 0.6
 ## The shader shows this many gate radii from the center to the quad's edge.
@@ -16,9 +18,8 @@ const WIDTH_SHARE := 0.62
 ## Slight lean so it does not look stamped on the screen.
 const LEAN := -0.1
 
-## Shader palettes: bright bands, outer body, deepest shade.
-const BLUE := [Color(0.35, 0.9, 1.0), Color(0.22, 0.35, 1.0), Color(0.02, 0.03, 0.18)]
-const RED := [Color(1.0, 0.4, 0.45), Color(0.85, 0.08, 0.25), Color(0.12, 0.0, 0.05)]
+## Default gate color (blue).
+const BLUE_COLOR := Color(0.3, 0.6, 1.0)
 
 var _stay: float = 1.0
 var _time: float = 0.0
@@ -29,12 +30,12 @@ var _glow_color := Color(0.3, 0.8, 1.0)
 
 
 ## `radius` in px (half the gate's height); `stay`: seconds it stays fully open once opened;
-## `red`: the last seal's palette.
-func setup(radius: float, stay: float, red: bool = false) -> void:
+## `color`: the seal's portal color (DifficultyData.color).
+func setup(radius: float, stay: float, color: Color = BLUE_COLOR) -> void:
 	_radius = radius
 	_stay = stay
 	z_index = 1
-	var palette: Array = RED if red else BLUE
+	var palette := palette_for(color)
 	_glow_color = palette[0]
 	_glow = Sprite2D.new()
 	var gradient := Gradient.new()
@@ -66,11 +67,17 @@ func setup(radius: float, stay: float, red: bool = false) -> void:
 	_material = ShaderMaterial.new()
 	_material.shader = SHADER
 	_material.set_shader_parameter(&"open", 0.0)
+	_material.set_shader_parameter(&"vortex", PORTAL_PICTURE)
 	_material.set_shader_parameter(&"mid", Vector3(palette[0].r, palette[0].g, palette[0].b))
 	_material.set_shader_parameter(&"outer", Vector3(palette[1].r, palette[1].g, palette[1].b))
 	_material.set_shader_parameter(&"deep", Vector3(palette[2].r, palette[2].g, palette[2].b))
 	sprite.material = _material
 	add_child(sprite)
+
+
+## Shader palette of a gate color: bright bands, outer body, deepest shade.
+static func palette_for(color: Color) -> Array[Color]:
+	return [color.lerp(Color.WHITE, 0.3), color.darkened(0.2), Color(color.r * 0.07, color.g * 0.07, color.b * 0.07 + 0.02)]
 
 
 ## Seconds from the start until the gate is gone.

@@ -33,8 +33,14 @@ const CLEAR_VFX_MAX := 40
 var grid: SpatialGrid
 ## Largest radius among spawned enemies; pads spatial queries.
 var max_radius: float = 0.0
+## Loudness order of the frequent sounds (dev, 2026-10-09): a kill is the loudest reward, then the
+## pickups (materials, XP), then the weapons' own attack sounds (they never stop, so they sit behind).
+const KILL_POP_DB := 2.0
+const ELITE_DEATH_DB := 1.0
 ## Size multiplier of elites (set by Run from StageData.elite_scale).
 var elite_scale: float = 1.6
+## Tallest an elite may be drawn, px: under the smallest boss (radius 40, scale 1.3 = 260).
+const ELITE_MAX_HEIGHT := 240.0
 ## Spawner enemies never push the count above this (Run sets StageData.max_enemies).
 var spawn_cap: int = 100000
 ## Player number of whoever deals the current damage (ADR 0017): set by the
@@ -93,10 +99,17 @@ func _ready() -> void:
 	process_physics_priority = -10
 
 
+## Size multiplier of an elite of type `data`: the stage's elite_scale, held so the elite's
+## drawn height never passes ELITE_MAX_HEIGHT (a big elite tank must stay smaller than a boss).
+func elite_factor(data: EnemyData) -> float:
+	var height := data.radius * Enemy.SPRITE_HEIGHT_PER_RADIUS * data.sprite_scale
+	return maxf(minf(elite_scale, ELITE_MAX_HEIGHT / maxf(height, 1.0)), 1.0)
+
+
 func spawn(data: EnemyData, pos: Vector2, hp_multiplier: float = 1.0, elite: bool = false,
 		damage_multiplier: float = 1.0) -> Enemy:
 	var enemy: Enemy = _pool.acquire()
-	enemy.reset(data, pos, hp_multiplier, elite, elite_scale if elite else 1.0)
+	enemy.reset(data, pos, hp_multiplier, elite, elite_factor(data) if elite else 1.0)
 	enemy.damage_multiplier = damage_multiplier
 	enemy.animator.time = _rng.randf() * 2.0  # desync the horde's steps
 	enemy.fire_timer = data.fire_cooldown * _rng.randf_range(0.5, 1.0)
@@ -308,12 +321,12 @@ func _lose_hp(enemy: Enemy, amount: float, crit: bool = false, silent: bool = fa
 	if _vfx != null:
 		_vfx.death(enemy.position, enemy.radius * 1.4, enemy.data.color)
 	if enemy.elite or enemy.data.boss:
-		Audio.play(Sounds.ELITE_DEATH, -2.0)
+		Audio.play(Sounds.ELITE_DEATH, ELITE_DEATH_DB)
 	else:
 		var frame := Engine.get_physics_frames()
 		if frame != _death_sound_frame:
 			_death_sound_frame = frame
-			Audio.play(_next_pop(), -4.0, HIT_PITCH_VARIATION)
+			Audio.play(_next_pop(), KILL_POP_DB, HIT_PITCH_VARIATION)
 	enemy_killed.emit(enemy.data, enemy.position, enemy.elite)
 
 

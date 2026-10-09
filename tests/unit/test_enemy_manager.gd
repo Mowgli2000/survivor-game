@@ -190,6 +190,18 @@ func test_ranged_enemy_keeps_distance_and_shoots() -> void:
 	assert_lt(_player.hp, 100.0, "its shots hit the player")
 
 
+func test_an_elite_is_never_drawn_bigger_than_the_smallest_boss() -> void:
+	_enemies.elite_scale = 1.6
+	var tank: EnemyData = ContentDB.get_def(&"enemies", &"tank")
+	var boss: EnemyData = ContentDB.get_def(&"enemies", &"ronin")
+	var elite_height := tank.radius * _enemies.elite_factor(tank) * Enemy.SPRITE_HEIGHT_PER_RADIUS * tank.sprite_scale
+	var boss_height := boss.radius * Enemy.SPRITE_HEIGHT_PER_RADIUS * boss.sprite_scale
+	assert_lte(elite_height, EnemyManager.ELITE_MAX_HEIGHT + 0.01, "elite tank held under the cap")
+	assert_lt(elite_height, boss_height, "a boss is bigger than an elite tank")
+	var runner: EnemyData = ContentDB.get_def(&"enemies", &"runner")
+	assert_almost_eq(_enemies.elite_factor(runner), 1.6, 0.001, "small elites keep the stage scale")
+
+
 func test_elite_has_more_radius_and_flag() -> void:
 	_enemies.elite_scale = 1.5
 	var elite := _enemies.spawn(_data, Vector2(300, 0), 5.0, true)

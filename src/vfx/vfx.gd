@@ -269,6 +269,9 @@ func _draw_additive() -> void:
 				_art.beam_glow(_glow, _a[i], _b[i], _size[i], color, t)
 			Kind.EXPLOSION:
 				_art.explosion_glow(_glow, _a[i], _size[i], _extra[i], color, 1.0 - t, busy)
+			Kind.DEATH:
+				if _count <= BUSY_COUNT * 3:
+					_art.death_motes(_glow, _a[i], _size[i], _extra[i], color, t, 3 if not busy else 2)
 			Kind.HIT:
 				_art.hit_glow(_glow, _a[i], _size[i], _extra[i], color, t)
 			Kind.LIGHTNING:

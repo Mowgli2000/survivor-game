@@ -14,5 +14,5 @@ spawn_rate_multiplier = 1.05
 group_size_bonus = 1
 name_key = "DANGER_2"
 description_key = "DANGER_2_DESC"
-color = Color(0.9, 0.93, 1, 1)
+color = Color(0.24, 0.95, 0.6, 1)
 biome = ExtResource("biome")

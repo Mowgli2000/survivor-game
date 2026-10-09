@@ -18,7 +18,7 @@ var off_family_scale: float = 1.0
 ## Share of its cooldown a new copy of an owned weapon waits before its first attack, per
 ## copy already owned (golden ratio: any number of copies spread evenly).
 ## Every weapon sound a little lower (playtest: swings drowned the hits).
-const WEAPON_SOUND_TRIM_DB := -3.0
+const WEAPON_SOUND_TRIM_DB := -7.0
 const COPY_PHASE := 0.618
 
 var _ctx: WeaponContext

@@ -15,6 +15,8 @@ const SFX_BUS := &"SFX"
 
 var _players: Array[AudioStreamPlayer] = []
 var _music: AudioStreamPlayer
+## id -> looping player (loop_start / loop_stop)
+var _loops: Dictionary[StringName, AudioStreamPlayer] = {}
 ## stream -> Time.get_ticks_msec() of its last play
 var _last_played: Dictionary[AudioStream, int] = {}
 
@@ -77,6 +79,50 @@ func voices(stream: AudioStream) -> int:
 	return count
 
 
+## Starts a sound that loops until loop_stop(id) (a fire burning while it is hovered). Does nothing
+## if the loop `id` is already running; a loop fading out comes back to full volume.
+func loop_start(id: StringName, stream: AudioStream, volume_db: float = 0.0) -> void:
+	var player: AudioStreamPlayer = _loops.get(id)
+	if player == null:
+		player = AudioStreamPlayer.new()
+		player.bus = SFX_BUS
+		add_child(player)
+		_loops[id] = player
+	if player.has_meta(&"fade"):
+		(player.get_meta(&"fade") as Tween).kill()
+		player.remove_meta(&"fade")
+	if player.playing and player.stream != null:
+		player.volume_db = volume_db
+		return
+	if stream is AudioStreamWAV:
+		var looping := (stream as AudioStreamWAV).duplicate() as AudioStreamWAV
+		looping.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		looping.loop_begin = 0
+		looping.loop_end = looping.data.size() / (2 if looping.format == AudioStreamWAV.FORMAT_16_BITS else 1)
+		stream = looping
+	player.stream = stream
+	player.volume_db = volume_db
+	player.play()
+
+
+## Fades the loop `id` out and stops it.
+func loop_stop(id: StringName, fade_seconds: float = 0.25) -> void:
+	var player: AudioStreamPlayer = _loops.get(id)
+	if player == null or not player.playing or player.has_meta(&"fade"):
+		return
+	var tween := create_tween()
+	player.set_meta(&"fade", tween)
+	tween.tween_property(player, "volume_db", -60.0, fade_seconds)
+	tween.tween_callback(func() -> void:
+		player.stop()
+		player.remove_meta(&"fade"))
+
+
+func is_loop_playing(id: StringName) -> bool:
+	var player: AudioStreamPlayer = _loops.get(id)
+	return player != null and player.playing and not player.has_meta(&"fade")
+
+
 ## Loops `stream` on the music bus (does nothing if it is already playing).
 func play_music(stream: AudioStream, volume_db: float = 0.0) -> void:
 	if _music.stream == stream and _music.playing:
@@ -96,6 +142,8 @@ func stop_music() -> void:
 
 func stop_all() -> void:
 	stop_music()
+	for player in _loops.values():
+		player.stop()
 	for player in _players:
 		player.stop()
 	_last_played.clear()

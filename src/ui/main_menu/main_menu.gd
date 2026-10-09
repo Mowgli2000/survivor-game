@@ -1,26 +1,22 @@
 class_name MainMenu
 extends Node2D
-## Main menu (ADR 0013, 0015): the dev's "Portal C2" mockup. Title and pill
-## buttons in a column on the left, over the lit arena: a big red gate (the only
-## thing that moves: spiral core, halo, runes), the demon knight standing in
-## front of it and his horde standing around (a still picture).
+## Main menu (ADR 0013, 0015, 0021): "Azure Crystal" theme. A framed panel with the
+## title and the buttons on the left, over a painted citadel with a portal (drifting,
+## with floating crystal sparks), the demon knight standing in front and his horde
+## around him (a still picture).
 ## Play (character select) / Local co-op / Progression / Settings / Quit.
 ## Buttons only ask SceneRouter to act.
 
-const ARENA_RECT := Rect2(-1200, -700, 2400, 1400)
 const MUSIC_DB := 0.0
-const GATE_COLOR := Color(1.0, 0.33, 0.47)
-const GATE_CORE := Color(0.29, 0.06, 0.19)
-const GATE_RADIUS := 330.0
+const BACKGROUND := preload("res://assets/ui/backgrounds/menu.png")
 ## World positions (the camera is centered on 0, 0 of a 1920x1080 screen).
-const GATE_POSITION := Vector2(440.0, -160.0)
-const BOSS_FEET := Vector2(460.0, 470.0)
+const BOSS_FEET := Vector2(500.0, 470.0)
 const BOSS_HEIGHT := 800.0
-## Left column: x of the title and buttons, their width, y of the first button.
-const COLUMN_X := 100.0
-const BUTTON_SIZE := Vector2(520.0, 80.0)
-const FIRST_BUTTON_Y := 360.0
-const FADE_WIDTH := 880.0
+## Left panel: position and size; x of the title and buttons, their width, y of the first button.
+const PANEL_RECT := Rect2(48.0, 36.0, 640.0, 944.0)
+const COLUMN_X := 108.0
+const BUTTON_SIZE := Vector2(520.0, 74.0)
+const FIRST_BUTTON_Y := 410.0
 
 var _crowd: MenuCrowd
 var _crowd_front: MenuCrowd
@@ -42,20 +38,18 @@ var _skin_shop: SkinShopScreen
 
 
 func _ready() -> void:
-	var arena := Arena.new()
-	arena.setup(ARENA_RECT)
-	add_child(arena)
+	var backdrop_layer := CanvasLayer.new()
+	backdrop_layer.layer = -10
+	add_child(backdrop_layer)
+	var backdrop := UiBackdrop.create(BACKGROUND, 0.12)
+	backdrop.animated = false  # a still picture (dev: the moving background was disliked)
+	backdrop.sparks_enabled = false
+	backdrop_layer.add_child(backdrop)
 	var enemies: Array[EnemyData] = []
 	enemies.assign(ContentDB.get_all(&"enemies"))
 	var camera := Camera2D.new()
 	add_child(camera)
 	camera.make_current()
-	var gate := MenuGate.new()
-	gate.radius = GATE_RADIUS
-	gate.color = GATE_COLOR
-	gate.core = GATE_CORE
-	gate.position = GATE_POSITION
-	add_child(gate)
 	# Far monsters, then the knight, then the near monsters in front of him.
 	_crowd = MenuCrowd.new()
 	_crowd.y_to = BOSS_FEET.y
@@ -76,16 +70,41 @@ func _ready() -> void:
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.theme = UiTheme.get_theme()
 	layer.add_child(root)
-	root.add_child(_left_fade())
+	var frame := Panel.new()
+	frame.position = PANEL_RECT.position
+	frame.size = PANEL_RECT.size
+	frame.add_theme_stylebox_override("panel", UiTheme.window_style())
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(frame)
+	var crown := TextureRect.new()
+	crown.texture = UiTheme.frame_texture("crown")
+	crown.position = Vector2(PANEL_RECT.get_center().x - 110.0, PANEL_RECT.position.y - 34.0)
+	crown.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(crown)
 	var title := Label.new()
 	title.text = "GAME_TITLE"
 	title.theme_type_variation = &"TitleLabel"
-	title.add_theme_font_size_override("font_size", 120)
+	title.add_theme_font_size_override("font_size", 96)
 	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	title.position = Vector2(COLUMN_X + 6.0, 70.0)
-	title.custom_minimum_size.x = BUTTON_SIZE.x + 160.0
-	title.size.x = BUTTON_SIZE.x + 160.0
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.position = Vector2(PANEL_RECT.position.x + 20.0, 84.0)
+	title.size = Vector2(PANEL_RECT.size.x - 40.0, 230.0)
 	root.add_child(title)
+	var divider := TextureRect.new()
+	divider.texture = UiTheme.frame_texture("divider")
+	divider.position = Vector2(PANEL_RECT.get_center().x - 256.0, 316.0)
+	divider.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(divider)
+	var tagline := Label.new()
+	tagline.text = "UI_TAGLINE"
+	tagline.theme_type_variation = &"SmallLabel"
+	tagline.add_theme_font_override("font", UiTheme.font(600, true))
+	tagline.add_theme_font_size_override("font_size", 21)
+	tagline.add_theme_color_override("font_color", UiTheme.ACCENT)
+	tagline.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tagline.position = Vector2(PANEL_RECT.position.x, 352.0)
+	tagline.size.x = PANEL_RECT.size.x
+	root.add_child(tagline)
 	_buttons = VBoxContainer.new()
 	_buttons.add_theme_constant_override("separation", 20)
 	_buttons.position = Vector2(COLUMN_X, FIRST_BUTTON_Y)
@@ -131,27 +150,6 @@ func _ready() -> void:
 	Audio.play_music(Sounds.MUSIC_MENU, MUSIC_DB)
 	UiFx.pop_in(title)
 	_play.grab_focus.call_deferred()
-
-
-## Dark fade on the left so the title and buttons stay readable over the arena.
-func _left_fade() -> TextureRect:
-	var gradient := Gradient.new()
-	gradient.set_color(0, Color(UiTheme.DIM, 0.94))
-	gradient.set_color(1, Color(UiTheme.DIM, 0.0))
-	var texture := GradientTexture2D.new()
-	texture.gradient = gradient
-	texture.width = 256
-	texture.height = 8
-	texture.fill_from = Vector2(0.0, 0.0)
-	texture.fill_to = Vector2(1.0, 0.0)
-	var fade := TextureRect.new()
-	fade.texture = texture
-	fade.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	fade.stretch_mode = TextureRect.STRETCH_SCALE
-	fade.set_anchors_preset(Control.PRESET_LEFT_WIDE)
-	fade.offset_right = FADE_WIDTH
-	fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	return fade
 
 
 ## "v" + application/config/version (project.godot).

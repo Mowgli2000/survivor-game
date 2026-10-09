@@ -389,6 +389,48 @@ func explosion_glow(ci: CanvasItem, center: Vector2, radius: float, seed: float,
 		var dist := radius * (0.4 + 0.95 * pow(age, 0.55))
 		var at := center + Vector2.from_angle(a) * dist + Vector2(0.0, 30.0 * age * age)
 		glow(ci, at, 5.0 * t + 1.5, Color(1.0, 0.75, 0.3, t))
+	shards(ci, center, radius, seed, color, age, 3 if busy else 6)
+
+
+# --- Crystal shards (theme T3) ----------------------------------------------------
+
+## Tint of the crystal debris: the effect's color pulled toward icy cyan.
+const SHARD_TINT := Color(0.7, 0.95, 1.0)
+var _shard_poly := PackedVector2Array([Vector2.ZERO, Vector2.ZERO, Vector2.ZERO, Vector2.ZERO])
+
+
+## Crystal fragments thrown out of a blast: small diamonds that fly, fall and fade.
+func shards(ci: CanvasItem, center: Vector2, radius: float, seed: float, color: Color, age: float,
+		count: int) -> void:
+	var t := 1.0 - age
+	var tint := Color(color.lerp(SHARD_TINT, 0.55), 0.9 * t)
+	for k in count:
+		var a := seed * 2.3 + k * TAU / count + sin(seed * 13.0 + k) * 0.3
+		var dir := Vector2.from_angle(a)
+		var dist := radius * (0.25 + 0.9 * (1.0 - (1.0 - age) * (1.0 - age)))
+		var at := center + dir * dist + Vector2(0.0, 40.0 * age * age)
+		var s := (5.0 + 3.0 * fposmod(seed * 5.0 + k * 0.37, 1.0)) * (1.0 - 0.5 * age)
+		_diamond(ci, at, dir, s, tint)
+
+
+## Monster death: a few crystal motes rise from the poof.
+func death_motes(ci: CanvasItem, center: Vector2, radius: float, seed: float, color: Color, t: float,
+		count: int) -> void:
+	var age := 1.0 - t
+	var tint := Color(color.lerp(SHARD_TINT, 0.6), 0.85 * t)
+	for k in count:
+		var x := (fposmod(seed * 9.0 + k * 0.41, 1.0) - 0.5) * radius * 1.5
+		var at := center + Vector2(x, -radius * (0.1 + 1.3 * age))
+		_diamond(ci, at, Vector2.UP, 3.5 * (1.0 - 0.6 * age) + 1.0, tint)
+
+
+func _diamond(ci: CanvasItem, at: Vector2, dir: Vector2, s: float, tint: Color) -> void:
+	var perp := Vector2(-dir.y, dir.x)
+	_shard_poly[0] = at + dir * s * 1.8
+	_shard_poly[1] = at + perp * s * 0.55
+	_shard_poly[2] = at - dir * s
+	_shard_poly[3] = at - perp * s * 0.55
+	ci.draw_colored_polygon(_shard_poly, tint)
 
 
 # --- Hit and lightning ------------------------------------------------------------

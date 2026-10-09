@@ -3,24 +3,18 @@ extends PanelContainer
 ## Square tile showing a weapon/item icon on a dark background, framed with the
 ## rarity tier color, with an optional count badge (bottom right). Display only.
 
-const BACKGROUND := UiTheme.PANEL_BG
-const BORDER := 3
-const RADIUS := 8
-
 var icon_rect: TextureRect
 var badge: Label
+var _tier_color: Color
 
 
 static func create(texture: Texture2D, tier: int, size: float, badge_text: String = "") -> IconTile:
 	var tile := IconTile.new()
 	tile.custom_minimum_size = Vector2(size, size)
 	tile.mouse_filter = Control.MOUSE_FILTER_PASS
-	var style := StyleBoxFlat.new()
-	style.bg_color = BACKGROUND
-	style.border_color = Tiers.color(tier)
-	style.set_border_width_all(BORDER)
-	style.set_corner_radius_all(RADIUS)
-	style.set_content_margin_all(size * 0.08)
+	tile._tier_color = Tiers.color(tier)
+	var style := UiTheme.slot_style(tile._tier_color)
+	style.set_content_margin_all(size * 0.12)
 	tile.add_theme_stylebox_override("panel", style)
 
 	tile.icon_rect = TextureRect.new()
@@ -45,4 +39,4 @@ static func create(texture: Texture2D, tier: int, size: float, badge_text: Strin
 
 
 func border_color() -> Color:
-	return (get_theme_stylebox("panel") as StyleBoxFlat).border_color
+	return _tier_color

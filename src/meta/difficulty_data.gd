@@ -18,5 +18,6 @@ extends Resource
 @export var double_final_boss: bool = false
 ## Where the seal's gate leads: bestiary, bosses and arena (null: the default dungeon).
 @export var biome: BiomeData
-## Seal metal color (selection button).
+## Seal and portal color, heat gradient: glacier blue, cyan, emerald, gold, orange, red (the
+## seal plaque, the painted portal of the seal screen and the gate the heroes walk out of).
 @export var color: Color = Color.WHITE
