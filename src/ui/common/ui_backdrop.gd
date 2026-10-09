@@ -16,9 +16,6 @@ var dim: float = 0.25
 var base_zoom: float = 1.07
 var shift: Vector2 = Vector2.ZERO
 var sparks_enabled: bool = true
-## True: the whole picture is shown, scaled to the height of the screen; the bars left at the sides by
-## a wide screen are filled with mirrored copies of the picture (the select screens: nothing is cut).
-var fit_height: bool = false
 ## False: a still picture (no drift, no zoom breathing, no sparks).
 var animated: bool = true
 ## How much the vignette darkens the edges (0..1).
@@ -84,21 +81,12 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	var rect := Rect2(Vector2.ZERO, size)
 	if texture != null:
-		var cover := size.y / texture.get_height() if fit_height else maxf(size.x / texture.get_width(), size.y / texture.get_height())
+		var cover := maxf(size.x / texture.get_width(), size.y / texture.get_height())
 		var zoom := base_zoom + 0.015 * sin(_time * 0.11)
 		var draw_size := Vector2(texture.get_size()) * cover * zoom
 		# A still picture does not drift (it would leave a strip uncovered at the top).
 		var drift := Vector2(sin(_time * DRIFT_PERIOD * TAU) * 18.0, cos(_time * DRIFT_PERIOD * 0.7 * TAU) * 9.0) 				if animated and not UiFx.reduce_motion else Vector2.ZERO
 		_picture_rect = Rect2((size - draw_size) * 0.5 + drift + shift * (size.y / 1080.0), draw_size)
-		if fit_height and draw_size.x < size.x:
-			# Mirrored copies on each side, until the screen is covered.
-			var span := draw_size.x
-			var count := ceili((size.x - span) * 0.5 / span) + 1
-			for k in count:
-				var left := _picture_rect.position.x - span * k
-				draw_texture_rect(texture, Rect2(Vector2(left, _picture_rect.position.y), Vector2(-span, draw_size.y)), false)
-				var right := _picture_rect.end.x + span * k
-				draw_texture_rect(texture, Rect2(Vector2(right + span, _picture_rect.position.y), Vector2(-span, draw_size.y)), false)
 		draw_texture_rect(texture, _picture_rect, false)
 	if dim > 0.0:
 		draw_rect(rect, Color(0.0, 0.01, 0.05, dim))

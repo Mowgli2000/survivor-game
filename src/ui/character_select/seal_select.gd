@@ -17,6 +17,12 @@ signal back
 ## The gate picture (the dev's own: stone medallions I..VI round the arch, a painted portal).
 ## The portal is re-drawn animated and recolored in the arch (seal_portal.gdshader).
 const BACKGROUND := preload("res://assets/ui/select/seal_gate_v3.png")
+## The same gate widened to a native 16:9 by outpainting (tools/art/widen.py): the original sits in the
+## middle (CORE_SHARE of the width, starting at SIDE_SHARE), the painted sides are new. Every position
+## below is in the original picture's shares; _picture_to_screen maps them onto the wide one.
+const WIDE := preload("res://assets/ui/select/seal_gate_wide.png")
+const SIDE_SHARE := 120.0 / 1536.0
+const CORE_SHARE := 1296.0 / 1536.0
 const NUMERAL_SHADER := preload("res://src/ui/character_select/seal_numeral.gdshader")
 const PORTAL_SHADER := preload("res://src/ui/character_select/seal_portal.gdshader")
 const ROMAN: Array[String] = ["I", "II", "III", "IV", "V", "VI"]
@@ -72,8 +78,6 @@ var _fx: PortalFx
 ## Hue shift of the frames for the pointed place.
 var _hue: float = 0.0
 var _top_bar: HBoxContainer
-## Mirrored copies of the gate picture at the left and right of it (wide screens).
-var _mirrors: Array[TextureRect] = []
 var _flames: UiHotspots
 ## The vortex quad, child of the background (it zooms with it when the run starts).
 var _portal: ColorRect
@@ -122,19 +126,9 @@ func _init() -> void:
 	floor_color.color = Color.BLACK
 	floor_color.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(floor_color)
-	for side in 2:
-		var mirror := TextureRect.new()
-		mirror.texture = BACKGROUND
-		mirror.flip_h = true
-		mirror.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		mirror.stretch_mode = TextureRect.STRETCH_SCALE
-		mirror.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		mirror.modulate = Color(0.7, 0.7, 0.8)
-		add_child(mirror)
-		_mirrors.append(mirror)
 	var background := TextureRect.new()
 	_background = background
-	background.texture = BACKGROUND
+	background.texture = WIDE
 	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	background.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -360,17 +354,17 @@ func _link_seals() -> void:
 			button.focus_neighbor_right = button.get_path_to(button if column == 1 or across == null else across)
 
 
-## Size of the picture on screen: the whole picture at the height of the screen (never cut, dev's request,
-## 2026-10-10); the bars the wide screen leaves at the sides are filled with mirrored copies.
+## Size of the wide picture on screen: all of it, at the height of the screen (never cut).
 func _drawn() -> Vector2:
-	var scale := minf(size.x / BACKGROUND.get_width(), size.y / BACKGROUND.get_height())
-	return Vector2(BACKGROUND.get_size()) * scale
+	var scale := minf(size.x / WIDE.get_width(), size.y / WIDE.get_height())
+	return Vector2(WIDE.get_size()) * scale
 
 
-## The picture's rectangle on screen, for the hover spots.
+## Where the original picture (the middle of the wide one) lies on screen, for the hover spots.
 func _picture_global_rect() -> Rect2:
 	var drawn := _drawn()
-	return Rect2(global_position + (size - drawn) * 0.5, drawn)
+	var origin := (size - drawn) * 0.5 + Vector2(drawn.x * SIDE_SHARE, 0.0)
+	return Rect2(global_position + origin, Vector2(drawn.x * CORE_SHARE, drawn.y))
 
 
 ## Puts the portal quad over the arch of the picture.
@@ -378,23 +372,16 @@ func _layout_portal() -> void:
 	if _portal == null:
 		return
 	var drawn := _drawn()
-	var span := drawn.x
-	var left := (size.x - span) * 0.5
-	if _mirrors.size() == 2:
-		_mirrors[0].position = Vector2(left - span, 0.0)
-		_mirrors[1].position = Vector2(left + span, 0.0)
-		for mirror in _mirrors:
-			mirror.size = Vector2(span, drawn.y)
-			mirror.visible = left > 0.0
+	var core := Vector2(drawn.x * CORE_SHARE, drawn.y)
 	_portal.position = _picture_to_screen(PORTAL_RECT.position)
-	_portal.size = drawn * PORTAL_RECT.size
-	_fx.place(_picture_to_screen(Vector2(PORTAL_CENTER.x, PORTAL_CENTER.y)), Vector2(0.0935, 0.215) * drawn)
+	_portal.size = core * PORTAL_RECT.size
+	_fx.place(_picture_to_screen(Vector2(PORTAL_CENTER.x, PORTAL_CENTER.y)), Vector2(0.0935, 0.215) * core)
 
 
-## Where a point of the picture (0..1) lies on screen.
+## Where a point of the original picture (0..1) lies on screen.
 func _picture_to_screen(uv: Vector2) -> Vector2:
 	var drawn := _drawn()
-	return (size - drawn) * 0.5 + drawn * uv
+	return (size - drawn) * 0.5 + drawn * Vector2(SIDE_SHARE + uv.x * CORE_SHARE, uv.y)
 
 
 ## Puts the six overlays on the medallions painted in the picture.
@@ -402,7 +389,7 @@ func _layout_plaques() -> void:
 	if _gate_layer == null:
 		return
 	var drawn := _drawn()
-	var cell := Vector2.ONE * MEDALLION_RADIUS * 2.0 * drawn.x
+	var cell := Vector2.ONE * MEDALLION_RADIUS * 2.0 * drawn.x * CORE_SHARE
 	for i in _buttons.size():
 		_buttons[i].size = cell
 		_buttons[i].pivot_offset = cell * 0.5
@@ -548,8 +535,7 @@ func _enter_portal() -> void:
 	_flames.visible = false
 	Audio.play(Sounds.PORTAL_OPEN, -4.0)
 	# Scale around the swirl: where it lies on screen once the picture is "covered".
-	var drawn := _drawn()
-	_background.pivot_offset = (size - drawn) * 0.5 + drawn * PORTAL_CENTER
+	_background.pivot_offset = _picture_to_screen(PORTAL_CENTER)
 	var flash := ColorRect.new()
 	flash.color = PortalArrival.cover_color(PORTAL_COLORS[clampi(_difficulty.level, 0, PORTAL_COLORS.size() - 1)])
 	flash.modulate.a = 0.0
