@@ -17,7 +17,7 @@ void fragment() {
 	// The numeral is the light part of the medallion's inner disc.
 	float mask = smoothstep(0.2, 0.3, lum);
 	// Only the inner disc of the medallion: never its metal rim, its spikes or the light around it.
-	float disc = 1.0 - smoothstep(0.46, 0.54, length(((UV - region.xy) / region.zw - 0.5) * 2.0 * vec2(0.8, 1.15)));
+	float disc = 1.0 - smoothstep(0.38, 0.46, length(((UV - region.xy) / region.zw - 0.5) * 2.0 * vec2(0.8, 0.8)));
 	mask *= disc;
 	vec3 lit = mix(tint * (0.7 + 0.8 * lum), tint * 0.15, dark);
 	COLOR = vec4(lit, mask * tint_strength);

@@ -33,6 +33,14 @@ const MEDALLION_RADIUS := 0.03
 ## arch, the light on the stones and the fragments of the red portal).
 const PORTAL_CENTER := Vector2(0.5015, 0.415)
 const PORTAL_RECT := Rect2(0.22, 0.08, 0.56, 0.66)
+## Color of each place's portal (dev, 2026-10-10): stone dungeon pale teal, sunken temple turquoise,
+## frozen forest white, infernal citadel orange, hive green, dragon's lair red. The interface frames
+## take the same hue (SelectBackdrops.DANGER_HUES).
+const PORTAL_COLORS: Array[Color] = [Color("5fd8c0"), Color("22d6e6"), Color("eef6ff"),
+		Color("ff7a1a"), Color("5cff2e"), Color("ff2a3a")]
+const RUMBLE_LOOP := &"seal_portal_rumble"
+const RUMBLE_DB := -6.0
+const PANEL_WIDTH := 460.0
 const ENTER_SECONDS := 1.4
 const ENTER_ZOOM := 9.0
 const REWARD_BOX := 70.0
@@ -61,6 +69,11 @@ var _page: Control
 var _entering: bool = false
 var _portal_tween: Tween
 var _fx: PortalFx
+## Hue shift of the frames for the pointed place.
+var _hue: float = 0.0
+var _top_bar: HBoxContainer
+## Mirrored copies of the gate picture at the left and right of it (wide screens).
+var _mirrors: Array[TextureRect] = []
 var _flames: UiHotspots
 ## The vortex quad, child of the background (it zooms with it when the run starts).
 var _portal: ColorRect
@@ -109,11 +122,21 @@ func _init() -> void:
 	floor_color.color = Color.BLACK
 	floor_color.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(floor_color)
+	for side in 2:
+		var mirror := TextureRect.new()
+		mirror.texture = BACKGROUND
+		mirror.flip_h = true
+		mirror.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		mirror.stretch_mode = TextureRect.STRETCH_SCALE
+		mirror.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		mirror.modulate = Color(0.7, 0.7, 0.8)
+		add_child(mirror)
+		_mirrors.append(mirror)
 	var background := TextureRect.new()
 	_background = background
 	background.texture = BACKGROUND
 	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	background.set_anchors_preset(Control.PRESET_FULL_RECT)
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(background)
@@ -154,38 +177,37 @@ func _init() -> void:
 	margin.add_child(page)
 	var top := HBoxContainer.new()
 	page.add_child(top)
+	_top_bar = top
 	var back_button := Button.new()
 	back_button.text = "UI_BACK"
 	back_button.custom_minimum_size = Vector2(190, 64)
 	back_button.focus_mode = Control.FOCUS_NONE
 	back_button.pressed.connect(_go_back)
 	top.add_child(back_button)
-	var title := Label.new()
-	title.text = "UI_CHOOSE_DANGER"
-	title.theme_type_variation = &"TitleLabel"
-	title.add_theme_font_size_override("font_size", 44)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top.add_child(title)
-	# Same width as the back pill: the title stays centered on the screen.
-	var balance := Control.new()
-	balance.custom_minimum_size = Vector2(190, 0)
-	top.add_child(balance)
-	# The plaques sit on the painted arch (_gate_layer); the details panel is at the bottom.
+	# No title (dev, 2026-10-09): the gate speaks for itself.
+	# The plaques sit on the painted arch (_gate_layer). The details and "Play" form a column at the
+	# right, so the gate and the portal stay in full view (dev's question, 2026-10-10).
+	var body := HBoxContainer.new()
+	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	page.add_child(body)
 	var push := Control.new()
-	push.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	page.add_child(push)
-	page.add_child(_build_panel())
-	var gap := Control.new()
-	gap.custom_minimum_size = Vector2(0, 6)
-	page.add_child(gap)
+	push.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	push.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	body.add_child(push)
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 16)
+	column.alignment = BoxContainer.ALIGNMENT_END
+	column.custom_minimum_size.x = PANEL_WIDTH
+	column.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	body.add_child(column)
+	column.add_child(_build_panel())
 	_launch = Button.new()
 	_launch.text = "UI_PLAY"
-	_launch.theme_type_variation = &"CtaButton"
-	_launch.custom_minimum_size = Vector2(460, 100)
-	_launch.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	# The plain button of the theme (it takes the color of the place), not the bright main-action one.
+	_launch.custom_minimum_size = Vector2(PANEL_WIDTH, 76)
 	_launch.pressed.connect(_confirm)
-	page.add_child(_launch)
+	column.add_child(_launch)
 	_gate_layer = Control.new()
 	_gate_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_gate_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -197,10 +219,9 @@ func _init() -> void:
 ## Details of the focused seal: name, effects, place; the rewards at right.
 func _build_panel() -> Control:
 	_panel = PanelContainer.new()
-	_panel.custom_minimum_size = Vector2(880, 0)
-	_panel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	var line := HBoxContainer.new()
-	line.add_theme_constant_override("separation", 30)
+	_panel.custom_minimum_size = Vector2(PANEL_WIDTH, 0)
+	var line := VBoxContainer.new()
+	line.add_theme_constant_override("separation", 14)
 	_panel.add_child(line)
 	var texts := VBoxContainer.new()
 	texts.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -221,12 +242,10 @@ func _build_panel() -> Control:
 	texts.add_child(_place)
 	var right := VBoxContainer.new()
 	right.add_theme_constant_override("separation", 8)
-	right.alignment = BoxContainer.ALIGNMENT_CENTER
 	line.add_child(right)
 	_rewards_title = Label.new()
 	_rewards_title.add_theme_font_size_override("font_size", 16)
 	_rewards_title.add_theme_color_override("font_color", UiTheme.GOLD)
-	_rewards_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	right.add_child(_rewards_title)
 	_rewards = HBoxContainer.new()
 	_rewards.add_theme_constant_override("separation", 10)
@@ -259,6 +278,7 @@ func open(hunters: Array[CharacterData]) -> void:
 
 func close() -> void:
 	visible = false
+	_update_rumble(false)
 
 
 ## Highest seal open: one above the best win of any hunter (global unlock).
@@ -295,7 +315,7 @@ func _seal_button(difficulty: DifficultyData) -> Button:
 	var empty := StyleBoxEmpty.new()
 	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
 		button.add_theme_stylebox_override(state, empty)
-	var medal := Medal.new(level, difficulty.color)
+	var medal := Medal.new(level, PORTAL_COLORS[clampi(level, 0, PORTAL_COLORS.size() - 1)])
 	medal.locked = not is_open(level)
 	medal.resized.connect(medal.refresh)
 	medal.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -340,10 +360,16 @@ func _link_seals() -> void:
 			button.focus_neighbor_right = button.get_path_to(button if column == 1 or across == null else across)
 
 
-## The picture's rectangle on screen ("cover" fit), for the hover spots.
+## Size of the picture on screen: the whole picture at the height of the screen (never cut, dev's request,
+## 2026-10-10); the bars the wide screen leaves at the sides are filled with mirrored copies.
+func _drawn() -> Vector2:
+	var scale := minf(size.x / BACKGROUND.get_width(), size.y / BACKGROUND.get_height())
+	return Vector2(BACKGROUND.get_size()) * scale
+
+
+## The picture's rectangle on screen, for the hover spots.
 func _picture_global_rect() -> Rect2:
-	var cover := maxf(size.x / BACKGROUND.get_width(), size.y / BACKGROUND.get_height())
-	var drawn := Vector2(BACKGROUND.get_size()) * cover
+	var drawn := _drawn()
 	return Rect2(global_position + (size - drawn) * 0.5, drawn)
 
 
@@ -351,17 +377,23 @@ func _picture_global_rect() -> Rect2:
 func _layout_portal() -> void:
 	if _portal == null:
 		return
-	var cover := maxf(size.x / BACKGROUND.get_width(), size.y / BACKGROUND.get_height())
-	var drawn := Vector2(BACKGROUND.get_size()) * cover
+	var drawn := _drawn()
+	var span := drawn.x
+	var left := (size.x - span) * 0.5
+	if _mirrors.size() == 2:
+		_mirrors[0].position = Vector2(left - span, 0.0)
+		_mirrors[1].position = Vector2(left + span, 0.0)
+		for mirror in _mirrors:
+			mirror.size = Vector2(span, drawn.y)
+			mirror.visible = left > 0.0
 	_portal.position = _picture_to_screen(PORTAL_RECT.position)
 	_portal.size = drawn * PORTAL_RECT.size
 	_fx.place(_picture_to_screen(Vector2(PORTAL_CENTER.x, PORTAL_CENTER.y)), Vector2(0.0935, 0.215) * drawn)
 
 
-## Where a point of the picture (0..1) lies on screen: the picture is drawn "cover".
+## Where a point of the picture (0..1) lies on screen.
 func _picture_to_screen(uv: Vector2) -> Vector2:
-	var cover := maxf(size.x / BACKGROUND.get_width(), size.y / BACKGROUND.get_height())
-	var drawn := Vector2(BACKGROUND.get_size()) * cover
+	var drawn := _drawn()
 	return (size - drawn) * 0.5 + drawn * uv
 
 
@@ -369,8 +401,7 @@ func _picture_to_screen(uv: Vector2) -> Vector2:
 func _layout_plaques() -> void:
 	if _gate_layer == null:
 		return
-	var cover := maxf(size.x / BACKGROUND.get_width(), size.y / BACKGROUND.get_height())
-	var drawn := Vector2(BACKGROUND.get_size()) * cover
+	var drawn := _drawn()
 	var cell := Vector2.ONE * MEDALLION_RADIUS * 2.0 * drawn.x
 	for i in _buttons.size():
 		_buttons[i].size = cell
@@ -394,9 +425,19 @@ func _point(level: int) -> void:
 	for i in _medals.size():
 		_medals[i].picked = i == level
 		_medals[i].refresh()
-	_tint_portal(_levels[level].color)
+	_apply_look(level)
+	_tint_portal(PORTAL_COLORS[clampi(level, 0, PORTAL_COLORS.size() - 1)])
 	_set_grandeur(level)
 	_show_info(_levels[level])
+
+
+## The frames and buttons of the screen take the color of the pointed place.
+func _apply_look(level: int) -> void:
+	var index := clampi(level, 0, PORTAL_COLORS.size() - 1)
+	UiTheme.shift_saturation = SelectBackdrops.DANGER_SATURATIONS[index]
+	UiTheme.shift_value = SelectBackdrops.DANGER_VALUES[index]
+	_hue = SelectBackdrops.DANGER_HUES[index]
+	theme = UiTheme.get_theme(_hue)
 
 
 ## The portal takes the color of the pointed seal (a short fade).
@@ -415,7 +456,18 @@ func _tint_portal(color: Color) -> void:
 
 ## The last seal's portal is the imposing one: lightning comes slowly out of it.
 func _set_grandeur(level: int) -> void:
-	_fx.intensity = 1.0 if level >= _levels.size() - 1 and level > 0 else 0.0
+	var grand := level >= _levels.size() - 1 and level > 0
+	_fx.intensity = 1.0 if grand else 0.0
+	_update_rumble(grand)
+
+
+## The last seal's portal rumbles, a constant deep sound, for as long as it is pointed and the screen
+## is shown; it never goes on under another screen.
+func _update_rumble(grand: bool) -> void:
+	if grand and is_visible_in_tree() and not _entering:
+		Audio.loop_start(RUMBLE_LOOP, Sounds.PORTAL_RUMBLE, RUMBLE_DB)
+	else:
+		Audio.loop_stop(RUMBLE_LOOP, 0.4)
 
 
 ## Sets the vortex palette (bright bands, body, shade) from the seal color.
@@ -430,9 +482,10 @@ func _set_portal_color(color: Color) -> void:
 func _show_info(difficulty: DifficultyData) -> void:
 	var level := difficulty.level
 	var open_seal := is_open(level)
-	_panel.add_theme_stylebox_override("panel", UiTheme.card_style(difficulty.color if open_seal else UiTheme.MUTED, 0.8))
+	var portal := PORTAL_COLORS[clampi(level, 0, PORTAL_COLORS.size() - 1)]
+	_panel.add_theme_stylebox_override("panel", SelectBackdrops.ghost(UiTheme.panel_style(UiTheme.accent_color(_hue), 0.9, 16, _hue)))
 	_name.text = tr(difficulty.name_key)
-	_name.add_theme_color_override("font_color", difficulty.color if open_seal else UiTheme.MUTED)
+	_name.add_theme_color_override("font_color", portal if open_seal else UiTheme.MUTED)
 	_effects.text = SKULL + " " + seal_effects(difficulty)
 	_place.text = tr("SEAL_PLACE") % seal_place(difficulty, _levels)
 	if not open_seal:
@@ -491,14 +544,14 @@ func _confirm() -> void:
 ## fades, then the run starts with a violet screen (PortalArrival) that clears.
 func _enter_portal() -> void:
 	_entering = true
+	_update_rumble(false)
 	_flames.visible = false
 	Audio.play(Sounds.PORTAL_OPEN, -4.0)
 	# Scale around the swirl: where it lies on screen once the picture is "covered".
-	var cover := maxf(size.x / BACKGROUND.get_width(), size.y / BACKGROUND.get_height())
-	var drawn := Vector2(BACKGROUND.get_size()) * cover
+	var drawn := _drawn()
 	_background.pivot_offset = (size - drawn) * 0.5 + drawn * PORTAL_CENTER
 	var flash := ColorRect.new()
-	flash.color = PortalArrival.cover_color(_difficulty.color)
+	flash.color = PortalArrival.cover_color(PORTAL_COLORS[clampi(_difficulty.level, 0, PORTAL_COLORS.size() - 1)])
 	flash.modulate.a = 0.0
 	flash.set_anchors_preset(Control.PRESET_FULL_RECT)
 	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
