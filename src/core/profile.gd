@@ -15,6 +15,9 @@ var runs_won: int = 0
 var best_wave: int = 0
 var total_kills: int = 0
 var wins_by_character: Dictionary[StringName, int] = {}
+## Danger levels (0..MAX_DIFFICULTY) won at least once with any hunter: each one unlocks its select
+## screen background (SelectBackdrops). Only winning that very level counts.
+var won_dangers: Array[int] = []
 ## Highest difficulty level won with each character.
 var best_difficulty_by_character: Dictionary[StringName, int] = {}
 ## Best wave reached in endless mode with each character.
@@ -39,6 +42,17 @@ func best_difficulty() -> int:
 ## statistics and challenges.
 func max_difficulty() -> int:
 	return mini(best_difficulty() + 1, MAX_DIFFICULTY)
+
+
+## A run was won at danger `level`.
+func record_danger_win(level: int) -> void:
+	if level >= 0 and level <= MAX_DIFFICULTY and not won_dangers.has(level):
+		won_dangers.append(level)
+		won_dangers.sort()
+
+
+func has_won_danger(level: int) -> bool:
+	return won_dangers.has(level)
 
 
 ## Pays `amount` shards (never negative).
@@ -91,6 +105,7 @@ func to_dict() -> Dictionary:
 		"total_kills": total_kills,
 		"wins_by_character": wins,
 		"best_difficulty_by_character": _id_ints(best_difficulty_by_character),
+		"won_dangers": won_dangers.duplicate(),
 		"best_endless_wave_by_character": _id_ints(best_endless_wave_by_character),
 		"seen_hints": hints,
 		"shards": shards,
@@ -129,6 +144,16 @@ static func from_dict(d: Dictionary) -> Profile:
 				profile.wins_by_character[StringName(str(character))] = int(wins[character])
 	_read_id_ints(d.get("best_difficulty_by_character"), profile.best_difficulty_by_character)
 	_read_id_ints(d.get("best_endless_wave_by_character"), profile.best_endless_wave_by_character)
+	var won: Variant = d.get("won_dangers")
+	if won is Array:
+		for level: Variant in won:
+			if typeof(level) in [TYPE_INT, TYPE_FLOAT]:
+				profile.record_danger_win(int(level))
+	else:
+		# Older save: a danger is open only once the one below was won (global unlock), so every
+		# level up to the best win was won itself.
+		for level in profile.best_difficulty() + 1:
+			profile.record_danger_win(level)
 	return profile
 
 

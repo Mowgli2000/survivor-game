@@ -77,7 +77,7 @@ func setup_second_player(player: Player, progression: Progression, wallet: Walle
 	tag.add_theme_color_override("font_color", color)
 	tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	box.add_child(tag)
-	var hp_bar := _make_bar(UiTheme.BAD)
+	var hp_bar := _make_bar(UiTheme.HEALTH_RED)
 	hp_bar.custom_minimum_size = Vector2(320, 32)
 	box.add_child(hp_bar)
 	var hp_label := _make_label(&"ValueLabel", 20)
@@ -192,7 +192,7 @@ func _init() -> void:
 	plate.add_child(box)
 	_p1_box = box
 
-	_hp_bar = _make_bar(UiTheme.BAD)
+	_hp_bar = _make_bar(UiTheme.HEALTH_RED)
 	_hp_bar.custom_minimum_size = Vector2(380, 38)
 	box.add_child(_hp_bar)
 	_hp_label = _make_label(&"ValueLabel", 22)
@@ -205,7 +205,7 @@ func _init() -> void:
 	box.add_child(_level_label)
 
 	_materials_label = _make_label(&"ValueLabel", 28)
-	_materials_label.add_theme_color_override("font_color", UiTheme.GOLD)
+	_materials_label.add_theme_color_override("font_color", UiTheme.GOLD_VIVID)
 	box.add_child(_materials_label)
 
 	var wave_plate := Panel.new()

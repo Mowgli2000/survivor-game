@@ -23,7 +23,7 @@ enum Step { LIST, LOOK, WEAPON }
 
 ## Head and shoulders of a card illustration: a square of this share of the figure's
 ## height, found on the figure itself (see head_region).
-const BACKGROUND := preload("res://assets/ui/backgrounds/select.png")
+const BACKGROUND := SelectBackdrops.HALL
 const HEAD_SHARE := 0.27
 const PREVIEW_HEIGHT := 170.0
 const LIST_WIDTH := 420.0
@@ -35,13 +35,16 @@ const COMPACT_ROW_HEIGHT := 124.0
 const STAGE_SIZE := Vector2(760, 600)
 const COMPACT_STAGE_SIZE := Vector2(0, 430)
 const ARMS_WIDTH := 680.0
-## Solo screen: the hero stands on the glowing seal painted in the background; this is the
-## seal's center as a share of the screen (the hero's feet), and the stage size around him.
-const SEAL_CENTER := Vector2(0.5, 0.84)
+## Solo screen: the hero stands on the floor seal (SealGlow, over the empty hall picture); this is
+## the seal's center as a share of the screen (the hero's feet), its width as a share of the screen
+## width, and the stage size around the hero.
+const SEAL_CENTER := Vector2(0.5, 0.89)
+const SEAL_WIDTH := 0.3
 const STAGE_HEIGHT := 620.0
-## Backdrop zoom and shift (px at 1080p) that put the painted seal's center under the hero.
+## Backdrop zoom and shift (px at 1080p): the picture is moved up a little, which shows more floor
+## under the stairs for the seal (dev: the seal touched the stairs).
 const SEAL_ZOOM := 1.0
-const SEAL_SHIFT := Vector2(0.0, -55.0)
+const SEAL_SHIFT := Vector2(0.0, -70.0)
 const DOTS_ROOM := 26.0
 ## Width the rule and bonus text wrap to in a half screen.
 const COMPACT_RULE_WIDTH := 440.0
@@ -86,8 +89,16 @@ var _stage_panel: PanelContainer
 var _arms_panel: PanelContainer
 ## Turntable: platform, the other look behind, the shown look in front.
 var _stage: Control
-## Solo: full-screen layer behind the columns that holds the stage (hero over the painted seal).
+## Solo: full-screen layer behind the columns that holds the stage (hero over the seal).
 var _stage_layer: Control
+## Solo: the floor seal, lit while the pointer is on "Next" (dev's request).
+var _seal_layer: Control
+var _seal_glow: SealGlow
+## Solo: the background (SelectBackdrops) and the living flames and crystals painted on the hall picture.
+var _backdrop: UiBackdrop
+var _hotspots: UiHotspots
+## Solo: top right, picks the background of this screen (and of the coop one).
+var _picker: BackdropPicker
 var _platform: TextureRect
 var _back_art: TextureRect
 var _hero_art: TextureRect
@@ -153,16 +164,24 @@ func _init(p_compact: bool = false) -> void:
 	visible = false
 	var backdrop := UiBackdrop.create(BACKGROUND, 0.4)
 	if not _compact:
-		# Solo: the painted seal is a little smaller and higher, its cross between the hero's legs.
 		backdrop.base_zoom = SEAL_ZOOM
 		backdrop.shift = SEAL_SHIFT
-		# The small floating crystals were removed (dev); the painted flames, crystals and seal live.
+		# The small floating crystals were removed (dev); the painted flames and crystals live.
 		backdrop.sparks_enabled = false
 		# A still picture (dev: the background seemed to move).
 		backdrop.animated = false
+	_backdrop = backdrop
 	add_child(backdrop)
 	if not _compact:
-		add_child(_build_hotspots(backdrop))
+		_hotspots = _build_hotspots(backdrop)
+		add_child(_hotspots)
+		_seal_layer = Control.new()
+		_seal_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
+		_seal_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_seal_layer.resized.connect(_place_seal)
+		add_child(_seal_layer)
+		_seal_glow = SealGlow.new(&"cyan")
+		_seal_layer.add_child(_seal_glow)
 	_stage_layer = Control.new()
 	_stage_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_stage_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -200,6 +219,18 @@ func _init(p_compact: bool = false) -> void:
 	_devices.theme_type_variation = &"SmallLabel"
 	_devices.size_flags_vertical = Control.SIZE_SHRINK_END
 	top.add_child(_devices)
+	if not _compact:
+		# Solo: no title (dev); the room goes to the background picker, top right.
+		_title.visible = false
+		var spacer := Control.new()
+		spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		spacer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		top.add_child(spacer)
+		_picker = BackdropPicker.new()
+		_picker.custom_minimum_size = Vector2(340, 52)
+		_picker.themed = true
+		_picker.chosen.connect(_on_backdrop_chosen)
+		top.add_child(_picker)
 	var body := HBoxContainer.new()
 	body.add_theme_constant_override("separation", 20 if _compact else 30)
 	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -214,7 +245,8 @@ func _init(p_compact: bool = false) -> void:
 	else:
 		# No frame: a soft plate over the painted background, name and stats above the weapons.
 		_arms_panel = PanelContainer.new()
-		_arms_panel.add_theme_stylebox_override("panel", UiTheme.plate_style(14))
+		# The same frame as the list of the hunters (dev, 2026-10-09).
+		_arms_panel.add_theme_stylebox_override("panel", SelectBackdrops.ghost(UiTheme.column_style(false)))
 		_arms_panel.custom_minimum_size.x = ARMS_WIDTH
 		var column := VBoxContainer.new()
 		column.add_theme_constant_override("separation", 14)
@@ -224,14 +256,14 @@ func _init(p_compact: bool = false) -> void:
 		column.add_child(arms)
 		body.add_child(_arms_panel)
 	if not _compact:
-		add_child(ButtonHints.create([[&"A", "UI_HINT_CHOOSE"], [&"B", "UI_HINT_BACK"], [&"Y", "UI_HINT_SWITCH_LOOK"]]))
+		add_child(ButtonHints.create([[&"A", "UI_HINT_CHOOSE"], [&"B", "UI_HINT_BACK"], [&"L1 R1", "UI_HINT_SWITCH_LOOK"]]))
 		_seals = SealSelect.new()
 		_seals.chosen.connect(_start)
 		_seals.back.connect(_on_seals_back)
 		add_child(_seals)
 
 
-## The painting comes alive under the mouse: blue flames, floating crystals and the floor seal.
+## The painting comes alive under the mouse: blue flames and floating crystals.
 func _build_hotspots(backdrop: UiBackdrop) -> UiHotspots:
 	var spots := UiHotspots.new()
 	spots.picture_rect = backdrop.picture_rect
@@ -241,13 +273,12 @@ func _build_hotspots(backdrop: UiBackdrop) -> UiHotspots:
 	for crystal in [Vector2(0.357, 0.37), Vector2(0.637, 0.375), Vector2(0.211, 0.42), Vector2(0.786, 0.42),
 			Vector2(0.39, 0.46), Vector2(0.61, 0.465), Vector2(0.052, 0.5), Vector2(0.967, 0.3)]:
 		spots.add_spot(UiHotspots.Kind.CRYSTAL, crystal, 0.016, Color(0.5, 0.88, 1.0))
-	spots.add_spot(UiHotspots.Kind.SEAL, Vector2(0.5, 0.805), 0.27, Color(0.35, 0.8, 1.0), 0.19)
 	return spots
 
 
 func _column(expand: bool) -> PanelContainer:
 	var panel := PanelContainer.new()
-	panel.add_theme_stylebox_override("panel", UiTheme.column_style(false))
+	panel.add_theme_stylebox_override("panel", SelectBackdrops.ghost(UiTheme.column_style(false)))
 	if expand:
 		panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	return panel
@@ -394,11 +425,11 @@ func _build_stage_column() -> Control:
 		var bar := ProgressBar.new()
 		bar.max_value = 1.0
 		bar.show_percentage = false
-		bar.custom_minimum_size = Vector2(56 if _compact else 220, 12)
+		# The bars of the game's own theme (the first ones were drawn at the very start of the project).
+		# The frame is 28 px tall: smaller, its slanted ends would break (the stretched middle collapses).
+		bar.custom_minimum_size = Vector2(56 if _compact else 220, 28)
 		bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		var styles := UiTheme.flat_bar_styles(STAT_COLORS[stat])
-		bar.add_theme_stylebox_override("background", styles[0])
-		bar.add_theme_stylebox_override("fill", styles[1])
+		_style_bar(bar, STAT_COLORS[stat])
 		grid.add_child(bar)
 		var numbers := HBoxContainer.new()
 		numbers.add_theme_constant_override("separation", 6)
@@ -417,6 +448,14 @@ func _build_stage_column() -> Control:
 		_hero_values[stat] = value_label
 		_hero_deltas[stat] = delta_label
 	return _stage_panel
+
+
+## A stat bar in the theme's bar frame, the fill in the color of its stat; the frame follows the
+## background's color.
+func _style_bar(bar: ProgressBar, color: Color) -> void:
+	var styles := UiTheme.bar_styles(color, SelectBackdrops.hue)
+	bar.add_theme_stylebox_override("background", styles[0])
+	bar.add_theme_stylebox_override("fill", styles[1])
 
 
 func _art_rect(texture: Texture2D) -> TextureRect:
@@ -440,10 +479,10 @@ func _arrow(text: String, direction: int) -> Button:
 	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
 		button.add_theme_stylebox_override(state, empty)
 	button.add_theme_font_size_override("font_size", 46 if _compact else 60)
-	button.add_theme_color_override("font_color", UiTheme.ACCENT)
+	button.add_theme_color_override("font_color", _accent())
 	button.add_theme_color_override("font_hover_color", Color.WHITE)
 	button.add_theme_color_override("font_pressed_color", Color.WHITE)
-	button.add_theme_color_override("font_outline_color", Color(UiTheme.ACCENT, 0.3))
+	button.add_theme_color_override("font_outline_color", Color(_accent(), 0.3))
 	button.add_theme_constant_override("outline_size", 12)
 	button.pressed.connect(func() -> void:
 		if _look_target() != null:
@@ -472,6 +511,11 @@ func _build_arms() -> Control:
 	_next.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_next.visible = false
 	_next.pressed.connect(_validate_weapon)
+	# Solo: the floor seal lights up while the pointer (mouse or focus) is on "Next".
+	for entered in [_next.mouse_entered, _next.focus_entered]:
+		entered.connect(_light_seal.bind(true))
+	for left in [_next.mouse_exited, _next.focus_exited]:
+		left.connect(_light_seal.bind(false))
 	box.add_child(_next)
 	_ready_label = _section_label("UI_COOP_READY")
 	_ready_label.add_theme_color_override("font_color", UiTheme.GOOD)
@@ -498,6 +542,9 @@ func _begin_pick() -> void:
 	else:
 		_title.remove_theme_color_override("font_color")
 	_chosen = null
+	if not _compact:
+		_picker.refresh()
+		_on_backdrop_chosen()
 	_build_cards()
 	_show_weapons(false)
 	if _seals != null:
@@ -665,11 +712,11 @@ func _row(character: CharacterData) -> Button:
 	var button := Button.new()
 	button.custom_minimum_size = Vector2(0.0, height)
 	button.disabled = not unlocked
-	button.add_theme_stylebox_override("normal", UiTheme.card_style(character.color, 0.5 if unlocked else 0.12))
-	button.add_theme_stylebox_override("hover", UiTheme.card_style(UiTheme.ACCENT, 1.0))
-	button.add_theme_stylebox_override("pressed", UiTheme.card_style(UiTheme.ACCENT, 1.0))
-	button.add_theme_stylebox_override("disabled", UiTheme.card_style(character.color, 0.1))
-	button.add_theme_stylebox_override("focus", UiTheme.card_focus_style())
+	button.add_theme_stylebox_override("normal", SelectBackdrops.ghost(UiTheme.card_style(_themed(character.color), 0.5 if unlocked else 0.12, _hue())))
+	button.add_theme_stylebox_override("hover", SelectBackdrops.ghost(UiTheme.card_style(_accent(), 1.0, _hue())))
+	button.add_theme_stylebox_override("pressed", SelectBackdrops.ghost(UiTheme.card_style(_accent(), 1.0, _hue())))
+	button.add_theme_stylebox_override("disabled", SelectBackdrops.ghost(UiTheme.card_style(_themed(character.color), 0.1, _hue())))
+	button.add_theme_stylebox_override("focus", UiTheme.card_focus_style(_accent()))
 	if not _compact:
 		# Solo, from the list: left / right (stick, d-pad, keys) turn the looks of this hunter.
 		button.gui_input.connect(func(event: InputEvent) -> void:
@@ -810,7 +857,7 @@ func _show_hero(character: CharacterData) -> void:
 			var dot := Label.new()
 			dot.text = "●" if i == look else "○"
 			dot.add_theme_font_size_override("font_size", 18)
-			dot.add_theme_color_override("font_color", UiTheme.ACCENT if i == look else UiTheme.MUTED)
+			dot.add_theme_color_override("font_color", _accent() if i == look else UiTheme.MUTED)
 			_dots.add_child(dot)
 	_hero_name.text = character.name_key_for(look)
 	_hero_name.add_theme_color_override("font_color", character.color if unlocked else UiTheme.MUTED)
@@ -834,8 +881,62 @@ func _show_hero(character: CharacterData) -> void:
 	_layout_stage()
 
 
-## Solo: puts the stage so that the hero's feet land on the center of the seal painted in
-## the background (SEAL_CENTER, a share of the screen).
+## A hunter's color on the current background: pulled toward the background's accent so the rows and
+## weapon frames follow its color (the hall keeps the hunter's own color).
+func _themed(color: Color) -> Color:
+	if is_zero_approx(SelectBackdrops.hue):
+		return color
+	return _accent().lerp(color, 0.3)
+
+
+## Hue shift and accent color of the interface for the current background.
+func _hue() -> float:
+	return SelectBackdrops.hue
+
+
+func _accent() -> Color:
+	return UiTheme.accent_color(SelectBackdrops.hue)
+
+
+## The background picked in the settings or by the picker: the flames and crystals painted on the hall
+## picture only fit that one.
+func _on_backdrop_chosen() -> void:
+	# The living flames were measured on the old hall picture: off until they are redone.
+	_hotspots.visible = false
+	SelectBackdrops.apply(_backdrop, false)
+	_restyle()
+
+
+## Frames, cards and buttons take the color of the background (SelectBackdrops.hue).
+func _restyle() -> void:
+	var hue := SelectBackdrops.hue
+	theme = UiTheme.get_theme(hue)
+	_list_panel.add_theme_stylebox_override("panel", SelectBackdrops.ghost(UiTheme.column_style(false, hue)))
+	_arms_panel.add_theme_stylebox_override("panel", SelectBackdrops.ghost(UiTheme.column_style(false, hue)))
+	for stat in _hero_bars:
+		_style_bar(_hero_bars[stat], STAT_COLORS[stat])
+	if _rows != null and _character_buttons.size() > 0:
+		var previous := _weapon
+		_build_cards()
+		if _chosen != null:
+			_choose_character(_chosen, false)
+			if previous != null:
+				_pick_weapon(previous)
+
+
+## Solo: the floor seal under the hero's feet.
+func _place_seal() -> void:
+	if _seal_glow != null:
+		_seal_glow.place(_seal_layer.size * SEAL_CENTER, _seal_layer.size.x * SEAL_WIDTH)
+
+
+func _light_seal(on: bool) -> void:
+	if _seal_glow != null:
+		_seal_glow.set_lit(on and _next.visible)
+
+
+## Solo: puts the stage so that the hero's feet land on the center of the floor seal
+## (SEAL_CENTER, a share of the screen).
 func _place_stage() -> void:
 	if _compact or _stage == null:
 		return
@@ -858,7 +959,7 @@ func _layout_stage() -> void:
 	var dots_room := DOTS_ROOM
 	var ratio := PLATFORM.get_height() / float(PLATFORM.get_width())
 	var per_hero := platform_per_hero(_hero_art.texture, _back_art.texture)
-	# Solo: no stone platform, the hero's feet stand right on the painted seal.
+	# Solo: no stone platform, the hero's feet stand right on the floor seal.
 	var below := (1.0 - PLATFORM_TOP.y) * ratio * per_hero if _platform.visible else 0.0
 	var hero_h := (area.y - dots_room - 6.0) / (1.0 + below)
 	var platform_w := minf(hero_h * per_hero, area.x * 0.8)
@@ -1186,6 +1287,7 @@ func _choose_character(character: CharacterData, confirm: bool = true) -> void:
 	# The previous character's weapon belongs to him: forget it.
 	_weapon = null
 	_next.visible = false
+	_light_seal(false)
 	for child in _weapons.get_children():
 		_weapons.remove_child(child)
 		child.queue_free()
@@ -1204,15 +1306,20 @@ func _choose_character(character: CharacterData, confirm: bool = true) -> void:
 		_turn.grab_focus()
 
 
+## Frame color of the weapon cards: the hunter's own, as the rows of the list (dev, 2026-10-09).
+func _frame_color() -> Color:
+	return _themed(_chosen.color if _chosen != null else Tiers.color(1))
+
+
 ## Weapon card: icon, name, one-line description.
 func _weapon_card(weapon: WeaponData) -> Button:
 	var height := 80.0 if _compact else 104.0
 	var button := Button.new()
 	button.custom_minimum_size = Vector2(0.0, height)
-	button.add_theme_stylebox_override("normal", UiTheme.card_style(Tiers.color(1), 0.4))
-	button.add_theme_stylebox_override("hover", UiTheme.card_style(UiTheme.ACCENT, 1.0))
-	button.add_theme_stylebox_override("pressed", UiTheme.card_style(UiTheme.ACCENT, 1.0))
-	button.add_theme_stylebox_override("focus", UiTheme.card_focus_style())
+	button.add_theme_stylebox_override("normal", SelectBackdrops.ghost(UiTheme.card_style(_frame_color(), 0.5, _hue())))
+	button.add_theme_stylebox_override("hover", SelectBackdrops.ghost(UiTheme.card_style(_accent(), 1.0, _hue())))
+	button.add_theme_stylebox_override("pressed", SelectBackdrops.ghost(UiTheme.card_style(_accent(), 1.0, _hue())))
+	button.add_theme_stylebox_override("focus", UiTheme.card_focus_style(_accent()))
 	var line := HBoxContainer.new()
 	line.set_anchors_preset(Control.PRESET_FULL_RECT)
 	line.offset_left = 12.0
@@ -1279,10 +1386,12 @@ func _choose_weapon(weapon: WeaponData) -> void:
 func _pick_weapon(weapon: WeaponData) -> void:
 	_weapon = weapon
 	_next.visible = weapon != null
+	if weapon == null:
+		_light_seal(false)
 	for child in _weapons.get_children():
 		var picked_card: bool = weapon != null and child.get_meta(&"weapon") == weapon
 		(child as Button).add_theme_stylebox_override("normal",
-			UiTheme.card_style(UiTheme.ACCENT if picked_card else Tiers.color(1), 1.0 if picked_card else 0.4))
+			SelectBackdrops.ghost(UiTheme.card_style(_accent() if picked_card else _frame_color(), 1.0 if picked_card else 0.5, _hue())))
 
 
 ## "Next": the weapon is validated. Split coop, this player is ready (the shared seal

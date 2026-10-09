@@ -19,6 +19,7 @@ var data := SettingsData.new()
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	MenuInput.install()
 	load_settings()
 
 

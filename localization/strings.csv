@@ -39,7 +39,7 @@ UPGRADE_POWER,Power,Puissance
 UPGRADE_HASTE,Haste,Frénésie
 UPGRADE_VITALITY,Vitality,Vitalité
 UPGRADE_SWIFTNESS,Swiftness,Célérité
-UPGRADE_MULTISHOT,Multishot,Tir multiple
+UPGRADE_MULTISHOT,Multi-attack,Attaque multiple
 UPGRADE_PIERCING,Piercing,Perforation
 UPGRADE_MAGNET,Magnet,Aimant
 UPGRADE_PRECISION,Precision,Précision
@@ -214,6 +214,10 @@ SET_SCREEN_SHAKE,Screen shake,Tremblement de l'écran
 SET_DAMAGE_NUMBERS,Damage numbers,Chiffres de dégâts
 SET_REDUCE_MOTION,Reduce menu animations,Réduire les animations des menus
 SET_LANGUAGE,Language,Langue
+SET_SELECT_BACKGROUND,Select screen background,Décor de sélection
+BG_DEFAULT,Hunters' hall,Salle de la guilde
+BG_RANDOM,Random,Aléatoire
+BG_RANDOM_SHORT,Among those unlocked,Parmi les débloqués
 LANG_SYSTEM,System,Système
 LANG_EN,English,English
 LANG_FR,Français,Français

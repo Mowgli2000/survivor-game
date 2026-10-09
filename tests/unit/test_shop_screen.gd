@@ -112,6 +112,23 @@ func test_left_right_skip_sold_cards() -> void:
 	assert_eq(lock_first.get_node_or_null(lock_first.focus_neighbor_right), _screen._controls["lock:3"])
 
 
+func test_weapons_are_shown_left_and_items_right() -> void:
+	# Dev's request, 2026-10-09: the offers are grouped, weapons first (left), then the items.
+	_open_screen(100)
+	var pulse: WeaponData = ContentDB.get_def(&"weapons", &"pulse")
+	_shop.offers[1].weapon = pulse
+	_shop.offers[1].item = null
+	_shop.offers[3].weapon = pulse
+	_shop.offers[3].item = null
+	assert_eq(ShopScreen.display_order(_shop.offers), [1, 3, 0, 2] as Array[int], "weapons first, each group in order")
+	_screen._rebuild_cards()
+	assert_true(_screen._cards.get_child(0).is_ancestor_of(_screen._controls["buy:1"]), "the first card shown is a weapon")
+	assert_true(_screen._cards.get_child(2).is_ancestor_of(_screen._controls["buy:0"]), "then the items")
+	var first_buy: Button = _screen._controls["buy:1"]
+	var next_buy: Button = _screen._controls["buy:3"]
+	assert_eq(first_buy.get_node_or_null(first_buy.focus_neighbor_right), next_buy, "right goes to the next card shown")
+
+
 func _icon_tiles(node: Node) -> Array[IconTile]:
 	var found: Array[IconTile] = []
 	for child in node.get_children():
@@ -210,6 +227,19 @@ func test_owned_weapon_details_show_description_and_tier_stats() -> void:
 	assert_ne(low, high, "the numbers follow the tier")
 
 
+
+
+func test_weapon_details_follow_the_mouse_hover_only() -> void:
+	# Regression (dev, 2026-10-09): a click gave the weapon the focus and the description stayed
+	# on screen after the mouse left.
+	_open_screen(100)
+	var button: Button = _screen._controls["weapon:0"]
+	button.mouse_entered.emit()
+	assert_true(_screen._item_popup.visible, "shown while hovered")
+	button.mouse_exited.emit()
+	assert_false(_screen._item_popup.visible, "gone when the mouse leaves")
+	button.pressed.emit()
+	assert_false(_screen._item_popup.visible, "a click does not leave it on screen")
 
 
 func test_merge_shortcut_merges_the_focused_weapon() -> void:

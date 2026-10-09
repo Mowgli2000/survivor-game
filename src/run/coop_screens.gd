@@ -1,7 +1,6 @@
 class_name CoopScreens
 extends CanvasLayer
-## Coop between waves (ADR 0021): both players level up and shop at the same time;
-## also the split character pick of the main menu (CoopCharacterSelect).
+## Coop between waves (ADR 0021): both players level up and shop at the same time.
 ## The screen is split in two halves, each a SubViewport holding one player's
 ## LevelUpScreen and ShopScreen (compact layout). A viewport has its own GUI focus,
 ## so two players can navigate with their own device at once: key and gamepad events
