@@ -25,8 +25,12 @@ const ACCENT := Color("5fd4ff")
 const GOOD := Color("6dffa0")
 ## HP, "worse" values, too expensive, defeat (coral).
 const BAD := Color("ff6b5e")
+## Vivid red of the health bar in a run (dev, 2026-10-09).
+const HEALTH_RED := Color("ff1f2e")
 ## Victory, elites, ornaments.
 const GOLD := Color("f0cd7c")
+## Bright yellow of the gold counter in the run HUD (dev, 2026-10-09).
+const GOLD_VIVID := Color("ffd814")
 ## Section headings (settings), rare things.
 const VIOLET := Color("a98bff")
 const XP := Color("9b6dff")
@@ -37,19 +41,61 @@ const OUTLINE := Color(0.01, 0.02, 0.06)
 const OUTLINE_WIDTH := 3
 ## Kept for the few flat styles (glyphs, plates).
 const GLOW_SIZE := 4
+## A plain outline (no fill) `width` px thick: marks the hovered picture of a block of pictures.
+static func outline_style(color: Color, width: int) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.draw_center = false
+	style.border_color = color
+	style.set_border_width_all(width)
+	return style
+
+
+## The style with its whole frame (lines and fill) at `alpha` of its opacity: the select screens let
+## the background show through (dev, 2026-10-09).
+static func translucent(style: StyleBoxTexture, alpha: float) -> StyleBoxTexture:
+	style.modulate_color.a *= alpha
+	return style
+
+
 ## Hovered / focused flat fills and the main-action fill (kept for debug tools).
 const FOCUS_FILL := Color("1f5fd0")
 const CTA_FILL := Color("2a7cf5")
 
-static var _theme: Theme
+## Saturation of the shifted blues (1 = as baked, lower = greyer), set with the hue shift by the
+## screens that take the color of their background; 1 for every other screen.
+static var shift_saturation: float = 1.0
+## Brightness of the shifted blues (1 = as baked, above = lighter), same use as shift_saturation.
+static var shift_value: float = 1.0
+## Themes by hue shift (see get_theme).
+static var _themes: Dictionary = {}
 static var _fonts: Dictionary = {}
 static var _textures: Dictionary = {}
 
+## Hues (degrees) the shift moves: the blue of the baked frames and buttons. Gold corners and
+## every other color stay as they are.
+const BLUE_HUES := Vector2(150.0, 280.0)
 
-static func get_theme() -> Theme:
-	if _theme == null:
-		_theme = _build()
-	return _theme
+
+## The theme. `hue_shift` (degrees) turns the blue of the baked frames and buttons toward another
+## color: the select screens take the color of their background (SelectBackdrops). One theme per shift.
+static func get_theme(hue_shift: float = 0.0) -> Theme:
+	var key := "%d@%d@%d" % [roundi(hue_shift), roundi(shift_saturation * 100.0), roundi(shift_value * 100.0)] if not is_zero_approx(hue_shift) else "0"
+	if not _themes.has(key):
+		_themes[key] = _build(hue_shift)
+	return _themes[key]
+
+
+## The accent color after a hue shift (texts and tints that are not part of a baked frame).
+static func accent_color(hue_shift: float = 0.0) -> Color:
+	return shifted_color(ACCENT, hue_shift)
+
+
+## `color` with its hue turned by `hue_shift` degrees and the current `shift_saturation`.
+static func shifted_color(color: Color, hue_shift: float) -> Color:
+	if is_zero_approx(hue_shift):
+		return color
+	return Color.from_hsv(fposmod(color.h * 360.0 + hue_shift, 360.0) / 360.0, color.s * shift_saturation,
+			minf(color.v * shift_value, 1.0), color.a)
 
 
 ## Variable font at a given weight (Cinzel for display, Nunito for text). Cached.
@@ -63,24 +109,47 @@ static func font(weight: int, display: bool = false) -> FontVariation:
 	return _fonts[key]
 
 
-static func frame_texture(frame_name: String) -> Texture2D:
+static func frame_texture(frame_name: String, hue_shift: float = 0.0) -> Texture2D:
 	if not _textures.has(frame_name):
 		_textures[frame_name] = load(FRAMES + frame_name + ".png")
-	return _textures[frame_name]
+	if is_zero_approx(hue_shift) or frame_name in ["crown", "divider"]:
+		return _textures[frame_name]
+	var key := "%s@%d@%d@%d" % [frame_name, roundi(hue_shift), roundi(shift_saturation * 100.0), roundi(shift_value * 100.0)]
+	if not _textures.has(key):
+		_textures[key] = _shifted(_textures[frame_name], hue_shift)
+	return _textures[key]
+
+
+## Copy of a baked frame whose blue pixels have their hue turned by `degrees`.
+static func _shifted(source: Texture2D, degrees: float) -> Texture2D:
+	# A copy: get_image() may hand out the texture's own image, which must stay blue.
+	var image := source.get_image().duplicate() as Image
+	if image.is_compressed():
+		image.decompress()
+	for y in image.get_height():
+		for x in image.get_width():
+			var pixel := image.get_pixel(x, y)
+			if pixel.a <= 0.0 or pixel.s < 0.15:
+				continue
+			var hue := pixel.h * 360.0
+			if hue >= BLUE_HUES.x and hue <= BLUE_HUES.y:
+				image.set_pixel(x, y, Color.from_hsv(fposmod(hue + degrees, 360.0) / 360.0,
+						pixel.s * shift_saturation, minf(pixel.v * shift_value, 1.0), pixel.a))
+	return ImageTexture.create_from_image(image)
 
 
 ## Line color of a frame: dim blue-grey when `strength` is low, the accent when it is 1.
-static func frame_tint(accent: Color, strength: float = 1.0) -> Color:
-	var tint := Color(0.5, 0.62, 0.85).lerp(accent, clampf(strength, 0.0, 1.0))
+static func frame_tint(accent: Color, strength: float = 1.0, hue_shift: float = 0.0) -> Color:
+	var tint := shifted_color(Color(0.5, 0.62, 0.85), hue_shift).lerp(accent, clampf(strength, 0.0, 1.0))
 	tint.a = lerpf(0.6, 1.0, clampf(strength, 0.0, 1.0))
 	return tint
 
 
 ## 9-slice style from a baked frame. `margin` is the fixed corner size in texture pixels.
 static func frame_style(frame_name: String, margin_h: int, margin_v: int, tint: Color,
-		content: float = 16.0) -> StyleBoxTexture:
+		content: float = 16.0, hue_shift: float = 0.0) -> StyleBoxTexture:
 	var style := StyleBoxTexture.new()
-	style.texture = frame_texture(frame_name)
+	style.texture = frame_texture(frame_name, hue_shift)
 	style.texture_margin_left = margin_h
 	style.texture_margin_right = margin_h
 	style.texture_margin_top = margin_v
@@ -93,23 +162,23 @@ static func frame_style(frame_name: String, margin_h: int, margin_v: int, tint: 
 ## Frame in the accent color: the cyan accent uses the frame baked in cyan (its gold corners
 ## stay gold), any other accent tints the white one (corners take the tint too).
 static func accent_frame(frame_name: String, margin: int, accent: Color, strength: float,
-		content: float) -> StyleBoxTexture:
-	var tint := frame_tint(accent, strength)
+		content: float, hue_shift: float = 0.0) -> StyleBoxTexture:
+	var tint := frame_tint(accent, strength, hue_shift)
 	if accent.is_equal_approx(ACCENT):
 		return frame_style(frame_name + "_cyan", margin, margin, Color(1.0, 1.0, 1.0, tint.a).lerp(
-			Color(0.55, 0.65, 0.85), 1.0 - clampf(strength, 0.0, 1.0)), content)
-	return frame_style(frame_name, margin, margin, tint, content)
+			shifted_color(Color(0.55, 0.65, 0.85), hue_shift), 1.0 - clampf(strength, 0.0, 1.0)), content, hue_shift)
+	return frame_style(frame_name, margin, margin, tint, content, hue_shift)
 
 
 ## Panel: midnight fill, bevelled frame with gold corner brackets, tinted by `accent`.
 ## `radius` is kept for older callers (the frame shape is fixed).
-static func panel_style(accent: Color, strength: float = 1.0, _radius: int = 16) -> StyleBoxTexture:
-	return accent_frame("panel", 56, accent, strength, 24.0)
+static func panel_style(accent: Color, strength: float = 1.0, _radius: int = 16, hue_shift: float = 0.0) -> StyleBoxTexture:
+	return accent_frame("panel", 56, accent, strength, 24.0, hue_shift)
 
 
 ## Column of the select screen; `lit`: the step being edited (bright frame).
-static func column_style(lit: bool) -> StyleBoxTexture:
-	return accent_frame("panel", 56, ACCENT, 1.0 if lit else 0.4, 22.0)
+static func column_style(lit: bool, hue_shift: float = 0.0) -> StyleBoxTexture:
+	return accent_frame("panel", 56, ACCENT, 1.0 if lit else 0.4, 22.0, hue_shift)
 
 
 ## Window (pause, settings): the large panel with a bright frame.
@@ -118,8 +187,8 @@ static func window_style() -> StyleBoxTexture:
 
 
 ## Shop / level-up card colored by tier: brighter frame when `strength` is 1.
-static func card_style(accent: Color, strength: float = 1.0) -> StyleBoxTexture:
-	return accent_frame("card", 36, accent, strength, 16.0)
+static func card_style(accent: Color, strength: float = 1.0, hue_shift: float = 0.0) -> StyleBoxTexture:
+	return accent_frame("card", 36, accent, strength, 16.0, hue_shift)
 
 
 ## Square slot (item tile): thin frame tinted by `accent`.
@@ -178,14 +247,14 @@ static func flat_bar_styles(color: Color) -> Array[StyleBoxFlat]:
 
 
 ## [background, fill] styles for a ProgressBar filled with `color` (slanted ends).
-static func bar_styles(color: Color) -> Array[StyleBoxTexture]:
-	var bg := frame_style("bar_bg", 12, 10, Color.WHITE, 0.0)
+static func bar_styles(color: Color, hue_shift: float = 0.0) -> Array[StyleBoxTexture]:
+	var bg := frame_style("bar_bg", 12, 10, Color.WHITE, 0.0, hue_shift)
 	var fill := frame_style("bar_fill", 12, 8, color, 0.0)
 	return [bg, fill]
 
 
-static func _button_style(frame_name: String, tint: Color = Color.WHITE) -> StyleBoxTexture:
-	var style := frame_style(frame_name, 30, 24, tint, 0.0)
+static func _button_style(frame_name: String, tint: Color = Color.WHITE, hue_shift: float = 0.0) -> StyleBoxTexture:
+	var style := frame_style(frame_name, 30, 24, tint, 0.0, hue_shift)
 	style.content_margin_left = 30.0
 	style.content_margin_right = 30.0
 	style.content_margin_top = 10.0
@@ -193,7 +262,7 @@ static func _button_style(frame_name: String, tint: Color = Color.WHITE) -> Styl
 	return style
 
 
-static func _build() -> Theme:
+static func _build(hue_shift: float = 0.0) -> Theme:
 	var theme := Theme.new()
 	theme.default_font = font(700)
 	theme.default_font_size = 22
@@ -216,12 +285,12 @@ static func _build() -> Theme:
 	theme.set_color("font_outline_color", "Button", OUTLINE)
 	theme.set_constant("outline_size", "Button", 5)
 	theme.set_constant("h_separation", "Button", 10)
-	theme.set_stylebox("normal", "Button", _button_style("button_normal"))
-	theme.set_stylebox("hover", "Button", _button_style("button_hover"))
-	theme.set_stylebox("pressed", "Button", _button_style("button_pressed"))
-	theme.set_stylebox("disabled", "Button", _button_style("button_disabled"))
+	theme.set_stylebox("normal", "Button", _button_style("button_normal", Color.WHITE, hue_shift))
+	theme.set_stylebox("hover", "Button", _button_style("button_hover", Color.WHITE, hue_shift))
+	theme.set_stylebox("pressed", "Button", _button_style("button_pressed", Color.WHITE, hue_shift))
+	theme.set_stylebox("disabled", "Button", _button_style("button_disabled", Color.WHITE, hue_shift))
 	# Keyboard / gamepad focus is shown by the lit style (hover), not an extra frame.
-	theme.set_stylebox("focus", "Button", _button_style("button_hover"))
+	theme.set_stylebox("focus", "Button", _button_style("button_hover", Color.WHITE, hue_shift))
 	theme.set_type_variation(&"BigButton", &"Button")
 	theme.set_font_size("font_size", &"BigButton", 34)
 	# Main action: bright blue with gold frame in every state.
@@ -229,16 +298,16 @@ static func _build() -> Theme:
 	theme.set_font_size("font_size", &"CtaButton", 38)
 	theme.set_font("font", &"CtaButton", font(800, true))
 	for state in ["normal", "hover", "focus"]:
-		theme.set_stylebox(state, &"CtaButton", _button_style("button_cta"))
-	theme.set_stylebox("pressed", &"CtaButton", _button_style("button_pressed", Color(1.0, 0.9, 0.7)))
-	theme.set_stylebox("disabled", &"CtaButton", _button_style("button_disabled"))
+		theme.set_stylebox(state, &"CtaButton", _button_style("button_cta", Color.WHITE, hue_shift))
+	theme.set_stylebox("pressed", &"CtaButton", _button_style("button_pressed", Color(1.0, 0.9, 0.7), hue_shift))
+	theme.set_stylebox("disabled", &"CtaButton", _button_style("button_disabled", Color.WHITE, hue_shift))
 
-	theme.set_stylebox("panel", "PanelContainer", panel_style(ACCENT, 0.7))
-	theme.set_stylebox("panel", "Panel", panel_style(ACCENT, 0.7))
+	theme.set_stylebox("panel", "PanelContainer", panel_style(ACCENT, 0.7, 16, hue_shift))
+	theme.set_stylebox("panel", "Panel", panel_style(ACCENT, 0.7, 16, hue_shift))
 	var bars := bar_styles(ACCENT)
 	theme.set_stylebox("background", "ProgressBar", bars[0])
 	theme.set_stylebox("fill", "ProgressBar", bars[1])
-	var tooltip := accent_frame("card", 36, ACCENT, 0.7, 10.0)
+	var tooltip := accent_frame("card", 36, ACCENT, 0.7, 10.0, hue_shift)
 	theme.set_stylebox("panel", "TooltipPanel", tooltip)
 	theme.set_color("font_color", "TooltipLabel", TEXT)
 	theme.set_font("font", "TooltipLabel", font(700))
@@ -253,7 +322,7 @@ static func _build() -> Theme:
 	theme.set_stylebox("grabber_area", "HSlider", slider_bars[1])
 	theme.set_stylebox("grabber_area_highlight", "HSlider", slider_bars[1])
 	theme.set_stylebox("focus", "HSlider", focus_style(ACCENT, 10))
-	theme.set_stylebox("panel", "PopupMenu", accent_frame("card", 36, ACCENT, 0.7, 12.0))
+	theme.set_stylebox("panel", "PopupMenu", accent_frame("card", 36, ACCENT, 0.7, 12.0, hue_shift))
 	theme.set_font("font", "PopupMenu", font(700))
 	theme.set_font_size("font_size", "PopupMenu", 22)
 	# Toggles: only the switch icon, no button frame (the frame read as a big empty button).

@@ -24,6 +24,17 @@ var show_hints: bool = true
 ## Small HP bar above each player (PlayerHealthBar).
 var player_hp_bar: bool = true
 var locale: String = ""
+## Background of the character select screens: `default`, `random` or `danger_N` (SelectBackdrops).
+var select_background: String = "default"
+
+
+## Values of the `select_background` setting.
+static func background_ids() -> Array[String]:
+	var ids: Array[String] = ["default"]
+	for level in 6:
+		ids.append("danger_%d" % level)
+	ids.append("random")
+	return ids
 
 
 ## Validated write. Returns false (nothing changed) for an unknown key or a wrong type.
@@ -38,6 +49,11 @@ func set_value(key: StringName, value: Variant) -> bool:
 			return false
 		set(key, value)
 		return true
+	if key == &"select_background":
+		if typeof(value) != TYPE_STRING:
+			return false
+		select_background = value if value in background_ids() else "default"
+		return true
 	if key == &"locale":
 		if typeof(value) != TYPE_STRING:
 			return false
@@ -47,7 +63,7 @@ func set_value(key: StringName, value: Variant) -> bool:
 
 
 func to_dict() -> Dictionary:
-	var result := {"version": VERSION, "locale": locale}
+	var result := {"version": VERSION, "locale": locale, "select_background": select_background}
 	for key in VOLUME_KEYS + BOOL_KEYS:
 		result[String(key)] = get(key)
 	return result

@@ -71,6 +71,9 @@ const FIRE_CRACKLE := preload("res://assets/audio/sfx/fire_crackle.wav")
 ## Lightning striking out of the last seal's portal (synthesized, tools/audio/make_zap.py).
 const LIGHTNING_ZAP: Array[AudioStream] = [preload("res://assets/audio/sfx/lightning_zap_1.wav"),
 		preload("res://assets/audio/sfx/lightning_zap_2.wav"), preload("res://assets/audio/sfx/lightning_zap_3.wav")]
+## Constant deep rumble of the last seal's portal, looped while it is pointed (synthesized,
+## tools/audio/make_rumble.py).
+const PORTAL_RUMBLE := preload("res://assets/audio/sfx/portal_rumble.wav")
 ## A run starts through a seal's gate ("Magic Spell SFX", OpenGameArt, CC0).
 const PORTAL_OPEN := preload("res://assets/audio/sfx/portal_open.ogg")
 const UI_NEXT := preload("res://assets/audio/sfx/ui_next.ogg")

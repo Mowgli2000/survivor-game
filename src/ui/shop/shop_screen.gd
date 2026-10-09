@@ -413,16 +413,31 @@ func _rebuild_cards() -> void:
 	for child in _cards.get_children():
 		_cards.remove_child(child)
 		child.queue_free()
-	for i in _shop.offers.size():
+	var position := 0
+	for i in display_order(_shop.offers):
 		var card := _make_card(i, _shop.offers[i])
 		_cards.add_child(card)
 		if _animate_cards:
-			UiFx.pop_in(card, CARD_STAGGER * i)
+			UiFx.pop_in(card, CARD_STAGGER * position)
 		elif i == _bought_index:
 			UiFx.bounce(card)
+		position += 1
 	_animate_cards = false
 	_bought_index = -1
 	_link_card_rows()
+
+
+## Indexes of the offers in the order they are shown: the weapons first (left), then the items
+## (right), each group in its own order (dev's request, 2026-10-09).
+static func display_order(offers: Array[ShopOffer]) -> Array[int]:
+	var order: Array[int] = []
+	for i in offers.size():
+		if offers[i].is_weapon():
+			order.append(i)
+	for i in offers.size():
+		if not offers[i].is_weapon():
+			order.append(i)
+	return order
 
 
 ## Links the buy and lock buttons left/right across the cards still for sale:
@@ -430,7 +445,7 @@ func _rebuild_cards() -> void:
 func _link_card_rows() -> void:
 	for prefix in ["buy:", "lock:"]:
 		var row: Array[Control] = []
-		for i in _shop.offers.size():
+		for i in display_order(_shop.offers):
 			var control: Control = _controls.get("%s%d" % [prefix, i])
 			if control != null:
 				row.append(control)
@@ -504,8 +519,7 @@ func _make_card(index: int, offer: ShopOffer) -> Control:
 	if _compact:
 		# Gamepad / keyboard: the full card text while the buy button is focused.
 		var full := texts[1] + "\n" + texts[2]
-		buy.focus_entered.connect(func() -> void: _show_item_popup(panel, full))
-		buy.focus_exited.connect(func() -> void: _item_popup.visible = false)
+		_popup_on_hover(buy, panel, full)
 	box.add_child(buy)
 	_controls["buy:%d" % index] = buy
 	# A padlock icon instead of the word: closed when the offer is locked, open otherwise.
@@ -520,6 +534,8 @@ func _make_card(index: int, offer: ShopOffer) -> Control:
 
 
 func _rebuild_weapons() -> void:
+	# The rebuilt buttons are new: a popup shown for an old one would never go away.
+	_item_popup.visible = false
 	for child in _weapon_row.get_children():
 		child.queue_free()
 	for child in _weapon_actions.get_children():
@@ -551,8 +567,7 @@ func _rebuild_weapons() -> void:
 		button.tooltip_text = weapon_details(slot)
 		# Gamepad / keyboard: the details while the weapon is focused (as the mouse tooltip).
 		var details := weapon_details(slot)
-		button.focus_entered.connect(func() -> void: _show_item_popup(button, details))
-		button.focus_exited.connect(func() -> void: _item_popup.visible = false)
+		_popup_on_hover(button, button, details)
 		_weapon_row.add_child(button)
 		_controls["weapon:%d" % i] = button
 	var free := _label(22, UiTheme.MUTED, &"ValueLabel")
@@ -643,6 +658,18 @@ func _make_item_focusable(tile: IconTile, details: String) -> void:
 	tile.focus_exited.connect(func() -> void:
 		frame.visible = false
 		_item_popup.visible = false)
+
+
+## Shows `details` above `anchor` while `control` is hovered by the mouse, or focused with a
+## gamepad / the keyboard; never because a click gave it the focus (the text stayed on screen
+## after a click, dev 2026-10-09).
+func _popup_on_hover(control: Control, anchor: Control, details: String) -> void:
+	control.mouse_entered.connect(func() -> void: _show_item_popup(anchor, details))
+	control.mouse_exited.connect(func() -> void: _item_popup.visible = false)
+	control.focus_entered.connect(func() -> void:
+		if not control.get_global_rect().has_point(control.get_global_mouse_position()):
+			_show_item_popup(anchor, details))
+	control.focus_exited.connect(func() -> void: _item_popup.visible = false)
 
 
 ## Details of the focused item, above its tile (kept inside the screen).

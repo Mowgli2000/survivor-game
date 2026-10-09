@@ -4,7 +4,8 @@ extends Control
 ## manga style as the portal (dark outline, red body, white core, no glow). Real lightning: a bolt is
 ## a jagged path (midpoint displacement) with a few forks; it shoots out in a fraction of a second
 ## (the tip races along the path), flickers while it holds, then vanishes. Bolts of very different
-## sizes appear at random, from anywhere inside the opening or on its rim, with a crack sound each.
+## sizes appear at random, from anywhere inside the opening or on its rim (silent: the portal's sound
+## is a constant deep rumble, see SealSelect).
 ## Display only. `intensity` (0..1) turns the effect on and off (the seal pointed).
 
 ## Bolts alive at once, at most.
@@ -99,12 +100,11 @@ func spawn_bolt() -> void:
 		"grow": _rng.randf_range(0.05, 0.09) if quick else _rng.randf_range(0.09, 0.17),
 		"hold": _rng.randf_range(0.08, 0.2), "fade": _rng.randf_range(0.14, 0.26),
 		"width": lerpf(2.2, 5.5, clampf(size_class, 0.0, 1.0)), "size": size_class})
-	Audio.play(Sounds.LIGHTNING_ZAP[_rng.randi() % Sounds.LIGHTNING_ZAP.size()],
-		-14.0 + 6.0 * clampf(size_class, 0.0, 1.0), 0.12)
 
 
 func _process(delta: float) -> void:
-	if not visible:
+	# is_visible_in_tree: a hidden parent screen must silence the bolts and their sounds too.
+	if not is_visible_in_tree():
 		return
 	if not UiFx.reduce_motion:
 		_next_spawn -= delta

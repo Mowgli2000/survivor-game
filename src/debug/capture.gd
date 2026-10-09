@@ -14,6 +14,8 @@ var _out: String = "user://capture.png"
 var _mode: String = ""
 ## --fullshop: 6 weapons and 30 items in the shop (layout worst case).
 var _full_shop := false
+## --picker: the background picker of the select screens is opened.
+var _open_picker := false
 var _done: bool = false
 var _boss_id: StringName = &""
 
@@ -57,6 +59,13 @@ func _ready() -> void:
 			# Puts the mouse at x,y (window pixels) from the start: shows hover effects.
 			var xy := arg.trim_prefix("--mouse=").split(",")
 			_mouse = Vector2(xy[0].to_float(), xy[1].to_float())
+		elif arg.begins_with("--bg="):
+			# A select screen background (default, random, danger_N), every danger counted as won.
+			for level in 6:
+				SaveService.profile.record_danger_win(level)
+			Settings.data.select_background = arg.trim_prefix("--bg=")
+		elif arg == "--picker":
+			_open_picker = true
 		elif arg == "--arrival":
 			arrival = true
 		elif arg == "--pickweapon":
@@ -72,6 +81,9 @@ func _ready() -> void:
 		add_child(menu)
 		if _mode in ["--characters", "--coopselect"]:
 			menu._open_character_select(_mode == "--coopselect")
+			if _open_picker:
+				var picker: BackdropPicker = menu._coop_select._picker if _mode == "--coopselect" else menu._character_select._picker
+				picker.toggle()
 			# With --character=<id>: open that character's starting weapon choice.
 			# --variant=1: the cards show the second look.
 			if variant > 0:
@@ -79,14 +91,16 @@ func _ready() -> void:
 					menu._character_select._variants[(def as CharacterData).id] = variant
 				menu._character_select._build_cards()
 			if _mode == "--coopselect" and character_id != "":
-				# Both halves pick that character; with --danger too, both are ready.
+				# Both hunters go to that character; with --pickweapon hunter 1 is on his weapons
+				# and hunter 2 is ready; with --danger too, both are ready.
+				var picker: CoopCharacterSelect = menu._coop_select
 				for i in 2:
-					var half := menu._coop_select.select_of(i)
-					half._choose_character(ContentDB.get_def(&"characters", StringName(character_id)))
+					picker.cursor_to(i, StringName(character_id))
 					if pick_weapon or danger >= 0:
-						(half._weapons.get_child(0) as Button).pressed.emit()
-					if danger >= 0:
-						half._next.pressed.emit()
+						picker.press(i, &"ui_accept")
+						if i == 1 or danger >= 0:
+							picker.press(i, &"ui_accept")
+							picker.press(i, &"ui_accept")
 			elif character_id != "":
 				menu._character_select._choose_character(ContentDB.get_def(&"characters", StringName(character_id)))
 				# With --danger=N too: pick the first weapon, which opens the seal screen.
