@@ -242,10 +242,10 @@ func test_upgrade_that_adds_attacks_is_not_called_after_arrows() -> void:
 	TranslationServer.set_locale("en")
 
 
-func test_select_pictures_are_shown_whole_never_cut() -> void:
-	# Regression (dev, 2026-10-09): the 3:2 pictures were "covered" on a 16:9 screen, which cut their top
-	# (the dragon's skull) and bottom (the floor of the seals). The whole picture is shown now.
-	Settings.data.select_background = "default"
+func test_select_pictures_are_native_16_9_and_shown_without_zoom() -> void:
+	# Dev, 2026-10-10: no mirrored sides. Every picture is a real 16:9 image, shown as it is.
+	for texture in [SelectBackdrops.HALL, SelectBackdrops.SOLO_HALL] + SelectBackdrops.DANGERS + SelectBackdrops.SOLO_DANGERS:
+		assert_almost_eq(float(texture.get_width()) / texture.get_height(), 16.0 / 9.0, 0.01)
 	var backdrop := UiBackdrop.new()
 	backdrop.animated = false
 	add_child_autofree(backdrop)
@@ -253,10 +253,9 @@ func test_select_pictures_are_shown_whole_never_cut() -> void:
 	backdrop.size = Vector2(1920.0, 1080.0)
 	SelectBackdrops.apply(backdrop, false)
 	await wait_process_frames(2)
-	assert_true(backdrop.fit_height)
-	assert_almost_eq(backdrop._picture_rect.position.y, 0.0, 0.01)
-	assert_almost_eq(backdrop._picture_rect.size.y, 1080.0, 0.01, "the whole height of the picture")
-	assert_lt(backdrop._picture_rect.size.x, 1920.0, "the sides are filled by mirrored copies, not by a crop")
+	assert_eq(backdrop.base_zoom, 1.0)
+	assert_almost_eq(backdrop._picture_rect.size.x, 1920.0, 0.5, "it covers the screen exactly")
+	assert_almost_eq(backdrop._picture_rect.size.y, 1080.0, 0.5)
 
 
 func test_the_last_portal_rumbles_while_it_is_pointed_and_never_under_another_screen() -> void:
@@ -324,7 +323,7 @@ func test_seal_screen_shows_the_whole_gate_and_a_calm_play_button() -> void:
 	seals.size = Vector2(1920.0, 1080.0)
 	var drawn := seals._drawn()
 	assert_almost_eq(drawn.y, 1080.0, 0.01, "the picture is as tall as the screen: nothing cut")
-	assert_lt(drawn.x, 1920.0)
+	assert_almost_eq(drawn.x, 1920.0, 0.5, "and as wide: a native 16:9 picture, no mirrored sides")
 	assert_ne(seals._launch.theme_type_variation, &"CtaButton", "not the bright main-action button")
 
 
