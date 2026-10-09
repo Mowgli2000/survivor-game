@@ -10,9 +10,11 @@ signal reroll_requested
 
 ## Short delay before cards accept input, to avoid accidental picks.
 const INPUT_DELAY := 0.35
-const CARD_SIZE := Vector2(360, 400)
+## Stat icon on a level-up card.
+const ICON_SIZE := 112.0
+const CARD_SIZE := Vector2(360, 450)
 ## Coop: half-screen layout.
-const COMPACT_CARD_SIZE := Vector2(218, 400)
+const COMPACT_CARD_SIZE := Vector2(218, 450)
 ## Delay between two cards appearing.
 const CARD_STAGGER := 0.04
 
@@ -242,6 +244,15 @@ func _make_card(offer: UpgradeOffer) -> Button:
 	margin.add_child(box)
 
 	box.add_child(_card_label(texts[0].to_upper(), &"SmallLabel", 18, accent))
+	if offer.upgrade.icon != null:
+		var icon := TextureRect.new()
+		icon.texture = offer.upgrade.icon
+		icon.custom_minimum_size = Vector2(ICON_SIZE, ICON_SIZE) * (0.7 if _card_size != CARD_SIZE else 1.0)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		box.add_child(icon)
 	box.add_child(_card_label(texts[1], &"SubtitleLabel", 36, UiTheme.TEXT))
 	box.add_child(_card_label(texts[2], &"", 24, UiTheme.TEXT))
 	if _stats != null:

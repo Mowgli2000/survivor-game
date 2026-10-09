@@ -12,8 +12,10 @@ const BURN_TINT := Color(1.8, 1.0, 0.55)
 const SLOW_TINT := Color(0.55, 0.9, 1.8)
 ## Sprite height in px per px of collision radius.
 const SPRITE_HEIGHT_PER_RADIUS := 5.0
-## Feet sit this fraction of the radius below the enemy center.
-const SPRITE_FOOT := 0.8
+## An enemy's position (hitbox center, where hits are measured) is at the middle of its body:
+## the feet sit this share of the sprite's height below it. It used to be near the feet, so a
+## slash that visibly cut through an enemy's torso missed it (playtest 2026-10-09).
+const HIP_SHARE := 0.48
 
 var data: EnemyData
 var elite: bool = false
@@ -133,13 +135,22 @@ func _refresh_tint() -> void:
 		self_modulate = Color.WHITE
 
 
+## Height of the drawn sprite in px.
+func sprite_height() -> float:
+	return radius * SPRITE_HEIGHT_PER_RADIUS * data.sprite_scale
+
+
+## Distance from the enemy's position (its body center) down to its feet.
+func foot_offset() -> float:
+	return sprite_height() * HIP_SHARE
+
+
 func _draw() -> void:
 	if data == null:
 		return
 	var sheet := animator.sheet
 	if sheet != null:
-		sheet.draw(self, animator.frame, radius * SPRITE_HEIGHT_PER_RADIUS * data.sprite_scale,
-			radius * SPRITE_FOOT, animator.facing, data.sprite_tint)
+		sheet.draw(self, animator.frame, sprite_height(), foot_offset(), animator.facing, data.sprite_tint)
 		return
 	var texture := data.get_elite_texture(radius / data.radius) if elite else data.get_texture()
 	draw_texture(texture, -texture.get_size() * 0.5)

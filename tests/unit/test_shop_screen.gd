@@ -139,9 +139,8 @@ func test_owned_items_are_shown_as_icons_with_counts() -> void:
 func test_cards_and_buttons_use_the_theme() -> void:
 	_open_screen(100)
 	var card := _screen._cards.get_child(0) as PanelContainer
-	var style := card.get_theme_stylebox("panel") as StyleBoxFlat
-	assert_eq(style.border_color, UiTheme.OUTLINE, "black outline")
-	assert_eq(Color(style.shadow_color, 1.0), Tiers.color(1), "tier glow")
+	var style := card.get_theme_stylebox("panel") as StyleBoxTexture
+	assert_eq(style.texture, UiTheme.frame_texture("card"), "baked card frame")
 	assert_eq(_screen._next.theme_type_variation, &"CtaButton")
 	assert_eq(_screen._title.theme_type_variation, &"TitleLabel")
 
@@ -251,10 +250,10 @@ func test_reroll_shortcut_rerolls_the_offers() -> void:
 func test_owned_weapon_keeps_its_card_shape_on_hover() -> void:
 	_open_screen(100)
 	var button: Button = _screen._controls["weapon:0"]
-	var normal := button.get_theme_stylebox("normal") as StyleBoxFlat
+	var normal := button.get_theme_stylebox("normal") as StyleBoxTexture
 	for state in ["hover", "pressed"]:
-		var style := button.get_theme_stylebox(state) as StyleBoxFlat
-		assert_eq(style.corner_radius_top_left, normal.corner_radius_top_left, "%s: same corners" % state)
+		var style := button.get_theme_stylebox(state) as StyleBoxTexture
+		assert_eq(style.texture, normal.texture, "%s: same card frame" % state)
 
 
 func test_card_type_and_tier_sit_above_the_icon() -> void:
@@ -284,12 +283,11 @@ func test_right_stick_scrolls_the_item_list() -> void:
 	assert_eq(ShopScreen.right_stick_y(-1), 0.0, "no gamepad: no scroll")
 
 
-func test_mergeable_weapons_get_a_gold_ring() -> void:
+func test_mergeable_weapons_get_a_gold_frame() -> void:
 	_open_screen(100)  # two pulses of the same tier
 	for key in ["weapon:0", "weapon:1"]:
-		var style := (_screen._controls[key] as Button).get_theme_stylebox("normal") as StyleBoxFlat
-		assert_eq(style.border_color, UiTheme.GOLD, "%s: gold ring" % key)
-		assert_gte(style.border_width_left, ShopScreen.MERGE_RING)
+		var style := (_screen._controls[key] as Button).get_theme_stylebox("normal") as StyleBoxTexture
+		assert_eq(style.modulate_color, UiTheme.frame_tint(UiTheme.GOLD, 1.0), "%s: gold frame" % key)
 
 
 func test_family_item_card_shows_the_bonus_for_the_current_build() -> void:

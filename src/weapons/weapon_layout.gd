@@ -3,10 +3,10 @@ class_name WeaponLayout
 ## first one on the right). Shared by WeaponHolder (attack origins) and
 ## WeaponVisuals (drawing).
 
-## Center of the mount circle relative to the owner's origin (its feet area):
-## around the chest of the character sprite.
-## Raised from the chest (-36) so weapons above the hero clear his head (playtest).
-const BODY_CENTER := Vector2(0.0, -54.0)
+## Center of the mount circle relative to the owner's origin, which is the hips (the middle of
+## the character since the hitbox was moved there, 2026-10-09): the weapons circle round the body,
+## the ones above still clear the head (the sprite's top is ~53 px above the origin).
+const BODY_CENTER := Vector2(0.0, -12.0)
 ## Distance from the circle center to a weapon mount.
 const MOUNT_RADIUS := 84.0
 ## Distance from a mount to the weapon's muzzle (where shots start).

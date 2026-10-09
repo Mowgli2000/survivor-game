@@ -2,7 +2,8 @@ class_name SealSelect
 extends Control
 ## Seal (danger level) choice, its own screen once every player has picked a hunter
 ## and a weapon (dev's choice, mockup B, 2026-10-08): the dungeon gate behind, the six
-## seals in a row, then the details of the focused one (effects, place, the rewards
+## seals engraved in the stone around the portal (three each side, Roman numerals; the
+## portal takes the color of the pointed seal, heat gradient, the last one red), then the details of the focused one (effects, place, the rewards
 ## still to win as dark silhouettes) and Play. Solo and coop: one screen for everybody;
 ## a seal is open when every hunter of the party has won the one below it.
 ## Moving onto an open seal picks it; pressing it moves to Play, Play starts the run
@@ -13,23 +14,31 @@ signal chosen(difficulty: DifficultyData)
 ## Back to the hunters.
 signal back
 
-const BACKGROUND := preload("res://assets/ui/select/seal_gate.png")
-const SWIRL_SHADER := preload("res://src/ui/character_select/portal_swirl.gdshader")
+## The gate picture (the dev's own: stone medallions I..VI round the arch, a painted portal).
+## The portal is re-drawn animated and recolored in the arch (seal_portal.gdshader).
+const BACKGROUND := preload("res://assets/ui/select/seal_gate_v3.png")
+const NUMERAL_SHADER := preload("res://src/ui/character_select/seal_numeral.gdshader")
+const PORTAL_SHADER := preload("res://src/ui/character_select/seal_portal.gdshader")
 const ROMAN: Array[String] = ["I", "II", "III", "IV", "V", "VI"]
 const SKULL := "☠"
 const LOCK := "🔒"
-## Seal metals, Copper -> Astral: rim (also the seal's text color) and face.
-const SEAL_RIM: Array[Color] = [Color("d9874a"), Color("b8c0cc"), Color("eef2f8"), Color("ffd84d"),
-		Color("b86bff"), Color("8fe9ff")]
-const SEAL_FACE: Array[Color] = [Color("8a4a24"), Color("5a6270"), Color("9aa4b4"), Color("b8860b"),
-		Color("241a3a"), Color("2b5c8a")]
-## Where the gate's swirl sits in seal_gate.png (share of width, of height).
-const PORTAL_CENTER := Vector2(0.508, 0.39)
+## The six medallions painted on the arch, as a share of the picture (center). The picked seal
+## lights its medallion; a locked one is covered. Index = seal level (I at the bottom left,
+## VI at the bottom right, III and IV at the top).
+const MEDALLIONS: Array[Vector2] = [Vector2(0.369, 0.405), Vector2(0.382, 0.288), Vector2(0.430, 0.180),
+		Vector2(0.570, 0.180), Vector2(0.617, 0.285), Vector2(0.630, 0.408)]
+## Radius of a medallion, as a share of the picture's width.
+const MEDALLION_RADIUS := 0.03
+## Where the portal lies in the picture, and the part of the picture its quad covers (the
+## arch, the light on the stones and the fragments of the red portal).
+const PORTAL_CENTER := Vector2(0.5015, 0.415)
+const PORTAL_RECT := Rect2(0.22, 0.08, 0.56, 0.66)
 const ENTER_SECONDS := 1.4
 const ENTER_ZOOM := 9.0
-const MEDAL_SIZE := Vector2(150, 150)
 const REWARD_BOX := 70.0
 
+## Debug (capture tool): every seal counts as open.
+static var debug_all_open: bool = false
 static var _silhouette: ShaderMaterial
 
 var _levels: Array[DifficultyData] = []
@@ -38,7 +47,8 @@ var _medals: Array[Medal] = []
 ## Highest seal the party may play.
 var _allowed: int = 0
 var _difficulty: DifficultyData
-var _row: HBoxContainer
+## Full-screen layer over the page that holds the six plaques, placed on the painted arch.
+var _gate_layer: Control
 var _panel: PanelContainer
 var _name: Label
 var _effects: Label
@@ -49,61 +59,45 @@ var _launch: Button
 var _background: TextureRect
 var _page: Control
 var _entering: bool = false
+var _portal_tween: Tween
+var _fx: PortalFx
+var _flames: UiHotspots
+## The vortex quad, child of the background (it zooms with it when the run starts).
+var _portal: ColorRect
 
 
-## Round seal: metal rim, face, numeral; glowing rings when picked, dark with a padlock
-## when locked. A few circles per frame on one screen: plain draw calls are fine.
+## Overlay of one medallion painted in the picture. It adds no shape: the painted numeral itself
+## (the light pixels of the medallion, redrawn by seal_numeral.gdshader) takes the seal's color when
+## the seal is picked, and darkens when it is locked.
 class Medal extends Control:
 	var level: int = 0
+	var color: Color = Color.WHITE
 	var locked: bool = false
 	var picked: bool = false
-	var _label: Label
+	## Where the medallion is in the picture, in texture pixels.
+	var source: Rect2 = Rect2()
 
-	func _init(p_level: int) -> void:
+	func _init(p_level: int, p_color: Color) -> void:
 		level = p_level
+		color = p_color
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
-		custom_minimum_size = MEDAL_SIZE
-		_label = Label.new()
-		_label.set_anchors_preset(Control.PRESET_FULL_RECT)
-		_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(_label)
+		var tint_material := ShaderMaterial.new()
+		tint_material.shader = NUMERAL_SHADER
+		material = tint_material
 
 	func refresh() -> void:
-		var radius := _radius()
-		if locked:
-			_label.text = LOCK
-			_label.add_theme_font_size_override("font_size", roundi(radius * 0.7))
-			_label.remove_theme_font_override("font")
-		else:
-			_label.text = ROMAN[level]
-			_label.add_theme_font_override("font", UiTheme.BANGERS)
-			_label.add_theme_font_size_override("font_size", roundi(radius * 0.8))
-			_label.add_theme_color_override("font_color", SEAL_RIM[level])
-			_label.add_theme_color_override("font_outline_color", UiTheme.OUTLINE)
-			_label.add_theme_constant_override("outline_size", 10)
+		var tint_material := material as ShaderMaterial
+		tint_material.set_shader_parameter(&"tint", color.lerp(Color.WHITE, 0.15))
+		var texel := Vector2(BACKGROUND.get_size())
+		tint_material.set_shader_parameter(&"region", Vector4(source.position.x / texel.x, source.position.y / texel.y,
+				source.size.x / texel.x, source.size.y / texel.y))
+		tint_material.set_shader_parameter(&"dark", 1.0 if locked else 0.0)
+		tint_material.set_shader_parameter(&"tint_strength", 0.85 if locked else (1.0 if picked else 0.0))
 		queue_redraw()
 
-	func _radius() -> float:
-		return minf(size.x, size.y) * (0.4 if picked else 0.33) if size.x > 0.0 else MEDAL_SIZE.x * 0.33
-
 	func _draw() -> void:
-		var center := size * 0.5
-		var radius := _radius()
-		if locked:
-			draw_circle(center, radius, Color("1a1430"))
-			draw_arc(center, radius, 0.0, TAU, 64, UiTheme.OUTLINE, 6.0, true)
-			draw_arc(center, radius * 0.82, 0.0, TAU, 64, Color(UiTheme.MUTED, 0.25), 3.0, true)
-			return
-		var rim := SEAL_RIM[level]
-		if picked:
-			for k in 3:
-				draw_arc(center, radius * (1.16 + k * 0.1), 0.0, TAU, 64, Color(rim, 0.35 - k * 0.1), 8.0, true)
-		draw_circle(center, radius, rim)
-		draw_arc(center, radius, 0.0, TAU, 64, UiTheme.OUTLINE, 6.0, true)
-		draw_circle(center, radius * 0.8, SEAL_FACE[level])
-		draw_arc(center, radius * 0.8, 0.0, TAU, 64, UiTheme.OUTLINE, 4.0, true)
+		if source.size.x > 0.0 and (picked or locked):
+			draw_texture_rect_region(BACKGROUND, Rect2(Vector2.ZERO, size), source)
 
 
 func _init() -> void:
@@ -118,25 +112,40 @@ func _init() -> void:
 	var background := TextureRect.new()
 	_background = background
 	background.texture = BACKGROUND
-	# The picture's own portal turns like a black hole (same picture, same portal).
-	var swirl := ShaderMaterial.new()
-	swirl.shader = SWIRL_SHADER
-	background.material = swirl
 	background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	background.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	background.set_anchors_preset(Control.PRESET_FULL_RECT)
 	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(background)
+	# The night veil over the painting (it zooms with it), under the portal so the portal stays bright.
 	var dim := ColorRect.new()
 	dim.color = Color(UiTheme.DIM, 0.4)
 	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
 	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(dim)
+	background.add_child(dim)
+	_portal = ColorRect.new()
+	_portal.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var portal_material := ShaderMaterial.new()
+	portal_material.shader = PORTAL_SHADER
+	portal_material.set_shader_parameter(&"rect_min", PORTAL_RECT.position)
+	portal_material.set_shader_parameter(&"rect_size", PORTAL_RECT.size)
+	portal_material.set_shader_parameter(&"vortex", BACKGROUND)
+	_portal.material = portal_material
+	background.add_child(_portal)
+	_fx = PortalFx.new()
+	background.add_child(_fx)
+	background.resized.connect(_layout_portal)
+	# The violet flames of the gate come alive under the mouse (animation + fire sound).
+	_flames = UiHotspots.new()
+	_flames.picture_rect = _picture_global_rect
+	_flames.texture = BACKGROUND
+	_flames.add_gate_flames(Color(0.7, 0.3, 1.0), false)
+	add_child(_flames)
 	var margin := MarginContainer.new()
 	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
 	for side in ["left", "right"]:
 		margin.add_theme_constant_override("margin_" + side, 40)
-	margin.add_theme_constant_override("margin_top", 26)
+	margin.add_theme_constant_override("margin_top", 6)
 	margin.add_theme_constant_override("margin_bottom", 90)
 	add_child(margin)
 	_page = margin
@@ -154,7 +163,7 @@ func _init() -> void:
 	var title := Label.new()
 	title.text = "UI_CHOOSE_DANGER"
 	title.theme_type_variation = &"TitleLabel"
-	title.add_theme_font_size_override("font_size", 64)
+	title.add_theme_font_size_override("font_size", 44)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top.add_child(title)
@@ -162,17 +171,14 @@ func _init() -> void:
 	var balance := Control.new()
 	balance.custom_minimum_size = Vector2(190, 0)
 	top.add_child(balance)
-	var spacer := Control.new()
-	spacer.custom_minimum_size = Vector2(0, 225)
-	page.add_child(spacer)
-	_row = HBoxContainer.new()
-	_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	_row.add_theme_constant_override("separation", 30)
-	page.add_child(_row)
-	page.add_child(_build_panel())
+	# The plaques sit on the painted arch (_gate_layer); the details panel is at the bottom.
 	var push := Control.new()
 	push.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	page.add_child(push)
+	page.add_child(_build_panel())
+	var gap := Control.new()
+	gap.custom_minimum_size = Vector2(0, 6)
+	page.add_child(gap)
 	_launch = Button.new()
 	_launch.text = "UI_PLAY"
 	_launch.theme_type_variation = &"CtaButton"
@@ -180,6 +186,11 @@ func _init() -> void:
 	_launch.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_launch.pressed.connect(_confirm)
 	page.add_child(_launch)
+	_gate_layer = Control.new()
+	_gate_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_gate_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_gate_layer.resized.connect(_layout_plaques)
+	add_child(_gate_layer)
 	add_child(ButtonHints.create([[&"A", "UI_PLAY"], [&"B", "UI_HINT_BACK"]]))
 
 
@@ -227,16 +238,16 @@ func _build_panel() -> Control:
 func open(hunters: Array[CharacterData]) -> void:
 	_allowed = allowed_level(hunters)
 	_levels = all_levels()
-	for child in _row.get_children():
-		_row.remove_child(child)
+	for child in _gate_layer.get_children():
+		_gate_layer.remove_child(child)
 		child.queue_free()
 	_buttons.clear()
 	_medals.clear()
 	for difficulty in _levels:
-		var button := _seal_button(difficulty)
-		_row.add_child(button)
-		# Down from any seal: Play.
-		button.focus_neighbor_bottom = button.get_path_to(_launch)
+		_gate_layer.add_child(_seal_button(difficulty))
+	_link_seals()
+	_layout_plaques()
+	_layout_portal()
 	visible = true
 	# The hardest open seal is picked; the focus is on it.
 	var last := mini(_allowed, _buttons.size() - 1)
@@ -273,7 +284,7 @@ func seal_buttons() -> Array[Button]:
 
 
 func is_open(level: int) -> bool:
-	return level <= _allowed
+	return debug_all_open or level <= _allowed
 
 
 func _seal_button(difficulty: DifficultyData) -> Button:
@@ -284,23 +295,12 @@ func _seal_button(difficulty: DifficultyData) -> Button:
 	var empty := StyleBoxEmpty.new()
 	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
 		button.add_theme_stylebox_override(state, empty)
-	var box := VBoxContainer.new()
-	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_theme_constant_override("separation", 0)
-	button.add_child(box)
-	var medal := Medal.new(level)
+	var medal := Medal.new(level, difficulty.color)
 	medal.locked = not is_open(level)
 	medal.resized.connect(medal.refresh)
-	box.add_child(medal)
-	var label := Label.new()
-	label.text = seal_short_name(level) if is_open(level) else "???"
-	label.theme_type_variation = &"SubtitleLabel"
-	label.add_theme_font_size_override("font_size", 22)
-	label.add_theme_color_override("font_color", SEAL_RIM[level] if is_open(level) else UiTheme.MUTED)
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	box.add_child(label)
-	button.custom_minimum_size = MEDAL_SIZE + Vector2(0, 34)
+	medal.set_anchors_preset(Control.PRESET_FULL_RECT)
+	button.add_child(medal)
+	button.set_meta(&"medal", medal)
 	button.focus_entered.connect(_point.bind(level))
 	button.mouse_entered.connect(button.grab_focus)
 	button.pressed.connect(func() -> void:
@@ -314,6 +314,75 @@ func _seal_button(difficulty: DifficultyData) -> Button:
 	return button
 
 
+## Row (0 = top .. 2 = bottom) of seal `i` in its column: the levels climb on the left (I at the
+## bottom), and on the right VI is at the bottom, IV at the top.
+static func slot_row(i: int) -> int:
+	return 2 - i % 3 if i < 3 else i % 3
+
+
+## Up / down inside a column, left / right to the same row of the other column; down from the
+## lowest plaque goes to Play.
+func _link_seals() -> void:
+	var grid: Array = [[null, null], [null, null], [null, null]]
+	for i in _buttons.size():
+		grid[slot_row(i)][0 if i < 3 else 1] = _buttons[i]
+	for row in 3:
+		for column in 2:
+			var button: Button = grid[row][column]
+			if button == null:
+				continue
+			var above: Button = grid[row - 1][column] if row > 0 else null
+			var below: Button = grid[row + 1][column] if row < 2 else null
+			var across: Button = grid[row][1 - column]
+			button.focus_neighbor_top = button.get_path_to(above if above != null else button)
+			button.focus_neighbor_bottom = button.get_path_to(below if below != null else _launch)
+			button.focus_neighbor_left = button.get_path_to(button if column == 0 or across == null else across)
+			button.focus_neighbor_right = button.get_path_to(button if column == 1 or across == null else across)
+
+
+## The picture's rectangle on screen ("cover" fit), for the hover spots.
+func _picture_global_rect() -> Rect2:
+	var cover := maxf(size.x / BACKGROUND.get_width(), size.y / BACKGROUND.get_height())
+	var drawn := Vector2(BACKGROUND.get_size()) * cover
+	return Rect2(global_position + (size - drawn) * 0.5, drawn)
+
+
+## Puts the portal quad over the arch of the picture.
+func _layout_portal() -> void:
+	if _portal == null:
+		return
+	var cover := maxf(size.x / BACKGROUND.get_width(), size.y / BACKGROUND.get_height())
+	var drawn := Vector2(BACKGROUND.get_size()) * cover
+	_portal.position = _picture_to_screen(PORTAL_RECT.position)
+	_portal.size = drawn * PORTAL_RECT.size
+	_fx.place(_picture_to_screen(Vector2(PORTAL_CENTER.x, PORTAL_CENTER.y)), Vector2(0.0935, 0.215) * drawn)
+
+
+## Where a point of the picture (0..1) lies on screen: the picture is drawn "cover".
+func _picture_to_screen(uv: Vector2) -> Vector2:
+	var cover := maxf(size.x / BACKGROUND.get_width(), size.y / BACKGROUND.get_height())
+	var drawn := Vector2(BACKGROUND.get_size()) * cover
+	return (size - drawn) * 0.5 + drawn * uv
+
+
+## Puts the six overlays on the medallions painted in the picture.
+func _layout_plaques() -> void:
+	if _gate_layer == null:
+		return
+	var cover := maxf(size.x / BACKGROUND.get_width(), size.y / BACKGROUND.get_height())
+	var drawn := Vector2(BACKGROUND.get_size()) * cover
+	var cell := Vector2.ONE * MEDALLION_RADIUS * 2.0 * drawn.x
+	for i in _buttons.size():
+		_buttons[i].size = cell
+		_buttons[i].pivot_offset = cell * 0.5
+		_buttons[i].position = _picture_to_screen(MEDALLIONS[i]) - cell * 0.5
+		var medal := _buttons[i].get_meta(&"medal") as Medal
+		var texel := Vector2(BACKGROUND.get_size())
+		medal.source = Rect2((MEDALLIONS[i] - Vector2.ONE * MEDALLION_RADIUS * Vector2(1.0, 1.5)) * texel,
+				Vector2.ONE * MEDALLION_RADIUS * 2.0 * Vector2(1.0, 1.5) * texel)
+		medal.refresh()
+
+
 ## The pointer (focus or mouse) is on seal `level`: shows it; an open seal is picked.
 func _point(level: int) -> void:
 	if is_open(level):
@@ -325,15 +394,45 @@ func _point(level: int) -> void:
 	for i in _medals.size():
 		_medals[i].picked = i == level
 		_medals[i].refresh()
+	_tint_portal(_levels[level].color)
+	_set_grandeur(level)
 	_show_info(_levels[level])
+
+
+## The portal takes the color of the pointed seal (a short fade).
+func _tint_portal(color: Color) -> void:
+	var material := _portal.material as ShaderMaterial
+	var current: Variant = material.get_shader_parameter(&"mid")
+	var from: Color = Color(current.x, current.y, current.z) if current is Vector3 else color
+	if _portal_tween != null and _portal_tween.is_valid():
+		_portal_tween.kill()
+	if UiFx.reduce_motion or from.is_equal_approx(color):
+		_set_portal_color(color)
+		return
+	_portal_tween = create_tween()
+	_portal_tween.tween_method(func(value: Color) -> void: _set_portal_color(value), from, color, 0.35)
+
+
+## The last seal's portal is the imposing one: lightning comes slowly out of it.
+func _set_grandeur(level: int) -> void:
+	_fx.intensity = 1.0 if level >= _levels.size() - 1 and level > 0 else 0.0
+
+
+## Sets the vortex palette (bright bands, body, shade) from the seal color.
+func _set_portal_color(color: Color) -> void:
+	var palette := ArrivalGate.palette_for(color)
+	var material := _portal.material as ShaderMaterial
+	material.set_shader_parameter(&"mid", Vector3(palette[0].r, palette[0].g, palette[0].b))
+	material.set_shader_parameter(&"outer", Vector3(palette[1].r, palette[1].g, palette[1].b))
+	material.set_shader_parameter(&"deep", Vector3(palette[2].r, palette[2].g, palette[2].b))
 
 
 func _show_info(difficulty: DifficultyData) -> void:
 	var level := difficulty.level
 	var open_seal := is_open(level)
-	_panel.add_theme_stylebox_override("panel", UiTheme.card_style(SEAL_RIM[level] if open_seal else UiTheme.MUTED, 0.8))
+	_panel.add_theme_stylebox_override("panel", UiTheme.card_style(difficulty.color if open_seal else UiTheme.MUTED, 0.8))
 	_name.text = tr(difficulty.name_key)
-	_name.add_theme_color_override("font_color", SEAL_RIM[level] if open_seal else UiTheme.MUTED)
+	_name.add_theme_color_override("font_color", difficulty.color if open_seal else UiTheme.MUTED)
 	_effects.text = SKULL + " " + seal_effects(difficulty)
 	_place.text = tr("SEAL_PLACE") % seal_place(difficulty, _levels)
 	if not open_seal:
@@ -392,19 +491,21 @@ func _confirm() -> void:
 ## fades, then the run starts with a violet screen (PortalArrival) that clears.
 func _enter_portal() -> void:
 	_entering = true
+	_flames.visible = false
 	Audio.play(Sounds.PORTAL_OPEN, -4.0)
 	# Scale around the swirl: where it lies on screen once the picture is "covered".
 	var cover := maxf(size.x / BACKGROUND.get_width(), size.y / BACKGROUND.get_height())
 	var drawn := Vector2(BACKGROUND.get_size()) * cover
 	_background.pivot_offset = (size - drawn) * 0.5 + drawn * PORTAL_CENTER
 	var flash := ColorRect.new()
-	flash.color = PortalArrival.COLOR
+	flash.color = PortalArrival.cover_color(_difficulty.color)
 	flash.modulate.a = 0.0
 	flash.set_anchors_preset(Control.PRESET_FULL_RECT)
 	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(flash)
 	var tween := create_tween().set_parallel(true)
 	tween.tween_property(_page, "modulate:a", 0.0, ENTER_SECONDS * 0.3)
+	tween.tween_property(_gate_layer, "modulate:a", 0.0, ENTER_SECONDS * 0.3)
 	tween.tween_property(_background, "scale", Vector2.ONE * ENTER_ZOOM, ENTER_SECONDS) 		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
 	tween.tween_method(_set_pull, 0.0, 1.0, ENTER_SECONDS * 0.8)
 	tween.tween_property(flash, "modulate:a", 1.0, ENTER_SECONDS * 0.35).set_delay(ENTER_SECONDS * 0.65)
@@ -412,7 +513,7 @@ func _enter_portal() -> void:
 
 
 func _set_pull(value: float) -> void:
-	(_background.material as ShaderMaterial).set_shader_parameter(&"pull", value)
+	(_portal.material as ShaderMaterial).set_shader_parameter(&"pull", value)
 
 
 ## The violet cover stays up: the scene changes right after "chosen".

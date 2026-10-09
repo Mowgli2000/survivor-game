@@ -182,10 +182,14 @@ func _init() -> void:
 	_xp_bar.offset_bottom = 22
 	root.add_child(_xp_bar)
 
+	var plate := PanelContainer.new()
+	plate.position = Vector2(24, 34)
+	plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	plate.add_theme_stylebox_override("panel", _plate_style())
+	root.add_child(plate)
 	var box := VBoxContainer.new()
-	box.position = Vector2(32, 40)
 	box.add_theme_constant_override("separation", 8)
-	root.add_child(box)
+	plate.add_child(box)
 	_p1_box = box
 
 	_hp_bar = _make_bar(UiTheme.BAD)
@@ -204,10 +208,20 @@ func _init() -> void:
 	_materials_label.add_theme_color_override("font_color", UiTheme.GOLD)
 	box.add_child(_materials_label)
 
+	var wave_plate := Panel.new()
+	wave_plate.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	wave_plate.offset_left = -170
+	wave_plate.offset_right = 170
+	wave_plate.offset_top = 26
+	wave_plate.offset_bottom = 140
+	wave_plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	wave_plate.add_theme_stylebox_override("panel", _plate_style())
+	root.add_child(wave_plate)
+
 	_wave_label = _make_label(&"SubtitleLabel", 30)
 	_wave_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
 	_wave_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_wave_label.offset_top = 28
+	_wave_label.offset_top = 36
 	_wave_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	root.add_child(_wave_label)
 
@@ -215,14 +229,14 @@ func _init() -> void:
 	_timer_label.add_theme_color_override("font_color", UiTheme.TEXT)
 	_timer_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
 	_timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_timer_label.offset_top = 64
+	_timer_label.offset_top = 72
 	_timer_label.grow_horizontal = Control.GROW_DIRECTION_BOTH
 	root.add_child(_timer_label)
 
 	_boss_bar = BossBar.new()
 	_boss_bar.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
 	_boss_bar.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_boss_bar.offset_top = 128
+	_boss_bar.offset_top = 152
 	root.add_child(_boss_bar)
 
 	_toast = _make_label(&"SubtitleLabel", 34)
@@ -230,7 +244,7 @@ func _init() -> void:
 	_toast.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
 	_toast.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_toast.grow_horizontal = Control.GROW_DIRECTION_BOTH
-	_toast.offset_top = 210
+	_toast.offset_top = 230
 	_toast.visible = false
 	root.add_child(_toast)
 
@@ -282,7 +296,7 @@ func _update_timer_warning(seconds: int) -> void:
 	# Re-centered on its new size (a Label does not shrink back by itself).
 	_timer_label.reset_size()
 	_timer_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE)
-	_timer_label.offset_top = 64
+	_timer_label.offset_top = 72
 	if size == TIMER_FONT_SIZE:
 		_timer_label.add_theme_color_override("font_color", UiTheme.TEXT)
 		return
@@ -329,6 +343,14 @@ func _refresh_level() -> void:
 	_level_label.text = "%s %d" % [tr("UI_LEVEL"), _level]
 	if pending > 0:
 		_level_label.text += "  (+%d)" % pending
+
+
+## No frame behind the HUD blocks (playtest: the blue boxes were too much): bars and
+## outlined text only, with a little room around.
+static func _plate_style() -> StyleBoxEmpty:
+	var style := StyleBoxEmpty.new()
+	style.set_content_margin_all(8.0)
+	return style
 
 
 func _make_bar(fill_color: Color) -> ProgressBar:

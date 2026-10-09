@@ -19,8 +19,9 @@ const SPRITE_HEIGHT_PER_RADIUS := 6.4
 const WALK_ANIM_SPEED := 300.0
 const WALK_RATE_MIN := 0.6
 const WALK_RATE_MAX := 1.8
-## Feet sit this fraction of the radius below the player center.
-const SPRITE_FOOT := 0.8
+## The player's position (hitbox, weapons and attacks origin) is at the hips: the feet sit
+## this share of the sprite's height below it (dev's request: the hitbox was near the feet).
+const HIP_SHARE := 0.48
 ## Opacity of a dead player waiting for the next wave (coop).
 const GHOST_ALPHA := 0.3
 ## Default seconds of the walk out of the portal (enter_from).
@@ -128,6 +129,8 @@ func _ready() -> void:
 ## `wait` seconds hidden inside; controls, weapons and damage wait until it arrives.
 func enter_from(origin: Vector2, seconds: float = ARRIVAL_SECONDS, wait: float = 0.0) -> void:
 	_arrival_offset = origin - global_position
+	# In front of the gate (ArrivalGate is at z 1) while stepping out of it.
+	z_index = 2
 	_arrival_total = seconds
 	_arrival_left = seconds
 	_arrival_wait = wait
@@ -155,6 +158,7 @@ func _physics_process(delta: float) -> void:
 			weapon_visuals.visible = true
 			if health_bar != null:
 				health_bar.modulate.a = 1.0
+			z_index = 0
 			landed.emit()
 		queue_redraw()
 		return
@@ -248,12 +252,12 @@ func _on_stat_changed(stat: StringName) -> void:
 
 func _draw() -> void:
 	if tag_color.a > 0.0:
-		var feet := Vector2(0.0, radius * SPRITE_FOOT)
+		var feet := Vector2(0.0, foot_offset())
 		draw_set_transform(feet, 0.0, Vector2(1.0, 0.45))
 		draw_arc(Vector2.ZERO, radius * 1.5, 0.0, TAU, 32, tag_color, 5.0, true)
 		draw_set_transform(Vector2.ZERO)
 	if rig != null:
-		var feet := Vector2(0.0, radius * SPRITE_FOOT)
+		var feet := Vector2(0.0, foot_offset())
 		# Ground shadow (the baked sprites have it in their frames).
 		draw_set_transform(feet, 0.0, Vector2(1.0, 0.35))
 		draw_circle(Vector2.ZERO, radius * 1.7, Color(0.05, 0.03, 0.12, 0.35 if not is_dead else 0.0))
@@ -278,21 +282,30 @@ func _draw_dust(feet: Vector2) -> void:
 		draw_circle(at, radius * (0.2 + r * 0.45), Color(0.9, 0.88, 0.95, 0.4 * (1.0 - r)))
 
 
+## Height of the drawn sprite in px.
+func sprite_height() -> float:
+	return radius * SPRITE_HEIGHT_PER_RADIUS * (_data.sprite_scale_for(_variant) if _data != null else 1.0)
+
+
+## Distance from the center (the hips) down to the feet.
+func foot_offset() -> float:
+	return sprite_height() * HIP_SHARE
+
+
 ## Distance from the center to the top of the sprite (where the HP bar sits).
 func head_height() -> float:
-	var height := radius * SPRITE_HEIGHT_PER_RADIUS * (_data.sprite_scale_for(_variant) if _data != null else 1.0)
-	return height - radius * SPRITE_FOOT
+	return sprite_height() - foot_offset()
 
 
 ## The puppet stands on the feet, as tall as the sprite would be, leaning and
 ## squashed like it (PlayerMotion). body_scale().x already holds the facing
 ## (mirrored when moving left): it must not be applied twice.
 func _place_rig() -> void:
-	var height := radius * SPRITE_HEIGHT_PER_RADIUS * (_data.sprite_scale_for(_variant) if _data != null else 1.0)
+	var height := sprite_height()
 	var s := height / rig.rig.height
 	var squash := motion.body_scale()
 	rig.transform = Transform2D(motion.lean, Vector2(s * squash.x, s * squash.y), 0.0,
-		Vector2(0.0, radius * SPRITE_FOOT))
+		Vector2(0.0, foot_offset()))
 
 
 func _setup_sprite_material(sheet: SpriteSheet) -> void:
@@ -316,8 +329,8 @@ func _update_sprite_material() -> void:
 ## Dust, then the body leaning around its feet.
 func _draw_sprite() -> void:
 	var sheet := animator.sheet
-	var height := radius * SPRITE_HEIGHT_PER_RADIUS * (_data.sprite_scale_for(_variant) if _data != null else 1.0)
-	var foot := radius * SPRITE_FOOT
+	var height := sprite_height()
+	var foot := foot_offset()
 	var feet := Vector2(0.0, foot)
 	_draw_dust(feet)
 

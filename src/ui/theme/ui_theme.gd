@@ -1,46 +1,49 @@
 class_name UiTheme
-## Single source of the UI look ("chibi neon", ADR 0011; "Portal" pass: pill
-## buttons, violet focus fill with a cyan frame, violet main-action button):
-## drawn like the characters and icons: thick dark outline, flat dark fill.
+## Single source of the UI look ("Azure Crystal", theme T3, ADR 0024): midnight-blue
+## panels with bevelled, crystal-tipped frames (9-slice textures baked from SVG by
+## tools/ui/make_frames.py), cyan accent, gold corners, coral for alerts, serif titles.
 ## Builds the Godot Theme once (fonts, styles, type variations) and exposes the
 ## palette plus accented style factories for elements colored by tier / weapon.
 ## Screens set `theme = UiTheme.get_theme()` on their root Control and use the
 ## type variations; only semantic colors are set per widget.
+## Frames are drawn in near-white lines: the accent is applied as `modulate_color`.
 
-const FREDOKA := preload("res://assets/fonts/Fredoka.ttf")
 const NUNITO := preload("res://assets/fonts/Nunito.ttf")
-## Manga title font (art bible): only for TitleLabel.
+## Serif display font (headings, buttons) and its decorative cut (big titles).
+const CINZEL := preload("res://assets/fonts/Cinzel.ttf")
+const CINZEL_DECO := preload("res://assets/fonts/CinzelDecorative-Bold.ttf")
+## Manga font: damage numbers only.
 const BANGERS := preload("res://assets/fonts/Bangers.ttf")
 
-const TEXT := Color("eef0ff")
-const MUTED := Color(0.93, 0.94, 1.0, 0.55)
+const FRAMES := "res://assets/ui/frames/"
+
+const TEXT := Color("eaf4ff")
+const MUTED := Color(0.82, 0.9, 1.0, 0.6)
 ## General UI accent (titles, level-up, focus).
-const ACCENT := Color("66f2ff")
+const ACCENT := Color("5fd4ff")
 ## Materials, "better" values.
-const GOOD := Color("73ff8c")
-## HP, "worse" values, too expensive, defeat.
-const BAD := Color("ff6673")
-## Victory, elites.
-const GOLD := Color("ffd94d")
-## Section headings (settings).
-const VIOLET := Color("b86bff")
-const XP := Color("59b8ff")
-const PANEL_BG := Color(0.106, 0.09, 0.188, 0.95)
-## Full-screen veil behind menus: night violet, not pure black.
-const DIM := Color(0.06, 0.04, 0.12, 0.78)
-const OUTLINE := Color.BLACK
-## Thinner frames and a tighter glow (playtest: thick neon borders hurt the eyes, the
-## accent glow read as color bleeding past the black outline).
+const GOOD := Color("6dffa0")
+## HP, "worse" values, too expensive, defeat (coral).
+const BAD := Color("ff6b5e")
+## Victory, elites, ornaments.
+const GOLD := Color("f0cd7c")
+## Section headings (settings), rare things.
+const VIOLET := Color("a98bff")
+const XP := Color("9b6dff")
+const PANEL_BG := Color(0.035, 0.07, 0.18, 0.95)
+## Full-screen veil behind menus: deep midnight blue, not pure black.
+const DIM := Color(0.015, 0.03, 0.09, 0.8)
+const OUTLINE := Color(0.01, 0.02, 0.06)
 const OUTLINE_WIDTH := 3
+## Kept for the few flat styles (glyphs, plates).
 const GLOW_SIZE := 4
-## Portal theme: focused / hovered button fill, main-action button fill.
-const FOCUS_FILL := Color("4a2a86")
-const CTA_FILL := Color("7b3ff2")
-## Buttons are pills: the radius is half their height or more.
-const PILL := 40
+## Hovered / focused flat fills and the main-action fill (kept for debug tools).
+const FOCUS_FILL := Color("1f5fd0")
+const CTA_FILL := Color("2a7cf5")
 
 static var _theme: Theme
 static var _fonts: Dictionary = {}
+static var _textures: Dictionary = {}
 
 
 static func get_theme() -> Theme:
@@ -49,74 +52,94 @@ static func get_theme() -> Theme:
 	return _theme
 
 
-## Variable font at a given weight (Fredoka for display, Nunito for text). Cached.
+## Variable font at a given weight (Cinzel for display, Nunito for text). Cached.
 static func font(weight: int, display: bool = false) -> FontVariation:
 	var key := "%s%d" % ["F" if display else "N", weight]
 	if not _fonts.has(key):
 		var variation := FontVariation.new()
-		variation.base_font = FREDOKA if display else NUNITO
+		variation.base_font = CINZEL if display else NUNITO
 		variation.variation_opentype = {TextServerManager.get_primary_interface().name_to_tag("wght"): weight}
 		_fonts[key] = variation
 	return _fonts[key]
 
 
-## Panel: dark violet fill tinted by `accent`, black outline, accent glow.
-static func panel_style(accent: Color, strength: float = 1.0, radius: int = 16) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = PANEL_BG.lerp(Color(accent, PANEL_BG.a), 0.07 * strength)
-	style.border_color = OUTLINE
-	style.set_border_width_all(OUTLINE_WIDTH)
-	style.set_corner_radius_all(radius)
-	style.shadow_color = Color(accent, 0.14 * strength)
-	style.shadow_size = roundi(GLOW_SIZE * strength)
-	style.set_content_margin_all(20)
-	style.anti_aliasing = true
+static func frame_texture(frame_name: String) -> Texture2D:
+	if not _textures.has(frame_name):
+		_textures[frame_name] = load(FRAMES + frame_name + ".png")
+	return _textures[frame_name]
+
+
+## Line color of a frame: dim blue-grey when `strength` is low, the accent when it is 1.
+static func frame_tint(accent: Color, strength: float = 1.0) -> Color:
+	var tint := Color(0.5, 0.62, 0.85).lerp(accent, clampf(strength, 0.0, 1.0))
+	tint.a = lerpf(0.6, 1.0, clampf(strength, 0.0, 1.0))
+	return tint
+
+
+## 9-slice style from a baked frame. `margin` is the fixed corner size in texture pixels.
+static func frame_style(frame_name: String, margin_h: int, margin_v: int, tint: Color,
+		content: float = 16.0) -> StyleBoxTexture:
+	var style := StyleBoxTexture.new()
+	style.texture = frame_texture(frame_name)
+	style.texture_margin_left = margin_h
+	style.texture_margin_right = margin_h
+	style.texture_margin_top = margin_v
+	style.texture_margin_bottom = margin_v
+	style.modulate_color = tint
+	style.set_content_margin_all(content)
 	return style
 
 
-## Column of the select screen; `lit`: the step being edited (soft accent frame).
-static func column_style(lit: bool) -> StyleBoxFlat:
-	var style := panel_style(ACCENT, 0.4, 22)
-	style.bg_color = Color(0.05, 0.03, 0.12, 0.8)
-	style.border_color = Color(ACCENT, 0.8) if lit else OUTLINE
-	style.set_border_width_all(3)
-	style.set_content_margin_all(18)
-	return style
+## Frame in the accent color: the cyan accent uses the frame baked in cyan (its gold corners
+## stay gold), any other accent tints the white one (corners take the tint too).
+static func accent_frame(frame_name: String, margin: int, accent: Color, strength: float,
+		content: float) -> StyleBoxTexture:
+	var tint := frame_tint(accent, strength)
+	if accent.is_equal_approx(ACCENT):
+		return frame_style(frame_name + "_cyan", margin, margin, Color(1.0, 1.0, 1.0, tint.a).lerp(
+			Color(0.55, 0.65, 0.85), 1.0 - clampf(strength, 0.0, 1.0)), content)
+	return frame_style(frame_name, margin, margin, tint, content)
 
 
-## Window (pause, settings): the panel with a cyan frame.
-static func window_style() -> StyleBoxFlat:
-	var style := panel_style(ACCENT, 0.5, 26)
-	style.border_color = Color(ACCENT, 0.85)
-	style.set_border_width_all(3)
-	style.set_content_margin_all(26)
-	return style
+## Panel: midnight fill, bevelled frame with gold corner brackets, tinted by `accent`.
+## `radius` is kept for older callers (the frame shape is fixed).
+static func panel_style(accent: Color, strength: float = 1.0, _radius: int = 16) -> StyleBoxTexture:
+	return accent_frame("panel", 56, accent, strength, 24.0)
 
 
-## Shop / level-up card colored by tier: stronger glow when `strength` is 1.
-static func card_style(accent: Color, strength: float = 1.0) -> StyleBoxFlat:
-	var style := panel_style(accent, strength)
-	style.set_content_margin_all(16)
-	return style
+## Column of the select screen; `lit`: the step being edited (bright frame).
+static func column_style(lit: bool) -> StyleBoxTexture:
+	return accent_frame("panel", 56, ACCENT, 1.0 if lit else 0.4, 22.0)
 
 
-## Focus frame of a card-shaped button (card_style): same rounded corners as the card,
-## a pill frame on a card read as a second, different outline (playtest).
-static func card_focus_style(accent: Color = ACCENT) -> StyleBoxFlat:
-	var style := focus_style(accent, 21)
-	style.set_border_width_all(3)
-	return style
+## Window (pause, settings): the large panel with a bright frame.
+static func window_style() -> StyleBoxTexture:
+	return accent_frame("window", 56, ACCENT, 1.0, 44.0)
 
 
-## Focus frame (keyboard / gamepad): crisp neon border drawn around the control.
-static func focus_style(accent: Color = ACCENT, radius: int = 18) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
+## Shop / level-up card colored by tier: brighter frame when `strength` is 1.
+static func card_style(accent: Color, strength: float = 1.0) -> StyleBoxTexture:
+	return accent_frame("card", 36, accent, strength, 16.0)
+
+
+## Square slot (item tile): thin frame tinted by `accent`.
+static func slot_style(accent: Color, strength: float = 1.0) -> StyleBoxTexture:
+	return accent_frame("slot", 26, accent, strength, 8.0)
+
+
+## Focus frame of a card-shaped button (card_style).
+static func card_focus_style(accent: Color = ACCENT) -> StyleBoxTexture:
+	return focus_style(accent, 20)
+
+
+## Focus frame (keyboard / gamepad): glowing outline drawn around the control.
+static func focus_style(accent: Color = ACCENT, _radius: int = 18) -> StyleBoxTexture:
+	var style := frame_style("focus", 44, 44, accent, 0.0)
 	style.draw_center = false
-	style.border_color = accent
-	style.set_border_width_all(3)
-	style.set_corner_radius_all(radius)
-	style.set_expand_margin_all(5)
-	style.anti_aliasing = true
+	style.expand_margin_left = 6.0
+	style.expand_margin_right = 6.0
+	style.expand_margin_top = 6.0
+	style.expand_margin_bottom = 6.0
 	return style
 
 
@@ -134,8 +157,8 @@ static func glyph_style(color: Color) -> StyleBoxFlat:
 ## Borderless soft panel (info plates): the text carries the screen, not a frame.
 static func plate_style(radius: int = 22) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0.05, 0.03, 0.12, 0.55)
-	style.set_corner_radius_all(radius)
+	style.bg_color = Color(0.02, 0.04, 0.12, 0.6)
+	style.set_corner_radius_all(mini(radius, 12))
 	style.set_content_margin_all(22)
 	style.anti_aliasing = true
 	return style
@@ -145,64 +168,28 @@ static func plate_style(radius: int = 22) -> StyleBoxFlat:
 static func flat_bar_styles(color: Color) -> Array[StyleBoxFlat]:
 	var bg := StyleBoxFlat.new()
 	bg.bg_color = Color(1, 1, 1, 0.1)
-	bg.set_corner_radius_all(6)
+	bg.set_corner_radius_all(4)
 	bg.anti_aliasing = true
 	var fill := StyleBoxFlat.new()
 	fill.bg_color = color
-	fill.set_corner_radius_all(6)
+	fill.set_corner_radius_all(4)
 	fill.anti_aliasing = true
 	return [bg, fill]
 
 
-## [background, fill] styles for a ProgressBar filled with `color`.
-static func bar_styles(color: Color) -> Array[StyleBoxFlat]:
-	var bg := StyleBoxFlat.new()
-	bg.bg_color = Color(0.05, 0.04, 0.09, 0.9)
-	bg.border_color = OUTLINE
-	bg.set_border_width_all(3)
-	bg.set_corner_radius_all(10)
-	bg.anti_aliasing = true
-	var fill := StyleBoxFlat.new()
-	fill.bg_color = color
-	fill.border_color = OUTLINE
-	fill.set_border_width_all(3)
-	fill.set_corner_radius_all(10)
-	fill.anti_aliasing = true
+## [background, fill] styles for a ProgressBar filled with `color` (slanted ends).
+static func bar_styles(color: Color) -> Array[StyleBoxTexture]:
+	var bg := frame_style("bar_bg", 12, 10, Color.WHITE, 0.0)
+	var fill := frame_style("bar_fill", 12, 8, color, 0.0)
 	return [bg, fill]
 
 
-static func _button_style(accent: Color, strength: float, pressed: bool = false) -> StyleBoxFlat:
-	var style := panel_style(accent, strength, PILL)
-	style.content_margin_left = 26
-	style.content_margin_right = 26
-	style.content_margin_top = 10 + (3 if pressed else 0)
-	style.content_margin_bottom = 12 - (3 if pressed else 0)
-	style.shadow_size = 0
-	if pressed:
-		style.bg_color = style.bg_color.darkened(0.3)
-	return style
-
-
-## Focused / hovered / pressed button: violet fill, cyan frame.
-static func _focused_button_style(pressed: bool = false) -> StyleBoxFlat:
-	var style := _button_style(ACCENT, 1.0, pressed)
-	style.bg_color = FOCUS_FILL.darkened(0.25 if pressed else 0.0)
-	style.border_color = ACCENT
-	style.set_border_width_all(3)
-	return style
-
-
-## Main action (Play, Next wave): bright violet, white text.
-## Unfocused: frame in its own violet, so the white frame of the focused state stands out.
-static func _cta_button_style(pressed: bool = false, focused: bool = false) -> StyleBoxFlat:
-	var style := _focused_button_style(pressed)
-	style.bg_color = CTA_FILL.darkened(0.25 if pressed else 0.0)
-	if focused:
-		style.bg_color = style.bg_color.lightened(0.15)
-		style.border_color = Color.WHITE
-		style.set_border_width_all(4)
-	else:
-		style.border_color = CTA_FILL.lightened(0.2)
+static func _button_style(frame_name: String, tint: Color = Color.WHITE) -> StyleBoxTexture:
+	var style := frame_style(frame_name, 30, 24, tint, 0.0)
+	style.content_margin_left = 30.0
+	style.content_margin_right = 30.0
+	style.content_margin_top = 10.0
+	style.content_margin_bottom = 10.0
 	return style
 
 
@@ -214,48 +201,44 @@ static func _build() -> Theme:
 	theme.set_color("font_color", "Label", TEXT)
 	theme.set_color("font_outline_color", "Label", OUTLINE)
 	theme.set_constant("outline_size", "Label", 4)
-	_label_variation(theme, &"TitleLabel", BANGERS, 80, 10, ACCENT)
-	_label_variation(theme, &"SubtitleLabel", font(600, true), 32, 6, TEXT)
-	_label_variation(theme, &"ValueLabel", font(600, true), 30, 6, TEXT)
+	_label_variation(theme, &"TitleLabel", CINZEL_DECO, 76, 8, Color.WHITE)
+	_label_variation(theme, &"SubtitleLabel", font(700, true), 30, 5, TEXT)
+	_label_variation(theme, &"ValueLabel", font(700, true), 28, 5, TEXT)
 	_label_variation(theme, &"SmallLabel", font(800), 17, 3, MUTED)
 
-	theme.set_font("font", "Button", font(600, true))
-	theme.set_font_size("font_size", "Button", 26)
+	theme.set_font("font", "Button", font(700, true))
+	theme.set_font_size("font_size", "Button", 25)
 	theme.set_color("font_color", "Button", TEXT)
 	theme.set_color("font_hover_color", "Button", Color.WHITE)
 	theme.set_color("font_focus_color", "Button", Color.WHITE)
-	theme.set_color("font_pressed_color", "Button", ACCENT)
+	theme.set_color("font_pressed_color", "Button", Color.WHITE)
 	theme.set_color("font_disabled_color", "Button", Color(TEXT, 0.4))
 	theme.set_color("font_outline_color", "Button", OUTLINE)
 	theme.set_constant("outline_size", "Button", 5)
 	theme.set_constant("h_separation", "Button", 10)
-	theme.set_stylebox("normal", "Button", _button_style(ACCENT, 0.45))
-	theme.set_stylebox("hover", "Button", _focused_button_style())
-	theme.set_stylebox("pressed", "Button", _focused_button_style(true))
-	var disabled := _button_style(ACCENT, 0.0)
-	disabled.bg_color = Color(PANEL_BG, 0.7)
-	theme.set_stylebox("disabled", "Button", disabled)
-	# Keyboard / gamepad focus is shown by the filled style (hover), not an extra frame.
-	theme.set_stylebox("focus", "Button", _focused_button_style())
+	theme.set_stylebox("normal", "Button", _button_style("button_normal"))
+	theme.set_stylebox("hover", "Button", _button_style("button_hover"))
+	theme.set_stylebox("pressed", "Button", _button_style("button_pressed"))
+	theme.set_stylebox("disabled", "Button", _button_style("button_disabled"))
+	# Keyboard / gamepad focus is shown by the lit style (hover), not an extra frame.
+	theme.set_stylebox("focus", "Button", _button_style("button_hover"))
 	theme.set_type_variation(&"BigButton", &"Button")
-	theme.set_font_size("font_size", &"BigButton", 36)
-	# Main action: bright violet in every state.
+	theme.set_font_size("font_size", &"BigButton", 34)
+	# Main action: bright blue with gold frame in every state.
 	theme.set_type_variation(&"CtaButton", &"Button")
-	theme.set_font_size("font_size", &"CtaButton", 40)
-	theme.set_font("font", &"CtaButton", BANGERS)
-	theme.set_stylebox("normal", &"CtaButton", _cta_button_style())
-	for state in ["hover", "focus"]:
-		theme.set_stylebox(state, &"CtaButton", _cta_button_style(false, true))
-	theme.set_stylebox("pressed", &"CtaButton", _cta_button_style(true, true))
-	theme.set_stylebox("disabled", &"CtaButton", disabled)
+	theme.set_font_size("font_size", &"CtaButton", 38)
+	theme.set_font("font", &"CtaButton", font(800, true))
+	for state in ["normal", "hover", "focus"]:
+		theme.set_stylebox(state, &"CtaButton", _button_style("button_cta"))
+	theme.set_stylebox("pressed", &"CtaButton", _button_style("button_pressed", Color(1.0, 0.9, 0.7)))
+	theme.set_stylebox("disabled", &"CtaButton", _button_style("button_disabled"))
 
-	theme.set_stylebox("panel", "PanelContainer", panel_style(ACCENT, 0.6))
-	theme.set_stylebox("panel", "Panel", panel_style(ACCENT, 0.6))
+	theme.set_stylebox("panel", "PanelContainer", panel_style(ACCENT, 0.7))
+	theme.set_stylebox("panel", "Panel", panel_style(ACCENT, 0.7))
 	var bars := bar_styles(ACCENT)
 	theme.set_stylebox("background", "ProgressBar", bars[0])
 	theme.set_stylebox("fill", "ProgressBar", bars[1])
-	var tooltip := panel_style(ACCENT, 0.5, 10)
-	tooltip.set_content_margin_all(10)
+	var tooltip := accent_frame("card", 36, ACCENT, 0.7, 10.0)
 	theme.set_stylebox("panel", "TooltipPanel", tooltip)
 	theme.set_color("font_color", "TooltipLabel", TEXT)
 	theme.set_font("font", "TooltipLabel", font(700))
@@ -270,7 +253,7 @@ static func _build() -> Theme:
 	theme.set_stylebox("grabber_area", "HSlider", slider_bars[1])
 	theme.set_stylebox("grabber_area_highlight", "HSlider", slider_bars[1])
 	theme.set_stylebox("focus", "HSlider", focus_style(ACCENT, 10))
-	theme.set_stylebox("panel", "PopupMenu", panel_style(ACCENT, 0.6, 10))
+	theme.set_stylebox("panel", "PopupMenu", accent_frame("card", 36, ACCENT, 0.7, 12.0))
 	theme.set_font("font", "PopupMenu", font(700))
 	theme.set_font_size("font_size", "PopupMenu", 22)
 	# Toggles: only the switch icon, no button frame (the frame read as a big empty button).

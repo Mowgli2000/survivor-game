@@ -31,11 +31,35 @@ func fire(slot: WeaponSlot, ctx: WeaponContext) -> bool:
 	var knockback := s.knockback * stats.get_value(StatIds.KNOCKBACK)
 	var count := s.projectile_count + int(stats.get_value(StatIds.PROJECTILE_COUNT))
 
+	# The blow lands when the swing strikes (after its wind-up), like the slash streak: the
+	# enemies it cuts through on screen are the ones it hurts (playtest 2026-10-09).
+	var delay := WeaponVisuals.strike_delay(slot.data.slash_style)
 	for i in count:
 		var slash_dir := direction.rotated(TAU * i / count)
 		var crit := ctx.roll_crit(s)
-		ctx.enemies.damage_in_radius(origin, radius, ctx.hit_damage(s, crit), crit, knockback,
-			s.status, s.status_chance, slash_dir, min_dot)
+		var amount := ctx.hit_damage(s, crit)
+		var strike := _strike.bind(ctx, slot.data.id, radius, amount, crit, knockback, s.status, s.status_chance, slash_dir, min_dot)
+		if delay > 0.0 and ctx.owner.is_inside_tree():
+			ctx.owner.get_tree().create_timer(delay, false).timeout.connect(strike)
+		else:
+			strike.call()
 		if ctx.vfx != null:
 			ctx.vfx.slash(origin, slash_dir.angle(), radius, half_angle, s.color, slot.data.slash_style, ctx.owner)
 	return true
+
+
+## The swing's blow, from where the player stands when it lands.
+func _strike(ctx: WeaponContext, weapon_id: StringName, radius: float, amount: float, crit: bool, knockback: float,
+		status: StatusData, status_chance: float, slash_dir: Vector2, min_dot: float) -> void:
+	var owner := ctx.owner
+	if not is_instance_valid(owner) or not owner.is_inside_tree() or owner.is_dead:
+		return
+	# The holder's damage source (coop player number, items tag) is only set while it fires.
+	var previous := ctx.enemies.damage_source
+	var previous_weapon: StringName = ctx.enemies.damage_weapon
+	ctx.enemies.damage_source = ctx.source
+	ctx.enemies.damage_weapon = weapon_id
+	ctx.enemies.damage_in_radius(owner.global_position, radius, amount, crit, knockback,
+		status, status_chance, slash_dir, min_dot)
+	ctx.enemies.damage_source = previous
+	ctx.enemies.damage_weapon = previous_weapon

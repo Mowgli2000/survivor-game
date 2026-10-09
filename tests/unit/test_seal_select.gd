@@ -93,13 +93,34 @@ func test_rewards_to_win_are_silhouettes() -> void:
 	assert_eq(art.material, SealSelect.silhouette_material())
 
 
-func test_right_moves_through_every_seal() -> void:
+func test_plaques_climb_in_two_mirrored_columns_with_the_last_seal_lowest_on_the_right() -> void:
 	var screen := _open([&"drifter"])
 	await wait_frames(3)
 	var buttons := screen.seal_buttons()
-	for i in buttons.size() - 1:
-		var right := buttons[i].find_valid_focus_neighbor(SIDE_RIGHT)
-		assert_eq(buttons.find(right), i + 1, "right from seal %d" % i)
+	# Left: I at the bottom; right: VI at the bottom, IV at the top.
+	assert_gt(buttons[0].position.y, buttons[2].position.y, "I is below III")
+	assert_gt(buttons[5].position.y, buttons[3].position.y, "VI is below IV")
+	for i in 3:
+		var left := buttons[i]
+		var right := buttons[5 - i]
+		assert_almost_eq(left.position.y, right.position.y, 12.0, "same row (painted by hand: a few px apart)")
+		assert_eq(left.find_valid_focus_neighbor(SIDE_RIGHT), right, "right from seal %d" % i)
+		assert_eq(right.find_valid_focus_neighbor(SIDE_LEFT), left, "left from seal %d" % (5 - i))
+		var mirror := (left.position.x + left.size.x * 0.5) + (right.position.x + right.size.x * 0.5)
+		# The medallions are painted in the picture (symmetric to a few px, not to the pixel).
+		assert_almost_eq(mirror * 0.5, screen._picture_to_screen(SealSelect.PORTAL_CENTER).x, 12.0, "mirrored on the portal")
+
+
+func test_each_seal_has_its_own_portal_color_and_the_last_is_red() -> void:
+	var levels := SealSelect.all_levels()
+	var seen := {}
+	for difficulty in levels:
+		seen[difficulty.color.to_html()] = true
+	assert_eq(seen.size(), levels.size(), "six different colors")
+	var last := levels[levels.size() - 1].color
+	assert_gt(last.r, 0.9)
+	assert_lt(last.g, 0.3)
+	assert_lt(last.b, 0.3)
 
 
 func test_hidden_weapons_cannot_take_the_focus_behind_the_seals() -> void:

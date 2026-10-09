@@ -7,7 +7,11 @@ signal main_menu_requested
 signal endless_requested
 
 ## Defeat veil: the night violet of the UI, pushed toward red.
-const DEFEAT_DIM := Color(0.16, 0.03, 0.08, 0.8)
+## Tint over the painted backdrop (the picture stays visible around the cards).
+const DEFEAT_DIM := Color(0.1, 0.01, 0.04, 0.5)
+const VICTORY_DIM := Color(0.0, 0.02, 0.08, 0.38)
+const DEFEAT_BACKGROUND := preload("res://assets/ui/backgrounds/defeat.png")
+const VICTORY_BACKGROUND := preload("res://assets/ui/backgrounds/victory.png")
 ## Rows shown in the damage summary (the biggest dealers).
 const RECAP_ROWS := 6
 const RECAP_ICON := 44.0
@@ -18,6 +22,7 @@ var is_victory: bool = false
 
 var _title: Label
 var _dim: ColorRect
+var _backdrop: UiBackdrop
 var _summary: Label
 ## Damage by weapon, next to the summary: one column per player (show_recap).
 var _recap: HBoxContainer
@@ -38,6 +43,8 @@ func _init() -> void:
 	root.theme = UiTheme.get_theme()
 	add_child(root)
 
+	_backdrop = UiBackdrop.create(DEFEAT_BACKGROUND, 0.0)
+	root.add_child(_backdrop)
 	_dim = ColorRect.new()
 	_dim.color = DEFEAT_DIM
 	_dim.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -47,9 +54,12 @@ func _init() -> void:
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.add_child(center)
 
+	var panel := PanelContainer.new()
+	panel.add_theme_stylebox_override("panel", UiTheme.window_style())
+	center.add_child(panel)
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 32)
-	center.add_child(box)
+	panel.add_child(box)
 
 	_title = Label.new()
 	_title.text = "UI_GAME_OVER"
@@ -106,7 +116,9 @@ func open(time_survived: float, level: int, kills: int, wave: int, victory: bool
 	is_victory = victory
 	_title.text = "UI_VICTORY" if victory else "UI_GAME_OVER"
 	_title.add_theme_color_override("font_color", UiTheme.GOLD if victory else UiTheme.BAD)
-	_dim.color = UiTheme.DIM if victory else DEFEAT_DIM
+	_dim.color = VICTORY_DIM if victory else DEFEAT_DIM
+	_backdrop.texture = VICTORY_BACKGROUND if victory else DEFEAT_BACKGROUND
+	_backdrop.queue_redraw()
 	_summary.text = "%s %d\n%s %s\n%s %d\n%s %d" % [
 		tr("UI_WAVE_REACHED"), wave,
 		tr("UI_TIME_SURVIVED"), Hud.format_time(time_survived),
