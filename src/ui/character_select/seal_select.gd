@@ -354,9 +354,10 @@ func _link_seals() -> void:
 			button.focus_neighbor_right = button.get_path_to(button if column == 1 or across == null else across)
 
 
-## Size of the wide picture on screen: all of it, at the height of the screen (never cut).
+## Size of the wide picture on screen: it covers the whole screen (no black bars, like the other
+## select screens); a screen wider than 16:9 cuts a little of the top and bottom.
 func _drawn() -> Vector2:
-	var scale := minf(size.x / WIDE.get_width(), size.y / WIDE.get_height())
+	var scale := maxf(size.x / WIDE.get_width(), size.y / WIDE.get_height())
 	return Vector2(WIDE.get_size()) * scale
 
 

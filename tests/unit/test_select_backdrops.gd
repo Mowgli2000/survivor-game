@@ -349,3 +349,14 @@ func test_stat_bars_are_as_tall_as_their_frame() -> void:
 	screen.open()
 	for bar in screen._hero_bars.values():
 		assert_gte((bar as ProgressBar).custom_minimum_size.y, 28.0)
+
+
+func test_seal_screen_has_no_black_bars_on_a_wider_screen() -> void:
+	# Dev, 2026-10-10: stretching to fill a screen wider than 16:9 left black bars at the sides.
+	var seals := SealSelect.new()
+	add_child_autofree(seals)
+	seals.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	seals.size = Vector2(2560.0, 1080.0)
+	var drawn := seals._drawn()
+	assert_gte(drawn.x, 2560.0 - 0.5, "the picture covers the width")
+	assert_gte(drawn.y, 1080.0 - 0.5)
