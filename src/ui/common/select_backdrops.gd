@@ -10,7 +10,7 @@ extends RefCounted
 const DEFAULT := &"default"
 const RANDOM := &"random"
 const DANGER_COUNT := 6
-## Two sets of pictures (dev, 2026-10-09), each shown as it is, never zoomed or cropped: the coop set
+## Two sets of native 16:9 pictures (dev, 2026-10-09), each shown as it is, never zoomed: the coop set
 ## is drawn from far (decor in the upper half, a huge empty floor for two seals), the solo set from
 ## closer (the same scenes, bigger, with less floor for one seal). Same distance inside a set.
 const HALL := preload("res://assets/ui/backgrounds/hall.png")
@@ -77,9 +77,7 @@ static func apply(backdrop: UiBackdrop, coop: bool) -> bool:
 	var level := resolve(Settings.data.select_background)
 	backdrop.base_zoom = 1.0
 	backdrop.shift = Vector2.ZERO
-	# The pictures are 3:2 and the screen 16:9: the whole picture is shown at the height of the screen,
-	# its sides mirrored (the panels hide them), so nothing is ever cut.
-	backdrop.fit_height = true
+	# The pictures are native 16:9 (widened by tools/art/widen.py): they fit a 16:9 screen exactly, no zoom.
 	backdrop.texture = picture(level, coop)
 	hue = DANGER_HUES[level] if level >= 0 else HALL_HUE
 	UiTheme.shift_saturation = DANGER_SATURATIONS[level] if level >= 0 else 1.0
