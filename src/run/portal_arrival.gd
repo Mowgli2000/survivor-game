@@ -5,6 +5,7 @@ extends CanvasLayer
 ## on the map (ArrivalGate), the heroes walk out of it (Player.enter_from), the gate
 ## closes, the wave starts. Purely visual; frees itself.
 
+## Cover color for the default (violet) portal.
 const COLOR := Color(0.36, 0.2, 0.85)
 const CLEAR_SECONDS := 0.5
 ## The gate grows for this long before the heroes step out.
@@ -15,16 +16,25 @@ const GATE_RADIUS := 150.0
 const GATE_OFFSET := Vector2(-125.0, -128.0)
 
 
+## Screen color of a seal's portal at the end of the zoom: its color, deepened.
+static func cover_color(portal: Color) -> Color:
+	return portal.darkened(0.45)
+
+
 ## Seconds after the run starts until the gate has closed and the wave begins.
 static func start_delay() -> float:
 	var open_for := WALK_START + WALK_SECONDS - ArrivalGate.OPEN_SECONDS
 	return ArrivalGate.total_seconds(open_for)
 
 
+## Portal color of the chosen seal (DifficultyData.color); the cover and the gate follow it.
+var portal_color: Color = ArrivalGate.BLUE_COLOR
+
+
 func _ready() -> void:
 	layer = 100
 	var cover := ColorRect.new()
-	cover.color = COLOR
+	cover.color = cover_color(portal_color)
 	cover.set_anchors_preset(Control.PRESET_FULL_RECT)
 	cover.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(cover)

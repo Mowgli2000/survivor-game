@@ -31,14 +31,15 @@ func test_a_run_without_the_portal_starts_at_once() -> void:
 	assert_true(run.waves.in_wave)
 
 
-func test_the_last_seal_gets_the_red_gate() -> void:
+func test_the_gate_takes_the_seal_color() -> void:
+	var last := SealSelect.all_levels()[5]
 	var gate := ArrivalGate.new()
-	gate.setup(100.0, 1.0, true)
+	gate.setup(100.0, 1.0, last.color)
 	add_child_autofree(gate)
 	var mid: Vector3 = (gate.get_child(1) as Sprite2D).material.get_shader_parameter(&"mid")
-	assert_gt(mid.x, mid.z, "red: more red than blue")
+	assert_gt(mid.x, mid.z, "last seal: red, more red than blue")
 	var blue := ArrivalGate.new()
-	blue.setup(100.0, 1.0, false)
+	blue.setup(100.0, 1.0, SealSelect.all_levels()[0].color)
 	add_child_autofree(blue)
 	var blue_mid: Vector3 = (blue.get_child(1) as Sprite2D).material.get_shader_parameter(&"mid")
 	assert_gt(blue_mid.z, blue_mid.x, "blue: more blue than red")

@@ -9,6 +9,7 @@ extends SceneTree
 ## tip up-right, so it fills the square and reads bigger in the UI; the output line says
 ## "diagonal" and the weapon's WeaponData.icon_diagonal must be set (WeaponVisuals turns
 ## it back for the floating weapon).
+## --cut=A: pixels with alpha below A are cleared first (soft halos would inflate the crop).
 ## With --height=N instead: crop and scale to N px high, keeping the aspect ratio
 ## (arena decor, see tools/art/bake_map.gd).
 
@@ -22,6 +23,7 @@ func _initialize() -> void:
 	var size := 128
 	var height := 0
 	var diagonal_ratio := 0.0
+	var cut := 0.0
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--in="):
 			input = arg.trim_prefix("--in=")
@@ -31,6 +33,8 @@ func _initialize() -> void:
 			size = arg.trim_prefix("--size=").to_int()
 		elif arg.begins_with("--height="):
 			height = arg.trim_prefix("--height=").to_int()
+		elif arg.begins_with("--cut="):
+			cut = arg.trim_prefix("--cut=").to_float()
 		elif arg.begins_with("--diagonal="):
 			diagonal_ratio = arg.trim_prefix("--diagonal=").to_float()
 	var source := Image.load_from_file(input) if input != "" else null
@@ -39,6 +43,12 @@ func _initialize() -> void:
 		quit(1)
 		return
 	source.convert(Image.FORMAT_RGBA8)
+	if cut > 0.0:
+		for y in source.get_height():
+			for x in source.get_width():
+				var px := source.get_pixel(x, y)
+				if px.a < cut:
+					source.set_pixel(x, y, Color(px, 0.0))
 	var art := source.get_region(source.get_used_rect())
 	if height > 0:
 		art.resize(roundi(art.get_width() * height / float(art.get_height())), height, Image.INTERPOLATE_LANCZOS)

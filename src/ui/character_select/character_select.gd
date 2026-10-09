@@ -23,6 +23,7 @@ enum Step { LIST, LOOK, WEAPON }
 
 ## Head and shoulders of a card illustration: a square of this share of the figure's
 ## height, found on the figure itself (see head_region).
+const BACKGROUND := preload("res://assets/ui/backgrounds/select.png")
 const HEAD_SHARE := 0.27
 const PREVIEW_HEIGHT := 170.0
 const LIST_WIDTH := 420.0
@@ -33,7 +34,15 @@ const COMPACT_ROW_HEIGHT := 124.0
 ## The hero is shown big (dev: room for the looks and future skins).
 const STAGE_SIZE := Vector2(760, 600)
 const COMPACT_STAGE_SIZE := Vector2(0, 430)
-const ARMS_WIDTH := 560.0
+const ARMS_WIDTH := 680.0
+## Solo screen: the hero stands on the glowing seal painted in the background; this is the
+## seal's center as a share of the screen (the hero's feet), and the stage size around him.
+const SEAL_CENTER := Vector2(0.5, 0.84)
+const STAGE_HEIGHT := 620.0
+## Backdrop zoom and shift (px at 1080p) that put the painted seal's center under the hero.
+const SEAL_ZOOM := 1.0
+const SEAL_SHIFT := Vector2(0.0, -55.0)
+const DOTS_ROOM := 26.0
 ## Width the rule and bonus text wrap to in a half screen.
 const COMPACT_RULE_WIDTH := 440.0
 ## Stone platform; PLATFORM_TOP is the middle of its top surface (fractions of the image).
@@ -77,6 +86,8 @@ var _stage_panel: PanelContainer
 var _arms_panel: PanelContainer
 ## Turntable: platform, the other look behind, the shown look in front.
 var _stage: Control
+## Solo: full-screen layer behind the columns that holds the stage (hero over the painted seal).
+var _stage_layer: Control
 var _platform: TextureRect
 var _back_art: TextureRect
 var _hero_art: TextureRect
@@ -140,13 +151,28 @@ func _init(p_compact: bool = false) -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	theme = UiTheme.get_theme()
 	visible = false
-	var backdrop := ColorRect.new()
-	backdrop.color = Color(0.08, 0.05, 0.17, 1.0)
-	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var backdrop := UiBackdrop.create(BACKGROUND, 0.4)
+	if not _compact:
+		# Solo: the painted seal is a little smaller and higher, its cross between the hero's legs.
+		backdrop.base_zoom = SEAL_ZOOM
+		backdrop.shift = SEAL_SHIFT
+		# The small floating crystals were removed (dev); the painted flames, crystals and seal live.
+		backdrop.sparks_enabled = false
+		# A still picture (dev: the background seemed to move).
+		backdrop.animated = false
 	add_child(backdrop)
+	if not _compact:
+		add_child(_build_hotspots(backdrop))
+	_stage_layer = Control.new()
+	_stage_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_stage_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_stage_layer.resized.connect(_place_stage)
+	add_child(_stage_layer)
 	var margin := MarginContainer.new()
 	_page = margin
 	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	# Solo: the middle of the page is empty (the hero is behind it): clicks go through.
+	margin.mouse_filter = Control.MOUSE_FILTER_PASS if _compact else Control.MOUSE_FILTER_IGNORE
 	for side in ["left", "right"]:
 		margin.add_theme_constant_override("margin_" + side, 20 if _compact else 40)
 	margin.add_theme_constant_override("margin_top", 18 if _compact else 26)
@@ -154,6 +180,7 @@ func _init(p_compact: bool = false) -> void:
 	add_child(margin)
 	var page := VBoxContainer.new()
 	page.add_theme_constant_override("separation", 12)
+	page.mouse_filter = margin.mouse_filter
 	margin.add_child(page)
 	# Top bar: back pill, title (the co-op devices next to it).
 	var top := HBoxContainer.new()
@@ -176,6 +203,7 @@ func _init(p_compact: bool = false) -> void:
 	var body := HBoxContainer.new()
 	body.add_theme_constant_override("separation", 20 if _compact else 30)
 	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	body.mouse_filter = margin.mouse_filter
 	page.add_child(body)
 	body.add_child(_build_list_column())
 	body.add_child(_build_stage_column())
@@ -184,9 +212,16 @@ func _init(p_compact: bool = false) -> void:
 	if _compact:
 		(_stage_panel.get_child(0) as VBoxContainer).add_child(arms)
 	else:
-		_arms_panel = _column(true)
+		# No frame: a soft plate over the painted background, name and stats above the weapons.
+		_arms_panel = PanelContainer.new()
+		_arms_panel.add_theme_stylebox_override("panel", UiTheme.plate_style(14))
 		_arms_panel.custom_minimum_size.x = ARMS_WIDTH
-		_arms_panel.add_child(arms)
+		var column := VBoxContainer.new()
+		column.add_theme_constant_override("separation", 14)
+		_arms_panel.add_child(column)
+		column.add_child(_hero_plate)
+		arms.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		column.add_child(arms)
 		body.add_child(_arms_panel)
 	if not _compact:
 		add_child(ButtonHints.create([[&"A", "UI_HINT_CHOOSE"], [&"B", "UI_HINT_BACK"], [&"Y", "UI_HINT_SWITCH_LOOK"]]))
@@ -194,6 +229,20 @@ func _init(p_compact: bool = false) -> void:
 		_seals.chosen.connect(_start)
 		_seals.back.connect(_on_seals_back)
 		add_child(_seals)
+
+
+## The painting comes alive under the mouse: blue flames, floating crystals and the floor seal.
+func _build_hotspots(backdrop: UiBackdrop) -> UiHotspots:
+	var spots := UiHotspots.new()
+	spots.picture_rect = backdrop.picture_rect
+	spots.texture = backdrop.texture
+	# The painted flames come alive when hovered (positions measured on the picture).
+	spots.add_gate_flames(Color(0.15, 0.45, 1.0), true)
+	for crystal in [Vector2(0.357, 0.37), Vector2(0.637, 0.375), Vector2(0.211, 0.42), Vector2(0.786, 0.42),
+			Vector2(0.39, 0.46), Vector2(0.61, 0.465), Vector2(0.052, 0.5), Vector2(0.967, 0.3)]:
+		spots.add_spot(UiHotspots.Kind.CRYSTAL, crystal, 0.016, Color(0.5, 0.88, 1.0))
+	spots.add_spot(UiHotspots.Kind.SEAL, Vector2(0.5, 0.805), 0.27, Color(0.35, 0.8, 1.0), 0.19)
+	return spots
 
 
 func _column(expand: bool) -> PanelContainer:
@@ -251,19 +300,31 @@ func _build_list_column() -> Control:
 ## Half screen: the weapons are added under it (see _init).
 func _build_stage_column() -> Control:
 	_stage_panel = _column(true)
+	if not _compact:
+		_stage_panel.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
+		_stage_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var box := VBoxContainer.new()
 	box.add_theme_constant_override("separation", 6 if _compact else 10)
 	_stage_panel.add_child(box)
 	var stage_row := HBoxContainer.new()
 	stage_row.add_theme_constant_override("separation", 12)
 	box.add_child(stage_row)
+	if not _compact:
+		# Solo: these empty containers sit over the hero's stage (behind them): they must not
+		# swallow the clicks meant for the turn arrows (a PASS container hides what is under).
+		box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		stage_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_stage = Control.new()
 	_stage.custom_minimum_size = COMPACT_STAGE_SIZE if _compact else STAGE_SIZE
 	_stage.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_stage.clip_contents = true
 	_stage.resized.connect(_layout_stage)
-	stage_row.add_child(_stage)
+	if _compact:
+		stage_row.add_child(_stage)
+	else:
+		_stage_layer.add_child(_stage)
 	_platform = _art_rect(PLATFORM)
+	_platform.visible = _compact
 	_stage.add_child(_platform)
 	_back_art = _art_rect(null)
 	_back_art.modulate = BACK_TINT
@@ -278,7 +339,7 @@ func _build_stage_column() -> Control:
 	var empty := StyleBoxEmpty.new()
 	for state in ["normal", "hover", "pressed", "disabled"]:
 		_turn.add_theme_stylebox_override(state, empty)
-	_turn.add_theme_stylebox_override("focus", UiTheme.focus_style(UiTheme.ACCENT, 22))
+	_turn.add_theme_stylebox_override("focus", empty)
 	_turn.pressed.connect(_confirm_look)
 	_turn.gui_input.connect(_on_turn_input)
 	_stage.add_child(_turn)
@@ -292,7 +353,8 @@ func _build_stage_column() -> Control:
 	_stage.add_child(_dots)
 	# Name and stats under the stage (half screen too: the stage gets the full width).
 	_hero_plate = VBoxContainer.new()
-	box.add_child(_hero_plate)
+	if _compact:
+		box.add_child(_hero_plate)
 	_hero_plate.add_theme_constant_override("separation", 6 if _compact else 8)
 	_hero_name = Label.new()
 	_hero_name.theme_type_variation = &"TitleLabel"
@@ -304,13 +366,13 @@ func _build_stage_column() -> Control:
 	_hero_rule.add_theme_color_override("font_color", UiTheme.MUTED)
 	_hero_rule.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	# The class rule (passive) is shown in coop too (playtest: the berserker's was not).
-	_hero_rule.custom_minimum_size = Vector2(COMPACT_RULE_WIDTH if _compact else STAGE_SIZE.x - 40.0, 0.0)
+	_hero_rule.custom_minimum_size = Vector2(COMPACT_RULE_WIDTH if _compact else ARMS_WIDTH - 60.0, 0.0)
 	_hero_plate.add_child(_hero_rule)
 	# Bonuses (green) and maluses (red) as plain text.
 	_hero_chips = HFlowContainer.new()
 	_hero_chips.add_theme_constant_override("h_separation", 14 if _compact else 26)
 	_hero_chips.add_theme_constant_override("v_separation", 2)
-	_hero_chips.custom_minimum_size = Vector2(COMPACT_RULE_WIDTH if _compact else STAGE_SIZE.x - 40.0, 0.0)
+	_hero_chips.custom_minimum_size = Vector2(COMPACT_RULE_WIDTH if _compact else ARMS_WIDTH - 60.0, 0.0)
 	_hero_plate.add_child(_hero_chips)
 	# Stats: name, bar (scaled on the roster: a full bar = the best class), the value and
 	# its difference with the base hero (+30 / -15).
@@ -327,12 +389,12 @@ func _build_stage_column() -> Control:
 		name_label.add_theme_font_size_override("font_size", 15 if _compact else 20)
 		name_label.add_theme_color_override("font_color", UiTheme.MUTED)
 		name_label.add_theme_constant_override("outline_size", 0)
-		name_label.custom_minimum_size.x = 0.0 if _compact else 230.0
+		name_label.custom_minimum_size.x = 0.0 if _compact else 190.0
 		grid.add_child(name_label)
 		var bar := ProgressBar.new()
 		bar.max_value = 1.0
 		bar.show_percentage = false
-		bar.custom_minimum_size = Vector2(56 if _compact else 260, 12)
+		bar.custom_minimum_size = Vector2(56 if _compact else 220, 12)
 		bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		var styles := UiTheme.flat_bar_styles(STAT_COLORS[stat])
 		bar.add_theme_stylebox_override("background", styles[0])
@@ -340,7 +402,7 @@ func _build_stage_column() -> Control:
 		grid.add_child(bar)
 		var numbers := HBoxContainer.new()
 		numbers.add_theme_constant_override("separation", 6)
-		numbers.custom_minimum_size.x = 96 if _compact else 170
+		numbers.custom_minimum_size.x = 96 if _compact else 150
 		grid.add_child(numbers)
 		var value_label := Label.new()
 		value_label.add_theme_font_size_override("font_size", 16 if _compact else 22)
@@ -384,8 +446,9 @@ func _arrow(text: String, direction: int) -> Button:
 	button.add_theme_color_override("font_outline_color", Color(UiTheme.ACCENT, 0.3))
 	button.add_theme_constant_override("outline_size", 12)
 	button.pressed.connect(func() -> void:
-		if _chosen != null:
-			_turn_look(direction))
+		if _look_target() != null:
+			_turn_look(direction)
+			UiFx.bounce(button))
 	return button
 
 
@@ -424,7 +487,6 @@ func open(p_split_index: int = -1) -> void:
 	_devices.visible = split_index >= 0
 	_devices.text = devices_hint(split_index, Input.get_connected_joypads().size())
 	_begin_pick()
-	UiFx.breathe(_hero_art)
 
 
 ## Shows the list; the first class is shown on the platform at once (dev's choice:
@@ -608,6 +670,17 @@ func _row(character: CharacterData) -> Button:
 	button.add_theme_stylebox_override("pressed", UiTheme.card_style(UiTheme.ACCENT, 1.0))
 	button.add_theme_stylebox_override("disabled", UiTheme.card_style(character.color, 0.1))
 	button.add_theme_stylebox_override("focus", UiTheme.card_focus_style())
+	if not _compact:
+		# Solo, from the list: left / right (stick, d-pad, keys) turn the looks of this hunter.
+		button.gui_input.connect(func(event: InputEvent) -> void:
+			if _step != Step.LIST or _shown != character:
+				return
+			if event.is_action_pressed("ui_left", true):
+				button.accept_event()
+				_turn_look(-1)
+			elif event.is_action_pressed("ui_right", true):
+				button.accept_event()
+				_turn_look(1))
 	var line: BoxContainer = VBoxContainer.new() if _compact else HBoxContainer.new()
 	line.set_anchors_preset(Control.PRESET_FULL_RECT)
 	line.offset_left = 8.0
@@ -761,6 +834,18 @@ func _show_hero(character: CharacterData) -> void:
 	_layout_stage()
 
 
+## Solo: puts the stage so that the hero's feet land on the center of the seal painted in
+## the background (SEAL_CENTER, a share of the screen).
+func _place_stage() -> void:
+	if _compact or _stage == null:
+		return
+	var area := _stage_layer.size
+	var feet_y := area.y * SEAL_CENTER.y
+	var top := maxf(feet_y + DOTS_ROOM - STAGE_HEIGHT, 8.0)
+	_stage.position = Vector2(area.x * SEAL_CENTER.x - STAGE_SIZE.x * 0.5, top)
+	_stage.size = Vector2(STAGE_SIZE.x, feet_y + DOTS_ROOM - top)
+
+
 ## Places the platform, the two looks and the arrows: the feet of the front look stand
 ## in the middle of the platform's top surface; the other look stands behind, higher
 ## and smaller.
@@ -770,14 +855,15 @@ func _layout_stage() -> void:
 		return
 	# The hero fills the height above his feet; the platform is sized on his feet (the wider
 	# of his two looks, so it does not change when the turntable turns), the dots under it.
-	var dots_room := 26.0
+	var dots_room := DOTS_ROOM
 	var ratio := PLATFORM.get_height() / float(PLATFORM.get_width())
 	var per_hero := platform_per_hero(_hero_art.texture, _back_art.texture)
-	var below := (1.0 - PLATFORM_TOP.y) * ratio * per_hero
+	# Solo: no stone platform, the hero's feet stand right on the painted seal.
+	var below := (1.0 - PLATFORM_TOP.y) * ratio * per_hero if _platform.visible else 0.0
 	var hero_h := (area.y - dots_room - 6.0) / (1.0 + below)
 	var platform_w := minf(hero_h * per_hero, area.x * 0.8)
 	var platform_h := platform_w * ratio
-	var feet := Vector2(area.x * 0.5, area.y - dots_room - platform_h * (1.0 - PLATFORM_TOP.y))
+	var feet := Vector2(area.x * 0.5, area.y - dots_room - (platform_h * (1.0 - PLATFORM_TOP.y) if _platform.visible else 0.0))
 	hero_h = feet.y - 6.0
 	_platform.position = feet - Vector2(platform_w * PLATFORM_TOP.x, platform_h * PLATFORM_TOP.y)
 	_platform.size = Vector2(platform_w, platform_h)
@@ -788,8 +874,9 @@ func _layout_stage() -> void:
 	_shadow.size = Vector2(platform_w * 0.34, platform_h * 0.14)
 	_shadow.position = feet - _shadow.size * 0.5
 	var arrow_y := feet.y - hero_h * 0.5
-	_arrow_left.position = Vector2(area.x * 0.5 - platform_w * 0.62 - 28.0, arrow_y - 36.0)
-	_arrow_right.position = Vector2(area.x * 0.5 + platform_w * 0.62 - 28.0, arrow_y - 36.0)
+	var arrow_dx := minf(platform_w * 0.62, area.x * 0.3)
+	_arrow_left.position = Vector2(area.x * 0.5 - arrow_dx - 28.0, arrow_y - 36.0)
+	_arrow_right.position = Vector2(area.x * 0.5 + arrow_dx - 28.0, arrow_y - 36.0)
 	_dots.position = Vector2(area.x * 0.5 - _dots.size.x * 0.5, area.y - dots_room)
 
 
@@ -1029,19 +1116,32 @@ static func look_count(character: CharacterData) -> int:
 
 
 ## Turns the turntable of the chosen class by `direction` looks.
+## The hunter whose looks the arrows turn: the chosen one, else the one on show (the arrows
+## also work from the list, before a press).
+func _look_target() -> CharacterData:
+	if _chosen != null:
+		return _chosen
+	if _shown != null and SaveService.is_unlocked(&"characters", _shown):
+		return _shown
+	return null
+
+
 func _turn_look(direction: int) -> void:
-	var looks := look_count(_chosen)
+	var target := _look_target()
+	if target == null:
+		return
+	var looks := look_count(target)
 	if looks <= 1:
 		return
-	_variants[_chosen.id] = posmod(variant_of(_chosen) + direction, looks)
+	_variants[target.id] = posmod(variant_of(target) + direction, looks)
 	Audio.play(Sounds.UI_SWOOSH, -4.0)
-	var head := _row_heads.get(_chosen.id) as TextureRect
-	var art := _chosen.card_art_for(variant_of(_chosen))
+	var head := _row_heads.get(target.id) as TextureRect
+	var art := target.card_art_for(variant_of(target))
 	if head != null and art != null:
 		head.texture = _head_texture(art)
-	var label := (_character_buttons[_chosen.id].get_child(0).get_child(1)) as Label
-	label.text = _chosen.name_key_for(variant_of(_chosen))
-	_show_hero(_chosen)
+	var label := (_character_buttons[target.id].get_child(0).get_child(1)) as Label
+	label.text = target.name_key_for(variant_of(target))
+	_show_hero(target)
 	if not UiFx.reduce_motion:
 		_hero_art.modulate.a = 0.0
 		create_tween().tween_property(_hero_art, "modulate:a", 1.0, 0.18)

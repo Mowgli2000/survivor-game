@@ -12,5 +12,5 @@ hp_multiplier = 1.12
 damage_multiplier = 1.12
 name_key = "DANGER_1"
 description_key = "DANGER_1_DESC"
-color = Color(0.68, 0.72, 0.78, 1)
+color = Color(0.21, 0.88, 1, 1)
 biome = ExtResource("biome")

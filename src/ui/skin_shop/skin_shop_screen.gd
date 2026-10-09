@@ -6,6 +6,7 @@ extends Control
 
 signal closed
 
+const BACKGROUND := preload("res://assets/ui/backgrounds/select.png")
 const CARD_ART_SIZE := Vector2(210, 300)
 const TAB_SIZE := Vector2(190, 64)
 
@@ -22,10 +23,7 @@ func _init() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	theme = UiTheme.get_theme()
 	visible = false
-	var dim := ColorRect.new()
-	dim.color = UiTheme.DIM
-	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(dim)
+	add_child(UiBackdrop.create(BACKGROUND, 0.5))
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(center)

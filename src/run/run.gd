@@ -105,6 +105,7 @@ func _ready() -> void:
 
 	var arena := Arena.new()
 	arena.setup(arena_rect, setup.difficulty.biome if setup != null and setup.difficulty != null else null)
+	arena.modulate = WorldGrade.TINT
 	add_child(arena)
 
 	vfx = Vfx.new()
@@ -153,6 +154,7 @@ func _ready() -> void:
 	add_child(enemy_projectiles)
 	add_child(vfx)
 	add_child(damage_numbers)
+	add_child(WorldGrade.new())
 	var arrival := setup != null and setup.portal_intro
 	if arrival:
 		_play_portal_arrival()
@@ -293,13 +295,16 @@ func _ready() -> void:
 ## Two players: chosen in the menu (setup.character_2) or forced by player_count.
 ## A gate appears and grows on the map, up and to the left of the start spot, seen
 ## three-quarter face; the heroes walk out of it, it closes, then the first wave starts
-## (red gate for the last seal).
+## (in the seal's portal color: heat gradient, red for the last seal).
 func _play_portal_arrival() -> void:
-	add_child(PortalArrival.new())
+	var portal_color := setup.difficulty.color if setup != null and setup.difficulty != null else ArrivalGate.BLUE_COLOR
+	var arrival := PortalArrival.new()
+	arrival.portal_color = portal_color
+	add_child(arrival)
 	var gate := ArrivalGate.new()
 	gate.position = party.center() + PortalArrival.GATE_OFFSET
 	var open_for := PortalArrival.WALK_START + PortalArrival.WALK_SECONDS - ArrivalGate.OPEN_SECONDS
-	gate.setup(PortalArrival.GATE_RADIUS, open_for, setup.difficulty != null and setup.difficulty.level >= 5)
+	gate.setup(PortalArrival.GATE_RADIUS, open_for, portal_color)
 	add_child(gate)
 	for rp in players:
 		rp.player.enter_from(gate.position, PortalArrival.WALK_SECONDS, PortalArrival.WALK_START)
@@ -638,6 +643,8 @@ func _resolve_level_ups(rp: RunPlayer = null) -> void:
 		_apply_offer(bot_policy.choose_upgrade(offers, rp) if bot_policy != null else offers[0], rp)
 		return
 	var cost := _level_up_reroll_cost(rp)
+	# The level-up screen is not drawn over a second HUD (hidden until the next wave starts).
+	hud.visible = false
 	rp.level_up_screen.open(offers, cost, rp.wallet.can_afford(cost), rp.player.stats)
 
 

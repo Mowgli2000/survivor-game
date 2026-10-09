@@ -18,7 +18,6 @@ const NEXT_AREA := 140.0
 const COMPACT_NEXT_AREA := 110.0
 const SCROLL_SPEED := 700.0
 ## Width of the gold ring around two weapons that can be merged.
-const MERGE_RING := 4
 const SCROLL_DEADZONE := 0.25
 const CARD_ICON := 96.0
 ## Coop: smaller icon, room for the card's text.
@@ -105,9 +104,11 @@ func _init(p_compact: bool = false) -> void:
 	root.theme = UiTheme.get_theme()
 	add_child(root)
 
+	# The arena stays visible behind the shop (no painted background), under a night veil.
 	var dim := ColorRect.new()
-	dim.color = UiTheme.DIM
+	dim.color = Color(UiTheme.DIM, 0.62)
 	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(dim)
 
 	var center := CenterContainer.new()
@@ -464,7 +465,9 @@ func _make_card(index: int, offer: ShopOffer) -> Control:
 	var tag := _label(13 if _compact else 17, accent, &"SmallLabel")
 	tag.text = texts[0].to_upper()
 	tag.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	tag.custom_minimum_size.x = _card_size.x - 24.0
+	# Room for two lines on every card, so the icons line up whatever the tag's length.
+	tag.custom_minimum_size = Vector2(_card_size.x - 24.0, (13 if _compact else 17) * 2.6)
+	tag.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	box.add_child(tag)
 	box.add_child(icon)
 	var name_label := _label(23 if _compact else 30, name_color(offer), &"SubtitleLabel")
@@ -533,17 +536,11 @@ func _rebuild_weapons() -> void:
 		var normal := UiTheme.card_style(UiTheme.GOLD if mergeable else tier_color,
 			1.0 if mergeable or i == _selected_weapon else 0.45)
 		normal.set_content_margin_all(10)
-		if mergeable:
-			normal.border_color = UiTheme.GOLD
-			normal.set_border_width_all(MERGE_RING)
 		button.add_theme_stylebox_override("normal", normal)
 		button.add_theme_stylebox_override("focus", UiTheme.card_focus_style())
 		# Hover / press keep the card shape (the theme's pill read as another button).
 		var lit := UiTheme.card_style(UiTheme.GOLD if mergeable else tier_color, 1.0)
 		lit.set_content_margin_all(10)
-		if mergeable:
-			lit.border_color = UiTheme.GOLD
-			lit.set_border_width_all(MERGE_RING)
 		button.add_theme_stylebox_override("hover", lit)
 		button.add_theme_stylebox_override("pressed", lit)
 		button.add_theme_color_override("font_color", tier_color)
@@ -552,6 +549,10 @@ func _rebuild_weapons() -> void:
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		button.pressed.connect(_on_weapon_selected.bind(i))
 		button.tooltip_text = weapon_details(slot)
+		# Gamepad / keyboard: the details while the weapon is focused (as the mouse tooltip).
+		var details := weapon_details(slot)
+		button.focus_entered.connect(func() -> void: _show_item_popup(button, details))
+		button.focus_exited.connect(func() -> void: _item_popup.visible = false)
 		_weapon_row.add_child(button)
 		_controls["weapon:%d" % i] = button
 	var free := _label(22, UiTheme.MUTED, &"ValueLabel")

@@ -6,6 +6,7 @@ extends Control
 signal closed
 
 ## Pixels per second the list scrolls while up / down (D-pad, stick, arrows) is held.
+const BACKGROUND := preload("res://assets/ui/backgrounds/select.png")
 const SCROLL_SPEED := 900.0
 ## Reward icon of a challenge row.
 const REWARD_ICON := 52.0
@@ -26,10 +27,7 @@ func _init() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	theme = UiTheme.get_theme()
 	visible = false
-	var dim := ColorRect.new()
-	dim.color = UiTheme.DIM
-	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(dim)
+	add_child(UiBackdrop.create(BACKGROUND, 0.5))
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
