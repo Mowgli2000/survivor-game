@@ -7,3 +7,5 @@ extends Resource
 ## Relative chance of being offered.
 @export var weight: float = 1.0
 @export var modifiers: Array[StatModifier] = []
+## Shown on the level-up card.
+@export var icon: Texture2D

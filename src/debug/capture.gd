@@ -1,7 +1,7 @@
 extends Node
 ## Plays a run with a bot and saves a screenshot, so visuals can be checked
 ## without a human at the keyboard (used by Claude Code).
-## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--boss=shogun|ronin] [--coop] [--arrival] [--pickweapon] [--character=<id>]
+## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--boss=shogun|ronin] [--coop] [--arrival] [--pickweapon] [--character=<id>] [--mouse=x,y]
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
 const MENU_SCENE := preload("res://src/ui/main_menu/main_menu.tscn")
@@ -18,9 +18,13 @@ var _done: bool = false
 var _boss_id: StringName = &""
 
 
+var _mouse := Vector2(-1.0, -1.0)
+
+
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	ButtonHints.show_always = true  # the gamepad hint bars appear on captures too
+	UiFx.reduce_motion = false  # captures show the animations, whatever the dev's settings say
 	var stress := false
 	var all_weapons := false
 	var coop := false
@@ -49,6 +53,10 @@ func _ready() -> void:
 			danger = arg.trim_prefix("--danger=").to_int()
 		elif arg.begins_with("--variant="):
 			variant = arg.trim_prefix("--variant=").to_int()
+		elif arg.begins_with("--mouse="):
+			# Puts the mouse at x,y (window pixels) from the start: shows hover effects.
+			var xy := arg.trim_prefix("--mouse=").split(",")
+			_mouse = Vector2(xy[0].to_float(), xy[1].to_float())
 		elif arg == "--arrival":
 			arrival = true
 		elif arg == "--pickweapon":
@@ -82,6 +90,7 @@ func _ready() -> void:
 			elif character_id != "":
 				menu._character_select._choose_character(ContentDB.get_def(&"characters", StringName(character_id)))
 				# With --danger=N too: pick the first weapon, which opens the seal screen.
+				SealSelect.debug_all_open = danger >= 0  # every seal open for the capture
 				if danger >= 0:
 					(menu._character_select._weapons.get_child(0) as Button).pressed.emit()
 					menu._character_select._next.pressed.emit()
@@ -147,6 +156,8 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_time += delta
+	if _mouse.x >= 0.0:
+		Input.warp_mouse(_mouse)
 	if _done or _time < _capture_at:
 		return
 	if _mode == "--levelup" and not get_tree().paused:

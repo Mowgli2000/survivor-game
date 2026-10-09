@@ -3,6 +3,8 @@
 [ext_resource type="Script" path="res://src/progression/upgrade_data.gd" id="1_upgrade"]
 [ext_resource type="Script" path="res://src/core/stat_modifier.gd" id="2_mod"]
 
+[ext_resource type="Texture2D" path="res://assets/icons/upgrades/regeneration.png" id="icon_tex"]
+
 [sub_resource type="Resource" id="Resource_mod"]
 script = ExtResource("2_mod")
 stat = &"hp_regen"
@@ -15,3 +17,4 @@ id = &"regeneration"
 name_key = "UPGRADE_REGENERATION"
 weight = 0.35
 modifiers = Array[ExtResource("2_mod")]([SubResource("Resource_mod")])
+icon = ExtResource("icon_tex")

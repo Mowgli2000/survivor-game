@@ -60,7 +60,6 @@ func setup(inputs: Array[PlayerInput]) -> void:
 		var frame := FocusFrame.new()
 		frame.color = RunPlayer.COLORS[i]
 		frame.style = UiTheme.focus_style(RunPlayer.COLORS[i])
-		frame.style.set_border_width_all(3)
 		top.add_child(frame)
 		_frames.append(frame)
 
@@ -92,8 +91,13 @@ class FocusFrame extends Control:
 
 	## `control`'s focus box recolored, without fill (or `fallback`).
 	static func outline_of(control: Control, outline: Color, fallback: StyleBox) -> StyleBox:
-		var own := control.get_theme_stylebox(&"focus") as StyleBoxFlat
-		if own == null:
+		var own := control.get_theme_stylebox(&"focus")
+		if own is StyleBoxTexture:
+			var tex_copy := own.duplicate() as StyleBoxTexture
+			tex_copy.draw_center = false
+			tex_copy.modulate_color = outline
+			return tex_copy
+		if not own is StyleBoxFlat:
 			return fallback
 		var copy := own.duplicate() as StyleBoxFlat
 		copy.draw_center = false

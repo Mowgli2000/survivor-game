@@ -9,9 +9,9 @@ func test_level_up_cards_use_the_themed_card_style() -> void:
 	var offers: Array[UpgradeOffer] = [UpgradeOffer.for_stat(upgrade, 3)]
 	screen.open(offers)
 	var card := screen._cards.get_child(0) as Button
-	var style := card.get_theme_stylebox("normal") as StyleBoxFlat
-	assert_eq(style.border_color, UiTheme.OUTLINE, "black outline")
-	assert_eq(Color(style.shadow_color, 1.0), Tiers.color(3), "tier glow")
+	var style := card.get_theme_stylebox("normal") as StyleBoxTexture
+	assert_eq(style.texture, UiTheme.frame_texture("card"), "baked card frame")
+	assert_eq(Color(style.modulate_color, 1.0), Color(UiTheme.frame_tint(Tiers.color(3), 0.6), 1.0), "tier tint")
 
 
 func test_game_over_title_is_gold_on_victory() -> void:

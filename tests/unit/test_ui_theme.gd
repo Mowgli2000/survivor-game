@@ -30,12 +30,18 @@ func test_type_variations_exist() -> void:
 	assert_eq(theme.get_type_variation_base(&"CtaButton"), &"Button")
 
 
-func test_panel_style_has_black_outline_and_accent_glow() -> void:
+func test_panel_style_is_a_tinted_nine_slice_frame() -> void:
 	var style := UiTheme.panel_style(Color.RED)
-	assert_eq(style.border_color, Color.BLACK)
-	assert_gt(style.border_width_left, 0)
-	assert_eq(Color(style.shadow_color, 1.0), Color.RED)
-	assert_gt(style.shadow_size, 0)
+	assert_not_null(style.texture)
+	assert_gt(style.texture_margin_left, 0.0)
+	assert_eq(Color(style.modulate_color, 1.0), Color.RED)
+
+
+func test_every_frame_texture_is_baked() -> void:
+	for frame in ["panel", "window", "card", "slot", "panel_cyan", "window_cyan", "card_cyan", "slot_cyan",
+			"button_normal", "button_hover", "button_pressed",
+			"button_cta", "button_disabled", "bar_bg", "bar_fill", "focus", "divider", "crown"]:
+		assert_not_null(UiTheme.frame_texture(frame), "frame %s" % frame)
 
 
 func test_pop_in_ends_fully_visible() -> void:

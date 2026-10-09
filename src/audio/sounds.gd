@@ -65,6 +65,12 @@ const UI_SWOOSH := preload("res://assets/audio/sfx/ui_swoosh.wav")
 ## Every button (Audio hooks them): hover / focus tick and press click (Kenney UI Audio, CC0).
 const UI_HOVER := preload("res://assets/audio/sfx/ui_hover.ogg")
 const UI_CLICK := preload("res://assets/audio/sfx/ui_click.ogg")
+## Fire burning when the mouse lights a brazier of a menu picture (synthesized,
+## tools/audio/make_fire.py).
+const FIRE_CRACKLE := preload("res://assets/audio/sfx/fire_crackle.wav")
+## Lightning striking out of the last seal's portal (synthesized, tools/audio/make_zap.py).
+const LIGHTNING_ZAP: Array[AudioStream] = [preload("res://assets/audio/sfx/lightning_zap_1.wav"),
+		preload("res://assets/audio/sfx/lightning_zap_2.wav"), preload("res://assets/audio/sfx/lightning_zap_3.wav")]
 ## A run starts through a seal's gate ("Magic Spell SFX", OpenGameArt, CC0).
 const PORTAL_OPEN := preload("res://assets/audio/sfx/portal_open.ogg")
 const UI_NEXT := preload("res://assets/audio/sfx/ui_next.ogg")

@@ -15,5 +15,5 @@ group_size_bonus = 2
 name_key = "DANGER_5"
 description_key = "DANGER_5_DESC"
 double_final_boss = true
-color = Color(0.5, 0.9, 1, 1)
+color = Color(1, 0.19, 0.19, 1)
 biome = ExtResource("biome")

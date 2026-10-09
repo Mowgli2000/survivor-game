@@ -13,6 +13,7 @@ All assets below are public domain (CC0 1.0) unless noted: no attribution requir
 | Font `assets/fonts/Fredoka.ttf` — Fredoka | Milena Brandão, Hafontia | https://fonts.google.com/specimen/Fredoka | SIL OFL 1.1 (`assets/fonts/OFL-Fredoka.txt`) |
 | Font `assets/fonts/Nunito.ttf` — Nunito | Vernon Adams, Cyreal, Jacques Le Bailly | https://fonts.google.com/specimen/Nunito | SIL OFL 1.1 (`assets/fonts/OFL-Nunito.txt`) |
 | Font `assets/fonts/Bangers.ttf` — Bangers | Vernon Adams | https://fonts.google.com/specimen/Bangers | SIL OFL 1.1 (`assets/fonts/OFL-Bangers.txt`) |
+| Fonts `assets/fonts/Cinzel.ttf`, `assets/fonts/CinzelDecorative-Bold.ttf` — Cinzel, Cinzel Decorative | Natanael Gama | https://fonts.google.com/specimen/Cinzel | SIL OFL 1.1 (`assets/fonts/OFL-Cinzel.txt`) |
 | Sound `assets/audio/sfx/ui_swoosh.wav` (swing.wav) — "RPG Sound Pack" | OpenGameArt | https://opengameart.org/content/rpg-sound-pack | CC0 1.0 |
 | Combat sounds `assets/audio/sfx/combat/` (hits, crit, hurt, warning, tick, fuse) — "Impact Sounds" | Kenney | https://kenney.nl/assets/impact-sounds | CC0 1.0 |
 | Sound `assets/audio/sfx/combat/heartbeat.wav` | original synthesis (tools: Python wave) | - | project |
