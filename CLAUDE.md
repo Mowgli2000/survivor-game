@@ -1,4 +1,4 @@
-# Survivor Game (titre de travail) — Guide Claude Code
+# Rift and Run (ex-« Survivor Game », titre de travail) — Guide Claude Code
 
 Survivor-like / roguelite 2D vue de dessus pour PC/Steam. Arène bornée, vagues chronométrées, **boutique entre les vagues** (pilier du design). Attaque 100 % automatique : le joueur ne contrôle que le déplacement. Thème : **donjon fantasy façon Solo Leveling** (chasseurs contre monstres sortis de portails), rendu façon Brawlhalla : trait épais, aplats, proportions trapues (D50 ; l'ancien thème cyber-samouraï néon est abandonné).
 Boucle : combat → ressources → boutique/choix → build → combat plus dur → boss → récompense.
