@@ -10,7 +10,9 @@ config_version=5
 
 [application]
 
-config/name="Survivor Game"
+config/name="Rift and Run"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="Survivor Game"
 config/description="Survivor-like / roguelite 2D (working title)."
 config/version="0.9.0"
 run/main_scene="res://src/ui/main_menu/main_menu.tscn"

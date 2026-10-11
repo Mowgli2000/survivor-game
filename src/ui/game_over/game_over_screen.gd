@@ -14,8 +14,8 @@ const DEFEAT_BACKGROUND := preload("res://assets/ui/backgrounds/defeat.png")
 const VICTORY_BACKGROUND := preload("res://assets/ui/backgrounds/victory.png")
 ## Rows shown in the damage summary (the biggest dealers).
 const RECAP_ROWS := 6
-const RECAP_ICON := 44.0
-const RECAP_BAR_WIDTH := 220.0
+const RECAP_ICON := 68.0
+const RECAP_BAR_WIDTH := 260.0
 
 ## True when the last open() was a victory.
 var is_victory: bool = false
@@ -229,7 +229,7 @@ func _recap_row(row: Dictionary, top: float, total: float) -> Control:
 	info.add_child(name_label)
 	var bar := ProgressBar.new()
 	bar.show_percentage = false
-	bar.custom_minimum_size = Vector2(RECAP_BAR_WIDTH, 14)
+	bar.custom_minimum_size = Vector2(RECAP_BAR_WIDTH, 26)  # as tall as the 9-slice frame needs, else its ends break
 	bar.max_value = top
 	bar.value = row.damage
 	var styles := UiTheme.bar_styles(UiTheme.BAD)

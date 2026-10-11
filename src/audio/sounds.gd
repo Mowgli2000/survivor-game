@@ -15,7 +15,11 @@ const ENEMY_DEATH := preload("res://assets/audio/sfx/enemy_death.ogg")
 const ELITE_DEATH := preload("res://assets/audio/sfx/elite_death.ogg")
 const PLAYER_HURT := preload("res://assets/audio/sfx/player_hurt.ogg")
 const PICKUP := preload("res://assets/audio/sfx/pickup.ogg")
-const LEVEL_UP := preload("res://assets/audio/sfx/level_up.ogg")
+const LEVEL_UP := preload("res://assets/audio/sfx/level_up.wav")
+## End of a wave: two warm marimba notes that resolve (synthesized, tools/audio/make_wave_clear.py; the rising jingle did not fit).
+const WAVE_CLEAR := preload("res://assets/audio/sfx/wave_clear.wav")
+## The old level-up sound, now the death of a character.
+const PLAYER_DEATH := preload("res://assets/audio/sfx/player_death.ogg")
 
 ## Combat cues (Kenney "Impact Sounds", CC0; heartbeat synthesized). Every interaction has
 ## its own sound so the player hears what happens: hit, crit, kill, hurt, low HP...

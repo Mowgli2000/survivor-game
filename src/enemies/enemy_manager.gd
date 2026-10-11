@@ -18,6 +18,8 @@ const GRID_CELL_SIZE := 64.0
 const MAX_ENEMY_RADIUS := 48.0
 const SEPARATION_STRENGTH := 0.5
 const KNOCKBACK_DECAY := 1800.0
+## A vortex leaves enemies this close to its center alone (they stack up there).
+const PULL_STOP := 45.0
 ## Ranged enemies stay within +/- this distance of their preferred range.
 const RANGED_TOLERANCE := 40.0
 ## Strafing speed of ranged enemies, relative to their speed.
@@ -165,6 +167,22 @@ func find_nearest_excluding(from: Vector2, max_distance: float, exclude_ids: Arr
 	return best
 
 
+## Index of the `rank`-th nearest enemy within `max_distance` (0 = the nearest). With fewer enemies it is the
+## farthest one found; -1 when there is none.
+func find_nth_nearest(from: Vector2, max_distance: float, rank: int) -> int:
+	if rank <= 0:
+		return find_nearest(from, max_distance)
+	var excluded: Array[int] = []
+	var best := -1
+	for r in rank + 1:
+		var found := find_nearest_excluding(from, max_distance, excluded)
+		if found < 0:
+			break
+		best = found
+		excluded.append(_active[found].get_instance_id())
+	return best
+
+
 # --- Damage API -------------------------------------------------------------
 
 ## Hits one enemy. `status` is applied with probability `status_chance`.
@@ -233,7 +251,9 @@ func set_area_target_scale(source: int, scale: float) -> void:
 
 func damage_in_radius(center: Vector2, radius: float, amount: float, crit: bool, knockback_force: float,
 		status: StatusData = null, status_chance: float = 1.0,
-		arc_dir: Vector2 = Vector2.ZERO, arc_min_dot: float = -1.0) -> int:
+		arc_dir: Vector2 = Vector2.ZERO, arc_min_dot: float = -1.0, skip = null, hit_log = null) -> int:
+	if _vfx != null and _vfx.show_shapes:
+		_vfx.debug_circle(center, radius, arc_dir, arc_min_dot)
 	var found := grid.query_radius(center, radius + max_radius, _area_hits)
 	var max_targets := area_targets_for(damage_source)
 	var hits := 0
@@ -255,6 +275,12 @@ func damage_in_radius(center: Vector2, radius: float, amount: float, crit: bool,
 		var direction := offset / sqrt(d2) if d2 > 0.01 else Vector2.RIGHT
 		if arc_min_dot > -1.0 and d2 > enemy.radius * enemy.radius and direction.dot(arc_dir) < arc_min_dot:
 			continue
+		if skip != null:
+			if skip.has(enemy):
+				continue
+			skip[enemy] = true
+		if hit_log != null:
+			hit_log.append(enemy.position)
 		damage_enemy(index, amount, crit, direction, knockback_force, status, status_chance)
 		hits += 1
 		if priority:
@@ -272,9 +298,26 @@ static func is_priority(data: EnemyData) -> bool:
 	return data.boss or not data.phases.is_empty()
 
 
+## Drags every enemy within `radius` of `center` toward it, `speed` px/s (a vortex). Bosses resist: they are pulled a quarter as hard.
+func pull_in_radius(center: Vector2, radius: float, speed: float, delta: float) -> void:
+	var found := grid.query_radius(center, radius, _query)
+	for k in found:
+		var enemy := _active[_query[k]]
+		if not enemy.is_alive():
+			continue
+		var offset := center - enemy.position
+		var distance := offset.length()
+		if distance > radius or distance < PULL_STOP:
+			continue
+		var step := speed * delta * (0.25 if is_priority(enemy.data) else 1.0)
+		enemy.position += offset / distance * minf(step, distance - PULL_STOP * 0.5)
+
+
 ## Hits every enemy touching the segment [from, to] widened by `half_width`.
 func damage_along_segment(from: Vector2, to: Vector2, half_width: float, amount: float, crit: bool,
-		knockback_force: float, status: StatusData = null, status_chance: float = 1.0) -> int:
+		knockback_force: float, status: StatusData = null, status_chance: float = 1.0, skip = null, hit_log = null) -> int:
+	if _vfx != null and _vfx.show_shapes:
+		_vfx.debug_segment(from, to, half_width)
 	var found := grid.query_segment(from, to, half_width + max_radius, _area_hits)
 	var direction := (to - from).normalized()
 	var hits := 0
@@ -287,6 +330,12 @@ func damage_along_segment(from: Vector2, to: Vector2, half_width: float, amount:
 		var closest := Geometry2D.get_closest_point_to_segment(enemy.position, from, to)
 		if enemy.position.distance_squared_to(closest) > reach * reach:
 			continue
+		if skip != null:
+			if skip.has(enemy):
+				continue
+			skip[enemy] = true
+		if hit_log != null:
+			hit_log.append(enemy.position)
 		damage_enemy(index, amount, crit, direction, knockback_force, status, status_chance)
 		hits += 1
 	return hits
@@ -375,6 +424,11 @@ func _apply_status(index: int, status: StatusData, hit_damage: float) -> void:
 		StatusData.Type.SLOW:
 			if enemy.is_alive():
 				enemy.apply_slow(status.power, status.duration)
+		StatusData.Type.POISON:
+			if enemy.is_alive():
+				enemy.apply_poison(hit_damage * status.power, status.duration, status.max_stacks)
+				enemy.poison_source = damage_source
+				enemy.poison_weapon = damage_weapon
 		StatusData.Type.SHOCK:
 			_chain_lightning(index, hit_damage * status.power, status.chain_count, status.chain_range)
 
@@ -445,6 +499,10 @@ func _physics_process(delta: float) -> void:
 			continue
 		if enemy.burn_time > 0.0:
 			_tick_burn(enemy, delta)
+			if not enemy.is_alive():
+				continue
+		if enemy.poison_time > 0.0:
+			_tick_poison(enemy, delta)
 			if not enemy.is_alive():
 				continue
 		var speed := enemy.data.speed * enemy.speed_multiplier
@@ -597,6 +655,22 @@ func _update_spawner(enemy: Enemy, delta: float) -> void:
 	for k in data.spawn_count:
 		var pos := enemy.position + Vector2.from_angle(TAU * k / data.spawn_count) * (enemy.radius + 30.0)
 		spawn(data.spawn_enemy, pos, hp_multiplier, false, enemy.damage_multiplier)
+
+
+## Poison: every stack deals its share each second; the damage counts for the weapon that poisoned.
+func _tick_poison(enemy: Enemy, delta: float) -> void:
+	damage_source = enemy.poison_source
+	damage_weapon = enemy.poison_weapon
+	var step := minf(delta, enemy.poison_time)
+	var damage := enemy.poison_dps * enemy.poison_stacks * step
+	enemy.poison_time -= delta
+	enemy.poison_pending += damage
+	if enemy.poison_pending >= BURN_NUMBER_STEP or enemy.poison_time <= 0.0:
+		enemy_damaged.emit(enemy.position, enemy.poison_pending, false)
+		enemy.poison_pending = 0.0
+	if enemy.poison_time <= 0.0:
+		enemy.end_poison()
+	_lose_hp(enemy, damage, false, true)
 
 
 func _tick_burn(enemy: Enemy, delta: float) -> void:

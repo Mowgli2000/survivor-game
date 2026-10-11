@@ -144,9 +144,12 @@ func _ready() -> void:
 	projectiles.setup(enemies, arena_rect, 100, vfx)
 	add_child(projectiles)
 
+	var heroes: Array[Node2D] = []
 	for rp in players:
 		actors.add_child(rp.player)
 		rp.player.weapon_visuals.setup(rp.player.weapons, enemies, rp.player)
+		heroes.append(rp.player)
+	vfx.guard(heroes)
 	camera = GameCamera.new()
 	camera.name = "Camera"
 	add_child(camera)
@@ -585,7 +588,7 @@ func _on_wave_ended(wave: int) -> void:
 		rp.player.heal(rp.player.stats.get_value(StatIds.MAX_HP) * stage.heal_between_waves)
 	if waves.is_last_wave():
 		return  # _on_run_won follows
-	Audio.play(Sounds.WAVE_END, -6.0)
+	Audio.play(Sounds.WAVE_CLEAR, -4.0)  # a soft resolving chime marks the end of a wave (dev, 2026-10-11)
 	if not auto_choose_upgrades:
 		get_tree().paused = true
 		wave_end_screen.open(waves.wave)
@@ -657,7 +660,7 @@ func _show_wave_hint(wave: int) -> void:
 
 
 func _apply_offer(offer: UpgradeOffer, rp: RunPlayer) -> void:
-	Audio.play(Sounds.LEVEL_UP, -6.0)
+	Audio.play(Sounds.UI_SELECT, -6.0)
 	rp.progression.apply_offer(offer, rp.player.stats)
 	_resolve_level_ups(rp)
 
@@ -734,11 +737,11 @@ func _on_run_won() -> void:
 ## Coop: a dead player waits for the next wave; the run ends when nobody is left.
 func _on_player_died() -> void:
 	if party.alive_count() > 0:
-		Audio.play(Sounds.DEFEAT, -8.0)
+		Audio.play(Sounds.PLAYER_DEATH, -4.0)
 		return
 	state.is_over = true
 	Audio.stop_music()
-	Audio.play(Sounds.DEFEAT)
+	Audio.play(Sounds.PLAYER_DEATH)
 	get_tree().paused = true
 	game_over_screen.open(state.elapsed, progression.level, state.kills, waves.wave)
 	_show_recap()

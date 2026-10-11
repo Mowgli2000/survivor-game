@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="WeaponData" format=3]
 
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="1_weapon"]
+[ext_resource type="Resource" path="res://data/vfx/spear_pierce.tres" id="vfx_slash"]
 [ext_resource type="Script" path="res://src/weapons/behaviors/melee_arc_behavior.gd" id="2_behavior"]
 [ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
 [ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/spear.ogg" id="9_sound"]
@@ -31,7 +32,7 @@ description_key = "WEAPON_SPEAR_DESC"
 behavior = SubResource("Resource_behavior")
 levels = Array[ExtResource("3_level")]([SubResource("Resource_l2"), SubResource("Resource_l3"), SubResource("Resource_l4")])
 base_price = 18
-base_damage = 10.0
+base_damage = 16.0
 cooldown = 0.75
 attack_range = 290.0
 crit_chance = 0.15
@@ -39,6 +40,9 @@ knockback = 160.0
 projectile_count = 1
 area = 230.0
 arc_degrees = 40.0
+slash_sheet = ExtResource("vfx_slash")
+swing_fx = 2
+hit_width = 16.0
 slash_style = 2
 fire_sound = ExtResource("9_sound")
 fire_volume_db = -3.5

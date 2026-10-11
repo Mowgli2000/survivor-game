@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://src/weapons/status_data.gd" id="4_status"]
 [ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/laser_pistol.ogg" id="9_sound"]
 [ext_resource type="Texture2D" path="res://assets/icons/weapons/laser_pistol.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/vfx/crystal_beam.tres" id="10_beam"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")
@@ -52,7 +53,8 @@ status = SubResource("Resource_shock")
 status_chance = 0.3
 fire_sound = ExtResource("9_sound")
 fire_volume_db = 6.0
-color = Color(0.4, 0.95, 1, 1)
+color = Color(1, 0.2, 0.28, 1)
+beam_sheet = ExtResource("10_beam")
 icon = ExtResource("icon_tex")
 icon_diagonal = true
 families = Array[StringName]([&"gun", &"energy"])

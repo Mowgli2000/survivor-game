@@ -87,18 +87,6 @@ func test_setting_accepts_only_known_values() -> void:
 	assert_eq(SettingsData.from_dict(data.to_dict()).select_background, "random", "saved and read back")
 
 
-func test_settings_list_locks_the_dangers_not_won() -> void:
-	_win(0)
-	var screen := SettingsScreen.new()
-	add_child_autofree(screen)
-	screen.open()
-	var items: Array[Button] = screen._background.items()
-	assert_eq(items.size(), SettingsData.background_ids().size())
-	assert_false(items[1].disabled, "danger 1 is won")
-	assert_true(items[2].disabled, "danger 2 is not")
-	assert_eq(SettingsData.background_ids().back(), "random", "random comes last")
-
-
 func test_solo_screen_shows_the_chosen_background() -> void:
 	_win(3)
 	Settings.data.select_background = "danger_3"

@@ -9,7 +9,7 @@ func fire(slot: WeaponSlot, ctx: WeaponContext) -> bool:
 	var stats := ctx.stats
 	var origin := ctx.owner.global_position
 	var length := s.attack_range * stats.get_value(StatIds.RANGE)
-	var target := ctx.enemies.find_nearest(origin, length)
+	var target := ctx.pick_target(slot, origin, length)
 	if target < 0:
 		return false
 
@@ -22,7 +22,7 @@ func fire(slot: WeaponSlot, ctx: WeaponContext) -> bool:
 	length = maxf(length, origin.distance_to(target_pos))
 	var count := s.projectile_count + int(stats.get_value(StatIds.PROJECTILE_COUNT))
 	var spread := deg_to_rad(s.spread_deg)
-	var width := s.area * stats.get_value(StatIds.AREA)
+	var width := s.area * CombatMath.area_scale(stats.get_value(StatIds.AREA))
 	var knockback := s.knockback * stats.get_value(StatIds.KNOCKBACK)
 
 	for i in count:
@@ -32,5 +32,5 @@ func fire(slot: WeaponSlot, ctx: WeaponContext) -> bool:
 		ctx.enemies.damage_along_segment(origin, end, width * 0.5, ctx.hit_damage(s, crit), crit,
 			knockback, s.status, s.status_chance)
 		if ctx.vfx != null:
-			ctx.vfx.beam(origin, end, width, s.color, ctx.owner)
+			ctx.vfx.beam(origin, end, width, s.color, ctx.owner, slot.data.beam_sheet)
 	return true

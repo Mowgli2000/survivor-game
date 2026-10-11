@@ -1,0 +1,57 @@
+[gd_resource type="Resource" script_class="WeaponData" format=3]
+
+[ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="1_weapon"]
+[ext_resource type="Script" path="res://src/weapons/behaviors/orbit_behavior.gd" id="2_behavior"]
+[ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
+[ext_resource type="Script" path="res://src/weapons/status_data.gd" id="4_status"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/scythe.wav" id="9_sound"]
+[ext_resource type="Texture2D" path="res://assets/icons/weapons/shadow_blades.png" id="icon_tex"]
+
+[sub_resource type="Resource" id="Resource_behavior"]
+script = ExtResource("2_behavior")
+
+[sub_resource type="Resource" id="Resource_slow"]
+script = ExtResource("4_status")
+type = 1
+power = 0.3
+duration = 1.0
+
+[sub_resource type="Resource" id="Resource_l2"]
+script = ExtResource("3_level")
+damage_percent = 0.3
+
+[sub_resource type="Resource" id="Resource_l3"]
+script = ExtResource("3_level")
+fire_rate_percent = 0.3
+
+[sub_resource type="Resource" id="Resource_l4"]
+script = ExtResource("3_level")
+damage_percent = 0.3
+fire_rate_percent = 0.3
+
+[resource]
+script = ExtResource("1_weapon")
+id = &"shadow_blades"
+projectile_style = 24
+name_key = "WEAPON_SHADOW_BLADES"
+description_key = "WEAPON_SHADOW_BLADES_DESC"
+behavior = SubResource("Resource_behavior")
+levels = Array[ExtResource("3_level")]([SubResource("Resource_l2"), SubResource("Resource_l3"), SubResource("Resource_l4")])
+base_price = 16
+base_damage = 18.0
+cooldown = 1.0
+attack_range = 150.0
+crit_chance = 0.05
+knockback = 70.0
+projectile_count = 3
+projectile_radius = 10.0
+hit_half_length = 24.0
+rehit_time = 0.35
+status = SubResource("Resource_slow")
+status_chance = 1.0
+fire_sound = ExtResource("9_sound")
+fire_volume_db = -6.0
+color = Color(0.3, 0.55, 1, 1)
+icon = ExtResource("icon_tex")
+icon_diagonal = true
+families = Array[StringName]([&"blade"])

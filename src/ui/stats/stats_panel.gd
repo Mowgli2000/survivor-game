@@ -51,11 +51,11 @@ func _init() -> void:
 
 ## Smaller rows and details, for screens with little room (call before setup()).
 func set_dense() -> void:
-	_font_size = 16
+	_font_size = 17
 	_detail_size = 13
 	_grid.add_theme_constant_override("v_separation", 0)
-	_title.add_theme_font_size_override("font_size", 24)
-	custom_minimum_size.x = 290.0
+	_title.add_theme_font_size_override("font_size", 28)
+	custom_minimum_size.x = 330.0
 
 
 ## Coop: whose stats these are ("Player 2", in the player's color).
@@ -164,7 +164,7 @@ static func format_value(stat: StringName, value: float) -> String:
 	if stat in StatIds.SHOWN_AS_PERCENT:
 		return "%d%%" % roundi(value * 100.0)
 	if stat == StatIds.CRIT_DAMAGE:
-		return "x" + _short(value)
+		return "%+d%%" % roundi((value - 1.0) * 100.0)  # x1.5 reads as +50 % (dev, 2026-10-11)
 	if stat in StatIds.INTEGER_STATS:
 		return "%+d" % roundi(value)
 	return _short(value)

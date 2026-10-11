@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://src/weapons/status_data.gd" id="4_status"]
 [ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/fire_flask.wav" id="9_sound"]
 [ext_resource type="Texture2D" path="res://assets/icons/weapons/fire_flask.png" id="icon_tex"]
+[ext_resource type="Resource" path="res://data/vfx/fire_puddle.tres" id="10_puddle"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")
@@ -47,6 +48,8 @@ projectile_speed = 480.0
 projectile_count = 1
 projectile_radius = 8.0
 projectile_lifetime = 1.0
+zone_time = 3.0
+zone_sheet = ExtResource("10_puddle")
 explosion_radius = 80.0
 status = SubResource("Resource_status")
 status_chance = 1.0

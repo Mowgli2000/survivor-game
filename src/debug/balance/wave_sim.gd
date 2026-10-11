@@ -238,8 +238,8 @@ func _effective_stats(slot: WeaponSlot) -> WeaponStats:
 	copy.pierce = s.pierce + int(stats.get_value(StatIds.PIERCE))
 	copy.bounces = s.bounces
 	copy.attack_range = s.attack_range * stats.get_value(StatIds.RANGE)
-	copy.area = s.area * stats.get_value(StatIds.AREA)
-	copy.explosion_radius = s.explosion_radius * stats.get_value(StatIds.AREA)
+	copy.area = s.area * CombatMath.area_scale(stats.get_value(StatIds.AREA))
+	copy.explosion_radius = s.explosion_radius * CombatMath.area_scale(stats.get_value(StatIds.AREA))
 	copy.arc_degrees = s.arc_degrees
 	return copy
 

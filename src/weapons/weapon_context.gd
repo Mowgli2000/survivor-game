@@ -23,6 +23,11 @@ func _init(p_owner: Node2D, p_stats: StatBlock, p_enemies: EnemyManager,
 	vfx = p_vfx
 
 
+## The enemy `slot`'s attack aims at: the nearest, or for the 2nd, 3rd... copy of a weapon the 2nd, 3rd... nearest.
+func pick_target(slot: WeaponSlot, from: Vector2, max_distance: float) -> int:
+	return enemies.find_nth_nearest(from, max_distance, slot.copy_rank)
+
+
 func roll_crit(weapon: WeaponStats) -> bool:
 	return CombatMath.is_crit(weapon.crit_chance + stats.get_value(StatIds.CRIT_CHANCE), rng.randf())
 

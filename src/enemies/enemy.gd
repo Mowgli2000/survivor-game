@@ -10,6 +10,7 @@ const FLASH_TIME := 0.08
 const FLASH_TINT := Color(3.0, 3.0, 3.0)
 const BURN_TINT := Color(1.8, 1.0, 0.55)
 const SLOW_TINT := Color(0.55, 0.9, 1.8)
+const POISON_TINT := Color(0.75, 1.5, 0.6)
 ## Sprite height in px per px of collision radius.
 const SPRITE_HEIGHT_PER_RADIUS := 5.0
 ## An enemy's position (hitbox center, where hits are measured) is at the middle of its body:
@@ -38,6 +39,13 @@ var burn_pending: float = 0.0
 var burn_source: int = 0
 var slow_factor: float = 0.0
 var slow_time: float = 0.0
+## Poison: stacked hits, damage per second of each stack, time left, damage not yet shown, who and which weapon applied it.
+var poison_stacks: int = 0
+var poison_dps: float = 0.0
+var poison_time: float = 0.0
+var poison_pending: float = 0.0
+var poison_source: int = 0
+var poison_weapon: StringName = &""
 ## Wave scaling of contact and projectile damage (StageData.damage_multiplier_at).
 var damage_multiplier: float = 1.0
 ## Boss phase speed factor (BossDirector).
@@ -71,6 +79,10 @@ func reset(p_data: EnemyData, pos: Vector2, hp_multiplier: float, p_elite: bool 
 	burn_pending = 0.0
 	slow_factor = 0.0
 	slow_time = 0.0
+	poison_stacks = 0
+	poison_dps = 0.0
+	poison_time = 0.0
+	poison_pending = 0.0
 	speed_multiplier = 1.0
 	forced_velocity = Vector2.ZERO
 	forced_time = 0.0
@@ -110,6 +122,23 @@ func end_burn() -> void:
 	_refresh_tint()
 
 
+## One more stack of poison (up to `max_stacks`); every hit refreshes its duration.
+func apply_poison(dps_per_stack: float, duration: float, max_stacks: int) -> void:
+	var was_poisoned := poison_time > 0.0
+	poison_stacks = mini(poison_stacks + 1, maxi(max_stacks, 1)) if was_poisoned else 1
+	poison_dps = maxf(poison_dps if was_poisoned else 0.0, dps_per_stack)
+	poison_time = maxf(poison_time, duration)
+	if not was_poisoned:
+		_refresh_tint()
+
+
+func end_poison() -> void:
+	poison_stacks = 0
+	poison_dps = 0.0
+	poison_time = 0.0
+	_refresh_tint()
+
+
 func apply_slow(factor: float, duration: float) -> void:
 	slow_factor = maxf(slow_factor if slow_time > 0.0 else 0.0, clampf(factor, 0.0, 0.9))
 	var was_slowed := slow_time > 0.0
@@ -129,6 +158,8 @@ func _refresh_tint() -> void:
 		self_modulate = FLASH_TINT
 	elif burn_time > 0.0:
 		self_modulate = BURN_TINT
+	elif poison_time > 0.0:
+		self_modulate = POISON_TINT
 	elif slow_time > 0.0:
 		self_modulate = SLOW_TINT
 	else:

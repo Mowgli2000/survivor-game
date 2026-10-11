@@ -704,9 +704,12 @@ func _press_hero(player: int) -> void:
 			_press_look(player, &"ui_accept")
 
 
+## A click on a head always takes player 1 back to the list with that class, whatever his step
+## (look, weapon or ready): the choice can be changed (dev, 2026-10-10).
 func _on_tile_pressed(index: int) -> void:
-	if _step[0] != Step.LIST:
-		return
+	if _step[0] != Step.LIST and not SaveService.is_unlocked(&"characters", _characters[index]):
+		return  # a locked class does not take the choice away
+	_weapon[0] = null
 	_cursor[0] = index
 	_validate_character(0)
 

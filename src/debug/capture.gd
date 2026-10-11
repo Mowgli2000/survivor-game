@@ -1,7 +1,7 @@
 extends Node
 ## Plays a run with a bot and saves a screenshot, so visuals can be checked
 ## without a human at the keyboard (used by Claude Code).
-## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--boss=shogun|ronin] [--coop] [--arrival] [--pickweapon] [--character=<id>] [--mouse=x,y]
+## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--shapes] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--boss=shogun|ronin] [--coop] [--arrival] [--pickweapon] [--character=<id>] [--mouse=x,y]
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
 const MENU_SCENE := preload("res://src/ui/main_menu/main_menu.tscn")
@@ -36,6 +36,7 @@ func _ready() -> void:
 	var show_pickups := false
 	var arrival := false
 	var pick_weapon := false
+	var shapes := false
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--time="):
 			_capture_at = arg.trim_prefix("--time=").to_float()
@@ -72,6 +73,8 @@ func _ready() -> void:
 			pick_weapon = true
 		elif arg == "--pickups":
 			show_pickups = true
+		elif arg == "--shapes":
+			shapes = true
 		elif arg == "--allweapons":
 			all_weapons = true
 		elif arg == "--fullshop":
@@ -159,6 +162,8 @@ func _ready() -> void:
 		for i in 8:
 			_run.pickups.spawn_xp(Vector2(-420 + i * 120, -330), 1 + i * 7)
 			_run.pickups.spawn_material(Vector2(-420 + i * 120, -230), 0.5 + i * 3.0)
+	if shapes:
+		_run.vfx.show_shapes = true  # outlines of the real damage shapes (F4 in game)
 	if all_weapons:
 		for def in ContentDB.get_all(&"weapons"):
 			var weapon := def as WeaponData
