@@ -6,8 +6,10 @@ extends Node2D
 ## when the frame or facing changes), or the baked neon placeholder (EnemyArt)
 ## when the type has no sprite. Hit flash and statuses only change `self_modulate`.
 
-const FLASH_TIME := 0.08
-const FLASH_TINT := Color(3.0, 3.0, 3.0)
+## Hit flash: 0.04 s of pure white. The tint is far above 1 so every lit pixel of the sprite saturates to white (only its
+## dark outline stays dark); a shader per enemy would break the batching of 650 sprites.
+const FLASH_TIME := 0.04
+const FLASH_TINT := Color(8.0, 8.0, 8.0)
 const BURN_TINT := Color(1.8, 1.0, 0.55)
 const SLOW_TINT := Color(0.55, 0.9, 1.8)
 const POISON_TINT := Color(0.75, 1.5, 0.6)
