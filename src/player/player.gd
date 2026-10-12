@@ -78,6 +78,11 @@ static func walk_anim_rate(speed: float) -> float:
 	return clampf(speed / WALK_ANIM_SPEED, WALK_RATE_MIN, WALK_RATE_MAX)
 
 
+## Draw order of the hero: above the monsters (they share a y-sorted container) and above the painted effects (Vfx z 5),
+## so a swing never hides the player (ADR 0030).
+const RENDER_Z := 10
+
+
 func setup(data: CharacterData, arena: Rect2, variant: int = 0) -> void:
 	_data = data
 	_variant = variant
@@ -102,6 +107,7 @@ func setup(data: CharacterData, arena: Rect2, variant: int = 0) -> void:
 
 
 func _ready() -> void:
+	z_index = RENDER_Z
 	collision_layer = 1
 	collision_mask = 0
 	var shape := CollisionShape2D.new()
@@ -158,7 +164,7 @@ func _physics_process(delta: float) -> void:
 			weapon_visuals.visible = true
 			if health_bar != null:
 				health_bar.modulate.a = 1.0
-			z_index = 0
+			z_index = RENDER_Z
 			landed.emit()
 		queue_redraw()
 		return
