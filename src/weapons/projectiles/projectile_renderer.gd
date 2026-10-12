@@ -42,6 +42,9 @@ const SPIN_SPEED := 18.0
 ## Per cell: height of the used band (centered) vs. the cell, measured once from
 ## the texture. The body quad is that much flatter: far less transparent overdraw.
 static var _band: PackedFloat32Array = PackedFloat32Array()
+## Per looping style: the largest band of its frames. One band for the whole loop: a band that changes from frame to
+## frame resized the quad and made the sprite pulse once per cycle (the fireball).
+static var _loop_band: Dictionary = {}
 
 var _stretch: float
 var _glow: float
@@ -71,6 +74,12 @@ func _init(stretch: float = 1.8, glow: float = 1.8) -> void:
 	add_child(_body)
 	if _band.is_empty():
 		_band = measure_bands(BODY_TEXTURE, BODY_CELLS)
+		for style: int in ANIM:
+			var loop: Vector2i = ANIM[style]
+			var widest := 0.0
+			for k in loop.y:
+				widest = maxf(widest, _band[loop.x + k])
+			_loop_band[style] = widest
 
 
 func body_count() -> int:
@@ -120,7 +129,7 @@ func render(projectiles: Array[Projectile]) -> void:
 			blend = frame - whole
 			cell = loop.x + posmod(whole, loop.y)
 			next = loop.x + posmod(whole + 1, loop.y)
-		var band := _band[cell]
+		var band: float = _loop_band[style] if ANIM.has(style) else _band[cell]
 		_body.multimesh.set_instance_transform_2d(bodies,
 			Transform2D(angle, Vector2(body, body * band), 0.0, position))
 		# Red carries the band to the shader (the art is not tinted), green the cross-fade weight, blue the next frame.

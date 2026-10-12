@@ -15,3 +15,10 @@ Le brief du dev suppose des scènes d'attaque avec `AnimationPlayer`, `YSort` et
 - Les effets sont plus discrets et plus vifs ; le moment des dégâts, lié à la durée de l'effet, arrive plus tôt (impact plus nerveux).
 - Réglage central : 4 constantes de `Vfx` et les durées des `.tres`. À valider en jeu en fin de partie (> 100 monstres) et à ajuster.
 - Le héros, au-dessus des effets, pourrait avoir une zone dégagée moins grande (`GUARD_RADIUS`) : à décider après essai.
+
+## Révision (même jour, retour du dev après essai : « trop transparent, manque d'impact »)
+Approche Brotato : opacité et brièveté plutôt que transparence.
+- `PAINTED_OPACITY` 0,92 (au lieu de 0,55) ; plus d'éclaircissement en foule (constantes `CROWD_*` retirées). Zones au sol inchangées (0,45).
+- Durées des coups, impacts, faisceaux et explosions : **0,15 s au plus** (zones persistantes inchangées). 12 images en 0,15 s = 80 images/s : ça se lit comme un éclair, pas comme une animation ; réglable dans les `.tres`.
+- **Disparition** : visible à 100 % dès la première image, fondu seulement sur les `FADE_OUT` = 0,05 dernières secondes (`Vfx._draw_sheets`).
+- **Corps des projectiles** (hors couche peinte, donc non concernés par l'opacité ci-dessus) : deux défauts de déformation corrigés dans le rendu en boucle. (1) La hauteur de la bande de la cellule changeait d'une image à l'autre (la boule de feu : 0,63 puis 0,76 aux images 9-12), d'où une pulsation à chaque cycle : une seule bande par boucle (`ProjectileRenderer._loop_band`). (2) L'ondulation de la traîne couvrait la moitié de la boucle du puits de gravité et de la bombe (plage de cellules trop large) : elle ne couvre plus que la boule de feu et l'éclair (`RIPPLE_FIRST/END`).

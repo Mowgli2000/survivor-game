@@ -13,10 +13,10 @@ uniform float columns : hint_range(1.0, 32.0) = 16.0;
 uniform float rows : hint_range(1.0, 32.0) = 6.0;
 // Must match ProjectileRenderer.CELL_CODE.
 const float CELL_CODE = 256.0;
-// Cells that ripple: the energy loops (fireball, lightning, orb: ProjectileRenderer.ANIM); the bomb fuse before
-// them and the grenade after them stay rigid.
-const float RIPPLE_FIRST = 29.0;
-const float RIPPLE_END = 65.0;
+// Cells that ripple: the fireball and lightning loops (ProjectileRenderer.ANIM) as a WHOLE (a half-rippling loop popped
+// once per cycle); the bomb fuse before them and the orb, grenade, blades and stone after them stay rigid.
+const float RIPPLE_FIRST = 35.0;
+const float RIPPLE_END = 59.0;
 // Ripple: how far (share of the cell) the trail waves, and how fast.
 const float RIPPLE = 0.035;
 const float RIPPLE_SPEED = 13.0;

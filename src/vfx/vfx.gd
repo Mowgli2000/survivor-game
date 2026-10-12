@@ -28,13 +28,11 @@ const GROUND_Z := -5
 ## Burning ground is also drawn over the creatures at this share of its opacity (the hero's zone cleared): flames lick
 ## the monsters' legs instead of the monsters looking cut out of a flat decal. 0 = only under them.
 const GROUND_FRONT_SHARE := 0.3
-## Readability (ADR 0030): painted swings, impacts and blasts are semi-transparent so the monsters stay visible under them,
-## ground zones even more so; with many live effects the painted layer dims further.
-const PAINTED_OPACITY := 0.55
+## Readability (ADR 0030, revised): painted swings, impacts and blasts are almost opaque and very short, like Brotato's:
+## fully visible from the first frame, they fade out only over their last FADE_OUT seconds. Ground zones stay see-through.
+const PAINTED_OPACITY := 0.92
 const GROUND_OPACITY := 0.45
-const CROWD_START := 12
-const CROWD_SPAN := 40.0
-const CROWD_DIM := 0.25
+const FADE_OUT := 0.05
 ## Drawn height of a painted chain bolt's frame, px (its zigzag stays within about a third of it).
 const BOLT_HEIGHT := 220.0
 ## A painted beam's frame is this many times as tall as the beam is wide (its core stays about as thick as what hurts).
@@ -494,7 +492,6 @@ func _draw_ground() -> void:
 
 
 func _draw_sheets(canvas: Node2D, ground: bool) -> void:
-	var crowd := 1.0 - CROWD_DIM * clampf((_count - CROWD_START) / CROWD_SPAN, 0.0, 1.0)
 	for i in _count:
 		if _kind[i] != Kind.SHEET:
 			continue
@@ -531,7 +528,9 @@ func _draw_sheets(canvas: Node2D, ground: bool) -> void:
 		# Frames are cross-faded (premultiplied alpha: the weights scale color and alpha), so a
 		# 12-frame painting plays as a smooth animation instead of a slideshow.
 		var position := clampf(1.0 - t, 0.0, 0.999) * effect.frames
-		var tint := _color[i] * effect.opacity * (GROUND_OPACITY if is_loop else PAINTED_OPACITY * crowd)
+		var tint := _color[i] * effect.opacity * (GROUND_OPACITY if is_loop else PAINTED_OPACITY)
+		if not is_loop:
+			tint *= clampf(_life[i] / FADE_OUT, 0.0, 1.0)  # whole until the last moments
 		if is_loop and not ground:
 			tint *= GROUND_FRONT_SHARE  # the thin copy over the creatures
 		var wrap := false

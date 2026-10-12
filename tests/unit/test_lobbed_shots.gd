@@ -49,7 +49,7 @@ func test_a_meteor_hurts_only_when_it_lands() -> void:
 	var ctx := WeaponContext.new(s.player, StatBlock.from_defaults({}), s.enemies, s.projectiles, s.rng)
 	ctx.vfx = s.vfx
 	assert_true(weapon.behavior.fire(WeaponSlot.new(weapon, 1), ctx))
-	await wait_seconds(0.2)
+	await wait_seconds((weapon.behavior as StrikeBehavior).fall_sheet.duration * 0.3)  # the fall is very short (ADR 0030)
 	var rock_y := INF
 	for i in s.vfx.active_count():
 		rock_y = minf(rock_y, s.vfx._a[i].y)

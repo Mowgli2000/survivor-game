@@ -1,7 +1,8 @@
 extends Node
 ## Plays a run with a bot and saves a screenshot, so visuals can be checked
 ## without a human at the keyboard (used by Claude Code).
-## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--shapes] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--boss=shogun|ronin] [--coop] [--arrival] [--pickweapon] [--character=<id>] [--mouse=x,y]
+## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--shapes] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--boss=shogun|ronin] [--coop] [--arrival] [--pickweapon] [--character=<id>] [--mouse=x,y] [--clean]
+## --clean: store-quality capture (no debug overlay, no gamepad hint bars). For 1920x1080 add Godot's `--resolution 1920x1080`.
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
 const MENU_SCENE := preload("res://src/ui/main_menu/main_menu.tscn")
@@ -18,6 +19,8 @@ var _full_shop := false
 var _open_picker := false
 var _done: bool = false
 var _boss_id: StringName = &""
+## --clean: hide the debug overlay and the gamepad hint bars before the picture is taken.
+var _clean := false
 
 
 var _mouse := Vector2(-1.0, -1.0)
@@ -44,6 +47,8 @@ func _ready() -> void:
 			_out = arg.trim_prefix("--out=")
 		elif arg == "--stress":
 			stress = true
+		elif arg == "--clean":
+			_clean = true
 		elif arg in ["--levelup", "--die", "--unlocks", "--waveend", "--shop", "--pause", "--settings", "--menu", "--characters", "--coopselect", "--progression"]:
 			_mode = arg
 		elif arg == "--coop":
@@ -234,6 +239,9 @@ func _process(delta: float) -> void:
 		_capture_at = _time + 0.8
 		return
 	_done = true
+	if _clean:
+		for node in get_tree().root.find_children("*", "DebugOverlay", true, false) + get_tree().root.find_children("*", "ButtonHints", true, false):
+			(node as CanvasItem).visible = false
 	await RenderingServer.frame_post_draw
 	var image := get_viewport().get_texture().get_image()
 	image.save_png(_out)
