@@ -21,10 +21,16 @@ func test_bodies_only_for_styled_projectiles() -> void:
 func test_every_style_has_render_settings_and_a_cell() -> void:
 	var styles := WeaponData.ProjectileStyle.size()
 	assert_eq(ProjectileRenderer.BODY_SCALE.size(), styles)
-	assert_lt(styles, int(ProjectileRenderer.CELL_CODE), "cell code fits every style")
-	assert_eq(ProjectileRenderer.BODY_CELLS, styles - 1)
+	assert_lt(ProjectileRenderer.BODY_CELLS, int(ProjectileRenderer.CELL_CODE), "cell code fits every cell")
+	# One cell per style (the shadow blade has only its loop), then the frames of the animated ones.
+	var frames := 0
+	for style: int in ProjectileRenderer.ANIM:
+		var loop: Vector2i = ProjectileRenderer.ANIM[style]
+		frames += loop.y
+		assert_lte(loop.x + loop.y, ProjectileRenderer.BODY_CELLS)
+	assert_eq(ProjectileRenderer.BODY_CELLS, styles - 2 + frames)
 	var texture := ProjectileRenderer.BODY_TEXTURE
-	assert_eq(texture.get_width(), texture.get_height() * ProjectileRenderer.BODY_CELLS, "one square cell per style")
+	assert_eq(texture.get_width(), texture.get_height() * ProjectileRenderer.BODY_CELLS, "one square cell per style and frame")
 
 
 func test_enemy_shooters_use_enemy_styles() -> void:

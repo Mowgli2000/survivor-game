@@ -7,14 +7,32 @@ extends MultiMeshInstance2D
 
 const BODY_TEXTURE := preload("res://assets/sprites/projectiles.png")
 const BODY_SHADER := preload("res://src/weapons/projectiles/projectile_body.gdshader")
-const BODY_CELLS := 21
+const BODY_CELLS := 89
+## Styles drawn as a looping animation: Vector2i(strip cell of the first frame (0-based), number of frames).
+## The loops come after the 23 style cells (tools/art/bake_proj.py). The energy shots and the bomb have 12 frames (as the melee
+## swings), the grenade 6.
+const ANIM := {
+	WeaponData.ProjectileStyle.BOMB: Vector2i(23, 12), WeaponData.ProjectileStyle.FIREBALL: Vector2i(35, 12),
+	WeaponData.ProjectileStyle.LIGHTNING: Vector2i(47, 12), WeaponData.ProjectileStyle.ORB: Vector2i(59, 12),
+	WeaponData.ProjectileStyle.GRENADE: Vector2i(71, 6), WeaponData.ProjectileStyle.SHADOW_BLADE: Vector2i(77, 12),
+}
+## Seconds one pass of a loop lasts, whatever its number of frames (so 12 frames play at 26 fps, 6 at 13 fps).
+const ANIM_CYCLE := 0.46
+## Lobbed styles spin on themselves in flight, radians per second.
+const LOB_SPIN := {
+	WeaponData.ProjectileStyle.BOMB: 3.0, WeaponData.ProjectileStyle.FIRE_FLASK: 7.0,
+	WeaponData.ProjectileStyle.FROST_FLASK: 7.0, WeaponData.ProjectileStyle.GRENADE: 6.0,
+	WeaponData.ProjectileStyle.CANNONBALL: 4.0, WeaponData.ProjectileStyle.BOMB_FLASK: 7.0,
+	WeaponData.ProjectileStyle.ORB: 4.0,
+}
 ## Cell index code in the body color's alpha (see projectile_body.gdshader).
-const CELL_CODE := 32.0
+const CELL_CODE := 128.0
 ## Per style (index = WeaponData.ProjectileStyle): length of the square art cell
-## vs. the hitbox diameter. The art (AI, pointing right, trail on the left) keeps
+## vs. the hitbox diameter (painted projectiles: the head sits at the right of a long trail, so
+## their cells are about 2.4 times bigger than the old code-drawn ones). The art (AI, pointing right, trail on the left) keeps
 ## its own proportions inside the cell and its own colors (no tint).
-const BODY_SCALE: Array[float] = [0.0, 4.0, 4.0, 4.5, 4.0, 4.0, 3.6, 4.2, 4.0, 4.0, 6.0, 3.2, 6.0,
-	3.0, 4.0, 4.0, 3.6, 3.6, 3.6, 3.6, 3.6, 3.6]
+const BODY_SCALE: Array[float] = [0.0, 2.8, 3.2, 10.0, 9.5, 1.25, 3.6, 6.4, 9.5, 8.0, 12.0, 10.0, 12.0,
+	2.6, 3.75, 3.75, 3.0, 3.7, 3.6, 3.6, 3.6, 3.6, 11.0, 3.4, 2.1]
 ## Shuriken spin, radians per second of flight.
 const SPIN_SPEED := 18.0
 
@@ -76,12 +94,33 @@ func render(projectiles: Array[Projectile]) -> void:
 			glows += 1
 			continue
 		var body := p.radius * 2.0 * BODY_SCALE[style]
-		var angle := (_time + p.life) * SPIN_SPEED if style == WeaponData.ProjectileStyle.SHURIKEN 			else p.velocity.angle()
-		var band := _band[style - 1]
+		var angle := p.velocity.angle()
+		var position := p.position
+		if style == WeaponData.ProjectileStyle.SHURIKEN:
+			angle = (_time + p.life) * SPIN_SPEED
+		elif p.fused:
+			angle = 0.0  # a bomb at rest stands upright, fuse up (as painted)
+		elif p.lob_peak > 0.0:
+			# A lobbed shot: spins on itself, rises and falls in an arc over the ground point.
+			angle = (_time + p.life) * LOB_SPIN.get(style, 5.0)
+			var flown := 1.0 - p.life / p.lob_total
+			position.y -= 4.0 * p.lob_peak * flown * (1.0 - flown)
+		var cell := style - 1
+		var next := cell
+		var blend := 0.0
+		if ANIM.has(style):
+			# Loop of painted frames, cross-faded by the shader (a few frames read as a smooth flow).
+			var loop: Vector2i = ANIM[style]
+			var frame := (_time + p.life * 0.37) * loop.y / ANIM_CYCLE
+			var whole := int(frame)
+			blend = frame - whole
+			cell = loop.x + posmod(whole, loop.y)
+			next = loop.x + posmod(whole + 1, loop.y)
+		var band := _band[cell]
 		_body.multimesh.set_instance_transform_2d(bodies,
-			Transform2D(angle, Vector2(body, body * band), 0.0, p.position))
-		# Red carries the band to the shader (the art is not tinted).
-		var tint := Color(band, 1.0, 1.0, (style - 1 + 0.5) / CELL_CODE)
+			Transform2D(angle, Vector2(body, body * band), 0.0, position))
+		# Red carries the band to the shader (the art is not tinted), green the cross-fade weight, blue the next frame.
+		var tint := Color(band, blend, (next + 0.5) / CELL_CODE, (cell + 0.5) / CELL_CODE)
 		_body.multimesh.set_instance_color(bodies, tint)
 		bodies += 1
 	multimesh.visible_instance_count = glows

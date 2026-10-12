@@ -57,6 +57,9 @@ func _init() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("debug_toggle"):
 		visible = not visible
+	# F4: outlines of the real damage shapes (to compare with the painted effects).
+	if event is InputEventKey and event.pressed and not event.echo and event.physical_keycode == KEY_F4 and _vfx != null:
+		_vfx.show_shapes = not _vfx.show_shapes
 
 
 func _process(delta: float) -> void:

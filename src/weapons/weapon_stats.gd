@@ -18,6 +18,23 @@ var projectile_lifetime: float
 var bounces: int
 var bounce_range: float
 var explosion_radius: float
+var fragments: int = 0
+var fuse_time: float = 0.0
+var rebounds: int = 0
+var zone_time: float = 0.0
+var zone_sheet: EffectSheet
+var zone_end_sheet: EffectSheet
+var zone_radius: float = 0.0
+var rehit_time: float = 0.0
+var pull_radius: float = 0.0
+var pull_speed: float = 0.0
+var landing_blast: bool = true
+var blast_on_pierce: bool = false
+var distance_damage: float = 0.0
+var returns: bool = false
+var wall_bounces: int = 0
+var hit_half_length: float = 0.0
+var fragment_style: int = 0
 var area: float
 var arc_degrees: float
 var status: StatusData
@@ -47,6 +64,23 @@ static func compute(data: WeaponData, level: int) -> WeaponStats:
 	s.color = data.color
 	s.projectile_style = data.projectile_style
 	s.homing = data.homing
+	s.fragments = data.fragments
+	s.fuse_time = data.fuse_time
+	s.rebounds = data.rebounds
+	s.zone_time = data.zone_time
+	s.zone_sheet = data.zone_sheet
+	s.zone_end_sheet = data.zone_end_sheet
+	s.zone_radius = data.zone_radius
+	s.rehit_time = data.rehit_time
+	s.pull_radius = data.pull_radius
+	s.pull_speed = data.pull_speed
+	s.landing_blast = data.landing_blast
+	s.blast_on_pierce = data.blast_on_pierce
+	s.distance_damage = data.distance_damage
+	s.returns = data.returns
+	s.wall_bounces = data.wall_bounces
+	s.hit_half_length = data.hit_half_length
+	s.fragment_style = data.fragment_style
 
 	var damage_percent := 0.0
 	var fire_rate_percent := 0.0

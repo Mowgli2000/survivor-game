@@ -12,13 +12,20 @@ static var show_always: bool = false
 
 
 ## `items`: [[glyph, text key], ...]; glyph is A, B, X or Y.
-static func create(items: Array) -> ButtonHints:
+static func create(items: Array, top_right: bool = false) -> ButtonHints:
 	var bar := ButtonHints.new()
 	bar.add_theme_constant_override("separation", 34)
-	bar.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
-	bar.grow_vertical = Control.GROW_DIRECTION_BEGIN
-	bar.offset_left = 64.0
-	bar.offset_bottom = -28.0
+	if top_right:
+		# Screens whose bottom is full (the shop): the hints sit in the free top corner.
+		bar.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+		bar.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+		bar.offset_right = -40.0
+		bar.offset_top = 30.0
+	else:
+		bar.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT)
+		bar.grow_vertical = Control.GROW_DIRECTION_BEGIN
+		bar.offset_left = 64.0
+		bar.offset_bottom = -28.0
 	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	for item in items:
 		var glyph := Label.new()

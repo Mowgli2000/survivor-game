@@ -16,112 +16,112 @@
 	"astral_boss_final": [
 		0,
 		0,
-		284,
+		286,
 		304,
 		"res://assets/sprites/atlas_astral.png"
 	],
 	"astral_boss_mini": [
 		0,
 		304,
-		290,
+		301,
 		304,
 		"res://assets/sprites/atlas_astral.png"
 	],
 	"astral_charger": [
-		0,
-		1344,
-		143,
+		2064,
+		1160,
+		150,
 		144,
 		"res://assets/sprites/atlas_astral.png"
 	],
 	"astral_charger_elite": [
-		2002,
+		0,
 		1344,
-		143,
+		150,
 		144,
 		"res://assets/sprites/atlas_astral.png"
 	],
 	"astral_grunt": [
-		0,
-		1488,
+		1800,
+		1344,
 		134,
 		144,
 		"res://assets/sprites/atlas_astral.png"
 	],
 	"astral_grunt_elite": [
-		1876,
+		0,
 		1488,
 		134,
 		144,
 		"res://assets/sprites/atlas_astral.png"
 	],
 	"astral_kamikaze": [
-		0,
-		1632,
-		131,
+		1608,
+		1488,
+		152,
 		144,
 		"res://assets/sprites/atlas_astral.png"
 	],
 	"astral_kamikaze_elite": [
-		1834,
+		0,
 		1632,
-		131,
+		152,
 		144,
 		"res://assets/sprites/atlas_astral.png"
 	],
 	"astral_runner": [
-		0,
-		1776,
-		142,
+		1824,
+		1632,
+		156,
 		144,
 		"res://assets/sprites/atlas_astral.png"
 	],
 	"astral_runner_elite": [
-		1988,
+		0,
 		1776,
-		142,
+		156,
 		144,
 		"res://assets/sprites/atlas_astral.png"
 	],
 	"astral_shooter": [
-		0,
-		1920,
-		131,
+		1872,
+		1776,
+		130,
 		144,
 		"res://assets/sprites/atlas_astral.png"
 	],
 	"astral_shooter_elite": [
-		1834,
+		0,
 		1920,
-		131,
+		130,
 		144,
 		"res://assets/sprites/atlas_astral.png"
 	],
 	"astral_spawner": [
 		0,
 		608,
-		184,
+		174,
 		184,
 		"res://assets/sprites/atlas_astral.png"
 	],
 	"astral_spawner_elite": [
 		0,
 		792,
-		184,
+		174,
 		184,
 		"res://assets/sprites/atlas_astral.png"
 	],
 	"astral_tank": [
 		0,
 		976,
-		171,
+		172,
 		184,
 		"res://assets/sprites/atlas_astral.png"
 	],
 	"astral_tank_elite": [
 		0,
 		1160,
-		171,
+		172,
 		184,
 		"res://assets/sprites/atlas_astral.png"
 	],
@@ -140,16 +140,16 @@
 		"res://assets/sprites/atlas.png"
 	],
 	"charger": [
-		0,
-		2592,
-		141,
+		2052,
+		2408,
+		158,
 		144,
 		"res://assets/sprites/atlas.png"
 	],
 	"charger_elite": [
-		1974,
+		0,
 		2592,
-		141,
+		158,
 		144,
 		"res://assets/sprites/atlas.png"
 	],
@@ -177,76 +177,76 @@
 	"gold_boss_mini": [
 		0,
 		304,
-		286,
+		317,
 		304,
 		"res://assets/sprites/atlas_gold.png"
 	],
 	"gold_charger": [
 		0,
-		1344,
-		153,
+		976,
+		161,
 		144,
 		"res://assets/sprites/atlas_gold.png"
 	],
 	"gold_charger_elite": [
-		0,
-		1488,
-		153,
+		1932,
+		976,
+		161,
 		144,
 		"res://assets/sprites/atlas_gold.png"
 	],
 	"gold_grunt": [
 		0,
-		1632,
+		1120,
 		142,
 		144,
 		"res://assets/sprites/atlas_gold.png"
 	],
 	"gold_grunt_elite": [
-		1988,
-		1632,
+		1704,
+		1120,
 		142,
 		144,
 		"res://assets/sprites/atlas_gold.png"
 	],
 	"gold_kamikaze": [
 		0,
-		1776,
+		1264,
 		103,
 		144,
 		"res://assets/sprites/atlas_gold.png"
 	],
 	"gold_kamikaze_elite": [
-		1442,
-		1776,
+		1236,
+		1264,
 		103,
 		144,
 		"res://assets/sprites/atlas_gold.png"
 	],
 	"gold_runner": [
-		0,
-		1920,
-		125,
+		2472,
+		1264,
+		130,
 		144,
 		"res://assets/sprites/atlas_gold.png"
 	],
 	"gold_runner_elite": [
-		1750,
-		1920,
-		125,
+		0,
+		1408,
+		130,
 		144,
 		"res://assets/sprites/atlas_gold.png"
 	],
 	"gold_shooter": [
-		0,
-		2064,
+		1560,
+		1408,
 		128,
 		144,
 		"res://assets/sprites/atlas_gold.png"
 	],
 	"gold_shooter_elite": [
-		1792,
-		2064,
+		0,
+		1552,
 		128,
 		144,
 		"res://assets/sprites/atlas_gold.png"
@@ -254,42 +254,42 @@
 	"gold_spawner": [
 		0,
 		608,
-		164,
+		159,
 		184,
 		"res://assets/sprites/atlas_gold.png"
 	],
 	"gold_spawner_elite": [
-		0,
-		792,
-		164,
+		1908,
+		608,
+		159,
 		184,
 		"res://assets/sprites/atlas_gold.png"
 	],
 	"gold_tank": [
 		0,
-		976,
-		174,
+		792,
+		169,
 		184,
 		"res://assets/sprites/atlas_gold.png"
 	],
 	"gold_tank_elite": [
-		0,
-		1160,
-		174,
+		2028,
+		792,
+		169,
 		184,
 		"res://assets/sprites/atlas_gold.png"
 	],
 	"grunt": [
-		0,
-		2736,
-		125,
+		1896,
+		2592,
+		124,
 		144,
 		"res://assets/sprites/atlas.png"
 	],
 	"grunt_elite": [
-		1750,
+		0,
 		2736,
-		125,
+		124,
 		144,
 		"res://assets/sprites/atlas.png"
 	],
@@ -324,119 +324,119 @@
 	"iron_boss_mini": [
 		0,
 		304,
-		244,
+		245,
 		304,
 		"res://assets/sprites/atlas_iron.png"
 	],
 	"iron_charger": [
-		0,
-		1160,
-		151,
+		2160,
+		976,
+		152,
 		144,
 		"res://assets/sprites/atlas_iron.png"
 	],
 	"iron_charger_elite": [
 		0,
-		1304,
-		151,
+		1160,
+		152,
 		144,
 		"res://assets/sprites/atlas_iron.png"
 	],
 	"iron_grunt": [
-		2114,
-		1304,
-		127,
+		1824,
+		1160,
+		125,
 		144,
 		"res://assets/sprites/atlas_iron.png"
 	],
 	"iron_grunt_elite": [
 		0,
-		1448,
-		127,
+		1304,
+		125,
 		144,
 		"res://assets/sprites/atlas_iron.png"
 	],
 	"iron_kamikaze": [
-		1778,
-		1448,
-		96,
+		1500,
+		1304,
+		102,
 		144,
 		"res://assets/sprites/atlas_iron.png"
 	],
 	"iron_kamikaze_elite": [
-		0,
-		1592,
-		96,
+		2724,
+		1304,
+		102,
 		144,
 		"res://assets/sprites/atlas_iron.png"
 	],
 	"iron_runner": [
-		1344,
-		1592,
-		163,
+		0,
+		1448,
+		147,
 		144,
 		"res://assets/sprites/atlas_iron.png"
 	],
 	"iron_runner_elite": [
-		0,
-		1736,
-		163,
+		1764,
+		1448,
+		147,
 		144,
 		"res://assets/sprites/atlas_iron.png"
 	],
 	"iron_shooter": [
-		2282,
-		1736,
-		121,
+		0,
+		1592,
+		122,
 		144,
 		"res://assets/sprites/atlas_iron.png"
 	],
 	"iron_shooter_elite": [
-		0,
-		1880,
-		121,
+		1464,
+		1592,
+		122,
 		144,
 		"res://assets/sprites/atlas_iron.png"
 	],
 	"iron_spawner": [
 		0,
 		608,
-		111,
+		130,
 		184,
 		"res://assets/sprites/atlas_iron.png"
 	],
 	"iron_spawner_elite": [
-		1554,
+		1560,
 		608,
-		111,
+		130,
 		184,
 		"res://assets/sprites/atlas_iron.png"
 	],
 	"iron_tank": [
 		0,
 		792,
-		185,
+		180,
 		184,
 		"res://assets/sprites/atlas_iron.png"
 	],
 	"iron_tank_elite": [
 		0,
 		976,
-		185,
+		180,
 		184,
 		"res://assets/sprites/atlas_iron.png"
 	],
 	"kamikaze": [
-		0,
-		2880,
-		131,
+		1488,
+		2736,
+		147,
 		144,
 		"res://assets/sprites/atlas.png"
 	],
 	"kamikaze_elite": [
-		1834,
+		0,
 		2880,
-		131,
+		147,
 		144,
 		"res://assets/sprites/atlas.png"
 	],
@@ -471,119 +471,119 @@
 	"obsidian_boss_final": [
 		0,
 		0,
-		265,
+		275,
 		304,
 		"res://assets/sprites/atlas_obsidian.png"
 	],
 	"obsidian_boss_mini": [
 		0,
 		304,
-		259,
+		265,
 		304,
 		"res://assets/sprites/atlas_obsidian.png"
 	],
 	"obsidian_charger": [
 		0,
-		1344,
-		133,
+		1160,
+		158,
 		144,
 		"res://assets/sprites/atlas_obsidian.png"
 	],
 	"obsidian_charger_elite": [
-		1862,
-		1344,
-		133,
+		1896,
+		1160,
+		158,
 		144,
 		"res://assets/sprites/atlas_obsidian.png"
 	],
 	"obsidian_grunt": [
 		0,
-		1488,
-		120,
+		1304,
+		135,
 		144,
 		"res://assets/sprites/atlas_obsidian.png"
 	],
 	"obsidian_grunt_elite": [
-		1680,
-		1488,
-		120,
+		1620,
+		1304,
+		135,
 		144,
 		"res://assets/sprites/atlas_obsidian.png"
 	],
 	"obsidian_kamikaze": [
 		0,
-		1632,
-		137,
+		1448,
+		138,
 		144,
 		"res://assets/sprites/atlas_obsidian.png"
 	],
 	"obsidian_kamikaze_elite": [
-		1918,
-		1632,
-		137,
+		1656,
+		1448,
+		138,
 		144,
 		"res://assets/sprites/atlas_obsidian.png"
 	],
 	"obsidian_runner": [
 		0,
-		1776,
-		137,
+		1592,
+		135,
 		144,
 		"res://assets/sprites/atlas_obsidian.png"
 	],
 	"obsidian_runner_elite": [
-		1918,
-		1776,
-		137,
+		1620,
+		1592,
+		135,
 		144,
 		"res://assets/sprites/atlas_obsidian.png"
 	],
 	"obsidian_shooter": [
 		0,
-		1920,
-		125,
+		1736,
+		134,
 		144,
 		"res://assets/sprites/atlas_obsidian.png"
 	],
 	"obsidian_shooter_elite": [
-		1750,
-		1920,
-		125,
+		1608,
+		1736,
+		134,
 		144,
 		"res://assets/sprites/atlas_obsidian.png"
 	],
 	"obsidian_spawner": [
 		0,
 		608,
-		169,
+		164,
 		184,
 		"res://assets/sprites/atlas_obsidian.png"
 	],
 	"obsidian_spawner_elite": [
-		0,
-		792,
-		169,
+		1968,
+		608,
+		164,
 		184,
 		"res://assets/sprites/atlas_obsidian.png"
 	],
 	"obsidian_tank": [
 		0,
-		976,
-		206,
+		792,
+		217,
 		184,
 		"res://assets/sprites/atlas_obsidian.png"
 	],
 	"obsidian_tank_elite": [
 		0,
-		1160,
-		206,
+		976,
+		217,
 		184,
 		"res://assets/sprites/atlas_obsidian.png"
 	],
 	"ronin_boss": [
 		0,
 		0,
-		238,
+		249,
 		304,
 		"res://assets/sprites/atlas.png"
 	],
@@ -602,36 +602,36 @@
 		"res://assets/sprites/atlas.png"
 	],
 	"runner": [
-		0,
-		3024,
-		139,
+		1764,
+		2880,
+		160,
 		144,
 		"res://assets/sprites/atlas.png"
 	],
 	"runner_elite": [
-		1112,
-		3024,
-		139,
+		2724,
+		2880,
+		160,
 		144,
 		"res://assets/sprites/atlas.png"
 	],
 	"shogun": [
 		0,
 		304,
-		284,
+		285,
 		304,
 		"res://assets/sprites/atlas.png"
 	],
 	"shooter": [
 		0,
-		3168,
+		3024,
 		137,
 		144,
 		"res://assets/sprites/atlas.png"
 	],
 	"shooter_elite": [
-		1918,
-		3168,
+		1644,
+		3024,
 		137,
 		144,
 		"res://assets/sprites/atlas.png"
@@ -639,82 +639,82 @@
 	"silver_boss_final": [
 		0,
 		0,
-		280,
+		282,
 		304,
 		"res://assets/sprites/atlas_silver.png"
 	],
 	"silver_boss_mini": [
 		0,
 		304,
-		288,
+		294,
 		304,
 		"res://assets/sprites/atlas_silver.png"
 	],
 	"silver_charger": [
-		0,
-		1160,
-		140,
+		2172,
+		976,
+		145,
 		144,
 		"res://assets/sprites/atlas_silver.png"
 	],
 	"silver_charger_elite": [
-		1960,
+		0,
 		1160,
-		140,
+		145,
 		144,
 		"res://assets/sprites/atlas_silver.png"
 	],
 	"silver_grunt": [
-		0,
-		1304,
-		146,
+		1740,
+		1160,
+		138,
 		144,
 		"res://assets/sprites/atlas_silver.png"
 	],
 	"silver_grunt_elite": [
-		2044,
+		0,
 		1304,
-		146,
+		138,
 		144,
 		"res://assets/sprites/atlas_silver.png"
 	],
 	"silver_kamikaze": [
-		0,
-		1448,
-		119,
+		1656,
+		1304,
+		126,
 		144,
 		"res://assets/sprites/atlas_silver.png"
 	],
 	"silver_kamikaze_elite": [
-		1666,
+		0,
 		1448,
-		119,
+		126,
 		144,
 		"res://assets/sprites/atlas_silver.png"
 	],
 	"silver_runner": [
-		0,
-		1592,
-		139,
+		1512,
+		1448,
+		147,
 		144,
 		"res://assets/sprites/atlas_silver.png"
 	],
 	"silver_runner_elite": [
-		1946,
+		0,
 		1592,
-		139,
+		147,
 		144,
 		"res://assets/sprites/atlas_silver.png"
 	],
 	"silver_shooter": [
-		0,
-		1736,
+		1764,
+		1592,
 		143,
 		144,
 		"res://assets/sprites/atlas_silver.png"
 	],
 	"silver_shooter_elite": [
-		2002,
+		0,
 		1736,
 		143,
 		144,
@@ -723,14 +723,14 @@
 	"silver_spawner": [
 		0,
 		608,
-		121,
+		131,
 		184,
 		"res://assets/sprites/atlas_silver.png"
 	],
 	"silver_spawner_elite": [
-		1694,
+		1572,
 		608,
-		121,
+		131,
 		184,
 		"res://assets/sprites/atlas_silver.png"
 	],
@@ -751,28 +751,28 @@
 	"spawner": [
 		0,
 		1856,
-		173,
+		193,
 		184,
 		"res://assets/sprites/atlas.png"
 	],
 	"spawner_elite": [
 		0,
 		2040,
-		173,
+		193,
 		184,
 		"res://assets/sprites/atlas.png"
 	],
 	"tank": [
 		0,
 		2224,
-		170,
+		171,
 		184,
 		"res://assets/sprites/atlas.png"
 	],
 	"tank_elite": [
 		0,
 		2408,
-		170,
+		171,
 		184,
 		"res://assets/sprites/atlas.png"
 	]

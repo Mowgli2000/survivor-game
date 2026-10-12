@@ -83,7 +83,7 @@ func _process(delta: float) -> void:
 		var slot := slots[i]
 		var mount := origin + slot.mount_offset
 		var reach := MeleeArcBehavior.reach_multiplier(_owner.stats) if _is_melee(slot) else range_multiplier
-		var target := _enemies.find_nearest(mount, slot.stats.attack_range * reach) \
+		var target := _enemies.find_nth_nearest(mount, slot.stats.attack_range * reach, slot.copy_rank) \
 			if _enemies != null else -1
 		var wanted := _aim[i]
 		if target >= 0:

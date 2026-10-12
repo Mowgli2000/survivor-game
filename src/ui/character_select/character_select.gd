@@ -143,6 +143,8 @@ var _step: Step = Step.LIST
 ## Last key / gamepad event came from a gamepad: focusing a row picks that hero
 ## (with the keyboard or the mouse, only a click does).
 var _pad_focus: bool = false
+## True while the last press came from the mouse: a click on a row goes straight to the weapons.
+var _mouse_used: bool = false
 ## Look picked for each class (0 = the character itself, 1 = its second look).
 var _variants: Dictionary[StringName, int] = {}
 
@@ -500,10 +502,14 @@ func _build_arms() -> Control:
 	box.add_child(_weapon_title)
 	_weapons = VBoxContainer.new()
 	_weapons.add_theme_constant_override("separation", 8 if _compact else 12)
-	box.add_child(_weapons)
-	var spacer := Control.new()
-	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	box.add_child(spacer)
+	# Scrolls when a class starts with many weapons (playtest builds): the list takes the free height.
+	var weapons_scroll := ScrollContainer.new()
+	weapons_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	weapons_scroll.follow_focus = true
+	weapons_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_weapons.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	weapons_scroll.add_child(_weapons)
+	box.add_child(weapons_scroll)
 	_next = Button.new()
 	_next.text = "UI_NEXT"
 	_next.theme_type_variation = &"CtaButton"
@@ -616,6 +622,7 @@ func _input(event: InputEvent) -> void:
 		_pad_focus = true
 	elif event is InputEventKey or event is InputEventMouseButton:
 		_pad_focus = false
+		_mouse_used = event is InputEventMouseButton
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -1301,7 +1308,10 @@ func _choose_character(character: CharacterData, confirm: bool = true) -> void:
 		_weapons.add_child(_weapon_card(weapon))
 	_apply_focus_modes()
 	_show_weapons(true)
-	if confirm:
+	if confirm and _mouse_used:
+		# Mouse: no extra click on the platform, the weapon cards are usable at once.
+		_set_step(Step.WEAPON)
+	elif confirm:
 		_set_step(Step.LOOK)
 		_turn.grab_focus()
 

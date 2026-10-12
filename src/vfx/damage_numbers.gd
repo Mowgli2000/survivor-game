@@ -25,8 +25,9 @@ const CRIT_COLOR := Color("ffe600")
 const OUTLINE_SIZE := 7
 const EMBOLDEN := 0.35
 const BOX_WIDTH := 200.0
-## Readability cap: at most this many new numbers per frame (crits have their own budget).
-const MAX_NEW_PER_FRAME := 6
+## Readability cap: at most this many new numbers per frame (crits have their own budget). A piercing beam or a big
+## blast hits a dozen enemies in one frame: each one must show its number (dev, 2026-10-11).
+const MAX_NEW_PER_FRAME := 14
 
 ## Can be turned off (future settings menu).
 var enabled: bool = true

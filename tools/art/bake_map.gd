@@ -9,7 +9,8 @@ const SRC := "res://assets_src/drawn/map"
 const GROUND_OUT := "res://assets/sprites/ground.png"
 const ATLAS := "res://assets/map/decor_atlas.png"
 const PROJECTILES := "res://assets/sprites/projectiles.png"
-const PROJECTILE_CELL := 128
+# 92 px per cell: the strip stays under 8192 px wide (89 cells), the limit of older GPUs.
+const PROJECTILE_CELL := 92
 const PAD := 4
 const ATLAS_WIDTH := 1024
 

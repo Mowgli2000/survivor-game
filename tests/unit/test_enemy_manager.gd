@@ -306,7 +306,7 @@ func test_recycled_enemy_switches_sheet() -> void:
 func test_projectiles_start_at_the_weapon_muzzle() -> void:
 	_enemies.spawn(_data, Vector2(300, 0))
 	await wait_physics_frames(1)
-	var data: WeaponData = ContentDB.get_def(&"weapons", &"pulse")
+	var data: WeaponData = ContentDB.get_def(&"weapons", &"sling")
 	var slot := WeaponSlot.new(data)
 	slot.mount_offset = Vector2(0, -30)
 	var ctx := WeaponContext.new(_player, StatBlock.from_defaults({}), _enemies, _projectiles,
@@ -347,7 +347,7 @@ func test_beam_from_far_mount_still_reaches_a_target_at_max_range() -> void:
 
 
 func test_point_blank_projectile_hits_the_target() -> void:
-	var pulse: WeaponData = ContentDB.get_def(&"weapons", &"pulse")
+	var pulse: WeaponData = ContentDB.get_def(&"weapons", &"sling")
 	var slot := WeaponSlot.new(pulse)
 	slot.mount_offset = Vector2(50, -24)
 	_enemies.spawn(_enemy_data(1000.0, 0.0), Vector2(58, -24))  # right on the mount
@@ -417,6 +417,7 @@ func test_strike_hits_every_enemy_in_its_area() -> void:
 	var ctx := WeaponContext.new(_player, StatBlock.from_defaults({}), _enemies, _projectiles,
 		RandomNumberGenerator.new())
 	assert_true(_strike(60.0, 1).behavior.fire(WeaponSlot.new(_strike(60.0, 1)), ctx))
+	await wait_seconds(StrikeBehavior.FALL_TIME + 0.15)  # the meteor hurts when it lands
 	assert_lt(a.hp, 100.0, "the nearest enemy is struck")
 	assert_lt(b.hp, 100.0, "its neighbour too")
 	assert_eq(far.hp, 100.0, "outside the area")
@@ -478,3 +479,16 @@ func test_capped_area_hit_still_reaches_the_boss() -> void:
 		if _enemies.get_enemy(i).data == boss:
 			boss_index = i
 	assert_lt(_enemies.get_enemy(boss_index).hp, 1000.0, "the boss was hit")
+
+
+func test_nth_nearest_ranks_enemies_by_distance() -> void:
+	_enemies.spawn(_data, Vector2(300, 0))
+	_enemies.spawn(_data, Vector2(100, 0))
+	_enemies.spawn(_data, Vector2(200, 0))
+	await wait_physics_frames(2)
+	var nearest := _enemies.find_nth_nearest(Vector2.ZERO, 1000.0, 0)
+	var second := _enemies.find_nth_nearest(Vector2.ZERO, 1000.0, 1)
+	var far := _enemies.find_nth_nearest(Vector2.ZERO, 1000.0, 7)
+	assert_eq(_enemies.get_enemy(nearest).position.x, 100.0)
+	assert_eq(_enemies.get_enemy(second).position.x, 200.0)
+	assert_eq(_enemies.get_enemy(far).position.x, 300.0, "with fewer enemies, the farthest one")

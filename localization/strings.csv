@@ -1,5 +1,5 @@
 keys,en,fr
-GAME_TITLE,Survivor Game,Survivor Game
+GAME_TITLE,Rift and Run,Rift and Run
 UI_TAGLINE,Hunters against the portals,Chasseurs contre les portails
 UI_PLAY,Play,Jouer
 UI_QUIT,Quit,Quitter
@@ -44,7 +44,9 @@ UPGRADE_PIERCING,Piercing,Perforation
 UPGRADE_MAGNET,Magnet,Aimant
 UPGRADE_PRECISION,Precision,Précision
 UPGRADE_PLATING,Plating,Blindage
-WEAPON_PULSE,Arcane orb,Orbe arcanique
+WEAPON_SHADOW_BLADES,Shadow blades,Lames d'ombre
+WEAPON_SHADOW_BLADES_DESC,Spectral daggers circle you and slow what they cut.,Des dagues spectrales tournent autour de toi et ralentissent ce qu'elles tranchent.
+WEAPON_PULSE,Gravity well,Puits de gravité
 ENEMY_GRUNT,Orc,Orc
 ENEMY_RUNNER,Dungeon wolf,Loup du donjon
 CHARACTER_DRIFTER,Novice Huntress,Chasseuse novice
@@ -58,15 +60,15 @@ STAT_AREA,Area,Zone
 WSTAT_FIRE_RATE,Fire rate,Cadence
 WSTAT_BOUNCES,Bounces,Rebonds
 UPGRADE_AMPLITUDE,Amplitude,Amplitude
-WEAPON_PULSE_DESC,Fires arcane bolts at the nearest enemy.,Tire des éclats d'arcane sur l'ennemi le plus proche.
+WEAPON_PULSE_DESC,Sends a gravity sphere straight at the thickest bunch, dragging enemies along: a well opens where it stops.,Envoie une sphère de gravité droit sur le groupe le plus dense en attirant les ennemis : un puits s'ouvre où elle s'arrête.
 WEAPON_KATANA,Flame sword,Épée flamboyante
 WEAPON_KATANA_DESC,Wide flaming slash that sets enemies on fire.,Large coup d'épée qui enflamme les ennemis.
 WEAPON_LASER_PISTOL,Crystal wand,Baguette de cristal
 WEAPON_LASER_PISTOL_DESC,Instant crystal beam that pierces everything. Can electrocute.,Rayon de cristal instantané qui transperce tout. Peut électrocuter.
 WEAPON_SHURIKEN,Shuriken,Shuriken
-WEAPON_SHURIKEN_DESC,Spinning star that bounces from enemy to enemy.,Étoile tournoyante qui ricoche d'ennemi en ennemi.
+WEAPON_SHURIKEN_DESC,Spinning star that flies out, pierces, then comes back to you.,Étoile tournoyante qui part, transperce puis revient vers toi.
 WEAPON_SMG,Repeating crossbow,Arbalète à répétition
-WEAPON_SMG_DESC,Very fast but inaccurate bolts.,Carreaux très rapides mais imprécis.
+WEAPON_SMG_DESC,Very fast bolts: the longer it fires, the faster it gets.,Carreaux très rapides : plus il tire longtemps, plus il s'emballe.
 WEAPON_BAZOOKA,Bomb flask,Fiole explosive
 WEAPON_BAZOOKA_DESC,Slow flask that explodes and slows enemies.,Fiole lente qui explose et ralentit les ennemis.
 WEAPON_HEAVY_AXE,War axe,Hache de guerre
@@ -74,11 +76,11 @@ WEAPON_HEAVY_AXE_DESC,Slow but huge sweeping blow that knocks enemies back.,Coup
 WEAPON_SPEAR,Spear,Lance
 WEAPON_SPEAR_DESC,Fast long-reach thrust in a narrow line.,Estoc rapide et long sur une ligne étroite.
 WEAPON_FIRE_STAFF,Fire staff,Bâton de feu
-WEAPON_FIRE_STAFF_DESC,Slow fireballs that often set enemies on fire.,Boules de feu lentes qui enflamment souvent les ennemis.
+WEAPON_FIRE_STAFF_DESC,Slow fireballs that burst wide and often set enemies on fire.,Boules de feu lentes qui éclatent en grand et enflamment souvent.
 WEAPON_LONGBOW,Longbow,Arc long
-WEAPON_LONGBOW_DESC,Very long range arrows that pierce two enemies.,Flèches de très longue portée qui transpercent deux ennemis.
+WEAPON_LONGBOW_DESC,Very long range arrows that hit harder the farther they fly.,Flèches de très longue portée, plus fortes à grande distance.
 WEAPON_FROST_SCEPTER,Frost scepter,Sceptre de givre
-WEAPON_FROST_SCEPTER_DESC,Icy beam that pierces everything and slows enemies.,Rayon glacé qui transperce tout et ralentit les ennemis.
+WEAPON_FROST_SCEPTER_DESC,Cone of frost that slows everything it catches.,Cône de givre qui ralentit tout ce qu'il touche.
 ENEMY_SHOOTER,Goblin shaman,Chaman gobelin
 ENEMY_TANK,Stone golem,Golem de pierre
 ENEMY_SHOGUN,Demon Knight,Chevalier démon
@@ -354,19 +356,19 @@ WEAPON_SCYTHE_DESC,Slow reaping sweep almost all around you.,Fauchage lent presq
 WEAPON_RAPIER,Rapier,Rapière
 WEAPON_RAPIER_DESC,"Very fast narrow thrust, deadly critical hits.","Estoc étroit très rapide, critiques redoutables."
 WEAPON_VENOM_FANGS,Venom fangs,Crocs du venin
-WEAPON_VENOM_FANGS_DESC,Twin daggers: very fast short slashes with frequent critical hits.,Dagues jumelles : coups courts très rapides aux critiques fréquents.
+WEAPON_VENOM_FANGS_DESC,Twin daggers: very fast slashes whose poison stacks with every hit.,Dagues jumelles : coups très rapides dont le poison se cumule à chaque touche.
 WEAPON_WARHAMMER,War hammer,Marteau de guerre
 WEAPON_WARHAMMER_DESC,Very slow crushing blow that sends enemies flying.,Coup écrasant très lent qui projette les ennemis.
 WEAPON_RUNIC_BLADE,Runic blade,Lame runique
 WEAPON_RUNIC_BLADE_DESC,Rune-carved sword whose slashes can electrocute.,Épée gravée de runes dont les coups peuvent électrocuter.
 WEAPON_HEAVY_CROSSBOW,Heavy crossbow,Arbalète lourde
-WEAPON_HEAVY_CROSSBOW_DESC,"Slow, heavy bolt that pierces three enemies.",Gros carreau lent qui transperce trois ennemis.
+WEAPON_HEAVY_CROSSBOW_DESC,"Heavy bolt that pierces three enemies, slows them and sticks in the ground, slowing what is near.",Gros carreau qui transperce trois ennemis, les ralentit et se plante dans le sol en ralentissant les alentours.
 WEAPON_SLING,Sling,Fronde
-WEAPON_SLING_DESC,"Cheap, quick stones that push enemies back.",Pierres rapides et bon marché qui repoussent les ennemis.
+WEAPON_SLING_DESC,"Cheap, quick stones that push enemies back and bounce off the walls.",Pierres rapides qui repoussent les ennemis et ricochent sur les murs.
 WEAPON_JAVELINS,Javelins,Javelots
-WEAPON_JAVELINS_DESC,Two heavy javelins that pierce an enemy.,Deux javelots lourds qui transpercent un ennemi.
+WEAPON_JAVELINS_DESC,A short-range fan of three javelins that pierce.,Un éventail de trois javelots à courte portée qui transpercent.
 WEAPON_ALCHEMY_CANNON,Alchemical cannon,Canon alchimique
-WEAPON_ALCHEMY_CANNON_DESC,Long-range cannonball that explodes on impact.,Boulet de longue portée qui explose à l'impact.
+WEAPON_ALCHEMY_CANNON_DESC,Long-range cannonball: small blasts on up to 3 enemies it passes through, a big one at the end.,Boulet de longue portée : petites explosions sur 3 ennemis traversés, grosse à la fin.
 WEAPON_LIGHTNING_STAFF,Lightning staff,Bâton de foudre
 WEAPON_LIGHTNING_STAFF_DESC,Bolts that jump between enemies and can electrocute.,Éclairs qui sautent d'ennemi en ennemi et peuvent électrocuter.
 WEAPON_METEOR_GRIMOIRE,Meteor grimoire,Grimoire des météores
@@ -374,15 +376,15 @@ WEAPON_METEOR_GRIMOIRE_DESC,Meteors fall on enemies around you and can set them 
 WEAPON_BOMB,Bomb,Bombe
 WEAPON_BOMB_DESC,Slow bomb with a huge explosion.,Bombe lente à très grosse explosion.
 WEAPON_FIRE_FLASK,Fire flask,Fiole de feu
-WEAPON_FIRE_FLASK_DESC,Small explosion that sets enemies on fire.,Petite explosion qui enflamme les ennemis.
+WEAPON_FIRE_FLASK_DESC,Small explosion that leaves burning ground.,Petite explosion qui laisse un sol en flammes.
 WEAPON_FROST_FLASK,Frost flask,Fiole de givre
-WEAPON_FROST_FLASK_DESC,Icy explosion that slows enemies.,Explosion glacée qui ralentit les ennemis.
+WEAPON_FROST_FLASK_DESC,Icy explosion that leaves a patch of frost slowing enemies.,Explosion glacée qui laisse une zone de givre ralentissant les ennemis.
 WEAPON_FRAG_GRENADE,Frag grenades,Grenades à fragments
 WEAPON_FRAG_GRENADE_DESC,"Three grenades thrown in a fan, small explosions.","Trois grenades lancées en éventail, petites explosions."
 UI_WEAPON_PREVIEW_TITLE,"Weapons, ornate style (preview, not in game yet) · small frame = current icon","Armes, style orné (aperçu, pas encore en jeu) · petit cadre = icône actuelle"
 UI_WEAPON_PREVIEW_REAL,"Real in-game size: new art · current icons · some item icons","Taille réelle en jeu : nouvelles armes · icônes actuelles · quelques objets"
 WEAPON_CELESTIAL_BOW,Celestial bow,Arc céleste
-WEAPON_CELESTIAL_BOW_DESC,"Two homing starlight arrows that pierce two enemies.","Deux flèches d'étoile à tête chercheuse qui transpercent deux ennemis."
+WEAPON_CELESTIAL_BOW_DESC,"Two homing starlight arrows that explode on impact (the Area stat widens the blast). The end-game bow.","Deux flèches d'étoile à tête chercheuse qui explosent à l'impact (la Zone agrandit l'explosion). L'arc de fin de jeu."
 ITEM_COPPER_CHARM,Copper charm,Amulette de cuivre
 ITEM_TRACKER_BOOTS,Tracker boots,Bottes de traqueur
 ITEM_GUARDIAN_GAUNTLETS,Guardian gauntlets,Gantelets du gardien

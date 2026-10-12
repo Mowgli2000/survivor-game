@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="WeaponData" format=3]
 
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="1_weapon"]
+[ext_resource type="Resource" path="res://data/vfx/axe_slam.tres" id="vfx_slash"]
 [ext_resource type="Script" path="res://src/weapons/behaviors/melee_arc_behavior.gd" id="2_behavior"]
 [ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
 [ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/heavy_axe.ogg" id="9_sound"]
@@ -39,6 +40,9 @@ knockback = 420.0
 projectile_count = 1
 area = 170.0
 arc_degrees = 200.0
+slash_sheet = ExtResource("vfx_slash")
+swing_fx = 4
+hit_time = 0.2
 slash_style = 3
 fire_sound = ExtResource("9_sound")
 fire_volume_db = 0.0

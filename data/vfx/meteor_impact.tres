@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EffectSheet" format=3]
+
+[ext_resource type="Script" path="res://src/vfx/effect_sheet.gd" id="1_sheet"]
+[ext_resource type="Texture2D" path="res://assets/vfx/meteor_impact.png" id="2_tex"]
+
+[resource]
+script = ExtResource("1_sheet")
+texture = ExtResource("2_tex")
+columns = 8
+rows = 3
+frames = 24
+duration = 0.5
+scale = 2.4
+forward = 0.0
+reach = 0.95
+squash = 1.35

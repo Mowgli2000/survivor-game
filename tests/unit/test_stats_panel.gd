@@ -14,7 +14,7 @@ func test_multiplier_stats_show_the_bonus_percent() -> void:
 
 func test_other_stats_show_their_value() -> void:
 	assert_eq(StatsPanel.format_value(StatIds.CRIT_CHANCE, 0.12), "12%")
-	assert_eq(StatsPanel.format_value(StatIds.CRIT_DAMAGE, 1.5), "x1.5")
+	assert_eq(StatsPanel.format_value(StatIds.CRIT_DAMAGE, 1.5), "+50%")
 	assert_eq(StatsPanel.format_value(StatIds.PROJECTILE_COUNT, 2.0), "+2")
 	assert_eq(StatsPanel.format_value(StatIds.MAX_HP, 115.0), "115")
 	assert_eq(StatsPanel.format_value(StatIds.HP_REGEN, 1.5), "1.5")

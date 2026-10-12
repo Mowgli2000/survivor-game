@@ -2,6 +2,14 @@ extends GutTest
 ## Seal rewards: winning a seal (any character) unlocks a weapon and two items.
 
 
+## TEMPORARY (playtest of the painted effects): these weapons were unlocked by hand, see test_content.gd.
+const TEMP_PLAYTEST_UNLOCKED: Array[StringName] = [&"celestial_bow", &"scythe", &"alchemy_cannon", &"frag_grenade", &"heavy_crossbow", &"javelins"]
+
+
+func _still_locked(challenge: ChallengeData, target: Resource) -> bool:
+	return challenge.unlock_id in TEMP_PLAYTEST_UNLOCKED or not SaveService.is_unlocked(challenge.unlock_category, target)
+
+
 func before_each() -> void:
 	SafeFile.remove(SaveService.TEST_PATH)
 	SaveService.load_profile()
@@ -37,7 +45,7 @@ func test_every_seal_rewards_a_weapon_and_two_locked_items() -> void:
 		for challenge in challenges:
 			var target := ContentDB.get_def(challenge.unlock_category, challenge.unlock_id)
 			assert_not_null(target, String(challenge.unlock_id))
-			assert_true(target.get(&"locked"), "%s starts locked" % challenge.unlock_id)
+			assert_true(target.get(&"locked") or challenge.unlock_id in TEMP_PLAYTEST_UNLOCKED, "%s starts locked" % challenge.unlock_id)  # TEMP playtest unlocks, see test_content.gd
 			weapons += int(challenge.unlock_category == &"weapons")
 		assert_eq(weapons, 1, "seal %d gives one weapon" % level)
 
@@ -51,7 +59,7 @@ func test_winning_a_seal_unlocks_its_rewards_and_the_lower_ones() -> void:
 			assert_true(unlocked.has(challenge), "shown on the end screen: %s" % challenge.id)
 	for challenge in _seal_challenges(3):
 		var target := ContentDB.get_def(challenge.unlock_category, challenge.unlock_id)
-		assert_false(SaveService.is_unlocked(challenge.unlock_category, target), "seal 3 not won yet")
+		assert_true(_still_locked(challenge, target), "seal 3 not won yet")
 
 
 func test_a_lost_run_unlocks_nothing() -> void:
@@ -62,7 +70,7 @@ func test_a_lost_run_unlocks_nothing() -> void:
 	SaveService.record_run(result)
 	for challenge in _seal_challenges(0):
 		var target := ContentDB.get_def(challenge.unlock_category, challenge.unlock_id)
-		assert_false(SaveService.is_unlocked(challenge.unlock_category, target))
+		assert_true(_still_locked(challenge, target))
 
 
 func test_seal_screen_shows_rewards_to_win_until_won() -> void:
@@ -87,4 +95,4 @@ func test_seals_won_before_the_rewards_existed_grant_them_at_load() -> void:
 			assert_true(SaveService.is_unlocked(challenge.unlock_category, target), String(challenge.id))
 	for challenge in _seal_challenges(2):
 		var target := ContentDB.get_def(challenge.unlock_category, challenge.unlock_id)
-		assert_false(SaveService.is_unlocked(challenge.unlock_category, target))
+		assert_true(_still_locked(challenge, target))

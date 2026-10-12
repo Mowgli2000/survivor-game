@@ -45,11 +45,11 @@ const PORTAL_RECT := Rect2(0.22, 0.08, 0.56, 0.66)
 const PORTAL_COLORS: Array[Color] = [Color("5fd8c0"), Color("22d6e6"), Color("eef6ff"),
 		Color("ff7a1a"), Color("5cff2e"), Color("ff2a3a")]
 const RUMBLE_LOOP := &"seal_portal_rumble"
-const RUMBLE_DB := -6.0
+const RUMBLE_DB := 0.0
 const PANEL_WIDTH := 460.0
 const ENTER_SECONDS := 1.4
 const ENTER_ZOOM := 9.0
-const REWARD_BOX := 70.0
+const REWARD_BOX := 104.0
 
 ## Debug (capture tool): every seal counts as open.
 static var debug_all_open: bool = false

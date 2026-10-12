@@ -15,17 +15,22 @@ const COMPACT_CARD_SIZE := Vector2(214, 372)
 const COMPACT_ITEMS_WIDTH := 800.0
 ## Height kept free at the bottom for the pinned "Next wave" button (solo / coop).
 const NEXT_AREA := 140.0
+## Height kept for the sell / merge buttons under the weapons, shown or not.
+const WEAPON_ACTIONS_HEIGHT := 54.0
 const COMPACT_NEXT_AREA := 110.0
 const SCROLL_SPEED := 700.0
+## The shop shrinks to at most this share of its size to fit a short window.
+const MIN_FIT := 0.6
+const FIT_MARGIN := 24.0
 ## Width of the gold ring around two weapons that can be merged.
 const SCROLL_DEADZONE := 0.25
 const CARD_ICON := 96.0
 ## Coop: smaller icon, room for the card's text.
 const COMPACT_CARD_ICON := 64.0
-const ITEM_ICON := 60.0
+const ITEM_ICON := 76.0
 ## With many different items, the tiles shrink so the list stays on 3 rows.
-const ITEM_ICON_SMALL := 46.0
-const ITEMS_BEFORE_SMALL := 32
+const ITEM_ICON_SMALL := 60.0
+const ITEMS_BEFORE_SMALL := 26
 const ITEMS_WIDTH := 1100.0
 const ITEM_GAP := 8
 ## Rows of item icons shown before the list scrolls.
@@ -52,10 +57,15 @@ var _compact: bool = false
 var _card_size := CARD_SIZE
 var _items_width := ITEMS_WIDTH
 var _weapon_actions: HBoxContainer
+var _weapons_title: Label
 var _items_label: Label
 var _items_row: HFlowContainer
 var _items_scroll: ScrollContainer
 var _next: Button
+## The block above the "Next wave" button (shop and stats side by side) and the box that centers it: the block
+## shrinks to fit when the window is short (it used to run off the screen, items cut off, stats under the button).
+var _content: Control
+var _center: Control
 var _selected_weapon: int = -1
 ## Identifies the focused control across rebuilds ("buy:2", "weapon:1", "next"...).
 var _focus_key: String = ""
@@ -111,18 +121,21 @@ func _init(p_compact: bool = false) -> void:
 	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(dim)
 
-	var center := CenterContainer.new()
+	var center := Control.new()  # a plain Control: it keeps the size of the window (a container grows with its content)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	# "Next wave" is pinned at the bottom (below): the rest is centered above it.
 	center.offset_bottom = -(COMPACT_NEXT_AREA if _compact else NEXT_AREA)
 	root.add_child(center)
+	_center = center
 
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 14)
+	box.add_theme_constant_override("separation", 10)
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 40)
 	center.add_child(row)
 	row.add_child(box)
+	_content = row
 	stats_panel = StatsPanel.new()
 	stats_panel.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	stats_panel.set_dense()
@@ -137,7 +150,7 @@ func _init(p_compact: bool = false) -> void:
 	_player_tag = _label(32 if _compact else 40, UiTheme.ACCENT, &"SubtitleLabel")
 	_player_tag.visible = false
 	header.add_child(_player_tag)
-	_title = _label(46 if _compact else 64, UiTheme.ACCENT, &"TitleLabel")
+	_title = _label(46 if _compact else 54, UiTheme.ACCENT, &"TitleLabel")
 	header.add_child(_title)
 	_materials = _label(30 if _compact else 40, UiTheme.GOLD, &"ValueLabel")
 	header.add_child(_materials)
@@ -155,9 +168,9 @@ func _init(p_compact: bool = false) -> void:
 	_reroll.pressed.connect(_on_reroll)
 	box.add_child(_reroll)
 
-	var weapons_title := _label(28, TEXT_COLOR, &"SubtitleLabel")
-	weapons_title.text = "UI_SHOP_WEAPONS"
-	box.add_child(weapons_title)
+	_weapons_title = _label(28, TEXT_COLOR, &"SubtitleLabel")
+	_weapons_title.text = "UI_SHOP_WEAPONS"
+	box.add_child(_weapons_title)
 	# A grid (3 per row): a flow container reported its unwrapped width and
 	# pushed the whole screen past the edge with six long weapon names.
 	_weapon_row = GridContainer.new()
@@ -170,6 +183,8 @@ func _init(p_compact: bool = false) -> void:
 	_weapon_actions = HBoxContainer.new()
 	_weapon_actions.add_theme_constant_override("separation", 12)
 	_weapon_actions.alignment = BoxContainer.ALIGNMENT_CENTER
+	# Always as tall as its buttons: picking a weapon used to push the items down (playtest).
+	_weapon_actions.custom_minimum_size.y = WEAPON_ACTIONS_HEIGHT
 	box.add_child(_weapon_actions)
 
 	var items_box := HBoxContainer.new()
@@ -219,7 +234,7 @@ func _init(p_compact: bool = false) -> void:
 	_item_popup.add_child(_item_popup_label)
 	root.add_child(_item_popup)
 	if not _compact:
-		root.add_child(ButtonHints.create([[&"A", "UI_HINT_BUY"], [&"X", "UI_SHOP_MERGE"], [&"Y", "UI_HINT_REROLL"]]))
+		root.add_child(ButtonHints.create([[&"A", "UI_HINT_BUY"], [&"X", "UI_SHOP_MERGE"], [&"Y", "UI_HINT_REROLL"]], true))
 
 
 ## merge_weapon (gamepad Square / X, key F) on an owned weapon merges it at once;
@@ -570,9 +585,8 @@ func _rebuild_weapons() -> void:
 		_popup_on_hover(button, button, details)
 		_weapon_row.add_child(button)
 		_controls["weapon:%d" % i] = button
-	var free := _label(22, UiTheme.MUTED, &"ValueLabel")
-	free.text = "%d / %d" % [slots.size(), _weapons.max_slots]
-	_weapon_row.add_child(free)
+	# The slot count sits in the title (a lone cell in the grid cost a whole row).
+	_weapons_title.text = "%s   %d / %d" % [tr("UI_SHOP_WEAPONS"), slots.size(), _weapons.max_slots]
 	if _selected_weapon < 0:
 		return
 	var sell := _button(tr("UI_SHOP_SELL") % _shop.sell_price(_selected_weapon), 22)
@@ -689,9 +703,26 @@ func _show_item_popup(tile: Control, details: String) -> void:
 func _process(delta: float) -> void:
 	if not visible or _items_scroll == null:
 		return
+	_fit_content()
 	var axis := right_stick_y(scroll_device)
 	if absf(axis) > SCROLL_DEADZONE:
 		_items_scroll.scroll_vertical += roundi(axis * SCROLL_SPEED * delta)
+
+
+## Scales the content down (never up, never below MIN_FIT) so that it fits above the "Next wave" button and inside the
+## window's width, and centers it (top-aligned when even the smallest size is too tall: the title stays visible).
+func _fit_content() -> void:
+	if _content == null or _center == null:
+		return
+	var needed := _content.get_combined_minimum_size()
+	var room := _center.size
+	if needed.x <= 1.0 or needed.y <= 1.0 or room.x <= 1.0 or room.y <= 1.0:
+		return
+	var fit := clampf(minf((room.x - FIT_MARGIN) / needed.x, room.y / needed.y), MIN_FIT, 1.0)
+	_content.size = needed
+	_content.scale = Vector2(fit, fit)
+	_content.pivot_offset = Vector2.ZERO
+	_content.position = Vector2((room.x - needed.x * fit) * 0.5, maxf((room.y - needed.y * fit) * 0.5, 0.0))
 
 
 static func right_stick_y(device: int) -> float:
