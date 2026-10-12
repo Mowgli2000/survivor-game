@@ -212,6 +212,7 @@ SET_MUSIC_VOLUME,Music,Musique
 SET_SFX_VOLUME,Sound effects,Effets sonores
 SET_FULLSCREEN,Fullscreen,Plein écran
 SET_VSYNC,VSync,Synchronisation verticale
+SET_CAMERA_ZOOM,Camera zoom,Zoom de la caméra
 SET_SCREEN_SHAKE,Screen shake,Tremblement de l'écran
 SET_DAMAGE_NUMBERS,Damage numbers,Chiffres de dégâts
 SET_REDUCE_MOTION,Reduce menu animations,Réduire les animations des menus

@@ -26,6 +26,7 @@ LOOPS = {
     "a12_bomb": (2, 24, "bomb", 12), "a12_fireball": (2, 36, "fireball", 12), "a12_lightning": (2, 48, "lightning", 12),
     "a12_gravity_sphere": (1, 60, "gravity", 12), "a_grenade": (2, 72, "grenade", 6),
     "a12_shadowblade": (1, 78, "shadowblade", 12),
+    "a12_sling": (2, 90, "sling", 12),
 }
 
 
@@ -123,7 +124,7 @@ def main() -> None:
             save(fade_edges(key(cell)), file_name)
     for out in OUTS:  # the loops are renumbered: drop every old loop cell first
         for old in out.glob("*.png"):
-            if re.match(r"^\d\d_(bomb|fireball|ice|lightning|orb|gravity|grenade|shadowblade)_\d+$", old.stem):
+            if re.match(r"^\d{2,3}_(bomb|fireball|ice|lightning|orb|gravity|grenade|shadowblade|sling)_\d+$", old.stem):
                 old.unlink()
     for name, (pick, first, prefix, frames) in LOOPS.items():
         sheet = Image.open(SRC / ("%s_%d.png" % (name, pick))).convert("RGB")
@@ -133,7 +134,7 @@ def main() -> None:
         for k in range(frames):
             frame = sheet.crop(((k % columns) * cell, (k // columns) * cell, (k % columns + 1) * cell, (k // columns + 1) * cell))
             keyed.append(key_solid(frame) if prefix in ("bomb", "grenade", "gravity") else key(frame))
-        if prefix in ("shadowblade", "gravity"):
+        if prefix in ("shadowblade", "gravity", "sling"):
             keyed = stabilize(keyed)
         for k, image in enumerate(keyed):
             save(image, "%02d_%s_%d" % (first + k, prefix, k + 1))

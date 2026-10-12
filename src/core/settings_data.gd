@@ -8,6 +8,9 @@ const VERSION := 1
 ## "" = system language.
 const LOCALES: Array[String] = ["", "en", "fr"]
 const VOLUME_KEYS: Array[StringName] = [&"master_volume", &"music_volume", &"sfx_volume"]
+## Camera zoom range (player option): below 1 shows more of the arena, above 1 less.
+const ZOOM_MIN := 0.75
+const ZOOM_MAX := 1.15
 const BOOL_KEYS: Array[StringName] = [&"fullscreen", &"vsync", &"screen_shake",
 	&"damage_numbers", &"reduce_motion", &"show_hints", &"player_hp_bar"]
 
@@ -19,6 +22,8 @@ var vsync: bool = true
 var screen_shake: bool = true
 var damage_numbers: bool = true
 var reduce_motion: bool = false
+## Multiplies the run camera zoom (RunConfig.camera_zoom).
+var camera_zoom: float = 1.0
 ## First-time tips (HintBanner).
 var show_hints: bool = true
 ## Small HP bar above each player (PlayerHealthBar).
@@ -44,6 +49,11 @@ func set_value(key: StringName, value: Variant) -> bool:
 			return false
 		set(key, clampf(float(value), 0.0, 1.0))
 		return true
+	if key == &"camera_zoom":
+		if typeof(value) != TYPE_FLOAT and typeof(value) != TYPE_INT:
+			return false
+		camera_zoom = clampf(float(value), ZOOM_MIN, ZOOM_MAX)
+		return true
 	if key in BOOL_KEYS:
 		if typeof(value) != TYPE_BOOL:
 			return false
@@ -63,7 +73,8 @@ func set_value(key: StringName, value: Variant) -> bool:
 
 
 func to_dict() -> Dictionary:
-	var result := {"version": VERSION, "locale": locale, "select_background": select_background}
+	var result := {"version": VERSION, "locale": locale, "select_background": select_background,
+		"camera_zoom": camera_zoom}
 	for key in VOLUME_KEYS + BOOL_KEYS:
 		result[String(key)] = get(key)
 	return result

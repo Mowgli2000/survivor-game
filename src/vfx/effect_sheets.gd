@@ -6,6 +6,7 @@ extends RefCounted
 const STAR_IMPACT := preload("res://data/vfx/star_impact.tres")
 const IMPACT_GENERIC := preload("res://data/vfx/impact_generic.tres")
 const IMPACT_FROST := preload("res://data/vfx/impact_frost.tres")
+const IMPACT_SLING := preload("res://data/vfx/impact_sling.tres")
 const IMPACT_LIGHTNING := preload("res://data/vfx/impact_lightning.tres")
 const EXPLOSION_FIRE := preload("res://data/vfx/explosion_fire.tres")
 const EXPLOSION_FROST := preload("res://data/vfx/explosion_frost.tres")
@@ -34,9 +35,10 @@ static func impact_for(style: int) -> EffectSheet:
 			return IMPACT_FROST
 		WeaponData.ProjectileStyle.LIGHTNING:
 			return IMPACT_LIGHTNING
+		WeaponData.ProjectileStyle.STONE:
+			return IMPACT_SLING
 		WeaponData.ProjectileStyle.ORB, WeaponData.ProjectileStyle.BOLT, WeaponData.ProjectileStyle.BULLET, WeaponData.ProjectileStyle.MISSILE, \
-		WeaponData.ProjectileStyle.SHURIKEN, WeaponData.ProjectileStyle.ARROW, WeaponData.ProjectileStyle.STONE, \
-		WeaponData.ProjectileStyle.JAVELIN:
+		WeaponData.ProjectileStyle.SHURIKEN, WeaponData.ProjectileStyle.ARROW, WeaponData.ProjectileStyle.JAVELIN:
 			return IMPACT_GENERIC
 	return null
 

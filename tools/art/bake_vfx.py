@@ -43,6 +43,7 @@ SHEETS_HD = {
     "fang_slash": (1, 1.8, 2.2, 0.0, 0.3),
     "hammer_smash": (1, 1.6, 2.2, 0.0, 0.45),
     "impact_generic": (1, 1.5, 2.2, 0.0, 0.3),
+    "impact_sling": (1, 1.5, 2.2, 0.0, 0.34),
     "impact_fire": (1, 1.5, 2.2, 0.0, 0.34),
     "impact_frost": (1, 1.5, 2.2, 0.0, 0.34),
     "impact_lightning": (2, 1.5, 2.2, 0.0, 0.34),

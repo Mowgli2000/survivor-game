@@ -7,7 +7,7 @@ extends MultiMeshInstance2D
 
 const BODY_TEXTURE := preload("res://assets/sprites/projectiles.png")
 const BODY_SHADER := preload("res://src/weapons/projectiles/projectile_body.gdshader")
-const BODY_CELLS := 89
+const BODY_CELLS := 101
 ## Columns of the grid atlas (tools/art/bake_map.gd PROJECTILE_COLUMNS); rows follow from the texture height (ADR 0028).
 const BODY_COLUMNS := 16
 ## Styles drawn as a looping animation: Vector2i(strip cell of the first frame (0-based), number of frames).
@@ -17,6 +17,7 @@ const ANIM := {
 	WeaponData.ProjectileStyle.BOMB: Vector2i(23, 12), WeaponData.ProjectileStyle.FIREBALL: Vector2i(35, 12),
 	WeaponData.ProjectileStyle.LIGHTNING: Vector2i(47, 12), WeaponData.ProjectileStyle.ORB: Vector2i(59, 12),
 	WeaponData.ProjectileStyle.GRENADE: Vector2i(71, 6), WeaponData.ProjectileStyle.SHADOW_BLADE: Vector2i(77, 12),
+	WeaponData.ProjectileStyle.STONE: Vector2i(89, 12),
 }
 ## Seconds one pass of a loop lasts, whatever its number of frames (so 12 frames play at 26 fps, 6 at 13 fps).
 const ANIM_CYCLE := 0.46

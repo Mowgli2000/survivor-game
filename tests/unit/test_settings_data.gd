@@ -29,3 +29,16 @@ func test_empty_dict_gives_defaults() -> void:
 	assert_almost_eq(s.master_volume, 0.8, 0.0001)
 	assert_true(s.screen_shake)
 	assert_false(s.reduce_motion)
+
+
+func test_camera_zoom_defaults_to_one_is_clamped_and_round_trips() -> void:
+	var s := SettingsData.new()
+	assert_eq(s.camera_zoom, 1.0, "default zoom unchanged")
+	s.set_value(&"camera_zoom", 0.9)
+	assert_almost_eq(SettingsData.from_dict(s.to_dict()).camera_zoom, 0.9, 0.0001)
+	s.set_value(&"camera_zoom", 5.0)
+	assert_eq(s.camera_zoom, SettingsData.ZOOM_MAX)
+	s.set_value(&"camera_zoom", 0.1)
+	assert_eq(s.camera_zoom, SettingsData.ZOOM_MIN)
+	assert_false(s.set_value(&"camera_zoom", "far"), "wrong type rejected")
+

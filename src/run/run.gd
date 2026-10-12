@@ -153,7 +153,7 @@ func _ready() -> void:
 	camera = GameCamera.new()
 	camera.name = "Camera"
 	add_child(camera)
-	camera.follow(party, config.camera_zoom)
+	camera.follow(party, config.camera_zoom * Settings.data.camera_zoom)
 	add_child(enemy_projectiles)
 	add_child(vfx)
 	add_child(damage_numbers)
@@ -440,6 +440,7 @@ func _resume_from_pause() -> void:
 func _apply_settings() -> void:
 	damage_numbers.enabled = Settings.data.damage_numbers
 	camera.shake_enabled = Settings.data.screen_shake
+	camera.base_zoom = config.camera_zoom * Settings.data.camera_zoom  # eased in by GameCamera
 	for rp in players:
 		if rp.player.health_bar != null:
 			rp.player.health_bar.visible = Settings.data.player_hp_bar

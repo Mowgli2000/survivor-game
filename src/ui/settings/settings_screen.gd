@@ -59,6 +59,7 @@ func _init() -> void:
 	for key in DISPLAY:
 		_add_check(key)
 	_section("SET_SECTION_GAME")
+	_add_slider(&"camera_zoom", SettingsData.ZOOM_MIN, SettingsData.ZOOM_MAX)
 	for key in GAME:
 		_add_check(key)
 	_row_label("SET_LANGUAGE")
@@ -119,13 +120,13 @@ func _row_label(key: String) -> void:
 	_grid.add_child(label)
 
 
-func _add_slider(key: StringName) -> void:
+func _add_slider(key: StringName, min_value: float = 0.0, max_value: float = 1.0) -> void:
 	_row_label("SET_" + String(key).to_upper())
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 12)
 	var slider := HSlider.new()
-	slider.min_value = 0.0
-	slider.max_value = 1.0
+	slider.min_value = min_value
+	slider.max_value = max_value
 	slider.step = 0.05
 	slider.custom_minimum_size = Vector2(320, 32)
 	slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER

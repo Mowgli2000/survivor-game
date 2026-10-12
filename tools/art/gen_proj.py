@@ -121,6 +121,16 @@ JOBS["p_ranged"] = ("sheet", FIRE_REFS[:2], "A sprite sheet in a grid of 3 colum
     "cell 6: leave this cell completely black and empty. ")
 
 
+# Tenth pass (dev, 2026-10-12): the Sling stone gets its own looping body (12 frames), copied from the current stone cell.
+JOBS["a12_sling"] = ("sheet12", ["art_source/ai/projectiles/11_stone.png", "art_source/ai/weapons/sling.png"] + FIRE_REFS[:1],
+    "A sprite sheet of ONE looping animation in a grid of 4 columns by 3 rows, 12 equal square cells read left to right then top to "
+    "bottom, nothing crossing the cell borders, no grid lines, pure black background (#000000). In every cell the SAME round grey sling stone "
+    "copied from the FIRST reference image, flying to the RIGHT, centered, identical size and place, with a short painted dust-and-speed trail "
+    "streaming to the LEFT. The stone spins on itself: from cell to cell its cracks, chips and highlight rotate a twelfth of a turn so that "
+    "after cell 12 it flows smoothly into cell 1; the trail of brown dust, small grey chips and thin speed streaks shifts and flickers "
+    "each cell. Keep everything well inside its cell with a black margin. ")
+
+
 def main() -> None:
     OUT.mkdir(exist_ok=True)
     names = sys.argv[1:] or list(JOBS)

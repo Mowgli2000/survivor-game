@@ -123,7 +123,8 @@ func _bake_projectiles() -> bool:
 				names.append(f)
 		if not names.is_empty():
 			break
-	names.sort()
+	# Numeric order of the file number prefix ("100_x" comes after "99_x").
+	names.sort_custom(func(a: String, b: String) -> bool: return int(a.get_slice("_", 0)) < int(b.get_slice("_", 0)))
 	if names.is_empty():
 		return _fail("missing %s (run python tools/art/make_map.py)" % dir)
 	# A grid, not a strip: a strip hit the 8192 px texture limit at 89 cells (ADR 0028).
