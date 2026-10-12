@@ -194,7 +194,7 @@ static func describe_weapon_level(bonus: WeaponLevel) -> String:
 	if bonus.fire_rate_percent != 0.0:
 		lines.append(_percent_line(bonus.fire_rate_percent, "WSTAT_FIRE_RATE"))
 	if bonus.area_percent != 0.0:
-		lines.append(_percent_line(bonus.area_percent, "STAT_AREA"))
+		lines.append(_percent_line(bonus.area_percent, "STAT_WEAPON_SIZE"))
 	if bonus.projectile_count != 0:
 		lines.append("%+d %s" % [bonus.projectile_count, TranslationServer.translate("STAT_PROJECTILE_COUNT")])
 	if bonus.pierce != 0:

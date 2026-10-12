@@ -4,8 +4,8 @@ extends WeaponBehavior
 ## has a painted swing (WeaponData.swing_fx) whose damage shape is the same shape:
 ## ARC (no painted sheet) a sector around the wielder, TRAVEL a wave flying forward, LINE a thin
 ## segment, FLURRY three fanned stabs, TARGET a circle on the enemy, RING a shockwave growing from
-## it, ORBIT a blade circling the wielder. Radius = weapon area; the Range stat lengthens the reach at
-## half effect, like Brotato's melee weapons.
+## it, ORBIT a blade circling the wielder. Radius = weapon area (grows with the weapon's rank); the Range stat
+## lengthens the reach at 3/4 effect up to x1.6 (ADR 0029); the explosion size stat does not apply to swings.
 ## Rules from the playtests:
 ## - nothing starts inside the ring of floating weapons (RING_GAP): the hunter and his weapons stay visible;
 ## - the size of a circle or wave follows the weapon's cooldown (fast weapon = small discreet effect);
@@ -14,7 +14,9 @@ extends WeaponBehavior
 ##   go to different enemies too; a blade circles at an even spacing.
 
 ## Share of the Range stat bonus a melee weapon gets.
-const RANGE_SHARE := 0.5
+const RANGE_SHARE := 0.75
+## Largest reach multiplier a melee weapon (or beam) gets from the Range stat.
+const REACH_CAP := 1.6
 ## Nothing starts closer to the wielder than this: the ring of floating weapons plus their size.
 const RING_GAP := WeaponLayout.MOUNT_RADIUS + 16.0
 ## An arc this wide or wider (scythe, hammer) repeats around the wielder; a narrower one (frost cone, claws) is aimed at
@@ -55,14 +57,14 @@ class Blow extends RefCounted:
 	var log: Array = []
 
 
-## Reach multiplier of melee weapons from the Range stat (+20 % range = +10 % reach).
+## Reach multiplier of melee weapons from the Range stat (+20 % range = +15 % reach, at most x1.6).
 static func reach_multiplier(stats: StatBlock) -> float:
-	return maxf(1.0 + (stats.get_value(StatIds.RANGE) - 1.0) * RANGE_SHARE, 0.1)
+	return CombatMath.reach_scale(stats.get_value(StatIds.RANGE), RANGE_SHARE, REACH_CAP)
 
 
 ## Radius of the damage circle (or half-width of the wave) of `data`: it grows with the cooldown.
-static func hit_size(data: WeaponData, area_stat: float, reach: float) -> float:
-	return (HIT_BASE + HIT_PER_SECOND * data.cooldown) * data.hit_scale * area_stat * reach
+static func hit_size(data: WeaponData, reach: float) -> float:
+	return (HIT_BASE + HIT_PER_SECOND * data.cooldown) * data.hit_scale * reach
 
 
 func fire(slot: WeaponSlot, ctx: WeaponContext) -> bool:
@@ -76,14 +78,14 @@ func fire(slot: WeaponSlot, ctx: WeaponContext) -> bool:
 
 	var spot := ctx.enemies.get_enemy(target).position
 	var direction := (spot - origin).normalized()
-	var radius := s.area * CombatMath.area_scale(stats.get_value(StatIds.AREA)) * reach
+	var radius := s.area * reach
 	var half_angle := deg_to_rad(s.arc_degrees) * 0.5
 	var min_dot := cos(half_angle)
 	var knockback := s.knockback * stats.get_value(StatIds.KNOCKBACK)
 	var count := s.projectile_count + int(stats.get_value(StatIds.PROJECTILE_COUNT))
 	var data := slot.data
 	var windup := WeaponVisuals.strike_delay(data.slash_style)
-	var size := hit_size(data, CombatMath.area_scale(stats.get_value(StatIds.AREA)), reach)
+	var size := hit_size(data, reach)
 	var used: Array[int] = []
 
 	for i in count:

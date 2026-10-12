@@ -108,7 +108,7 @@ func _trigger() -> void:
 	var laser: WeaponData = ContentDB.get_def(&"weapons", &"laser_pistol")
 	var bazooka: WeaponData = ContentDB.get_def(&"weapons", &"bazooka")
 	MeleeArcBehavior.play_visual(_vfx, katana, null, Vector2(-600, -150), Vector2.RIGHT, katana.area, Vector2(-600, -150) + Vector2.RIGHT * katana.area * 0.7, 0.0, katana.color, deg_to_rad(katana.arc_degrees) * 0.5,
-		MeleeArcBehavior.hit_size(katana, 1.0, 1.0))
+		MeleeArcBehavior.hit_size(katana, 1.0))
 	_vfx.sheet(load("res://data/vfx/star_impact.tres"), Vector2(250, -250), 0.0, 70.0)
 	_vfx.beam(Vector2(-250, -300), Vector2(350, -300), laser.area, laser.color, null, laser.beam_sheet)
 	var frost: WeaponData = ContentDB.get_def(&"weapons", &"frost_scepter")
@@ -129,7 +129,7 @@ func _trigger_slashes() -> void:
 		var w: WeaponData = melee[i]
 		var center := Vector2(-660 + (i % 4) * 440, -220 + (i / 4) * 420)
 		MeleeArcBehavior.play_visual(_vfx, w, null, center, Vector2.RIGHT, w.area, center + Vector2.RIGHT * w.area * 0.7, 0.0, w.color, deg_to_rad(w.arc_degrees) * 0.5,
-			MeleeArcBehavior.hit_size(w, 1.0, 1.0))
+			MeleeArcBehavior.hit_size(w, 1.0))
 
 
 ## One Vfx per column, each advanced to a later moment of the same effects.

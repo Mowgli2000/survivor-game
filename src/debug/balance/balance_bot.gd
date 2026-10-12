@@ -99,7 +99,7 @@ func _engage_distance() -> float:
 	for slot in _run.player.weapons.get_slots():
 		var r := slot.stats.attack_range * stats.get_value(StatIds.RANGE)
 		if slot.data.is_melee():
-			r = minf(r, slot.stats.area * CombatMath.area_scale(stats.get_value(StatIds.AREA)))
+			r = minf(r, slot.stats.area * MeleeArcBehavior.reach_multiplier(stats))
 		reach = minf(reach, r)
 	return clampf(reach * 0.6, 70.0, 380.0) if reach < INF else 200.0
 

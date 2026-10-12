@@ -56,7 +56,8 @@ UI_NEW_WEAPON,New weapon,Nouvelle arme
 UI_STAT_UPGRADE,Upgrade,Amélioration
 UI_STAT_PREVIEW,%s: %s → %s,%s : %s → %s
 UI_SHOP_ITEM_TOTAL,Total with ×%d:,Total avec ×%d :
-STAT_AREA,Area,Zone
+STAT_AREA,Explosion size,Taille des explosions
+STAT_WEAPON_SIZE,Size,Taille
 WSTAT_FIRE_RATE,Fire rate,Cadence
 WSTAT_BOUNCES,Bounces,Rebonds
 UPGRADE_AMPLITUDE,Amplitude,Amplitude
@@ -385,7 +386,7 @@ WEAPON_FRAG_GRENADE_DESC,"Three grenades thrown in a fan, small explosions.","Tr
 UI_WEAPON_PREVIEW_TITLE,"Weapons, ornate style (preview, not in game yet) · small frame = current icon","Armes, style orné (aperçu, pas encore en jeu) · petit cadre = icône actuelle"
 UI_WEAPON_PREVIEW_REAL,"Real in-game size: new art · current icons · some item icons","Taille réelle en jeu : nouvelles armes · icônes actuelles · quelques objets"
 WEAPON_CELESTIAL_BOW,Celestial bow,Arc céleste
-WEAPON_CELESTIAL_BOW_DESC,"Two homing starlight arrows that explode on impact (the Area stat widens the blast). The end-game bow.","Deux flèches d'étoile à tête chercheuse qui explosent à l'impact (la Zone agrandit l'explosion). L'arc de fin de jeu."
+WEAPON_CELESTIAL_BOW_DESC,"Two homing starlight arrows that explode on impact (the Explosion size stat widens the blast). The end-game bow.","Deux flèches d'étoile à tête chercheuse qui explosent à l'impact (la Taille des explosions agrandit l'explosion). L'arc de fin de jeu."
 ITEM_COPPER_CHARM,Copper charm,Amulette de cuivre
 ITEM_TRACKER_BOOTS,Tracker boots,Bottes de traqueur
 ITEM_GUARDIAN_GAUNTLETS,Guardian gauntlets,Gantelets du gardien

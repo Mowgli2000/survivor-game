@@ -26,16 +26,16 @@ Les armes ont trois types de comportement :
 | **Dégâts critiques** | Multiplicateur d'un coup critique (de base ×1,5). |
 | **Recul** | Force avec laquelle les ennemis sont repoussés (toutes les armes). |
 
-## Portée, zone, projectiles : dépendent du type d'arme
+## Portée, taille des explosions, projectiles : dépendent du type d'arme
 | Stat | Mêlée | Projectiles | Faisceaux | Frappe du ciel |
 |---|---|---|---|---|
-| **Portée** | Distance à laquelle l'arme se déclenche **et** longueur du coup, mais à **moitié** (+20 % de portée = +10 % d'allonge). | Distance de détection de la cible et distance de vol. | Longueur du faisceau. | Distance de la zone d'impact. |
-| **Zone** | **Taille du coup** : rayon de l'arc (le « disque » dans lequel les ennemis sont touchés). | Rayon des **explosions** (bombes, fioles, roquettes). Sans effet sur un projectile sans explosion. | **Largeur** du faisceau. | Rayon de chaque impact. |
+| **Portée** | Distance à laquelle l'arme se déclenche **et** rayon du coup, aux **trois quarts** (+20 % de portée = +15 % d'allonge), plafonnée à ×1,6 (ADR 0029). | Distance de détection de la cible et distance de vol. | Longueur du faisceau (plafonnée à ×1,6). | Distance de la zone d'impact. |
+| **Taille des explosions** (id `area`) | Aucun effet (le rayon du coup grandit avec le rang de l'arme et la Portée). | Rayon des **explosions** (bombes, fioles, roquettes). Sans effet sur un projectile sans explosion. | Aucun effet (largeur fixe par arme, qui monte avec son rang). | Rayon de chaque impact de météore. |
 | **Projectiles** | Nombre de coups : 1 de plus = un coup dans une autre direction (2 = devant et derrière). | Nombre de projectiles par tir (en éventail). | Nombre de faisceaux. | Nombre de météores. |
 | **Vitesse des projectiles** | Aucun effet. | Vitesse de vol. | Aucun effet. | Aucun effet. |
 | **Perforation** | Aucun effet. | Nombre d'ennemis traversés en plus. | Aucun effet (le faisceau touche déjà tout sur son passage). | Aucun effet. |
 
-Autrement dit : **Projectiles, Vitesse des projectiles et Perforation sont pensés pour les armes à distance**. Pour une arme de mêlée, seul « Projectiles » fait quelque chose (coups supplémentaires). La **Zone** est la stat clé de la mêlée : elle agrandit le coup. La **Portée** allonge un peu le coup et la distance de déclenchement.
+Autrement dit : **Projectiles, Vitesse des projectiles et Perforation sont pensés pour les armes à distance**. Pour une arme de mêlée, seul « Projectiles » fait quelque chose (coups supplémentaires). La **Portée** est la stat de la mêlée : elle agrandit le coup et la distance de déclenchement. La **Taille des explosions** (ex-Zone) ne concerne que les explosions et les météores (ADR 0029).
 
 ## Économie et ramassage
 | Stat | Effet |
@@ -47,4 +47,4 @@ Autrement dit : **Projectiles, Vitesse des projectiles et Perforation sont pens�
 ## À savoir
 - Les stats ne sont **pas liées à une arme** : elles valent pour toutes les armes que tu possèdes, chacune selon son type (tableau ci-dessus).
 - Les **familles d'armes** (Lames, Magie, Alchimie…) donnent des bonus quand tu possèdes plusieurs armes de la même famille (visibles dans le panneau de stats, section « Familles »).
-- Les bornes : Zone plafonnée à +200 %, Projectiles à +5, Esquive à 60 %, Vol de vie à 100 %.
+- Les bornes : Taille des explosions plafonnée à +200 %, Projectiles à +5, Esquive à 60 %, Vol de vie à 100 %.

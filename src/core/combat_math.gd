@@ -2,14 +2,20 @@ class_name CombatMath
 ## Pure damage formulas. No state, no nodes: everything here is unit tested.
 
 
-## Size multiplier of a zone (explosion radius, swing size, beam width) for a Zone stat of `raw`: the first points
-## count in full below 1, the bonus above it counts for half (+100 % Zone = x1.5, +200 % = x2), so a huge Zone
-## stat never fills the screen (dev, 2026-10-11).
+## Size multiplier of an explosion (radius of explosions and meteor impacts) for an "explosion size" (`area`) stat of `raw`:
+## the first points count in full below 1, the bonus above it counts for half (+100 % = x1.5, +200 % = x2), so a huge
+## stat never fills the screen (dev, 2026-10-11). Since ADR 0029 it no longer touches swings, beams or orbiting blades.
 static func area_scale(raw: float) -> float:
 	return raw if raw <= 1.0 else 1.0 + (raw - 1.0) * AREA_BONUS_SHARE
 
 
 const AREA_BONUS_SHARE := 0.5
+
+
+## Reach multiplier from the Range stat `raw`: `share` of the bonus counts, the result stays within [0.1, `cap`]
+## (ADR 0029: melee reach and beam length are capped so a huge Range never fills the screen with painted effects).
+static func reach_scale(raw: float, share: float, cap: float) -> float:
+	return clampf(1.0 + (raw - 1.0) * share, 0.1, cap)
 
 
 ## `roll` is a random value in [0, 1).

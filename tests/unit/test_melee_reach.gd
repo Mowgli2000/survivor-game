@@ -1,5 +1,5 @@
 extends GutTest
-## Melee weapons: the Range stat lengthens the reach at half effect (Brotato rule).
+## Melee weapons: the Range stat lengthens the reach at 3/4 effect, at most x1.6 (ADR 0029).
 
 
 func test_no_range_bonus_keeps_the_base_reach() -> void:
@@ -7,9 +7,20 @@ func test_no_range_bonus_keeps_the_base_reach() -> void:
 	assert_almost_eq(MeleeArcBehavior.reach_multiplier(stats), 1.0, 0.001)
 
 
-func test_range_bonus_counts_half_for_melee() -> void:
+func test_range_bonus_counts_three_quarters_for_melee() -> void:
 	var stats := StatBlock.from_defaults({"range": 1.4})
-	assert_almost_eq(MeleeArcBehavior.reach_multiplier(stats), 1.2, 0.001)
+	assert_almost_eq(MeleeArcBehavior.reach_multiplier(stats), 1.3, 0.001)
+
+
+func test_melee_reach_is_capped() -> void:
+	var stats := StatBlock.from_defaults({"range": 4.0})
+	assert_almost_eq(MeleeArcBehavior.reach_multiplier(stats), MeleeArcBehavior.REACH_CAP, 0.001)
+
+
+func test_explosion_size_stat_does_not_change_a_swing() -> void:
+	var small := StatBlock.from_defaults({})
+	var big := StatBlock.from_defaults({"area": 3.0})
+	assert_almost_eq(MeleeArcBehavior.reach_multiplier(big), MeleeArcBehavior.reach_multiplier(small), 0.0001)
 
 
 func test_the_blow_lands_when_the_swing_strikes_not_when_it_starts() -> void:

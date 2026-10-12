@@ -627,7 +627,7 @@ static func weapon_stat_lines(s: WeaponStats) -> PackedStringArray:
 	if s.explosion_radius > 0.0:
 		lines.append("%s %d" % [t.call("WSTAT_BLAST"), roundi(s.explosion_radius)])
 	elif s.area > 0.0:
-		lines.append("%s %d" % [t.call("STAT_AREA"), roundi(s.area)])
+		lines.append("%s %d" % [t.call("STAT_WEAPON_SIZE"), roundi(s.area)])
 	if s.attack_range > 0.0:
 		lines.append("%s %d" % [t.call("STAT_RANGE"), roundi(s.attack_range)])
 	return lines

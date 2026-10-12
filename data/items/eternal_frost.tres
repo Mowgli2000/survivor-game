@@ -6,8 +6,8 @@
 
 [sub_resource type="Resource" id="Mod_1"]
 script = ExtResource("2_mod")
-stat = &"area"
-percent = 0.15
+stat = &"range"
+percent = 0.12
 
 [sub_resource type="Resource" id="Mod_2"]
 script = ExtResource("2_mod")

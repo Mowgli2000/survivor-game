@@ -20,7 +20,7 @@ func fire(slot: WeaponSlot, ctx: WeaponContext) -> bool:
 	var origin := ctx.owner.global_position
 	var count := s.projectile_count + int(stats.get_value(StatIds.PROJECTILE_COUNT))
 	var radius := s.attack_range  # the Range stat does not apply: the orbit is a fixed ring around the hero
-	var area := CombatMath.area_scale(stats.get_value(StatIds.AREA))
+	var area := 1.0  # the explosion size stat does not apply to the blades (ADR 0029)
 	var knockback := s.knockback * stats.get_value(StatIds.KNOCKBACK)
 	# Ranks and the attack speed stat make the blades turn and strike faster (the weapon's base cooldown is its pace 1).
 	var pace := slot.data.cooldown / maxf(s.cooldown, 0.05) * maxf(stats.get_value(StatIds.ATTACK_SPEED), 0.1)
