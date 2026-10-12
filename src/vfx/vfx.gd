@@ -28,9 +28,10 @@ const GROUND_Z := -5
 ## Burning ground is also drawn over the creatures at this share of its opacity (the hero's zone cleared): flames lick
 ## the monsters' legs instead of the monsters looking cut out of a flat decal. 0 = only under them.
 const GROUND_FRONT_SHARE := 0.3
-## Readability (ADR 0030, revised): painted swings, impacts and blasts are almost opaque and very short, like Brotato's:
-## fully visible from the first frame, they fade out only over their last FADE_OUT seconds. Ground zones stay see-through.
-const PAINTED_OPACITY := 0.92
+## Readability (ADR 0030, revised twice): painted swings, impacts and blasts are fully opaque and last 0.18-0.25 s (shorter
+## ones were invisible to the eye): visible from the first frame, they fade out only over their last FADE_OUT seconds.
+## Ground zones stay see-through.
+const PAINTED_OPACITY := 1.0
 const GROUND_OPACITY := 0.45
 const FADE_OUT := 0.05
 ## Drawn height of a painted chain bolt's frame, px (its zigzag stays within about a third of it).

@@ -22,3 +22,12 @@ Approche Brotato : opacité et brièveté plutôt que transparence.
 - Durées des coups, impacts, faisceaux et explosions : **0,15 s au plus** (zones persistantes inchangées). 12 images en 0,15 s = 80 images/s : ça se lit comme un éclair, pas comme une animation ; réglable dans les `.tres`.
 - **Disparition** : visible à 100 % dès la première image, fondu seulement sur les `FADE_OUT` = 0,05 dernières secondes (`Vfx._draw_sheets`).
 - **Corps des projectiles** (hors couche peinte, donc non concernés par l'opacité ci-dessus) : deux défauts de déformation corrigés dans le rendu en boucle. (1) La hauteur de la bande de la cellule changeait d'une image à l'autre (la boule de feu : 0,63 puis 0,76 aux images 9-12), d'où une pulsation à chaque cycle : une seule bande par boucle (`ProjectileRenderer._loop_band`). (2) L'ondulation de la traîne couvrait la moitié de la boucle du puits de gravité et de la bombe (plage de cellules trop large) : elle ne couvre plus que la boule de feu et l'éclair (`RIPPLE_FIRST/END`).
+
+## Révision 2 (retour du dev : « trop vite, illisible », puis « une durée par type d'arme »)
+- Opacité des animations peintes **1,0** (`PAINTED_OPACITY`) ; fondu seulement sur les 0,05 dernières secondes.
+- Durée selon la catégorie de l'arme (`duration` des `.tres`, jamais accélérée par la cadence d'attaque : seule la taille d'un coup suit le cooldown) :
+  - **rapides** (dagues, piqûres, tirs légers, impacts légers, éclairs, rayons) : 0,15 à 0,18 s ;
+  - **intermédiaires** (épées, tranchants, impacts de feu et de givre) : 0,20 à 0,25 s ;
+  - **lourdes et sorts puissants** (marteau, hache, faux, sceau runique, vagues de magie, explosions, impact de météore) : 0,30 à 0,40 s ;
+  - **chute d'un météore : 0,5 s**, hors fourchette : une pierre qui tombe doit se voir tomber.
+- Les zones persistantes gardent leur durée de jeu. Un `EffectSheet` neuf choisit sa catégorie en fixant `duration` ; `tools/art/bake_vfx.py` (`SHEETS_HD`) porte les mêmes valeurs.
