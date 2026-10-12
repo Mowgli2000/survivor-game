@@ -1,17 +1,18 @@
 shader_type canvas_item;
 // Projectile bodies (ProjectileRenderer, renderer: Compatibility): each
-// MultiMesh instance picks one cell of the horizontal strip
-// assets/sprites/projectiles.png. The cell index travels in the instance
+// MultiMesh instance picks one cell of the grid
+// assets/sprites/projectiles.png (columns x rows of square cells, row by row). The cell index travels in the instance
 // color's alpha (alpha = (cell + 0.5) / CELL_CODE), so the renderer sets only
 // a transform and a color per instance; the body is then drawn opaque.
 // Looping painted projectiles (fire, ice, lightning, bomb fuse) also carry the next frame (blue) and the
 // cross-fade weight (green): two samples are mixed, and the flame side of the picture ripples (see ripple).
 // Vertex work and two texture samples: cheap for 1000+ projectiles.
 
-// Number of cells in the strip (one per WeaponData.ProjectileStyle except GLOW).
-uniform float cells : hint_range(1.0, 128.0) = 89.0;
+// Grid of the atlas: columns and rows of square cells (ProjectileRenderer.BODY_COLUMNS, texture height / cell).
+uniform float columns : hint_range(1.0, 32.0) = 16.0;
+uniform float rows : hint_range(1.0, 32.0) = 6.0;
 // Must match ProjectileRenderer.CELL_CODE.
-const float CELL_CODE = 128.0;
+const float CELL_CODE = 256.0;
 // Cells that ripple: the energy loops (fireball, lightning, orb: ProjectileRenderer.ANIM); the bomb fuse before
 // them and the grenade after them stay rigid.
 const float RIPPLE_FIRST = 29.0;
@@ -37,10 +38,9 @@ void vertex() {
 	// The quad covers only the used band of the cell (height = COLOR.r).
 	// (A QuadMesh is drawn upside down in 2D: flip v so the art stands the way it was painted.)
 	float v = 0.5 + (0.5 - UV.y) * COLOR.r;
-	uv_a = vec2((UV.x + cell) / cells, v);
-	uv_b = vec2((UV.x + next) / cells, v);
-	UV.x = uv_a.x;
-	UV.y = v;
+	uv_a = vec2((UV.x + mod(cell, columns)) / columns, (v + floor(cell / columns)) / rows);
+	uv_b = vec2((UV.x + mod(next, columns)) / columns, (v + floor(next / columns)) / rows);
+	UV = uv_a;
 	COLOR = vec4(1.0);
 }
 

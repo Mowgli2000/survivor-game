@@ -11,6 +11,8 @@ const ATLAS := "res://assets/map/decor_atlas.png"
 const PROJECTILES := "res://assets/sprites/projectiles.png"
 # 92 px per cell: the strip stays under 8192 px wide (89 cells), the limit of older GPUs.
 const PROJECTILE_CELL := 92
+## Columns of the projectile grid (must match ProjectileRenderer.BODY_COLUMNS).
+const PROJECTILE_COLUMNS := 16
 const PAD := 4
 const ATLAS_WIDTH := 1024
 
@@ -110,7 +112,7 @@ func _bake_decor(set_name: String) -> bool:
 
 
 ## Projectile bodies: one square cell per style (WeaponData.ProjectileStyle 1..),
-## in file name order. AI art PNGs (01_orb.png..., art_source/ai/projectiles/ via
+## in file name order, laid out in a grid of PROJECTILE_COLUMNS columns. AI art PNGs (01_orb.png..., art_source/ai/projectiles/ via
 ## make_icon.gd) win over the old code-drawn SVGs (make_map.py).
 func _bake_projectiles() -> bool:
 	var dir := "res://assets_src/drawn/projectiles"
@@ -124,7 +126,9 @@ func _bake_projectiles() -> bool:
 	names.sort()
 	if names.is_empty():
 		return _fail("missing %s (run python tools/art/make_map.py)" % dir)
-	var strip := Image.create(PROJECTILE_CELL * names.size(), PROJECTILE_CELL, false, Image.FORMAT_RGBA8)
+	# A grid, not a strip: a strip hit the 8192 px texture limit at 89 cells (ADR 0028).
+	var rows := ceili(float(names.size()) / PROJECTILE_COLUMNS)
+	var strip := Image.create(PROJECTILE_CELL * PROJECTILE_COLUMNS, PROJECTILE_CELL * rows, false, Image.FORMAT_RGBA8)
 	for i in names.size():
 		var path := dir.path_join(names[i])
 		var image := Image.load_from_file(ProjectSettings.globalize_path(path)) if names[i].ends_with(".png") 			else _raster(path)
@@ -133,7 +137,8 @@ func _bake_projectiles() -> bool:
 		image.convert(Image.FORMAT_RGBA8)
 		if image.get_size() != Vector2i(PROJECTILE_CELL, PROJECTILE_CELL):
 			image.resize(PROJECTILE_CELL, PROJECTILE_CELL, Image.INTERPOLATE_LANCZOS)
-		strip.blit_rect(image, Rect2i(Vector2i.ZERO, image.get_size()), Vector2i(i * PROJECTILE_CELL, 0))
+		strip.blit_rect(image, Rect2i(Vector2i.ZERO, image.get_size()),
+				Vector2i((i % PROJECTILE_COLUMNS) * PROJECTILE_CELL, (i / PROJECTILE_COLUMNS) * PROJECTILE_CELL))
 	strip.save_png(PROJECTILES)
 	return true
 

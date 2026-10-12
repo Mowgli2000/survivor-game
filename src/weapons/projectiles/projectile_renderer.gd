@@ -8,6 +8,8 @@ extends MultiMeshInstance2D
 const BODY_TEXTURE := preload("res://assets/sprites/projectiles.png")
 const BODY_SHADER := preload("res://src/weapons/projectiles/projectile_body.gdshader")
 const BODY_CELLS := 89
+## Columns of the grid atlas (tools/art/bake_map.gd PROJECTILE_COLUMNS); rows follow from the texture height (ADR 0028).
+const BODY_COLUMNS := 16
 ## Styles drawn as a looping animation: Vector2i(strip cell of the first frame (0-based), number of frames).
 ## The loops come after the 23 style cells (tools/art/bake_proj.py). The energy shots and the bomb have 12 frames (as the melee
 ## swings), the grenade 6.
@@ -26,7 +28,7 @@ const LOB_SPIN := {
 	WeaponData.ProjectileStyle.ORB: 4.0,
 }
 ## Cell index code in the body color's alpha (see projectile_body.gdshader).
-const CELL_CODE := 128.0
+const CELL_CODE := 256.0
 ## Per style (index = WeaponData.ProjectileStyle): length of the square art cell
 ## vs. the hitbox diameter (painted projectiles: the head sits at the right of a long trail, so
 ## their cells are about 2.4 times bigger than the old code-drawn ones). The art (AI, pointing right, trail on the left) keeps
@@ -62,7 +64,8 @@ func _init(stretch: float = 1.8, glow: float = 1.8) -> void:
 	_body.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	var body_material := ShaderMaterial.new()
 	body_material.shader = BODY_SHADER
-	body_material.set_shader_parameter("cells", float(BODY_CELLS))
+	body_material.set_shader_parameter("columns", float(BODY_COLUMNS))
+	body_material.set_shader_parameter("rows", float(BODY_TEXTURE.get_height()) * BODY_COLUMNS / BODY_TEXTURE.get_width())
 	_body.material = body_material
 	add_child(_body)
 	if _band.is_empty():
@@ -137,9 +140,9 @@ static func measure_bands(texture: Texture2D, cells: int) -> PackedFloat32Array:
 		return bands
 	if image.is_compressed():
 		image.decompress()
-	var cell := image.get_height()
+	var cell := image.get_width() / BODY_COLUMNS
 	for c in cells:
-		var used := image.get_region(Rect2i(c * cell, 0, cell, cell)).get_used_rect()
+		var used := image.get_region(Rect2i((c % BODY_COLUMNS) * cell, (c / BODY_COLUMNS) * cell, cell, cell)).get_used_rect()
 		if used.size.y <= 0:
 			continue
 		var half := maxf(cell * 0.5 - used.position.y, used.end.y - cell * 0.5)

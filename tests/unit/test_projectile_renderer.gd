@@ -30,7 +30,9 @@ func test_every_style_has_render_settings_and_a_cell() -> void:
 		assert_lte(loop.x + loop.y, ProjectileRenderer.BODY_CELLS)
 	assert_eq(ProjectileRenderer.BODY_CELLS, styles - 2 + frames)
 	var texture := ProjectileRenderer.BODY_TEXTURE
-	assert_eq(texture.get_width(), texture.get_height() * ProjectileRenderer.BODY_CELLS, "one square cell per style and frame")
+	var cell := texture.get_width() / ProjectileRenderer.BODY_COLUMNS
+	var rows := ceili(float(ProjectileRenderer.BODY_CELLS) / ProjectileRenderer.BODY_COLUMNS)
+	assert_eq(texture.get_height(), cell * rows, "one square cell per style and frame, in a grid")
 
 
 func test_enemy_shooters_use_enemy_styles() -> void:
