@@ -4,10 +4,9 @@ extends Node2D
 ## When full, the oldest number is overwritten (no allocation, bounded cost).
 
 const CAPACITY := 160
-## A number lives 0.3 s at most: it pops, drifts up a little and fades (readability in a crowd).
-const LIFE := 0.3
+const LIFE := 0.8
 ## Numbers rise fast then slow down: total rise distance over LIFE.
-const RISE_DISTANCE := 32.0
+const RISE_DISTANCE := 56.0
 const NORMAL_SIZE := 27
 const CRIT_SIZE := 42
 ## Big hits get up to this much extra size (log scale from SIZE_REF_LOW to SIZE_REF_HIGH damage).
@@ -15,11 +14,11 @@ const BIG_HIT_BONUS := 0.3
 const SIZE_REF_LOW := 10.0
 const SIZE_REF_HIGH := 100.0
 ## Spawn "pop": start scaled up, ease back to 1.0 over POP_TIME.
-const POP_TIME := 0.06
+const POP_TIME := 0.12
 const POP_NORMAL := 1.6
 const POP_CRIT := 2.0
 const CRIT_SHAKE := 4.0
-const FADE_TIME := 0.12
+const FADE_TIME := 0.25
 const NORMAL_COLOR := Color(1.0, 1.0, 1.0)
 ## Bright yellow (dev's request: not a pale yellow).
 const CRIT_COLOR := Color("ffe600")
