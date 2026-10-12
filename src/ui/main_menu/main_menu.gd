@@ -1,26 +1,21 @@
 class_name MainMenu
 extends Node2D
 ## Main menu (ADR 0013, 0015, 0021): "Azure Crystal" theme. A framed panel with the
-## title and the buttons on the left, over a painted citadel with a portal (drifting,
-## with floating crystal sparks), the demon knight standing in front and his horde
-## around him (a still picture).
+## logo and the buttons on the left, over one painted courtyard with the portal where the
+## monsters are part of the picture (a still image, no sprite on top of it).
 ## Play (character select) / Local co-op / Progression / Settings / Quit.
 ## Buttons only ask SceneRouter to act.
 
 const MUSIC_DB := 0.0
 const BACKGROUND := preload("res://assets/ui/backgrounds/menu.png")
-## World positions (the camera is centered on 0, 0 of a 1920x1080 screen).
-const BOSS_FEET := Vector2(500.0, 470.0)
-const BOSS_HEIGHT := 800.0
-## Left panel: position and size; x of the title and buttons, their width, y of the first button.
+const LOGO := preload("res://assets/branding/title.png")
+## Left panel: position and size; x of the logo and buttons, their width, y of the first button.
 const PANEL_RECT := Rect2(48.0, 36.0, 640.0, 944.0)
 const COLUMN_X := 108.0
-const BUTTON_SIZE := Vector2(520.0, 74.0)
-const FIRST_BUTTON_Y := 410.0
+const BUTTON_SIZE := Vector2(520.0, 70.0)
+const FIRST_BUTTON_Y := 424.0
+const LOGO_WIDTH := 520.0
 
-var _crowd: MenuCrowd
-var _crowd_front: MenuCrowd
-var _boss: MenuBoss
 var _hints: ButtonHints
 var _buttons: VBoxContainer
 var _play: Button
@@ -44,26 +39,8 @@ func _ready() -> void:
 	var backdrop := UiBackdrop.create(BACKGROUND, 0.12)
 	backdrop.animated = false  # a still picture (dev: the moving background was disliked)
 	backdrop.sparks_enabled = false
+	backdrop.base_zoom = 1.0  # no crop: the golem stands near the right edge of the picture
 	backdrop_layer.add_child(backdrop)
-	var enemies: Array[EnemyData] = []
-	enemies.assign(ContentDB.get_all(&"enemies"))
-	var camera := Camera2D.new()
-	add_child(camera)
-	camera.make_current()
-	# Far monsters, then the knight, then the near monsters in front of him.
-	_crowd = MenuCrowd.new()
-	_crowd.y_to = BOSS_FEET.y
-	_crowd.setup(enemies)
-	add_child(_crowd)
-	_boss = MenuBoss.new()
-	_boss.height = BOSS_HEIGHT
-	_boss.position = BOSS_FEET
-	add_child(_boss)
-	_crowd_front = MenuCrowd.new()
-	_crowd_front.y_from = BOSS_FEET.y
-	_crowd_front.setup(enemies)
-	add_child(_crowd_front)
-
 	var layer := CanvasLayer.new()
 	add_child(layer)
 	var root := Control.new()
@@ -81,32 +58,17 @@ func _ready() -> void:
 	crown.position = Vector2(PANEL_RECT.get_center().x - 110.0, PANEL_RECT.position.y - 34.0)
 	crown.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(crown)
-	var title := Label.new()
-	title.text = "GAME_TITLE"
-	title.theme_type_variation = &"TitleLabel"
-	title.add_theme_font_size_override("font_size", 96)
-	title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.position = Vector2(PANEL_RECT.position.x + 20.0, 84.0)
-	title.size = Vector2(PANEL_RECT.size.x - 40.0, 230.0)
+	var title := TextureRect.new()
+	title.texture = LOGO
+	title.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	title.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	title.position = Vector2(PANEL_RECT.get_center().x - LOGO_WIDTH * 0.5, 64.0)
+	title.size = Vector2(LOGO_WIDTH, LOGO_WIDTH * LOGO.get_height() / LOGO.get_width())
+	title.pivot_offset = title.size * 0.5
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(title)
-	var divider := TextureRect.new()
-	divider.texture = UiTheme.frame_texture("divider")
-	divider.position = Vector2(PANEL_RECT.get_center().x - 256.0, 316.0)
-	divider.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	root.add_child(divider)
-	var tagline := Label.new()
-	tagline.text = "UI_TAGLINE"
-	tagline.theme_type_variation = &"SmallLabel"
-	tagline.add_theme_font_override("font", UiTheme.font(600, true))
-	tagline.add_theme_font_size_override("font_size", 21)
-	tagline.add_theme_color_override("font_color", UiTheme.ACCENT)
-	tagline.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	tagline.position = Vector2(PANEL_RECT.position.x, 352.0)
-	tagline.size.x = PANEL_RECT.size.x
-	root.add_child(tagline)
 	_buttons = VBoxContainer.new()
-	_buttons.add_theme_constant_override("separation", 20)
+	_buttons.add_theme_constant_override("separation", 18)
 	_buttons.position = Vector2(COLUMN_X, FIRST_BUTTON_Y)
 	root.add_child(_buttons)
 	_play = _button("UI_PLAY", _open_character_select.bind(false))

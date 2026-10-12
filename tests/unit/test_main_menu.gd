@@ -6,13 +6,11 @@ func test_main_scene_is_the_main_menu() -> void:
 	assert_eq(ProjectSettings.get_setting("application/run/main_scene"), SceneRouter.MAIN_MENU)
 
 
-func test_menu_builds_with_a_crowd_and_focus_on_play() -> void:
+func test_menu_builds_with_focus_on_play() -> void:
 	var menu: MainMenu = load(SceneRouter.MAIN_MENU).instantiate()
 	add_child_autofree(menu)
 	await wait_process_frames(2)
 	assert_true(menu._play.has_focus())
-	assert_gt(menu._crowd.count(), 0)
-	assert_true(menu._boss.is_ready(), "the demon knight stands in front of the gate")
 
 
 func test_settings_open_and_close() -> void:

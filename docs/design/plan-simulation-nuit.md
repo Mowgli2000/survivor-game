@@ -1,15 +1,26 @@
 # Plan de simulation de nuit (à lancer sur « go nuit » du dev)
 
-Branche à part (worktree `../sg_balance`, branche `night/sim` ou `sim/<date>`), rapport le matin. Simulateur : ADR 0019,
-`python tools/balance/run_balance.py`, ~14 processus parallèles sur 16 coeurs, 1-3 min de CPU par partie. Durée estimée : ~4 h.
+Branche à part (worktree `../sg_night`, branche `sim/<date>`), rapport le matin. Simulateur réel : ADR 0019,
+`python tools/balance/run_balance.py`. **6 workers maximum** (14 workers ont saturé les 16 Go de RAM le 2026-10-12 et la
+tâche a été tuée). Fermer Godot, navigateur et jeu avant de dormir. Les cibles viennent de `notes.md` (le dev), les dangers
+« 1 à 6 » du jeu sont les sceaux 0 à 5 du simulateur.
 
-1. **Joueur mobile** : `--characters all --seals 0-5 --weapons both --policies dps,family,random` (~252 parties, ~1 h 30).
-   Cibles du dev (mémoire `seal-difficulty-curve`) : victoires ~100/90/75/55/40/25 % aux dangers 0-5 ; crescendo net.
-2. **Joueur immobile** : `--static --seals 0-2` (~40 min) : un build immobile doit gagner au danger 0, rester envisageable aux dangers 1-2.
-3. **Mode infini** : `--endless 40 --seals 0-2 --policies dps` (~1 h 30) : boss toutes les 5 vagues (`endless_boss_every = 5`) ;
-   cible : « vraiment, vraiment difficile » vers la vague 35 (médiane de mort entre les vagues 30 et 40 pour le bot dps au danger 0 ; au danger 2,
-   plus tôt). Leviers : `endless_hp_growth` (0,07), `endless_damage_growth` (0,04), `endless_spawn_growth` (0,03), `endless_elite_growth` (0,015).
-4. **Armes** : taux de victoire et dégâts par arme de départ (rapport `report.py`) ; contrôle de l'ordre Arc céleste > Lames d'ombre > Faux > le reste.
+## Cibles (notes.md, hypothèses de départ)
+- Taux de victoire par danger 1 à 6 : 65-75 / 55-65 / 45-55 / 35-45 / 25-35 / 15-25 %, mesurés sur toutes les parties.
+- Mode infini : vagues 21-25 progressif ; 26-30 les builds moyens échouent ; 31-35 extrême ; 36-40 builds très efficaces ;
+  41-50 zone de records ; 51+ sans limite imposée. Mesurer médiane, P10, P90 et records, pas la moyenne seule.
 
-Le matin : rapport + propositions de valeurs ; aucune valeur de donnée n'est modifiée sans accord du dev, sauf le réglage évident de la
-courbe infinie si la cible n'est manifestement pas atteinte.
+## Profils de joueurs (politiques existantes de `balance_policy.gd`)
+`random` = débutant · `family`/`economy` = moyen · `dps`/`zone`/`tank` = expérimenté/optimisé. Les cibles de victoire
+s'appliquent au mélange, pas au seul bot `dps` (mesure du 2026-10-12 avec `dps` : 100/93/86/79/71/64 %, trop haut, 14 parties par danger).
+
+## Nuit type (≈ 6-8 h avec 6 workers)
+1. Mesure de départ : `--characters all --seals 0-5 --weapons first --policies random,family,dps --seeds 3` (marge d'erreur à chiffrer).
+2. Infini : `--endless 70 --seals 0-5 --policies family,dps` (plafond relevé pour voir où les bots meurent réellement).
+3. Armes : taux de victoire et dégâts par arme de départ (`report.py`).
+Le mode `--static` est laissé de côté (décision du dev, 2026-10-12).
+
+## Le jour
+Itérer avec le simulateur rapide `balance_fast.tscn` (millisecondes par partie), un petit nombre de paramètres à la fois,
+mêmes seeds avant/après. Les nuits servent à confirmer avec des parties réelles. Aucune valeur de données n'est modifiée
+sans accord du dev.
