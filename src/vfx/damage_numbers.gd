@@ -4,9 +4,10 @@ extends Node2D
 ## When full, the oldest number is overwritten (no allocation, bounded cost).
 
 const CAPACITY := 160
-const LIFE := 0.8
+## Compromise (dev, 2026-10-12): 0.8 s left a number above a monster that was already dead, 0.3 s was too short.
+const LIFE := 0.5
 ## Numbers rise fast then slow down: total rise distance over LIFE.
-const RISE_DISTANCE := 56.0
+const RISE_DISTANCE := 40.0
 const NORMAL_SIZE := 27
 const CRIT_SIZE := 42
 ## Big hits get up to this much extra size (log scale from SIZE_REF_LOW to SIZE_REF_HIGH damage).
@@ -18,7 +19,7 @@ const POP_TIME := 0.12
 const POP_NORMAL := 1.6
 const POP_CRIT := 2.0
 const CRIT_SHAKE := 4.0
-const FADE_TIME := 0.25
+const FADE_TIME := 0.18
 const NORMAL_COLOR := Color(1.0, 1.0, 1.0)
 ## Bright yellow (dev's request: not a pale yellow).
 const CRIT_COLOR := Color("ffe600")

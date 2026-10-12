@@ -155,6 +155,7 @@ func test_a_volley_of_meteors_spreads_over_different_bunches() -> void:
 	for spot in [Vector2(-300.0, 150.0), Vector2(60.0, -330.0), Vector2(200.0, 330.0), Vector2(-120.0, -120.0)]:
 		s.enemies.spawn(data, spot)
 	await wait_physics_frames(2)
+	s.rng.seed = 5  # the meteors pick their targets at random: a fixed draw keeps the test stable
 	var weapon: WeaponData = ContentDB.get_def(&"weapons", &"meteor_grimoire")
 	var ctx := WeaponContext.new(s.player, StatBlock.from_defaults({StatIds.PROJECTILE_COUNT: 2.0}), s.enemies, s.projectiles, s.rng)
 	ctx.vfx = s.vfx

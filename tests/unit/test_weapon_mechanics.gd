@@ -29,6 +29,7 @@ func _setup(enemy_at: Vector2, hp: float = 5000.0) -> Dictionary:
 func _fire(s: Dictionary, id: StringName) -> WeaponSlot:
 	var weapon: WeaponData = ContentDB.get_def(&"weapons", id)
 	var slot := WeaponSlot.new(weapon, 1)
+	slot.stats.crit_chance = 0.0  # a random critical hit made the damage comparisons flaky
 	var ctx := WeaponContext.new(s.player, StatBlock.from_defaults({}), s.enemies, s.projectiles, s.rng)
 	assert_true(weapon.behavior.fire(slot, ctx))
 	return slot
