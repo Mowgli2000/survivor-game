@@ -3,7 +3,7 @@ extends GutTest
 
 
 ## TEMPORARY (playtest of the painted effects): these weapons were unlocked by hand, see test_content.gd.
-const TEMP_PLAYTEST_UNLOCKED: Array[StringName] = [&"celestial_bow", &"scythe", &"alchemy_cannon", &"frag_grenade", &"heavy_crossbow", &"javelins"]
+const TEMP_PLAYTEST_UNLOCKED: Array[StringName] = [&"celestial_bow", &"scythe", &"alchemy_cannon", &"meteor_grimoire", &"heavy_crossbow", &"javelins"]
 
 
 func _still_locked(challenge: ChallengeData, target: Resource) -> bool:

@@ -43,7 +43,6 @@ Les 4 comportements du code : `melee_arc` (coup en arc autour du héros), `proje
 | Fiole de feu | Explose, laisse une flaque qui brûle 3 s | Garder |
 | Fiole explosive | Explose, rebondit sur un second ennemi | Garder |
 | Fiole de givre | Explose, ralentit | Laisser une zone de givre au sol qui ralentit (jumelle de la flaque de feu) |
-| Grenades à fragments | Explose, 8 éclats | Garder |
 
 ## Rayons et frappes (4)
 

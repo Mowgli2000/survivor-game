@@ -10,7 +10,6 @@ Les identifiants (`id` des `.tres`, fichiers `data/weapons/<id>.tres`, `assets/i
 | `celestial_bow` | Arc céleste | projectile_shooter |
 | `fire_flask` | Fiole de feu | projectile_shooter |
 | `fire_staff` | Bâton de feu | projectile_shooter |
-| `frag_grenade` | Grenades à fragments | projectile_shooter |
 | `frost_flask` | Fiole de givre | projectile_shooter |
 | `frost_scepter` | Sceptre de givre | beam |
 | `heavy_axe` | Hache de guerre | melee_arc |

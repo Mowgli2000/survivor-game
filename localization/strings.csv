@@ -379,8 +379,6 @@ WEAPON_FIRE_FLASK,Fire flask,Fiole de feu
 WEAPON_FIRE_FLASK_DESC,Small explosion that leaves burning ground.,Petite explosion qui laisse un sol en flammes.
 WEAPON_FROST_FLASK,Frost flask,Fiole de givre
 WEAPON_FROST_FLASK_DESC,Icy explosion that leaves a patch of frost slowing enemies.,Explosion glacée qui laisse une zone de givre ralentissant les ennemis.
-WEAPON_FRAG_GRENADE,Frag grenades,Grenades à fragments
-WEAPON_FRAG_GRENADE_DESC,"Three grenades thrown in a fan, small explosions.","Trois grenades lancées en éventail, petites explosions."
 UI_WEAPON_PREVIEW_TITLE,"Weapons, ornate style (preview, not in game yet) · small frame = current icon","Armes, style orné (aperçu, pas encore en jeu) · petit cadre = icône actuelle"
 UI_WEAPON_PREVIEW_REAL,"Real in-game size: new art · current icons · some item icons","Taille réelle en jeu : nouvelles armes · icônes actuelles · quelques objets"
 WEAPON_CELESTIAL_BOW,Celestial bow,Arc céleste
