@@ -9,10 +9,11 @@ extends RefCounted
 ##   "random"  any affordable offer, random cards (a weak, unfocused player);
 ##   "zone"    like "family", and Zone is worth 4 times more (area builds, D67);
 ##   "mono"    like "dps" but buys only copies of the starting weapon (weapon test);
-##   "ref"     like "dps" with no weapon purchases: a fixed reference build + the tested weapon.
+##   "ref"     like "dps" with no weapon purchases: a fixed reference build + the tested weapon;
+##   "range"   shooting-range test (with --dummy): only the tested weapon, 3 free copies, no other weapon.
 ## Scores are "points": a typical common item or card is worth about 1.
 
-const KINDS: Array[String] = ["dps", "tank", "family", "economy", "random", "zone", "mono", "ref"]
+const KINDS: Array[String] = ["dps", "tank", "family", "economy", "random", "zone", "mono", "ref", "range"]
 ## "zone" policy: Zone value multiplier.
 const ZONE_FOCUS := 4.0
 ## Points per unit of flat value, per stat.
@@ -80,6 +81,8 @@ func play_shop(shop: Shop, wallet: Wallet, weapons: WeaponHolder, wave: int) -> 
 		weapons.add_weapon(_mono, 1)
 	elif kind == "ref":
 		_grant_reference_build(weapons, wave)
+	elif kind == "range" and wave <= 3 and not weapons.is_full():
+		weapons.add_weapon(_mono, 1)
 	var max_rerolls := MAX_REROLLS
 	for action in MAX_ACTIONS:
 		_merge_all(shop, weapons)
@@ -135,6 +138,8 @@ func _grant_reference_build(weapons: WeaponHolder, wave: int) -> void:
 
 
 func _best_offer(shop: Shop, weapons: WeaponHolder, wave: int) -> int:
+	if kind == "range":
+		return -1
 	var candidates: Array[int] = []
 	var best := -1
 	var best_value := 0.0
@@ -156,7 +161,7 @@ func _best_offer(shop: Shop, weapons: WeaponHolder, wave: int) -> int:
 
 func _weapon_points(offer: ShopOffer, weapons: WeaponHolder) -> float:
 	var data := offer.weapon
-	if kind == "ref" or (kind == "mono" and data != _mono):
+	if kind in ["ref", "range"] or (kind == "mono" and data != _mono):
 		return 0.0
 	var points := WEAPON_BASE + WEAPON_PER_TIER * offer.tier
 	var same := 0
