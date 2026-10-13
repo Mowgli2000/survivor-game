@@ -7,10 +7,12 @@ extends RefCounted
 ##   "family"  one weapon family (the starting weapon's), offense items;
 ##   "economy" harvest and luck early (waves 1-8), then "dps";
 ##   "random"  any affordable offer, random cards (a weak, unfocused player);
-##   "zone"    like "family", and Zone is worth 4 times more (area builds, D67).
+##   "zone"    like "family", and Zone is worth 4 times more (area builds, D67);
+##   "mono"    like "dps" but buys only copies of the starting weapon (weapon test);
+##   "ref"     like "dps" with no weapon purchases: a fixed reference build + the tested weapon.
 ## Scores are "points": a typical common item or card is worth about 1.
 
-const KINDS: Array[String] = ["dps", "tank", "family", "economy", "random", "zone"]
+const KINDS: Array[String] = ["dps", "tank", "family", "economy", "random", "zone", "mono", "ref"]
 ## "zone" policy: Zone value multiplier.
 const ZONE_FOCUS := 4.0
 ## Points per unit of flat value, per stat.
@@ -33,13 +35,14 @@ const WEAPON_BASE := 2.0
 const WEAPON_PER_TIER := 2.5
 const MAX_ACTIONS := 24
 const MAX_REROLLS := 4
-
 var kind: String = "dps"
 ## Set by the simulator after each wave: share of max HP lost (0..1+).
 var last_wave_damage_ratio: float = 0.0
 var _rng := RandomNumberGenerator.new()
 ## Family the "family" policy commits to (the starting weapon's).
 var _focus: StringName = &""
+## Weapon the "mono" policy sticks to (the starting weapon).
+var _mono: WeaponData = null
 
 
 func _init(p_kind: String = "dps", seed: int = 0) -> void:
@@ -67,9 +70,17 @@ func shop_turn(rp: RunPlayer, wave: int) -> void:
 
 ## Same, from the parts (the fast wave simulator has no Player).
 func play_shop(shop: Shop, wallet: Wallet, weapons: WeaponHolder, wave: int) -> void:
+	if _mono == null and weapons.slot_count() > 0:
+		_mono = weapons.get_slots()[0].data
 	if _focus == &"" and weapons.slot_count() > 0 and not weapons.get_slots()[0].data.families.is_empty():
 		_focus = weapons.get_slots()[0].data.families[0]
 	var rerolls := 0
+	if kind == "mono" and not weapons.is_full():
+		# Weapon test: one free copy per wave, so every weapon is judged as a full build.
+		weapons.add_weapon(_mono, 1)
+	elif kind == "ref":
+		_grant_reference_build(weapons, wave)
+	var max_rerolls := MAX_REROLLS
 	for action in MAX_ACTIONS:
 		_merge_all(shop, weapons)
 		var pick := _best_offer(shop, weapons, wave)
@@ -77,7 +88,7 @@ func play_shop(shop: Shop, wallet: Wallet, weapons: WeaponHolder, wave: int) -> 
 			shop.buy(pick)
 			continue
 		var reserve := 0 if wave >= 19 else shop.reroll_cost() * 2
-		if kind != "random" and rerolls < MAX_REROLLS and wallet.amount >= shop.reroll_cost() + reserve:
+		if kind != "random" and rerolls < max_rerolls and wallet.amount >= shop.reroll_cost() + reserve:
 			if shop.reroll():
 				rerolls += 1
 				continue
@@ -103,6 +114,26 @@ func score_modifiers(modifiers: Array[StatModifier], wave: int) -> float:
 	return score
 
 
+## Weapon test in a realistic mix ("ref"): the tested weapon (starting weapon) gets 3 free copies
+## (waves 1-3, merging up to rank III) beside one melee, one ranged and one zone reference weapon
+## (rank II from wave 3). The tested weapon's share of the damage is the measure.
+const REF_MELEE: Array[StringName] = [&"runic_blade", &"rapier"]
+const REF_RANGED: Array[StringName] = [&"heavy_crossbow", &"longbow"]
+const REF_ZONE: Array[StringName] = [&"fire_flask", &"frost_flask"]
+
+
+func _grant_reference_build(weapons: WeaponHolder, wave: int) -> void:
+	if wave <= 3 and not weapons.is_full():
+		weapons.add_weapon(_mono, 1)
+	for group in [REF_MELEE, REF_RANGED, REF_ZONE]:
+		var id: StringName = group[0] if group[0] != _mono.id else group[1]
+		var data: WeaponData = ContentDB.get_def(&"weapons", id)
+		if wave == 1 and not weapons.is_full():
+			weapons.add_weapon(data, 1)
+		elif wave == 3 and not weapons.is_full():
+			weapons.add_weapon(data, 1)
+
+
 func _best_offer(shop: Shop, weapons: WeaponHolder, wave: int) -> int:
 	var candidates: Array[int] = []
 	var best := -1
@@ -125,6 +156,8 @@ func _best_offer(shop: Shop, weapons: WeaponHolder, wave: int) -> int:
 
 func _weapon_points(offer: ShopOffer, weapons: WeaponHolder) -> float:
 	var data := offer.weapon
+	if kind == "ref" or (kind == "mono" and data != _mono):
+		return 0.0
 	var points := WEAPON_BASE + WEAPON_PER_TIER * offer.tier
 	var same := 0
 	var family := 0

@@ -7,6 +7,8 @@ extends PanelContainer
 ## Stats stored as multipliers (1.0 = +0 %): shown as a bonus percent.
 const MULTIPLIER_STATS: Array[StringName] = [StatIds.DAMAGE, StatIds.ATTACK_SPEED,
 	StatIds.PROJECTILE_SPEED, StatIds.KNOCKBACK, StatIds.RANGE, StatIds.AREA]
+## Stats no item, card or character changes yet: not worth a line (the stat still works for weapons).
+const HIDDEN_STATS: Array[StringName] = [StatIds.PROJECTILE_SPEED]
 const BETTER := UiTheme.GOOD
 const WORSE := UiTheme.BAD
 const NEUTRAL := UiTheme.TEXT
@@ -67,6 +69,8 @@ func set_tag(text: String, color: Color) -> void:
 func setup(stats: StatBlock) -> void:
 	_stats = stats
 	for stat: StringName in StatIds.DEFAULTS:
+		if stat in HIDDEN_STATS:
+			continue
 		var name_label := _label(NEUTRAL)
 		name_label.text = StatIds.localization_key(stat)
 		_grid.add_child(name_label)

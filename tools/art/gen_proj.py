@@ -131,6 +131,14 @@ JOBS["a12_sling"] = ("sheet12", ["art_source/ai/projectiles/11_stone.png", "art_
     "each cell. Keep everything well inside its cell with a black margin. ")
 
 
+# Eleventh pass (dev, 2026-10-13): the fragmentation grenade no longer looks like a real military grenade.
+JOBS["i_rune_grenade"] = ("icon", ["art_source/ai/weapons/bomb.png", "art_source/ai/weapons/fire_flask.png"],
+    "Game item icon in exactly the style of the reference images (thick black outline, flat saturated colors with simple painterly highlights, "
+    "gold trim and gold diamond studs). It shows ONE single fantasy RUNE GRENADE: a round dark stone sphere split open by glowing red-orange "
+    "crystal shards, bound by a gold band with engraved runes and a small red gem, a short braided fuse with a tiny spark. "
+    "NO military grenade, NO pin ring, NO lever. Centered, tilted slightly, filling about 80 percent of the image. Transparent background.")
+
+
 def main() -> None:
     OUT.mkdir(exist_ok=True)
     names = sys.argv[1:] or list(JOBS)

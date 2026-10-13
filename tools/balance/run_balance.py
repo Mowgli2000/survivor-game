@@ -51,6 +51,7 @@ def main():
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 4) - 2))
     parser.add_argument("--out", default="")
     parser.add_argument("--endless", type=int, default=0, help="keep playing endless waves up to this wave")
+    parser.add_argument("--weapon-ids", default="", help="weapon test: 'all' or a,b: each weapon as the starting weapon of every character listed")
     parser.add_argument("--static", action="store_true", help="the bot never moves (static build)")
     parser.add_argument("--static-after", type=int, default=0, help="the bot moves up to this wave, then stands still")
     args = parser.parse_args()
@@ -62,7 +63,9 @@ def main():
     jobs = []
     for character in characters:
         weapons = _starting_weapons(character)
-        if args.weapons == "first":
+        if args.weapon_ids:
+            weapons = _ids("weapons") if args.weapon_ids == "all" else args.weapon_ids.split(",")
+        elif args.weapons == "first":
             weapons = weapons[:1]
         for weapon, seal, policy, seed in itertools.product(weapons, _seals(args.seals),
                                                            args.policies.split(","), range(1, args.seeds + 1)):

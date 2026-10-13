@@ -166,10 +166,20 @@ func _record_wave() -> void:
 		"sheet_dps": BalanceSimTools.sheet_dps(player.weapons, player.stats),
 		"max_hp": max_hp,
 		"stats": _stats(player.stats),
+		"dealt": _dealt(),
 	})
 	_policy.last_wave_damage_ratio = _damage_taken / maxf(max_hp, 1.0)
 	_damage_taken = 0.0
 	_min_hp_ratio = 1.0
+
+
+## Cumulative damage dealt so far by weapon id (plus "items" / "burn").
+func _dealt() -> Dictionary:
+	var out := {}
+	var dealt := _run.enemies.damage_dealt(0)
+	for key in dealt:
+		out[String(key)] = snappedf(dealt[key], 0.1)
+	return out
 
 
 static func _weapon_list(weapons: WeaponHolder) -> Array:

@@ -25,7 +25,7 @@ func test_panel_lists_every_stat_and_follows_changes() -> void:
 	var panel := StatsPanel.new()
 	add_child_autofree(panel)
 	panel.setup(stats)
-	assert_eq(panel.line_count(), StatIds.DEFAULTS.size())
+	assert_eq(panel.line_count(), StatIds.DEFAULTS.size() - StatsPanel.HIDDEN_STATS.size())
 	var bonus := StatModifier.new()
 	bonus.stat = StatIds.DAMAGE
 	bonus.percent = 0.2

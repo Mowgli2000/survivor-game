@@ -13,7 +13,7 @@ const VICTORY_DIM := Color(0.0, 0.02, 0.08, 0.38)
 const DEFEAT_BACKGROUND := preload("res://assets/ui/backgrounds/defeat.png")
 const VICTORY_BACKGROUND := preload("res://assets/ui/backgrounds/victory.png")
 ## Rows shown in the damage summary (the biggest dealers).
-const RECAP_ROWS := 6
+const RECAP_ROWS := 8
 const RECAP_ICON := 68.0
 const RECAP_BAR_WIDTH := 260.0
 
