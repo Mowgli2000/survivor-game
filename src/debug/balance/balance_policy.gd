@@ -117,9 +117,9 @@ func score_modifiers(modifiers: Array[StatModifier], wave: int) -> float:
 ## Weapon test in a realistic mix ("ref"): the tested weapon (starting weapon) gets 3 free copies
 ## (waves 1-3, merging up to rank III) beside one melee, one ranged and one zone reference weapon
 ## (rank II from wave 3). The tested weapon's share of the damage is the measure.
-const REF_MELEE: Array[StringName] = [&"runic_blade", &"rapier"]
-const REF_RANGED: Array[StringName] = [&"heavy_crossbow", &"longbow"]
-const REF_ZONE: Array[StringName] = [&"fire_flask", &"frost_flask"]
+const REF_MELEE: Array[StringName] = [&"katana", &"heavy_axe"]
+const REF_RANGED: Array[StringName] = [&"longbow", &"javelins"]
+const REF_ZONE: Array[StringName] = [&"bomb", &"bazooka"]
 
 
 func _grant_reference_build(weapons: WeaponHolder, wave: int) -> void:
