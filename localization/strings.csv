@@ -437,6 +437,7 @@ UPGRADE_HARVEST,Harvest,Moisson
 UI_RECAP_DAMAGE,Damage by weapon,Dégâts par arme
 UI_RECAP_ITEMS,Item effects,Effets d'objets
 UI_RECAP_BURN,Burning,Brûlure
+UI_RECAP_OTHERS,Earlier weapons and effects,Armes précédentes et effets
 WSTAT_BLAST,Blast,Explosion
 DANGER_0_SHORT,Copper,Cuivre
 DANGER_1_SHORT,Iron,Fer

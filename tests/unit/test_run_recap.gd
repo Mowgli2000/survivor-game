@@ -39,3 +39,42 @@ func test_coop_columns_show_each_players_kills_and_deaths() -> void:
 		{"title": "Player 1", "color": Color.WHITE, "rows": rows, "kills": 120, "deaths": 2},
 		{"title": "Player 2", "color": Color.WHITE, "rows": rows, "kills": 80, "deaths": 0}])
 	assert_eq(screen._recap.get_child_count(), 2, "a column per player even without damage rows")
+
+
+func test_final_weapons_come_first_even_when_others_dealt_more() -> void:
+	var final_ids: Array[StringName] = [&"katana"]
+	var rows := GameOverScreen.recap_rows({&"katana": 120.0, &"bomb": 900.0, EnemyManager.BURN_TAG: 300.0}, final_ids)
+	assert_eq(rows.size(), 3)
+	assert_eq(rows[0].name, (ContentDB.get_def(&"weapons", &"katana") as WeaponData).name_key, "held at the end: first")
+	assert_true(rows[0].final)
+	assert_eq(rows[1].name, (ContentDB.get_def(&"weapons", &"bomb") as WeaponData).name_key, "then the others by damage")
+	assert_false(rows[1].final)
+
+
+func test_long_list_scrolls_and_shows_six_rows_first() -> void:
+	var screen := GameOverScreen.new()
+	add_child_autofree(screen)
+	screen.open(60.0, 5, 100, 4)
+	var dealt := {}
+	var final_ids: Array[StringName] = []
+	var weapons: Array = ContentDB.get_all(&"weapons")
+	for i in 9:
+		var weapon: WeaponData = weapons[i]
+		dealt[weapon.id] = 100.0 + i
+		if i < 6:
+			final_ids.append(weapon.id)
+	screen.show_recap([{"title": "", "color": Color.WHITE, "rows": GameOverScreen.recap_rows(dealt, final_ids)}])
+	assert_eq(screen._recap_scrolls.size(), 1, "9 weapons: the list scrolls")
+	var list: Node = screen._recap_scrolls[0].get_child(0)
+	assert_eq(list.get_child_count(), 10, "9 rows and a divider")
+	assert_eq((list.get_child(6) as Label).text, "UI_RECAP_OTHERS", "divider right after the six final weapons")
+
+
+func test_short_list_does_not_scroll() -> void:
+	var screen := GameOverScreen.new()
+	add_child_autofree(screen)
+	screen.open(60.0, 5, 100, 4)
+	var final_ids: Array[StringName] = [&"katana"]
+	screen.show_recap([{"title": "", "color": Color.WHITE,
+		"rows": GameOverScreen.recap_rows({&"katana": 120.0, &"bomb": 80.0}, final_ids)}])
+	assert_true(screen._recap_scrolls.is_empty())

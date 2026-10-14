@@ -16,6 +16,10 @@ const VICTORY_BACKGROUND := preload("res://assets/ui/backgrounds/victory.png")
 const RECAP_ROWS := 8
 const RECAP_ICON := 68.0
 const RECAP_BAR_WIDTH := 260.0
+const RECAP_ROW_SEPARATION := 8
+## Right-stick / page keys scroll the list when there are more rows than RECAP_ROWS.
+const RECAP_SCROLL_SPEED := 700.0
+const RECAP_STICK_DEADZONE := 0.25
 
 ## True when the last open() was a victory.
 var is_victory: bool = false
@@ -26,6 +30,8 @@ var _backdrop: UiBackdrop
 var _summary: Label
 ## Damage by weapon, next to the summary: one column per player (show_recap).
 var _recap: HBoxContainer
+## Scrolling lists of the recap columns (only the ones with more than RECAP_ROWS rows).
+var _recap_scrolls: Array[ScrollContainer] = []
 var _unlocks: HBoxContainer
 var _retry: Button
 var _main_menu: Button
@@ -142,6 +148,7 @@ func show_recap(columns: Array[Dictionary]) -> void:
 	for child in _recap.get_children():
 		_recap.remove_child(child)
 		child.queue_free()
+	_recap_scrolls.clear()
 	for column in columns:
 		var rows: Array[Dictionary] = column.rows
 		if rows.is_empty() and column.title == "":
@@ -170,8 +177,25 @@ func show_recap(columns: Array[Dictionary]) -> void:
 		var total := 0.0
 		for row in rows:
 			total += row.damage
-		for i in mini(rows.size(), RECAP_ROWS):
-			box.add_child(_recap_row(rows[i], top, total))
+		# The weapons held at the end come first; the others (sold, merged away, effects)
+		# follow under a divider, reachable by scrolling when the list is longer than RECAP_ROWS.
+		var list := VBoxContainer.new()
+		list.add_theme_constant_override("separation", RECAP_ROW_SEPARATION)
+		var divider_done := false
+		for i in rows.size():
+			if i > 0 and not rows[i].final and rows[i - 1].final and not divider_done:
+				list.add_child(_recap_divider())
+				divider_done = true
+			list.add_child(_recap_row(rows[i], top, total))
+		if list.get_child_count() > RECAP_ROWS:
+			var scroll := ScrollContainer.new()
+			scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+			scroll.custom_minimum_size.y = RECAP_ROWS * RECAP_ICON + (RECAP_ROWS - 1) * RECAP_ROW_SEPARATION
+			scroll.add_child(list)
+			box.add_child(scroll)
+			_recap_scrolls.append(scroll)
+		else:
+			box.add_child(list)
 	_recap.visible = _recap.get_child_count() > 0
 	if _recap.visible:
 		UiFx.pop_in(_recap, 0.12)
@@ -179,13 +203,14 @@ func show_recap(columns: Array[Dictionary]) -> void:
 
 ## Rows of the damage summary, biggest first: weapons with their icon and
 ## name, then item effects and burning. `dealt` = EnemyManager.damage_dealt().
-static func recap_rows(dealt: Dictionary) -> Array[Dictionary]:
+## `final_ids`: weapons held at the end of the run; their rows ("final") come first.
+static func recap_rows(dealt: Dictionary, final_ids: Array[StringName] = []) -> Array[Dictionary]:
 	var rows: Array[Dictionary] = []
 	for key: StringName in dealt:
 		var damage: float = dealt[key]
 		if damage <= 0.0:
 			continue
-		var row := {"damage": damage, "icon": null, "name": "", "tier": 1}
+		var row := {"damage": damage, "icon": null, "name": "", "tier": 1, "final": key in final_ids}
 		if key == EnemyManager.ITEMS_TAG:
 			row.name = "UI_RECAP_ITEMS"
 		elif key == EnemyManager.BURN_TAG:
@@ -197,7 +222,10 @@ static func recap_rows(dealt: Dictionary) -> Array[Dictionary]:
 			row.name = weapon.name_key
 			row.icon = weapon.icon
 		rows.append(row)
-	rows.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.damage > b.damage)
+	rows.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		if a.final != b.final:
+			return a.final
+		return a.damage > b.damage)
 	return rows
 
 
@@ -208,6 +236,29 @@ static func compact(value: float) -> String:
 	if value >= 1e4:
 		return "%.1fk" % (value / 1e3)
 	return str(roundi(value))
+
+
+func _recap_divider() -> Control:
+	var label := Label.new()
+	label.text = "UI_RECAP_OTHERS"
+	label.theme_type_variation = &"SmallLabel"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	return label
+
+
+func _process(delta: float) -> void:
+	if not visible or _recap_scrolls.is_empty():
+		return
+	var direction := 0.0
+	for device in Input.get_connected_joypads():
+		var axis := Input.get_joy_axis(device, JOY_AXIS_RIGHT_Y)
+		if absf(axis) > RECAP_STICK_DEADZONE:
+			direction += axis
+	direction += Input.get_action_strength(&"ui_page_down") - Input.get_action_strength(&"ui_page_up")
+	if is_zero_approx(direction):
+		return
+	for scroll in _recap_scrolls:
+		scroll.scroll_vertical += roundi(clampf(direction, -1.0, 1.0) * RECAP_SCROLL_SPEED * delta)
 
 
 func _recap_row(row: Dictionary, top: float, total: float) -> Control:

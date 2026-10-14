@@ -148,6 +148,8 @@ func _ready() -> void:
 	for rp in players:
 		actors.add_child(rp.player)
 		rp.player.weapon_visuals.setup(rp.player.weapons, enemies, rp.player)
+		if rp.player.health_bar != null:
+			rp.player.health_bar.bind_progression(rp.progression)
 		heroes.append(rp.player)
 	vfx.guard(heroes)
 	camera = GameCamera.new()
@@ -762,11 +764,20 @@ func _show_recap() -> void:
 		columns.append({
 			"title": tr("UI_PLAYER_N") % (rp.index + 1) if players.size() > 1 else "",
 			"color": rp.color(),
-			"rows": GameOverScreen.recap_rows(enemies.damage_dealt(rp.index)),
+			"rows": GameOverScreen.recap_rows(enemies.damage_dealt(rp.index), _final_weapon_ids(rp)),
 			"kills": rp.kills,
 			"deaths": rp.deaths,
 		})
 	game_over_screen.show_recap(columns)
+
+
+## Ids of the weapons `rp` holds right now (the ones of the last wave).
+func _final_weapon_ids(rp: RunPlayer) -> Array[StringName]:
+	var ids: Array[StringName] = []
+	for slot in rp.player.weapons.get_slots():
+		if not slot.retired and slot.data.id not in ids:
+			ids.append(slot.data.id)
+	return ids
 
 
 ## After a victory: the waves go on (level-ups, shop, wave 21...) until death.
