@@ -30,7 +30,7 @@ var _dummy_to: int = 0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	var args := {"character": "drifter", "weapon": "", "seal": "0", "policy": "dps", "seed": "1", "endless": "0", "static": "0", "static_after": "0", "dummy": "0"}
+	var args := {"character": "drifter", "weapon": "", "seal": "0", "policy": "dps", "seed": "1", "endless": "0", "static": "0", "static_after": "0", "dummy": "0", "dummy_hp": "1000"}
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--out="):
 			_out = arg.trim_prefix("--out=")
@@ -45,12 +45,12 @@ func _ready() -> void:
 	var weapon: WeaponData = ContentDB.get_def(&"weapons", StringName(args.weapon)) if args.weapon != "" \
 		else character.starting_weapons[0]
 	var seed := int(args.seed)
-	# --dummy=N: shooting-range test: enemies have 1000x HP (nothing dies, so there is no overkill
+	# --dummy=N: shooting-range test: enemies have --dummy_hp (default 1000) x HP (nothing dies, so there is no overkill
 	# sharing between weapons), the player cannot die, the run stops after wave N.
 	_dummy_to = int(args.dummy)
 	if _dummy_to > 0:
 		difficulty = difficulty.duplicate() as DifficultyData
-		difficulty.hp_multiplier *= 1000.0
+		difficulty.hp_multiplier *= float(args.dummy_hp)
 	_endless_to = int(args.endless)
 	_policy = BalancePolicy.new(String(args.policy), seed)
 	_report = {"character": String(character.id), "weapon": String(weapon.id), "seal": difficulty.level,
