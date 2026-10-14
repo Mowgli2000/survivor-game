@@ -30,7 +30,7 @@ var _dummy_to: int = 0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	var args := {"character": "drifter", "weapon": "", "seal": "0", "policy": "dps", "seed": "1", "endless": "0", "static": "0", "static_after": "0", "dummy": "0", "dummy_hp": "1000"}
+	var args := {"character": "drifter", "weapon": "", "seal": "0", "policy": "dps", "seed": "1", "endless": "0", "static": "0", "static_after": "0", "dummy": "0", "dummy_hp": "1000", "skill": "0"}
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--out="):
 			_out = arg.trim_prefix("--out=")
@@ -79,6 +79,9 @@ func _ready() -> void:
 	_report["static"] = args.static == "1" or static_after > 0
 	_report["static_after"] = static_after
 	_bot.setup(_run)
+	# --skill=1: average-player movement (reaction 0.3 s, route jitter, 40 % of the shot dodging).
+	if args.skill == "1":
+		_bot.set_skill(18, 0.6, 0.4, seed)
 	add_child(_run)
 	_run.player.damaged.connect(_on_damaged)
 	_run.player.died.connect(_on_died)

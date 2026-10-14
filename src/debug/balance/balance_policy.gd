@@ -10,10 +10,11 @@ extends RefCounted
 ##   "zone"    like "family", and Zone is worth 4 times more (area builds, D67);
 ##   "mono"    like "dps" but buys only copies of the starting weapon (weapon test);
 ##   "ref"     like "dps" with no weapon purchases: a fixed reference build + the tested weapon;
+##   "casual"  like "dps" with a clumsier build: noisy scores, a single reroll (an average player);
 ##   "range"   shooting-range test (with --dummy): only the tested weapon, 3 free copies, no other weapon.
 ## Scores are "points": a typical common item or card is worth about 1.
 
-const KINDS: Array[String] = ["dps", "tank", "family", "economy", "random", "zone", "mono", "ref", "range"]
+const KINDS: Array[String] = ["dps", "tank", "family", "economy", "random", "zone", "mono", "ref", "range", "casual"]
 ## "zone" policy: Zone value multiplier.
 const ZONE_FOCUS := 4.0
 ## Points per unit of flat value, per stat.
@@ -36,6 +37,9 @@ const WEAPON_BASE := 2.0
 const WEAPON_PER_TIER := 2.5
 const MAX_ACTIONS := 24
 const MAX_REROLLS := 4
+## "casual": multiplicative noise range on every card / offer score, rerolls per shop turn.
+const CASUAL_NOISE := 0.5
+const CASUAL_REROLLS := 1
 var kind: String = "dps"
 ## Set by the simulator after each wave: share of max HP lost (0..1+).
 var last_wave_damage_ratio: float = 0.0
@@ -58,6 +62,8 @@ func choose_upgrade(offers: Array[UpgradeOffer], _rp: RunPlayer) -> UpgradeOffer
 	var best_score := -INF
 	for offer in offers:
 		var score := score_modifiers(offer.scaled_modifiers(), 0)
+		if kind == "casual":
+			score *= _rng.randf_range(1.0 - CASUAL_NOISE, 1.0 + CASUAL_NOISE)
 		if score > best_score:
 			best_score = score
 			best = offer
@@ -83,7 +89,7 @@ func play_shop(shop: Shop, wallet: Wallet, weapons: WeaponHolder, wave: int) -> 
 		_grant_reference_build(weapons, wave)
 	elif kind == "range" and wave <= 3 and not weapons.is_full():
 		weapons.add_weapon(_mono, 1)
-	var max_rerolls := MAX_REROLLS
+	var max_rerolls := CASUAL_REROLLS if kind == "casual" else MAX_REROLLS
 	for action in MAX_ACTIONS:
 		_merge_all(shop, weapons)
 		var pick := _best_offer(shop, weapons, wave)
@@ -151,6 +157,8 @@ func _best_offer(shop: Shop, weapons: WeaponHolder, wave: int) -> int:
 		var points := _weapon_points(offer, weapons) if offer.is_weapon() else _item_points(offer.item, wave)
 		# Value for money; worth buying only above a small threshold.
 		var value := points / maxf(offer.price, 1.0) * 10.0
+		if kind == "casual":
+			value *= _rng.randf_range(1.0 - CASUAL_NOISE, 1.0 + CASUAL_NOISE)
 		if points > 0.6 and value > best_value:
 			best_value = value
 			best = i

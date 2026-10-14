@@ -16,19 +16,47 @@ const CROWD_RADIUS := 110.0
 const CROWD_LIMIT := 6
 const FLEE_HP := 0.35
 
+## Skill knobs ("average player" profile): the direction is recomputed only every
+## `hold_frames` ticks (reaction time), turned by up to `jitter` radians (clumsy aim of the
+## route), and enemy shots are side-stepped `dodge_scale` as well as the expert bot does.
+var hold_frames: int = 1
+var jitter: float = 0.0
+var dodge_scale: float = 1.0
+
 var _run: Run
 var _hits: Array[int] = []
 var _orbit_sign: float = 1.0
+var _held := Vector2.ZERO
+var _hold_left: int = 0
+var _rng := RandomNumberGenerator.new()
 
 
 func setup(run: Run) -> void:
 	_run = run
 
 
+func set_skill(p_hold_frames: int, p_jitter: float, p_dodge_scale: float, seed: int) -> void:
+	hold_frames = maxi(p_hold_frames, 1)
+	jitter = p_jitter
+	dodge_scale = p_dodge_scale
+	_rng.seed = seed
+
+
+## Direction for this physics tick, held for `hold_frames` ticks with some jitter.
+func steer() -> Vector2:
+	if hold_frames <= 1 and jitter <= 0.0:
+		return _steer_expert()
+	if _hold_left <= 0:
+		_held = _steer_expert().rotated(_rng.randf_range(-jitter, jitter))
+		_hold_left = hold_frames
+	_hold_left -= 1
+	return _held
+
+
 ## Direction for this physics tick (length <= 1). Fights at its weapons' range:
 ## closes in when the nearest enemy is beyond it, backs off when closer, circles
 ## in between; flees (dodging shots) when surrounded or low on HP.
-func steer() -> Vector2:
+func _steer_expert() -> Vector2:
 	if _run == null or _run.player == null:
 		return Vector2.ZERO
 	var me := _run.player.global_position
@@ -88,7 +116,7 @@ func steer() -> Vector2:
 		var engage := _engage_distance()
 		var radial := clampf((nearest_d - engage) / engage, -1.0, 1.0)
 		direction = to_enemy * radial + orbit * (1.0 - absf(radial) * 0.5)
-	direction += dodge * 1.5 + wall * 1.5 + to_center * CENTER_PULL
+	direction += dodge * 1.5 * dodge_scale + wall * 1.5 + to_center * CENTER_PULL
 	return direction.normalized() if direction.length_squared() > 0.0001 else Vector2.ZERO
 
 

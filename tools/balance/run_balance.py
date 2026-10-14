@@ -54,6 +54,7 @@ def main():
     parser.add_argument("--weapon-ids", default="", help="weapon test: 'all' or a,b: each weapon as the starting weapon of every character listed")
     parser.add_argument("--dummy", type=int, default=0, help="shooting-range test: 1000x enemy HP, immortal player, stop after this wave")
     parser.add_argument("--dummy-hp", type=float, default=1000.0, help="shooting-range enemy HP multiplier")
+    parser.add_argument("--skill", type=int, default=0, help="1: average-player movement (reaction delay, route jitter)")
     parser.add_argument("--static", action="store_true", help="the bot never moves (static build)")
     parser.add_argument("--static-after", type=int, default=0, help="the bot moves up to this wave, then stands still")
     args = parser.parse_args()
@@ -84,7 +85,7 @@ def main():
             return name, "cached"
         cmd = [GODOT, "--headless", "--path", ROOT, "--fixed-fps", "60", "res://src/debug/balance/balance_sim.tscn",
                "--", "--character=" + character, "--weapon=" + weapon, "--seal=%d" % seal,
-               "--policy=" + policy, "--seed=%d" % seed, "--endless=%d" % args.endless, "--static=%d" % int(args.static), "--dummy=%d" % args.dummy, "--dummy_hp=%g" % args.dummy_hp, "--static_after=%d" % args.static_after, "--out=" + path]
+               "--policy=" + policy, "--seed=%d" % seed, "--endless=%d" % args.endless, "--static=%d" % int(args.static), "--dummy=%d" % args.dummy, "--skill=%d" % args.skill, "--dummy_hp=%g" % args.dummy_hp, "--static_after=%d" % args.static_after, "--out=" + path]
         subprocess.run(cmd, capture_output=True, text=True, timeout=2400 if args.endless else 1200)
         if not os.path.exists(path):
             return name, "no output"
