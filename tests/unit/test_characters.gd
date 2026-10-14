@@ -29,7 +29,8 @@ func test_character_modifiers_and_chosen_weapon_apply() -> void:
 	var run := _run(_setup(&"ronin", &"spear"))
 	assert_eq(run.player.weapons.get_slots()[0].data.id, &"spear")
 	assert_gt(run.player.stats.get_value(StatIds.DAMAGE), 1.0, "Swordswoman bonus: more damage")
-	assert_lt(run.player.stats.get_value(StatIds.RANGE), 1.0, "Swordswoman malus: less range")
+	assert_gt(run.player.stats.get_value(StatIds.MAX_HP), 100.0, "Swordswoman bonus: more health")
+	assert_almost_eq(run.player.stats.get_value(StatIds.RANGE), 1.0, 0.001, "Swordswoman has no range malus")
 
 
 func test_merchant_rule_effects_are_active() -> void:
