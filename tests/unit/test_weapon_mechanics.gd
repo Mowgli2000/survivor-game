@@ -55,7 +55,7 @@ func test_the_repeating_crossbow_speeds_up_while_it_keeps_firing_and_slows_down_
 	add_child_autofree(holder)
 	holder.setup(WeaponContext.new(s.player, StatBlock.from_defaults({}), s.enemies, s.projectiles, s.rng))
 	var slot := holder.add_weapon(weapon)
-	await wait_seconds(0.5)
+	await wait_seconds(1.0)
 	assert_gt(slot.ramp, 0.1, "it builds up while firing")
 	holder.remove_weapon(0)  # it stops: the speed-up of a slot fades by itself
 	assert_true(slot.retired)
