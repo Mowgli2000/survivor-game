@@ -98,7 +98,8 @@ func _blow_hurts(weapon_id: StringName, others: Array[Vector2]) -> Array[bool]:
 	data.max_hp = 5000.0
 	data.speed = 0.0
 	data.radius = 10.0
-	enemies.spawn(data, Vector2(90.0, 0.0))
+	# Just past the ring of floating weapons (RING_GAP): blows start there.
+	enemies.spawn(data, Vector2(130.0, 0.0))
 	for position in others:
 		enemies.spawn(data, position)
 	await wait_physics_frames(2)
@@ -114,7 +115,7 @@ func _blow_hurts(weapon_id: StringName, others: Array[Vector2]) -> Array[bool]:
 
 
 func test_the_cut_line_hurts_what_it_crosses_not_what_is_beside_it() -> void:
-	var hurt := await _blow_hurts(&"steel_katana", [Vector2(130.0, 3.0), Vector2(100.0, 70.0), Vector2(-150.0, 0.0)])
+	var hurt := await _blow_hurts(&"steel_katana", [Vector2(170.0, 3.0), Vector2(130.0, 70.0), Vector2(-150.0, 0.0)])
 	assert_true(hurt[0] and hurt[1], "enemies on the line are cut")
 	assert_false(hurt[2], "an enemy beside the line is spared")
 	assert_false(hurt[3], "an enemy behind the wielder is spared")
