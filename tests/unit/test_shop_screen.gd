@@ -340,3 +340,13 @@ func test_prices_show_the_gold_coin() -> void:
 	assert_not_null(screen._reroll.icon, "reroll price")
 	assert_eq(screen._reroll.icon.get_height(), UiIcons.BUTTON_ICON)
 	assert_gt(screen._reroll.get_minimum_size().x, 60.0, "the icon takes room in the button")
+
+
+func test_gamepad_left_from_merge_reaches_sell_and_back() -> void:
+	_open_screen(100)
+	_screen._controls["weapon:0"].pressed.emit()
+	var sell: Control = _screen._controls["sell"]
+	var merge: Control = _screen._controls["merge"]
+	assert_false((merge as Button).disabled, "two copies of a weapon can merge")
+	assert_eq(merge.find_valid_focus_neighbor(SIDE_LEFT), sell)
+	assert_eq(sell.find_valid_focus_neighbor(SIDE_RIGHT), merge)
