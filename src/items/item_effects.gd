@@ -116,7 +116,7 @@ func _resolve_explosions() -> void:
 		var radius := _explosions[i * 4 + 2]
 		enemies.damage_in_radius(pos, radius, _explosions[i * 4 + 3], false, 150.0)
 		if vfx != null:
-			vfx.explosion(pos, radius, ExplodeOnKillEffect.COLOR, false)
+			vfx.explosion(pos, radius, ExplodeOnKillEffect.COLOR, false, EffectSheets.EXPLOSION_BLAST)
 	effect_damage_running = false
 	_explosions = _explosions.slice(count * 4)
 

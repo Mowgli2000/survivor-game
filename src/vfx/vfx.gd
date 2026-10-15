@@ -336,12 +336,10 @@ func hit(pos: Vector2, color: Color = Color(1, 1, 1, 0.8)) -> void:
 	_add(Kind.HIT, pos, Vector2.ZERO, 12.0, _next_seed(), color, 0.1)
 
 
-## One hop of a chain of electricity: the painted bolt, or (screen already full of effects) the cheap drawn one.
-func lightning(from: Vector2, to: Vector2, color: Color) -> void:
-	if _count <= BUSY_COUNT:
-		sheet_stretch(EffectSheets.STORM_ARC, from, to, BOLT_HEIGHT)
-		return
-	_add(Kind.LIGHTNING, from, to, 3.0, _next_seed(), color, 0.18)
+## One hop of a chain of electricity: always the painted bolt (the drawn one used to take over on a busy
+## screen, i.e. in every late fight; dev's rule: no attack animation drawn by code).
+func lightning(from: Vector2, to: Vector2, _color: Color) -> void:
+	sheet_stretch(EffectSheets.STORM_ARC, from, to, BOLT_HEIGHT)
 
 
 ## Spawn gate: a violet portal that opens and closes where a monster appears
