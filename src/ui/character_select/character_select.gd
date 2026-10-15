@@ -620,6 +620,8 @@ func _apply_focus_modes() -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventJoypadButton or (event is InputEventJoypadMotion and absf(event.axis_value) >= 0.5):
 		_pad_focus = true
+		# A gamepad press after an earlier click: the look step must not be skipped.
+		_mouse_used = false
 	elif event is InputEventKey or event is InputEventMouseButton:
 		_pad_focus = false
 		_mouse_used = event is InputEventMouseButton
