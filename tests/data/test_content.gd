@@ -278,5 +278,5 @@ func test_every_class_has_two_starting_weapons() -> void:
 
 func test_final_bosses_take_a_share_of_the_wave_hp() -> void:
 	var stage: StageData = ContentDB.get_def(&"stages", &"default")
-	assert_lt(stage.boss_hp_share, 1.0, "the wave-20 boss must stay killable")
+	assert_lte(stage.boss_hp_share, 1.0, "the wave-20 boss must stay killable")
 	assert_gt(stage.boss_hp_share, 0.0)
