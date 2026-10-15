@@ -98,7 +98,7 @@ func _ready() -> void:
 	# Always a copy: difficulty and endless mode change it, never the shared data.
 	stage = config.stage.with_difficulty(setup.difficulty if setup != null else null)
 	if is_coop():
-		stage.apply_coop(config.coop_spawn_multiplier, config.coop_hp_multiplier)
+		stage.apply_coop(config.coop_spawn_multiplier, config.coop_hp_multiplier, config.coop_boss_hp_multiplier)
 	state = RunState.new(seed_override if seed_override >= 0 else randi())
 	progression = Progression.new(config.xp_base, config.xp_exponent)
 	_upgrade_pool.assign(ContentDB.get_all(&"upgrades"))

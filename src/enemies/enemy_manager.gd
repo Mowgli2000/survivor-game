@@ -130,6 +130,14 @@ func active_count() -> int:
 	return _active.size()
 
 
+## True while a boss or mini-boss (an enemy with phases) is alive. Linear scan: poll it rarely.
+func has_living_phased() -> bool:
+	for enemy in _active:
+		if enemy.is_alive() and not enemy.data.phases.is_empty():
+			return true
+	return false
+
+
 ## True while at least one boss is alive. Linear scan: only call it on boss events.
 func has_living_boss() -> bool:
 	for enemy in _active:

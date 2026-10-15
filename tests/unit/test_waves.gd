@@ -356,3 +356,55 @@ func test_coop_extra_enemies_do_not_thin_out_each_kill_drop() -> void:
 	coop.apply_coop(1.5, 1.2)
 	assert_almost_eq(coop.spawn_rate_at(15), solo.spawn_rate_at(15) * 1.5, 0.001)
 	assert_almost_eq(coop.material_rate_at(15), solo.material_rate_at(15), 0.0001, "same drop per kill, so 1.5x the team income")
+
+
+func _boss_duel_setup() -> Array:
+	var stage := _stage(3)
+	stage.spawn_rate_first = 60.0
+	stage.spawn_rate_last = 60.0
+	var entry := SpawnEntry.new()
+	entry.enemy = EnemyData.new()
+	stage.spawn_pool = [entry]
+	var boss := EnemyData.new()
+	boss.max_hp = 100.0
+	boss.phases = [BossPhase.new()]
+	var event := _event(1, 0.0)
+	event.enemy = boss
+	event.count = 1
+	stage.events = [event]
+	return _spawn_setup(stage)
+
+
+func test_no_steady_spawn_while_a_boss_lives_then_the_flow_comes_back() -> void:
+	var parts := _boss_duel_setup()
+	var director: WaveDirector = parts[0]
+	var spawner: SpawnDirector = parts[1]
+	var enemies: EnemyManager = parts[2]
+	director.start_wave(1)
+	spawner.begin_wave(1)
+	await wait_physics_frames(40)
+	assert_eq(enemies.active_count(), 1, "only the boss: the duel has no horde")
+	assert_true(enemies.has_living_phased())
+	enemies.damage_enemy(0, 1000.0, false, Vector2.RIGHT, 0.0)
+	await wait_physics_frames(60)
+	assert_gt(enemies.active_count(), 5, "the boss is dead: the horde comes back")
+
+
+func test_the_flow_comes_back_when_a_boss_fight_drags_on() -> void:
+	var parts := _boss_duel_setup()
+	var director: WaveDirector = parts[0]
+	var spawner: SpawnDirector = parts[1]
+	director.start_wave(1)
+	spawner.begin_wave(1)
+	await wait_physics_frames(3)
+	spawner._boss_clock = SpawnDirector.BOSS_PAUSE + SpawnDirector.BOSS_RAMP
+	assert_almost_eq(spawner._boss_flow(0.0), 1.0, 0.001, "after pause and ramp: full flow")
+	spawner._boss_clock = SpawnDirector.BOSS_PAUSE + SpawnDirector.BOSS_RAMP * 0.5
+	assert_almost_eq(spawner._boss_flow(0.0), 0.5, 0.01, "halfway through the ramp")
+
+
+func test_coop_bosses_get_extra_life() -> void:
+	var stage := _stage(3)
+	stage.boss_hp_share = 1.0
+	stage.apply_coop(1.5, 1.1, 1.6)
+	assert_almost_eq(stage.boss_hp_share, 1.6, 0.001)

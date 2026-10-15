@@ -8,6 +8,11 @@ extends Node
 const POSITION_ATTEMPTS := 8
 ## Members of a group appear within this distance of the group's center.
 const GROUP_SPREAD := 90.0
+## Boss duel: no steady spawn while a boss or mini-boss lives; after BOSS_PAUSE seconds of fight the
+## flow comes back over BOSS_RAMP seconds, so a fight nobody can finish is not a free rest.
+const BOSS_PAUSE := 45.0
+const BOSS_RAMP := 30.0
+const BOSS_POLL := 0.5
 
 var _stage: StageData
 var _state: RunState
@@ -20,6 +25,9 @@ var _accumulator: float = 0.0
 var _weights := PackedFloat32Array()
 var _eligible: Array[EnemyData] = []
 var _pending_events: Array[WaveEvent] = []
+## Seconds since the first boss of the wave appeared; -1 when no fight is on.
+var _boss_clock: float = -1.0
+var _boss_poll: float = 0.0
 
 
 func setup(stage: StageData, state: RunState, enemies: EnemyManager, party: Party, arena: Rect2,
@@ -30,6 +38,7 @@ func setup(stage: StageData, state: RunState, enemies: EnemyManager, party: Part
 	_party = party
 	_arena = arena
 	_waves = waves
+	enemies.boss_spawned.connect(_on_boss_spawned)
 
 
 func _ready() -> void:
@@ -40,6 +49,7 @@ func _ready() -> void:
 func begin_wave(wave: int) -> void:
 	_wave = wave
 	_accumulator = 0.0
+	_boss_clock = -1.0
 	_state.wave_spawned = 0
 	_state.wave_kills = 0
 	_pending_events = _stage.events_for(wave)
@@ -57,7 +67,7 @@ func _physics_process(delta: float) -> void:
 	var hp_multiplier := _stage.hp_multiplier_at(_wave)
 	var damage_multiplier := _stage.damage_multiplier_at(_wave)
 	_fire_events(_waves.wave_elapsed(), hp_multiplier, damage_multiplier)
-	_accumulator += _stage.spawn_rate_at(_wave) * delta
+	_accumulator += _stage.spawn_rate_at(_wave) * delta * _boss_flow(delta)
 	var group := _stage.group_size_at(_wave)
 	while _accumulator >= group:
 		_accumulator -= group
@@ -77,6 +87,26 @@ func _physics_process(delta: float) -> void:
 			_state.wave_spawned += 1
 
 
+func _on_boss_spawned(_enemy: Enemy) -> void:
+	if _boss_clock < 0.0:
+		_boss_clock = 0.0
+		_boss_poll = BOSS_POLL
+
+
+## Share (0..1) of the steady spawn flow right now: 1 outside a boss fight, 0 during the duel, then back up.
+func _boss_flow(delta: float) -> float:
+	if _boss_clock < 0.0:
+		return 1.0
+	_boss_clock += delta
+	_boss_poll -= delta
+	if _boss_poll <= 0.0:
+		_boss_poll = BOSS_POLL
+		if not _enemies.has_living_phased():
+			_boss_clock = -1.0
+			return 1.0
+	return clampf((_boss_clock - BOSS_PAUSE) / BOSS_RAMP, 0.0, 1.0)
+
+
 func _fire_events(elapsed: float, hp_multiplier: float, damage_multiplier: float) -> void:
 	for i in range(_pending_events.size() - 1, -1, -1):
 		var event := _pending_events[i]
@@ -86,7 +116,7 @@ func _fire_events(elapsed: float, hp_multiplier: float, damage_multiplier: float
 		var hp := hp_multiplier * (_stage.elite_hp_multiplier if event.elite else 1.0)
 		var offset := _state.rng.randf() * TAU
 		var enemy := event.pick_enemy(_state.rng)
-		if enemy.boss:
+		if enemy.boss or not enemy.phases.is_empty():
 			hp *= _stage.boss_hp_share
 		# Scripted events ignore max_enemies: elites and hordes must always appear.
 		for k in event.count:

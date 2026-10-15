@@ -163,7 +163,7 @@ func test_boss_bar_follows_the_director() -> void:
 	assert_true(bar.visible)
 	boss.hp = 25.0
 	bar._process(0.0)
-	assert_almost_eq(bar._rows[0].bar.value, 25.0, 0.01)
+	assert_almost_eq(bar._rows[0].bar.value, 0.25, 0.01, "one phase: the plain HP ratio")
 	_enemies.damage_enemy(0, 100.0, false, Vector2.ZERO, 0.0)
 	_director.update(0.01)
 	assert_false(bar.visible)

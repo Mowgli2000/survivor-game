@@ -23,6 +23,8 @@ extends Resource
 ## Two players (ADR 0017): enemy spawn rate and HP multiplied by these.
 @export var coop_spawn_multiplier: float = 1.5
 @export var coop_hp_multiplier: float = 1.1
+## Extra life of bosses and mini-bosses in coop (two players kill them about twice as fast).
+@export var coop_boss_hp_multiplier: float = 1.6
 
 @export_group("Weapons")
 @export var max_weapon_slots: int = 6

@@ -13,6 +13,7 @@ class Row:
 	var box: VBoxContainer
 	var name_label: Label
 	var bar: ProgressBar
+	var phase: int = -1
 
 
 var _rows: Array[Row] = []
@@ -32,7 +33,33 @@ func setup(director: BossDirector) -> void:
 
 func _process(_delta: float) -> void:
 	for row in _rows:
-		row.bar.value = maxf(row.boss.hp, 0.0)
+		var ratio := maxf(row.boss.hp, 0.0) / maxf(row.boss.max_hp, 1.0)
+		row.bar.value = segment_fill(row.boss.data, ratio)
+		var phase := row.boss.data.phase_index_for(ratio)
+		if phase != row.phase:
+			row.phase = phase
+			row.name_label.text = phase_title(row.boss.data, phase)
+
+
+## The bar shows one phase at a time: it refills at every phase (dev's idea), so a boss reads as
+## consecutive life bars. 1 = the segment of the current phase is full, 0 = about to change phase.
+## `ratio` = HP / max HP; the phase starts at its `hp_ratio` and ends at the next one's (or 0).
+static func segment_fill(data: EnemyData, ratio: float) -> float:
+	var count := data.phases.size()
+	if count <= 1:
+		return clampf(ratio, 0.0, 1.0)
+	var phase := data.phase_index_for(ratio)
+	var top := 1.0 if phase == 0 else data.phases[phase].hp_ratio
+	var bottom := data.phases[phase + 1].hp_ratio if phase + 1 < count else 0.0
+	return clampf((ratio - bottom) / maxf(top - bottom, 0.001), 0.0, 1.0)
+
+
+## "Name 2/3": the name and, for a boss with several phases, the phase it is in.
+static func phase_title(data: EnemyData, phase: int) -> String:
+	var name := TranslationServer.translate(data.name_key)
+	if data.phases.size() <= 1:
+		return name
+	return "%s  %d/%d" % [name, phase + 1, data.phases.size()]
 
 
 func _on_boss_started(enemy: Enemy) -> void:
@@ -53,8 +80,8 @@ func _on_boss_started(enemy: Enemy) -> void:
 	var styles := UiTheme.bar_styles(enemy.data.color)
 	row.bar.add_theme_stylebox_override("background", styles[0])
 	row.bar.add_theme_stylebox_override("fill", styles[1])
-	row.bar.max_value = enemy.max_hp
-	row.bar.value = enemy.hp
+	row.bar.max_value = 1.0
+	row.bar.value = 1.0
 	row.box.add_child(row.bar)
 	add_child(row.box)
 	_rows.append(row)

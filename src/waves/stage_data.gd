@@ -209,8 +209,10 @@ func apply_biome(biome: BiomeData) -> void:
 
 
 ## Two players (ADR 0017): more and tougher enemies. Call on a copy only.
-func apply_coop(spawn_multiplier: float, hp_multiplier: float) -> void:
+func apply_coop(spawn_multiplier: float, hp_multiplier: float, boss_multiplier: float = 1.0) -> void:
 	coop_spawn_factor = spawn_multiplier
+	# Two players share the duel: the boss needs more life, or it falls twice as fast.
+	boss_hp_share *= boss_multiplier
 	spawn_rate_first *= spawn_multiplier
 	spawn_rate_last *= spawn_multiplier
 	hp_multiplier_first *= hp_multiplier
