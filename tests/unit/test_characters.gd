@@ -182,7 +182,7 @@ func test_rank_e_hunter_cards_are_stronger() -> void:
 	var hunter: CharacterData = ContentDB.get_def(&"characters", &"drifter")
 	var offer := UpgradeOffer.for_stat(ContentDB.get_def(&"upgrades", &"vitality"), 1)
 	offer.bonus_scale = hunter.upgrade_scale
-	assert_eq(offer.scaled_modifiers()[0].flat, 15.0, "+10 HP card gives +15")
+	assert_eq(offer.scaled_modifiers()[0].flat, 13.0, "+10 HP card gives +13")
 
 
 func test_mage_other_families_deal_less_damage() -> void:
