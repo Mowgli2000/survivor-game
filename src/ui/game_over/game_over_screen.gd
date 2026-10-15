@@ -13,9 +13,14 @@ const VICTORY_DIM := Color(0.0, 0.02, 0.08, 0.38)
 const DEFEAT_BACKGROUND := preload("res://assets/ui/backgrounds/defeat.png")
 const VICTORY_BACKGROUND := preload("res://assets/ui/backgrounds/victory.png")
 ## Rows shown in the damage summary (the biggest dealers).
-const RECAP_ROWS := 8
-const RECAP_ICON := 68.0
+const RECAP_ROWS := 6
+const RECAP_ICON := 56.0
 const RECAP_BAR_WIDTH := 260.0
+## The unlock cards share this width (the end screen must fit the 1920 px viewport).
+const UNLOCKS_MAX_WIDTH := 1500.0
+const UNLOCK_CARD_MAX := 170.0
+const UNLOCK_CARD_MIN := 116.0
+var _unlock_card_width: float = UNLOCK_CARD_MAX
 const RECAP_ROW_SEPARATION := 8
 ## Right-stick / page keys scroll the list when there are more rows than RECAP_ROWS.
 const RECAP_SCROLL_SPEED := 700.0
@@ -64,14 +69,14 @@ func _init() -> void:
 	panel.add_theme_stylebox_override("panel", UiTheme.window_style())
 	center.add_child(panel)
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 32)
+	box.add_theme_constant_override("separation", 20)
 	panel.add_child(box)
 
 	_title = Label.new()
 	_title.text = "UI_GAME_OVER"
 	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_title.theme_type_variation = &"TitleLabel"
-	_title.add_theme_font_size_override("font_size", 88)
+	_title.add_theme_font_size_override("font_size", 72)
 	box.add_child(_title)
 
 	var middle := HBoxContainer.new()
@@ -95,27 +100,32 @@ func _init() -> void:
 	_unlocks.visible = false
 	box.add_child(_unlocks)
 
+	# One row: three stacked buttons pushed the cards off the bottom of the screen.
+	var buttons := HBoxContainer.new()
+	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
+	buttons.add_theme_constant_override("separation", 24)
+	box.add_child(buttons)
 	_retry = Button.new()
 	_retry.text = "UI_RETRY"
 	_retry.custom_minimum_size = Vector2(340, 84)
 	_retry.theme_type_variation = &"BigButton"
-	_retry.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_retry.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_retry.pressed.connect(func() -> void: retry_requested.emit())
-	box.add_child(_retry)
+	buttons.add_child(_retry)
 
 	_endless = Button.new()
 	_endless.text = "UI_CONTINUE_ENDLESS"
-	_endless.custom_minimum_size = Vector2(340, 64)
-	_endless.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_endless.custom_minimum_size = Vector2(300, 84)
+	_endless.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_endless.pressed.connect(func() -> void: endless_requested.emit())
-	box.add_child(_endless)
+	buttons.add_child(_endless)
 
 	_main_menu = Button.new()
 	_main_menu.text = "UI_MAIN_MENU"
-	_main_menu.custom_minimum_size = Vector2(340, 64)
-	_main_menu.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_main_menu.custom_minimum_size = Vector2(300, 84)
+	_main_menu.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	_main_menu.pressed.connect(func() -> void: main_menu_requested.emit())
-	box.add_child(_main_menu)
+	buttons.add_child(_main_menu)
 
 
 func open(time_survived: float, level: int, kills: int, wave: int, victory: bool = false) -> void:
@@ -302,6 +312,16 @@ func show_unlocks(challenges: Array[ChallengeData]) -> void:
 	for child in _unlocks.get_children():
 		_unlocks.remove_child(child)
 		child.queue_free()
+	var count_cards := 0
+	var has_shards := false
+	for challenge in challenges:
+		if ContentDB.get_def(challenge.unlock_category, challenge.unlock_id) != null:
+			count_cards += 1
+		has_shards = has_shards or challenge.shards > 0
+	if has_shards:
+		count_cards += 1
+	_unlock_card_width = clampf((UNLOCKS_MAX_WIDTH - 18.0 * maxi(count_cards - 1, 0)) / maxi(count_cards, 1),
+		UNLOCK_CARD_MIN, UNLOCK_CARD_MAX)
 	var delay := 0.3
 	var shards := 0
 	var collected := 0
@@ -334,7 +354,7 @@ func unlock_names() -> PackedStringArray:
 ## One card for the portal shards the collection challenges of this run paid.
 func _shards_card(shards: int, challenges: int) -> Control:
 	var card := PanelContainer.new()
-	card.custom_minimum_size = Vector2(190, 0)
+	card.custom_minimum_size = Vector2(_unlock_card_width, 0)
 	card.add_theme_stylebox_override("panel", UiTheme.card_style(UiTheme.VIOLET, 0.9))
 	card.set_meta(&"name_key", "UI_SHARDS_EARNED")
 	var box := VBoxContainer.new()
@@ -345,11 +365,11 @@ func _shards_card(shards: int, challenges: int) -> Control:
 	line.alignment = BoxContainer.ALIGNMENT_CENTER
 	line.add_theme_constant_override("separation", 8)
 	box.add_child(line)
-	line.add_child(UiIcons.tile(UiIcons.shard(), 58.0))
+	line.add_child(UiIcons.tile(UiIcons.shard(), 48.0))
 	var amount := Label.new()
 	amount.text = "+%d" % shards
 	amount.theme_type_variation = &"TitleLabel"
-	amount.add_theme_font_size_override("font_size", 48)
+	amount.add_theme_font_size_override("font_size", 40)
 	amount.add_theme_color_override("font_color", UiTheme.VIOLET)
 	line.add_child(amount)
 	var name_label := Label.new()
@@ -368,7 +388,7 @@ func _shards_card(shards: int, challenges: int) -> Control:
 
 func _unlock_card(def: Resource) -> Control:
 	var card := PanelContainer.new()
-	card.custom_minimum_size = Vector2(190, 0)
+	card.custom_minimum_size = Vector2(_unlock_card_width, 0)
 	card.add_theme_stylebox_override("panel", UiTheme.card_style(UiTheme.GOLD, 0.9))
 	card.set_meta(&"name_key", def.get(&"name_key"))
 	var box := VBoxContainer.new()
@@ -377,16 +397,18 @@ func _unlock_card(def: Resource) -> Control:
 	card.add_child(box)
 	var visual: Control
 	if def is CharacterData:
-		visual = SpritePreview.create(CharacterSelect.character_sheet(def), 110.0)
+		visual = SpritePreview.create(CharacterSelect.character_sheet(def), 84.0)
 	else:
-		visual = IconTile.create(def.get(&"icon"), int(def.get(&"tier")) if def is ItemData else 1, 96.0)
+		visual = IconTile.create(def.get(&"icon"), int(def.get(&"tier")) if def is ItemData else 1, 72.0)
 	visual.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	box.add_child(visual)
 	var name_label := Label.new()
 	name_label.text = def.get(&"name_key")
 	name_label.theme_type_variation = &"SubtitleLabel"
-	name_label.add_theme_font_size_override("font_size", 24)
+	name_label.add_theme_font_size_override("font_size", 20)
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	# Long names wrap inside the card instead of widening it.
+	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	if not def is CharacterData:
 		name_label.add_theme_color_override("font_color", Tiers.color(int(def.get(&"tier")) if def is ItemData else 1))
 	box.add_child(name_label)
