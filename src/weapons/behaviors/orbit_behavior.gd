@@ -19,7 +19,8 @@ func fire(slot: WeaponSlot, ctx: WeaponContext) -> bool:
 	var stats := ctx.stats
 	var origin := ctx.owner.global_position
 	var count := s.projectile_count + int(stats.get_value(StatIds.PROJECTILE_COUNT))
-	var radius := s.attack_range  # the Range stat does not apply: the orbit is a fixed ring around the hero
+	# The Range stat widens the ring like a melee swing (3/4 of it, capped at x1.6); the hit size does not grow.
+	var radius := s.attack_range * MeleeArcBehavior.reach_multiplier(stats)
 	var area := 1.0  # the explosion size stat does not apply to the blades (ADR 0029)
 	var knockback := s.knockback * stats.get_value(StatIds.KNOCKBACK)
 	# Ranks and the attack speed stat make the blades turn and strike faster (the weapon's base cooldown is its pace 1).

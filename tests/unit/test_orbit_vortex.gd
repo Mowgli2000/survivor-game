@@ -43,6 +43,23 @@ func test_shadow_blades_circle_the_hero_beyond_the_ring_of_weapons() -> void:
 		assert_gt(distance, MeleeArcBehavior.RING_GAP)
 
 
+func test_the_range_stat_widens_the_orbit_of_the_blades() -> void:
+	var s := await _setup(Vector2(600.0, 0.0))
+	var weapon: WeaponData = ContentDB.get_def(&"weapons", &"shadow_blades")
+	var stats := StatBlock.from_defaults({})
+	var bonus := StatModifier.new()
+	bonus.stat = StatIds.RANGE
+	bonus.percent = 0.2
+	stats.add_modifier(bonus)
+	var ctx := WeaponContext.new(s.player, stats, s.enemies, s.projectiles, s.rng, s.vfx)
+	assert_true(weapon.behavior.fire(WeaponSlot.new(weapon, 1), ctx))
+	await wait_physics_frames(10)
+	var expected := weapon.attack_range * MeleeArcBehavior.reach_multiplier(stats)
+	assert_gt(expected, weapon.attack_range, "+20 % Range makes the ring wider")
+	var distance: float = (s.projectiles.projectile_position(0) - s.player.global_position).length()
+	assert_almost_eq(distance, expected, 1.0)
+
+
 func test_a_blade_hurts_the_same_enemy_again_and_again() -> void:
 	var s := await _setup(Vector2(150.0, 0.0))
 	var weapon: WeaponData = ContentDB.get_def(&"weapons", &"shadow_blades")
