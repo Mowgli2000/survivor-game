@@ -255,7 +255,7 @@ func test_sprite_sheets_fit_their_atlas_page() -> void:
 		assert_lte(maxi(page.size.x, page.size.y), 8192, file + ": atlas page over 8192 px")
 
 
-## Every class has at least 6 usable weapons, every family at least 7 (session 8).
+## Every class has at least 6 usable weapons, every family at least 6 (7 until the frag grenade was removed, 2026-10-13).
 func test_every_class_and_family_has_enough_weapons() -> void:
 	var weapons: Array[WeaponData] = []
 	weapons.assign(ContentDB.get_all(&"weapons"))
@@ -265,7 +265,7 @@ func test_every_class_and_family_has_enough_weapons() -> void:
 		assert_gte(usable.size(), 6, "%s: %d weapons" % [character.id, usable.size()])
 	for family: StringName in [&"blade", &"gun", &"energy", &"explosive"]:
 		var count := weapons.filter(func(w: WeaponData) -> bool: return w.families.has(family)).size()
-		assert_gte(count, 7, "%s: %d weapons" % [family, count])
+		assert_gte(count, 6, "%s: %d weapons" % [family, count])
 
 
 ## Each class offers exactly two starting weapons (dev's rule, session 8).

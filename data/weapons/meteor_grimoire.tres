@@ -36,6 +36,7 @@ area_percent = 0.2
 [resource]
 script = ExtResource("1_weapon")
 id = &"meteor_grimoire"
+locked = true
 name_key = "WEAPON_METEOR_GRIMOIRE"
 description_key = "WEAPON_METEOR_GRIMOIRE_DESC"
 behavior = SubResource("Resource_behavior")

@@ -70,9 +70,12 @@ func test_painted_beams_and_meteor_art_exist() -> void:
 	assert_not_null(meteor.impact_sheet)
 
 
-func test_a_frag_grenade_throws_one_shot_that_bursts_into_shards() -> void:
+func test_a_shard_weapon_throws_one_shot_that_bursts_into_shards() -> void:
 	var s := await _setup()
-	var weapon: WeaponData = ContentDB.get_def(&"weapons", &"frag_grenade")
+	# No weapon uses shards at the moment (the frag grenade was removed): a bomb with 8 shards tests the mechanism.
+	var weapon: WeaponData = (ContentDB.get_def(&"weapons", &"bomb") as WeaponData).duplicate()
+	weapon.fragments = 8
+	weapon.fragment_style = 2
 	var ctx := WeaponContext.new(s.player, StatBlock.from_defaults({}), s.enemies, s.projectiles, s.rng)
 	ctx.vfx = s.vfx
 	assert_true(weapon.behavior.fire(WeaponSlot.new(weapon, 1), ctx))

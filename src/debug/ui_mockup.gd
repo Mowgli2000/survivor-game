@@ -485,7 +485,7 @@ func _screen_shop() -> void:
 	var cards := [
 		[1, "ARME · I · LAMES", "Hache de guerre", "Coup lent mais très large qui repousse les ennemis.", "heavy_axe", 24, "focus"],
 		[1, "OBJET · I", "Trèfle doré", "+15 Chance", "lucky_coin", 18, ""],
-		[1, "ARME · I · ALCHIMIE", "Grenades à fragments", "Trois grenades lancées en éventail, petites explosions.", "frag_grenade", 22, "sold"],
+		[1, "ARME · I · ALCHIMIE", "Bombe", "Explose en grande zone.", "bomb", 22, "sold"],
 		[1, "OBJET · I", "Gant de magnétite", "+40 Portée de ramassage", "magnet_glove", 10, ""],
 	]
 	for i in 4:
