@@ -53,11 +53,11 @@ func _init() -> void:
 
 ## Smaller rows and details, for screens with little room (call before setup()).
 func set_dense() -> void:
-	_font_size = 17
-	_detail_size = 13
+	_font_size = 19
+	_detail_size = 14
 	_grid.add_theme_constant_override("v_separation", 0)
 	_title.add_theme_font_size_override("font_size", 28)
-	custom_minimum_size.x = 330.0
+	custom_minimum_size.x = 360.0
 
 
 ## Coop: whose stats these are ("Player 2", in the player's color).

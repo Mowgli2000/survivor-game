@@ -234,7 +234,8 @@ func _init(p_compact: bool = false) -> void:
 	_item_popup.add_child(_item_popup_label)
 	root.add_child(_item_popup)
 	if not _compact:
-		root.add_child(ButtonHints.create([[&"A", "UI_HINT_BUY"], [&"X", "UI_SHOP_MERGE"], [&"Y", "UI_HINT_REROLL"]], true))
+		var hints := ButtonHints.create([[&"A", "UI_HINT_BUY"], [&"X", "UI_SHOP_MERGE"], [&"Y", "UI_HINT_REROLL"]])
+		root.add_child(hints)
 
 
 ## merge_weapon (gamepad Square / X, key F) on an owned weapon merges it at once;

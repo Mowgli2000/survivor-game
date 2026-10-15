@@ -114,7 +114,8 @@ func _draw_badge() -> void:
 	var text := str(_level)
 	var size := roundi(BADGE_FONT_SIZE * scale_now)
 	var width := _font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
-	var at := center + Vector2(-width * 0.5, size * 0.33)
+	# Baseline from the font's own metrics: the digits sit in the middle of the medal at any size.
+	var at := center + Vector2(-width * 0.5, (_font.get_ascent(size) - _font.get_descent(size)) * 0.5)
 	draw_string_outline(_font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, BADGE_OUTLINE, UiTheme.OUTLINE)
 	draw_string(_font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, Color.WHITE)
 

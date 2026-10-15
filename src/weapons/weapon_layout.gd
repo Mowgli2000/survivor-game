@@ -8,7 +8,7 @@ class_name WeaponLayout
 ## the ones above still clear the head (the sprite's top is ~53 px above the origin).
 const BODY_CENTER := Vector2(0.0, -12.0)
 ## Distance from the circle center to a weapon mount.
-const MOUNT_RADIUS := 84.0
+const MOUNT_RADIUS := 100.0
 ## Distance from a mount to the weapon's muzzle (where shots start).
 const BARREL := 28.0
 
