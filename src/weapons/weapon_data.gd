@@ -108,6 +108,8 @@ enum SlashStyle { CRESCENT, THIN, THRUST, HEAVY, SMASH, FLAME, RUNIC }
 ## What is drawn is exactly what hurts (MeleeArcBehavior).
 enum SwingFx { ARC, TRAVEL, LINE, ORBIT, TARGET, RING, FLURRY }
 @export var swing_fx: SwingFx = SwingFx.ARC
+## TARGET and RING swings are drawn on the ground, under the hero and the monsters (a sigil he walks over stays whole).
+@export var ground_swing: bool = false
 ## Width of the lines (LINE, FLURRY): the real damage width, an enemy's own size comes on top.
 @export var hit_width: float = 20.0
 ## Fine tuning of the size of the weapon's damage shape (circle, wave): 1 = the size its cooldown asks for.

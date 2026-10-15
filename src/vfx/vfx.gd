@@ -12,7 +12,7 @@ enum Kind { SLASH, BEAM, EXPLOSION, HIT, LIGHTNING, WARN_CIRCLE, WARN_LINE, PORT
 const CAPACITY := 384
 const PAINT_SHADER := preload("res://src/vfx/painted_effect.gdshader")
 ## Radius around a hero (world px) where painted effects fade out so he stays visible.
-const GUARD_RADIUS := 100.0  # = MeleeArcBehavior.RING_GAP: nothing painted inside the ring of floating weapons
+const GUARD_RADIUS := MeleeArcBehavior.RING_GAP  # nothing painted inside the ring of floating weapons
 ## Late game (Zone stat, many weapons) the drawn effects stay readable: past these sizes
 ## the picture grows at a fraction of the real hit area (the hits themselves are untouched).
 ## Slashes are drawn at their real size up to 320 px (playtest: with the cap at 140, more
@@ -64,7 +64,7 @@ const DEATH_LIFE := 0.42
 ## _size px with a drawn height of _extra px (beams, bolts), or falling along its direction over _extra px
 ## with its head (EffectSheet.head) landing on the end point (meteors, turned by EffectSheet.art_angle), or replaying its
 ## frames _extra times over its life, fading in and out (burning ground).
-enum SheetMode { PLAIN, TRAVEL, ORBIT, STRETCH, FALL, LOOP }
+enum SheetMode { PLAIN, TRAVEL, ORBIT, STRETCH, FALL, LOOP, GROUND }
 ## Angle swept by an orbiting sheet over its life, radians.
 const ORBIT_SWEEP := TAU * 0.75
 
@@ -248,6 +248,11 @@ func sheet_travel_at(effect: EffectSheet, pos: Vector2, angle: float, half_exten
 	_add_sheet(effect, pos, angle, effect.size_for(half_extent), follower, Color.WHITE, SheetMode.TRAVEL, distance, delay)
 
 
+## A painted one-shot on the ground: under the hero and the monsters, with a thin copy over them.
+func sheet_ground_at(effect: EffectSheet, pos: Vector2, half_extent: float, delay: float = 0.0) -> void:
+	_add_sheet(effect, pos, 0.0, effect.size_for(half_extent), null, Color.WHITE, SheetMode.GROUND, 0.0, delay)
+
+
 func sheet_orbit_at(effect: EffectSheet, pos: Vector2, angle: float, half_extent: float, radius: float,
 		follower: Node2D = null) -> void:
 	_add_sheet(effect, pos, angle, effect.size_for(half_extent), follower, Color.WHITE, SheetMode.ORBIT, radius)
@@ -420,7 +425,7 @@ func _process(delta: float) -> void:
 	var has_ground := false
 	for i in _count:
 		if _kind[i] == Kind.SHEET:
-			if _style[i] == SheetMode.LOOP:
+			if _style[i] == SheetMode.LOOP or _style[i] == SheetMode.GROUND:
 				has_ground = true
 				has_sheet = has_sheet or GROUND_FRONT_SHARE > 0.0
 			else:
@@ -497,9 +502,10 @@ func _draw_sheets(canvas: Node2D, ground: bool) -> void:
 		if _kind[i] != Kind.SHEET:
 			continue
 		var is_loop := _style[i] == SheetMode.LOOP
-		if ground and not is_loop:
+		var on_ground := is_loop or _style[i] == SheetMode.GROUND
+		if ground and not on_ground:
 			continue
-		if not ground and is_loop and GROUND_FRONT_SHARE <= 0.0:
+		if not ground and on_ground and GROUND_FRONT_SHARE <= 0.0:
 			continue
 		var t := _life[i] / _max_life[i]
 		var effect := _sheet[i]
@@ -532,7 +538,7 @@ func _draw_sheets(canvas: Node2D, ground: bool) -> void:
 		var tint := _color[i] * effect.opacity * (GROUND_OPACITY if is_loop else PAINTED_OPACITY)
 		if not is_loop:
 			tint *= clampf(_life[i] / FADE_OUT, 0.0, 1.0)  # whole until the last moments
-		if is_loop and not ground:
+		if on_ground and not ground:
 			tint *= GROUND_FRONT_SHARE  # the thin copy over the creatures
 		var wrap := false
 		if _style[i] == SheetMode.LOOP:

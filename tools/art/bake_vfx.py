@@ -58,7 +58,7 @@ SHEETS_HD = {
     "rapier_slash": (2, 1.8, 1.3, 0.0, 0.16),
     "axe_slam": (1, 1.6, 2.4, 0.0, 0.32),
     "scythe_blade": (1, 1.8, 2.2, 0.0, 0.36),
-    "rune_sigil": (1, 1.6, 2.4, 0.0, 0.38),
+    "rune_sigil": (1, 1.6, 1.9, 0.0, 0.38),
     "rapier_prick": (1, 1.8, 2.0, 0.0, 0.15),
     "spear_pierce": (1, 1.8, 1.3, 0.0, 0.16),
     # fifth pass (2026-10-11): painted beams, chain bolt and meteor
@@ -97,6 +97,9 @@ NO_SPECKS = {"flame_wave", "iaido_line", "steel_slash", "fang_slash", "axe_slam"
              "meteor_fall", "meteor_impact"}
 # Sheets made of dark solid matter (rock): their dark pixels stay opaque instead of fading with their brightness.
 SOLID = {"meteor_fall", "meteor_impact"}
+# Wider fade at the cell border (px of the baked cell): the art reaches the edge of its cell and the
+# frame would show as a hard line (the sigil's light pillar was cut flat at the top).
+SOFT_MARGIN = {"rune_sigil": 90}
 SPECK_SIDE = 96  # masks are worked on at this size per frame
 SPECK_KEEP = 0.10  # a blob smaller than this share of the frame's biggest blob is a speck
 
@@ -226,7 +229,7 @@ def bake_sheet(name: str) -> None:
     out = Image.new("RGBA", image.size)
     pixels = out.load()
     ramp = 16.0 if name in SOLID else 60.0  # dark rock must be opaque, light is additive-like
-    margin = 10  # px faded to nothing at every cell border: no grid line or neighbour bleed
+    margin = SOFT_MARGIN.get(name, 10)  # px faded to nothing at every cell border: no grid line or neighbour bleed
     for y in range(height):
         fy = min(y % cell_h, cell_h - 1 - y % cell_h)
         for x in range(width):
