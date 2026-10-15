@@ -22,7 +22,7 @@ extends Resource
 @export_group("Local coop")
 ## Two players (ADR 0017): enemy spawn rate and HP multiplied by these.
 @export var coop_spawn_multiplier: float = 1.5
-@export var coop_hp_multiplier: float = 1.2
+@export var coop_hp_multiplier: float = 1.1
 
 @export_group("Weapons")
 @export var max_weapon_slots: int = 6

@@ -348,3 +348,11 @@ func test_seal_hp_curve_overrides_the_stage_curve_only_when_set() -> void:
 	seal.hp_curve = 3.0
 	assert_eq(stage.with_difficulty(seal).hp_multiplier_curve, 3.0)
 	assert_eq(stage.hp_multiplier_curve, 5.0, "the stage itself is untouched")
+
+
+func test_coop_extra_enemies_do_not_thin_out_each_kill_drop() -> void:
+	var solo: StageData = ContentDB.get_def(&"stages", &"default").copy()
+	var coop: StageData = ContentDB.get_def(&"stages", &"default").copy()
+	coop.apply_coop(1.5, 1.2)
+	assert_almost_eq(coop.spawn_rate_at(15), solo.spawn_rate_at(15) * 1.5, 0.001)
+	assert_almost_eq(coop.material_rate_at(15), solo.material_rate_at(15), 0.0001, "same drop per kill, so 1.5x the team income")

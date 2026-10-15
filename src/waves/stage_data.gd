@@ -17,6 +17,9 @@ extends Resource
 ## Duration of the last wave (boss wave). 0 = same rule as the other waves.
 @export var final_wave_duration: float = 0.0
 
+## Spawn multiplier of a coop run (set by apply_coop, 1 in solo); see material_rate_at.
+var coop_spawn_factor: float = 1.0
+
 @export_group("Curves (wave 1 -> last wave)")
 ## Enemies per second.
 @export var spawn_rate_first: float = 1.5
@@ -134,7 +137,9 @@ func events_for(wave: int) -> Array[WaveEvent]:
 
 func material_rate_at(wave: int) -> float:
 	var rate := lerpf(material_rate_first, material_rate_last, pow(t_at(wave), material_rate_curve))
-	var spawn_rate := spawn_rate_at(wave)
+	# Coop: the extra enemies do not thin out what each kill drops (each player would end up with
+	# about half of the solo income): the decoupling looks at the solo spawn rate.
+	var spawn_rate := spawn_rate_at(wave) / maxf(coop_spawn_factor, 0.01)
 	if material_reference_spawn_rate > 0.0 and spawn_rate > material_reference_spawn_rate:
 		rate *= pow(material_reference_spawn_rate / spawn_rate, material_decoupling)
 	return rate * _endless_factor(wave, -endless_material_decay)
@@ -205,6 +210,7 @@ func apply_biome(biome: BiomeData) -> void:
 
 ## Two players (ADR 0017): more and tougher enemies. Call on a copy only.
 func apply_coop(spawn_multiplier: float, hp_multiplier: float) -> void:
+	coop_spawn_factor = spawn_multiplier
 	spawn_rate_first *= spawn_multiplier
 	spawn_rate_last *= spawn_multiplier
 	hp_multiplier_first *= hp_multiplier
