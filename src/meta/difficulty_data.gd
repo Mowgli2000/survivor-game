@@ -9,6 +9,9 @@ extends Resource
 @export var name_key: String
 @export var description_key: String
 @export var hp_multiplier: float = 1.0
+## Shape of the HP curve (StageData.hp_multiplier_curve); 0 keeps the stage's own. A lower
+## value starts the climb earlier: the seal is harder in the middle waves, not only at the end.
+@export_range(0.0, 8.0) var hp_curve: float = 0.0
 @export var damage_multiplier: float = 1.0
 @export var spawn_rate_multiplier: float = 1.0
 @export var group_size_bonus: int = 0

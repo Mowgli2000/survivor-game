@@ -338,3 +338,13 @@ func test_steady_spawns_arrive_in_groups() -> void:
 	var first := enemies.get_enemy(0).position
 	for i in range(1, 6):
 		assert_lt(enemies.get_enemy(i).position.distance_to(first), SpawnDirector.GROUP_SPREAD * 2.0 + 1.0)
+
+
+func test_seal_hp_curve_overrides_the_stage_curve_only_when_set() -> void:
+	var stage := StageData.new()
+	stage.hp_multiplier_curve = 5.0
+	var seal := DifficultyData.new()
+	assert_eq(stage.with_difficulty(seal).hp_multiplier_curve, 5.0, "0 keeps the stage curve")
+	seal.hp_curve = 3.0
+	assert_eq(stage.with_difficulty(seal).hp_multiplier_curve, 3.0)
+	assert_eq(stage.hp_multiplier_curve, 5.0, "the stage itself is untouched")

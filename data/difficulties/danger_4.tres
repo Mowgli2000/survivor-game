@@ -7,6 +7,7 @@
 script = ExtResource("1_difficulty")
 id = &"danger_4"
 level = 4
+hp_curve = 3.4
 steady_elite_chance = 0.02
 hp_multiplier = 1.55
 damage_multiplier = 1.55

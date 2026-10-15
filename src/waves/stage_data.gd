@@ -164,6 +164,8 @@ func with_difficulty(difficulty: DifficultyData) -> StageData:
 		return dup
 	dup.hp_multiplier_first *= _early(difficulty.hp_multiplier)
 	dup.hp_multiplier_last *= difficulty.hp_multiplier
+	if difficulty.hp_curve > 0.0:
+		dup.hp_multiplier_curve = difficulty.hp_curve
 	dup.damage_multiplier_first *= _early(difficulty.damage_multiplier)
 	dup.damage_multiplier_last *= difficulty.damage_multiplier
 	dup.spawn_rate_first *= _early(difficulty.spawn_rate_multiplier)
