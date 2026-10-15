@@ -197,3 +197,12 @@ func test_mage_other_families_deal_less_damage() -> void:
 	assert_almost_eq(slot.stats.damage, WeaponStats.compute(sword, 1).damage * 0.75, 0.001)
 	slot.set_level(2)
 	assert_almost_eq(slot.stats.damage, WeaponStats.compute(sword, 2).damage * 0.75, 0.001, "kept after a level up")
+
+
+func test_shadow_blades_count_as_melee_for_the_swordswoman_only() -> void:
+	var blades: WeaponData = ContentDB.get_def(&"weapons", &"shadow_blades")
+	var swordswoman: CharacterData = ContentDB.get_def(&"characters", &"ronin")
+	var archer: CharacterData = ContentDB.get_def(&"characters", &"gunslinger")
+	assert_false(blades.is_melee(), "still a projectile weapon")
+	assert_true(swordswoman.allows_weapon(blades))
+	assert_false(archer.allows_weapon(blades))

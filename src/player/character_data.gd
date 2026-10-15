@@ -130,7 +130,7 @@ func card_art_for(variant: int) -> Texture2D:
 func allows_weapon(weapon: WeaponData) -> bool:
 	match weapon_kind:
 		WeaponKind.MELEE:
-			return weapon.is_melee()
+			return weapon.in_melee_class()
 		WeaponKind.RANGED:
-			return not weapon.is_melee()
+			return not weapon.in_melee_class()
 	return true

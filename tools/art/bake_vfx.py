@@ -39,6 +39,7 @@ SHEETS = {
 # Third pass (tools/art/gen_vfx_hd.py, art_tests/vfx_hd): 4 columns, 3 rows (12 frames) or 4 rows (16 frames, square image).
 # These names replace the ones above. name: (candidate 1|2, boost, scale, forward, duration)
 SHEETS_HD = {
+    "frost_shards": (1, 1.7, 1.1, 0.5, 0.3),
     "steel_slash": (1, 1.8, 2.2, 0.0, 0.22),
     "fang_slash": (1, 1.8, 2.2, 0.0, 0.18),
     "hammer_smash": (1, 1.6, 2.2, 0.0, 0.36),

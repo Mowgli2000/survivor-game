@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://src/weapons/status_data.gd" id="4_status"]
 [ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/frost_scepter.wav" id="9_sound"]
 [ext_resource type="Texture2D" path="res://assets/icons/weapons/frost_scepter.png" id="icon_tex"]
-[ext_resource type="Resource" path="res://data/vfx/frost_cone.tres" id="10_cone"]
+[ext_resource type="Resource" path="res://data/vfx/frost_shards.tres" id="10_cone"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
 script = ExtResource("2_behavior")
@@ -39,7 +39,7 @@ description_key = "WEAPON_FROST_SCEPTER_DESC"
 behavior = SubResource("Resource_behavior")
 levels = Array[ExtResource("3_level")]([SubResource("Resource_l2"), SubResource("Resource_l3"), SubResource("Resource_l4")])
 base_price = 18
-base_damage = 10.0
+base_damage = 12.0
 cooldown = 0.8
 attack_range = 360.0
 crit_chance = 0.05
@@ -47,7 +47,7 @@ knockback = 60.0
 projectile_count = 1
 spread_deg = 12.0
 area = 270.0
-arc_degrees = 45.0
+arc_degrees = 30.0
 slash_sheet = ExtResource("10_cone")
 status = SubResource("Resource_shock")
 status_chance = 1.0

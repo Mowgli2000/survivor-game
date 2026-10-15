@@ -138,6 +138,8 @@ enum SwingFx { ARC, TRAVEL, LINE, ORBIT, TARGET, RING, FLURRY }
 ## Size of the floating weapon relative to WeaponVisuals.SIZE: round things (bombs,
 ## flasks) fill their icon and looked too big next to blades; melee weapons a bit bigger.
 @export var float_scale: float = 1.0
+## Counts as a melee weapon for the class rules though it is not a MeleeArcBehavior.
+@export var melee_class: bool = false
 
 
 func max_level() -> int:
@@ -147,3 +149,9 @@ func max_level() -> int:
 ## Close-range slashing weapon (MeleeArcBehavior); everything else is ranged.
 func is_melee() -> bool:
 	return behavior is MeleeArcBehavior
+
+
+## Class rules (CharacterData.allows_weapon): true for a melee weapon, and for the
+## short-range weapons of `melee_class`, which a melee class may carry (dev's call: shadow blades).
+func in_melee_class() -> bool:
+	return is_melee() or melee_class
