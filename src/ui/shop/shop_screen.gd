@@ -600,6 +600,10 @@ func _rebuild_weapons() -> void:
 	merge.pressed.connect(_on_merge)
 	_weapon_actions.add_child(merge)
 	_controls["merge"] = merge
+	# Explicit left/right link: Sell and Merge sit side by side, the pad must cross between them.
+	if _is_focusable(sell) and _is_focusable(merge):
+		sell.focus_neighbor_right = sell.get_path_to(merge)
+		merge.focus_neighbor_left = merge.get_path_to(sell)
 
 
 ## Hover text of an owned weapon: name and tier, description, stats at its tier.

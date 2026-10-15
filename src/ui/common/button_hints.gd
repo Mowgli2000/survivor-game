@@ -50,3 +50,8 @@ static func create(items: Array, top_right: bool = false) -> ButtonHints:
 		bar.add_child(pair)
 	bar.visible = show_always or not Input.get_connected_joypads().is_empty()
 	return bar
+
+
+# A pad plugged in (or unplugged) after the screen was built still shows (or hides) the bar.
+func _process(_delta: float) -> void:
+	visible = show_always or not Input.get_connected_joypads().is_empty()
