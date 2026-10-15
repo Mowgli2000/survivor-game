@@ -7,33 +7,6 @@
 [ext_resource type="Texture2D" path="res://assets/characters/cards/drifter_m_card.png" id="card_alt"]
 [ext_resource type="Resource" path="res://data/weapons/katana.tres" id="w0"]
 [ext_resource type="Resource" path="res://data/weapons/pulse.tres" id="w1"]
-[ext_resource type="Resource" path="res://data/weapons/shadow_blades.tres" id="t_shadow_blades"]
-[ext_resource type="Resource" path="res://data/weapons/alchemy_cannon.tres" id="t_alchemy_cannon"]
-[ext_resource type="Resource" path="res://data/weapons/bazooka.tres" id="t_bazooka"]
-[ext_resource type="Resource" path="res://data/weapons/bomb.tres" id="t_bomb"]
-[ext_resource type="Resource" path="res://data/weapons/celestial_bow.tres" id="t_celestial_bow"]
-[ext_resource type="Resource" path="res://data/weapons/fire_flask.tres" id="t_fire_flask"]
-[ext_resource type="Resource" path="res://data/weapons/fire_staff.tres" id="t_fire_staff"]
-[ext_resource type="Resource" path="res://data/weapons/frag_grenade.tres" id="t_frag_grenade"]
-[ext_resource type="Resource" path="res://data/weapons/frost_flask.tres" id="t_frost_flask"]
-[ext_resource type="Resource" path="res://data/weapons/frost_scepter.tres" id="t_frost_scepter"]
-[ext_resource type="Resource" path="res://data/weapons/heavy_axe.tres" id="t_heavy_axe"]
-[ext_resource type="Resource" path="res://data/weapons/heavy_crossbow.tres" id="t_heavy_crossbow"]
-[ext_resource type="Resource" path="res://data/weapons/javelins.tres" id="t_javelins"]
-[ext_resource type="Resource" path="res://data/weapons/laser_pistol.tres" id="t_laser_pistol"]
-[ext_resource type="Resource" path="res://data/weapons/lightning_staff.tres" id="t_lightning_staff"]
-[ext_resource type="Resource" path="res://data/weapons/longbow.tres" id="t_longbow"]
-[ext_resource type="Resource" path="res://data/weapons/meteor_grimoire.tres" id="t_meteor_grimoire"]
-[ext_resource type="Resource" path="res://data/weapons/rapier.tres" id="t_rapier"]
-[ext_resource type="Resource" path="res://data/weapons/runic_blade.tres" id="t_runic_blade"]
-[ext_resource type="Resource" path="res://data/weapons/scythe.tres" id="t_scythe"]
-[ext_resource type="Resource" path="res://data/weapons/shuriken.tres" id="t_shuriken"]
-[ext_resource type="Resource" path="res://data/weapons/sling.tres" id="t_sling"]
-[ext_resource type="Resource" path="res://data/weapons/smg.tres" id="t_smg"]
-[ext_resource type="Resource" path="res://data/weapons/spear.tres" id="t_spear"]
-[ext_resource type="Resource" path="res://data/weapons/steel_katana.tres" id="t_steel_katana"]
-[ext_resource type="Resource" path="res://data/weapons/venom_fangs.tres" id="t_venom_fangs"]
-[ext_resource type="Resource" path="res://data/weapons/warhammer.tres" id="t_warhammer"]
 
 [sub_resource type="Resource" id="Mod_1"]
 script = ExtResource("2_mod")
@@ -46,7 +19,7 @@ id = &"drifter"
 name_key = "CHARACTER_DRIFTER"
 description_key = "CHARACTER_DRIFTER_RULE"
 starting_weapon = ExtResource("w0")
-starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1"), ExtResource("t_alchemy_cannon"), ExtResource("t_bazooka"), ExtResource("t_bomb"), ExtResource("t_celestial_bow"), ExtResource("t_fire_flask"), ExtResource("t_fire_staff"), ExtResource("t_frag_grenade"), ExtResource("t_frost_flask"), ExtResource("t_frost_scepter"), ExtResource("t_heavy_axe"), ExtResource("t_heavy_crossbow"), ExtResource("t_javelins"), ExtResource("t_laser_pistol"), ExtResource("t_lightning_staff"), ExtResource("t_longbow"), ExtResource("t_meteor_grimoire"), ExtResource("t_rapier"), ExtResource("t_runic_blade"), ExtResource("t_scythe"), ExtResource("t_shadow_blades"), ExtResource("t_shuriken"), ExtResource("t_sling"), ExtResource("t_smg"), ExtResource("t_spear"), ExtResource("t_steel_katana"), ExtResource("t_venom_fangs"), ExtResource("t_warhammer")])
+starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1")])
 modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1")])
 upgrade_scale = 1.5
 stat_overrides = {

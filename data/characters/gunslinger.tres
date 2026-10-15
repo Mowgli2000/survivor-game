@@ -7,14 +7,8 @@
 [ext_resource type="Script" path="res://src/items/effects/conditional_stat_effect.gd" id="6_cond"]
 [ext_resource type="Texture2D" path="res://assets/characters/cards/gunslinger_card.png" id="card"]
 [ext_resource type="Texture2D" path="res://assets/characters/cards/gunslinger_m_card.png" id="card_m"]
-[ext_resource type="Resource" path="res://data/weapons/bazooka.tres" id="t_bazooka"]
-[ext_resource type="Resource" path="res://data/weapons/fire_flask.tres" id="t_fire_flask"]
-[ext_resource type="Resource" path="res://data/weapons/frost_flask.tres" id="t_frost_flask"]
-[ext_resource type="Resource" path="res://data/weapons/lightning_staff.tres" id="t_lightning_staff"]
-[ext_resource type="Resource" path="res://data/weapons/shuriken.tres" id="t_shuriken"]
 [ext_resource type="Resource" path="res://data/weapons/smg.tres" id="w0"]
 [ext_resource type="Resource" path="res://data/weapons/longbow.tres" id="w1"]
-[ext_resource type="Resource" path="res://data/weapons/celestial_bow.tres" id="w2"]
 
 [sub_resource type="Resource" id="Mod_1"]
 script = ExtResource("2_mod")
@@ -50,7 +44,7 @@ name_key = "CHARACTER_GUNSLINGER"
 locked = true
 description_key = "CHARACTER_GUNSLINGER_RULE"
 starting_weapon = ExtResource("w0")
-starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1"), ExtResource("w2"), ExtResource("t_bazooka"), ExtResource("t_fire_flask"), ExtResource("t_frost_flask"), ExtResource("t_lightning_staff"), ExtResource("t_shuriken")])
+starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1")])
 modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2"), SubResource("Mod_3"), SubResource("Mod_4")])
 effects = Array[ExtResource("5_effect")]([SubResource("Eagle")])
 weapon_kind = 2

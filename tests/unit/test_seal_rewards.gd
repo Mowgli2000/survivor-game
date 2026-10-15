@@ -2,12 +2,8 @@ extends GutTest
 ## Seal rewards: winning a seal (any character) unlocks a weapon and two items.
 
 
-## TEMPORARY (playtest of the painted effects): these weapons were unlocked by hand, see test_content.gd.
-const TEMP_PLAYTEST_UNLOCKED: Array[StringName] = [&"celestial_bow", &"scythe", &"alchemy_cannon", &"frag_grenade", &"heavy_crossbow", &"javelins"]
-
-
 func _still_locked(challenge: ChallengeData, target: Resource) -> bool:
-	return challenge.unlock_id in TEMP_PLAYTEST_UNLOCKED or not SaveService.is_unlocked(challenge.unlock_category, target)
+	return not SaveService.is_unlocked(challenge.unlock_category, target)
 
 
 func before_each() -> void:
@@ -45,7 +41,7 @@ func test_every_seal_rewards_a_weapon_and_two_locked_items() -> void:
 		for challenge in challenges:
 			var target := ContentDB.get_def(challenge.unlock_category, challenge.unlock_id)
 			assert_not_null(target, String(challenge.unlock_id))
-			assert_true(target.get(&"locked") or challenge.unlock_id in TEMP_PLAYTEST_UNLOCKED, "%s starts locked" % challenge.unlock_id)  # TEMP playtest unlocks, see test_content.gd
+			assert_true(target.get(&"locked"), "%s starts locked" % challenge.unlock_id)
 			weapons += int(challenge.unlock_category == &"weapons")
 		assert_eq(weapons, 1, "seal %d gives one weapon" % level)
 
