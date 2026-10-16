@@ -1,8 +1,8 @@
 class_name PlayerHealthBar
 extends Node2D
 ## Small HP bar above the player's head (playtest: the HUD bar alone was too far from
-## the action), with the player's level in a badge at its left and a short celebration
-## when the level goes up. Redrawn only when the health or the level changes, and every
+## the action), with a short celebration when the level goes up (no level badge: it hid the
+## floating weapons, dev's playtest 2026-10-16). Redrawn only when the health or the level changes, and every
 ## frame during the 0.9 s celebration. Own node: the player's sprite shader must not
 ## apply to it.
 
@@ -12,14 +12,9 @@ const GAP := 10.0
 const BORDER := 2.0
 const BACK := Color(0.05, 0.03, 0.12, 0.85)
 
-const BADGE_RADIUS := 10.0
-const BADGE_GAP := 6.0
-const BADGE_FONT_SIZE := 15
 const BADGE_OUTLINE := 5
 const EMBOLDEN := 0.35
 const CELEBRATION_SECONDS := 0.9
-const RING_GROWTH := 34.0
-const POP_SCALE := 0.7
 const TEXT_RISE := 26.0
 const TEXT_FONT_SIZE := 22
 
@@ -96,28 +91,8 @@ func _draw() -> void:
 	draw_rect(Rect2(-SIZE.x * 0.5, 0.0, SIZE.x, SIZE.y), BACK)
 	if _ratio > 0.0:
 		draw_rect(Rect2(-SIZE.x * 0.5, 0.0, SIZE.x * _ratio, SIZE.y), _color)
-	if _level > 0:
-		_draw_badge()
-
-
-func _draw_badge() -> void:
-	var center := Vector2(-SIZE.x * 0.5 - BORDER - BADGE_GAP - BADGE_RADIUS, SIZE.y * 0.5)
-	var scale_now := 1.0 + POP_SCALE * _glow
-	var radius := BADGE_RADIUS * scale_now
 	if _glow > 0.0:
-		# Expanding gold ring that fades out.
-		var ring := Color(UiTheme.GOLD_VIVID, _glow)
-		draw_arc(center, BADGE_RADIUS + RING_GROWTH * (1.0 - _glow), 0.0, TAU, 32, ring, 3.0)
-		_draw_level_up_text(center)
-	draw_circle(center, radius + 2.0, UiTheme.OUTLINE)
-	draw_circle(center, radius, UiTheme.GOLD.lerp(Color.WHITE, _glow * 0.6))
-	var text := str(_level)
-	var size := roundi(BADGE_FONT_SIZE * scale_now)
-	var width := _font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x
-	# Baseline from the font's own metrics: the digits sit in the middle of the medal at any size.
-	var at := center + Vector2(-width * 0.5, (_font.get_ascent(size) - _font.get_descent(size)) * 0.5)
-	draw_string_outline(_font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, BADGE_OUTLINE, UiTheme.OUTLINE)
-	draw_string(_font, at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, size, Color.WHITE)
+		_draw_level_up_text(Vector2(0.0, SIZE.y * 0.5))
 
 
 ## "Level up!" floating above the bar, rising while it fades.
