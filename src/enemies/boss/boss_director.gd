@@ -112,6 +112,8 @@ func _start_pattern(state: BossState) -> void:
 	_apply_pace()
 	var windup := pattern.scaled_windup(_ctx)
 	state.timer = windup
+	# The attack frames: the strike (frame 4 of 6) lands as the windup ends.
+	state.enemy.start_attack(windup / 0.5)
 	state.aim = _ctx.target_position(state.enemy.position)
 	if windup > 0.0:
 		state.enemy.forced_velocity = Vector2.ZERO

@@ -571,6 +571,8 @@ func _physics_process(delta: float) -> void:
 		pos += velocity * delta + enemy.separation * SEPARATION_STRENGTH + enemy.knockback * delta
 		enemy.knockback = enemy.knockback.move_toward(Vector2.ZERO, KNOCKBACK_DECAY * delta)
 		enemy.position = pos.clamp(_arena.position, _arena.end)
+		if enemy.attack_left > 0.0 and enemy.tick_attack(delta):
+			enemy.queue_redraw()
 		if enemy.animator.sheet != null:
 			var anim := &"walk" if velocity.length_squared() > 4.0 else &"idle"
 			if enemy.animator.advance(delta, anim, direction.x):

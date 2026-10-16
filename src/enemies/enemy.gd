@@ -61,6 +61,10 @@ var special_timer: float = 0.0
 var special_state: int = 0
 var special_dir := Vector2.ZERO
 var animator := SpriteAnimator.new()
+## Attack animation (EnemyData.attack_sheet): time left, total length and the frame shown.
+var attack_left: float = 0.0
+var attack_length: float = 1.0
+var attack_frame: int = 0
 
 
 func reset(p_data: EnemyData, pos: Vector2, hp_multiplier: float, p_elite: bool = false,
@@ -91,6 +95,7 @@ func reset(p_data: EnemyData, pos: Vector2, hp_multiplier: float, p_elite: bool 
 	special_timer = data.spawn_cooldown if data.movement == EnemyData.Movement.SPAWNER else 0.0
 	special_state = 0
 	special_dir = Vector2.ZERO
+	attack_left = 0.0
 	visible = true
 	if look_changed:
 		animator.reset(data.get_sheet(elite), 0.0)
@@ -178,8 +183,33 @@ func foot_offset() -> float:
 	return sprite_height() * HIP_SHARE
 
 
+## Plays the attack frames over `length` seconds (no sheet: nothing happens).
+func start_attack(length: float) -> void:
+	if data.attack_sheet == null:
+		return
+	attack_length = maxf(length, 0.1)
+	attack_left = attack_length
+	attack_frame = 0
+	queue_redraw()
+
+
+## Advances the attack animation; true when the frame changed or it ended (redraw needed).
+func tick_attack(delta: float) -> bool:
+	attack_left = maxf(attack_left - delta, 0.0)
+	var frames := maxi(data.attack_sheet.animations.get(&"attack", Vector3i(0, 1, 1)).y, 1)
+	var frame := mini(int((1.0 - attack_left / attack_length) * frames), frames - 1)
+	if frame == attack_frame and attack_left > 0.0:
+		return false
+	attack_frame = frame
+	return true
+
+
 func _draw() -> void:
 	if data == null:
+		return
+	if attack_left > 0.0 and data.attack_sheet != null:
+		data.attack_sheet.draw(self, attack_frame, sprite_height() * data.attack_scale, foot_offset(),
+			animator.facing, data.sprite_tint)
 		return
 	var sheet := animator.sheet
 	if sheet != null:

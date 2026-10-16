@@ -11,6 +11,7 @@
 [ext_resource type="Script" path="res://src/enemies/boss/flame_ring_pattern.gd" id="s_ring"]
 [ext_resource type="Script" path="res://src/enemies/boss/iaido_pattern.gd" id="s_iaido"]
 [ext_resource type="Resource" path="res://data/enemies/runner.tres" id="8_runner"]
+[ext_resource type="Resource" path="res://assets/sprites/shogun_attack.tres" id="9_attack"]
 
 [sub_resource type="Resource" id="Cross"]
 script = ExtResource("s_cross")
@@ -112,5 +113,7 @@ color = Color(0.88, 0.16, 0.35, 1)
 shape_sides = 8
 sprite_id = &"shogun"
 sprite_scale = 1.15
+attack_sheet = ExtResource("9_attack")
+attack_scale = 1.31
 phases = Array[ExtResource("2_phase")]([SubResource("Phase_1"), SubResource("Phase_2"), SubResource("Phase_3")])
 projectile_style = 19

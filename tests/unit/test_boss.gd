@@ -316,3 +316,29 @@ func test_the_toughest_seal_has_the_highest_boss_aggression() -> void:
 		assert_gte(aggression, last, "seal %d is at least as aggressive as the one below" % level)
 		last = aggression
 	assert_gt(last, 0.0)
+
+
+func test_an_attack_animation_runs_its_frames_over_the_windup_and_ends() -> void:
+	var shogun: EnemyData = ContentDB.get_def(&"enemies", &"shogun")
+	assert_not_null(shogun.attack_sheet, "the Demon Knight has attack frames")
+	var enemy := _enemies.spawn(shogun, Vector2(300, 0))
+	enemy.start_attack(1.2)
+	assert_gt(enemy.attack_left, 0.0)
+	assert_eq(enemy.attack_frame, 0)
+	enemy.tick_attack(0.7)
+	assert_gt(enemy.attack_frame, 1, "mid-way the sword is up or coming down")
+	enemy.tick_attack(1.0)
+	assert_eq(enemy.attack_left, 0.0, "the animation ends by itself")
+	assert_eq(enemy.attack_frame, 5, "on the last frame")
+
+
+func test_an_enemy_without_attack_frames_ignores_the_animation_request() -> void:
+	var plain := _enemies.spawn(EnemyData.new(), Vector2(300, 0))
+	plain.start_attack(1.0)
+	assert_eq(plain.attack_left, 0.0)
+
+
+func test_the_director_starts_the_attack_animation_with_each_pattern() -> void:
+	var shogun: EnemyData = ContentDB.get_def(&"enemies", &"shogun")
+	var enemy := _enemies.spawn(shogun, Vector2(300, 0))
+	assert_gt(enemy.attack_left, 0.0, "the first pattern is announced with its animation")

@@ -72,6 +72,11 @@ enum Movement {
 @export var sprite_tint: Color = Color.WHITE
 ## Extra size factor on top of the radius-based sprite size.
 @export var sprite_scale: float = 1.0
+## Boss attack animation (strip of frames, own texture): played by BossDirector over each
+## attack. Empty: the boss keeps its walk / idle sprite.
+@export var attack_sheet: SpriteSheet
+## Size of the attack frames relative to the walk ones (the knight's share of the cell).
+@export var attack_scale: float = 1.0
 
 var _texture: Texture2D
 var _elite_texture: Texture2D
