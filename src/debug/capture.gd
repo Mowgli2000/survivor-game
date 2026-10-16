@@ -19,6 +19,8 @@ var _full_shop := false
 var _open_picker := false
 var _done: bool = false
 var _boss_id: StringName = &""
+## --bosshp=<0..1>: the boss starts at that share of its life (to see its later phases).
+var _boss_hp := 1.0
 ## --clean: hide the debug overlay and the gamepad hint bars before the picture is taken.
 var _clean := false
 
@@ -57,6 +59,8 @@ func _ready() -> void:
 			character_id = arg.trim_prefix("--character=")
 		elif arg.begins_with("--boss="):
 			_boss_id = StringName(arg.trim_prefix("--boss="))
+		elif arg.begins_with("--bosshp="):
+			_boss_hp = arg.trim_prefix("--bosshp=").to_float()
 		elif arg.begins_with("--danger="):
 			danger = arg.trim_prefix("--danger=").to_int()
 		elif arg.begins_with("--variant="):
@@ -175,7 +179,8 @@ func _ready() -> void:
 			_run.player.weapons.add_weapon(weapon, weapon.max_level())
 	if _boss_id != &"":
 		# Boss next to the player, telegraphs and volleys on screen by --time.
-		_run.enemies.spawn(ContentDB.get_def(&"enemies", _boss_id), Vector2(320, -60), 3.0)
+		var boss := _run.enemies.spawn(ContentDB.get_def(&"enemies", _boss_id), Vector2(320, -60), 3.0)
+		boss.hp = boss.max_hp * clampf(_boss_hp, 0.01, 1.0)
 
 
 func _process(delta: float) -> void:
