@@ -605,6 +605,16 @@ func _rebuild_weapons() -> void:
 	if _is_focusable(sell) and _is_focusable(merge):
 		sell.focus_neighbor_right = sell.get_path_to(merge)
 		merge.focus_neighbor_left = merge.get_path_to(sell)
+	# Down from any weapon reaches the first usable action; up from an action goes back to the selected weapon.
+	var action: Control = sell if _is_focusable(sell) else merge if _is_focusable(merge) else null
+	var selected_button: Control = _controls.get("weapon:%d" % _selected_weapon)
+	if action == null or selected_button == null:
+		return
+	for i in slots.size():
+		var weapon_button: Control = _controls["weapon:%d" % i]
+		weapon_button.focus_neighbor_bottom = weapon_button.get_path_to(action)
+	for control: Control in [sell, merge]:
+		control.focus_neighbor_top = control.get_path_to(selected_button)
 
 
 ## Hover text of an owned weapon: name and tier, description, stats at its tier.

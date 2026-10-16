@@ -409,6 +409,9 @@ func _unlock_card(def: Resource) -> Control:
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	# Long names wrap inside the card instead of widening it.
 	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	# The name takes the spare height so the kind and the tag line up across cards.
+	name_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	if not def is CharacterData:
 		name_label.add_theme_color_override("font_color", Tiers.color(int(def.get(&"tier")) if def is ItemData else 1))
 	box.add_child(name_label)

@@ -350,3 +350,14 @@ func test_gamepad_left_from_merge_reaches_sell_and_back() -> void:
 	assert_false((merge as Button).disabled, "two copies of a weapon can merge")
 	assert_eq(merge.find_valid_focus_neighbor(SIDE_LEFT), sell)
 	assert_eq(sell.find_valid_focus_neighbor(SIDE_RIGHT), merge)
+
+
+func test_gamepad_down_from_a_weapon_reaches_the_action_and_up_returns() -> void:
+	_open_screen(100)
+	_screen._controls["weapon:0"].pressed.emit()
+	var sell: Control = _screen._controls["sell"]
+	var weapon: Control = _screen._controls["weapon:0"]
+	assert_eq(weapon.find_valid_focus_neighbor(SIDE_BOTTOM), sell, "down from the selected weapon: Sell")
+	assert_eq(_screen._controls["weapon:1"].find_valid_focus_neighbor(SIDE_BOTTOM), sell, "from any weapon")
+	assert_eq(sell.find_valid_focus_neighbor(SIDE_TOP), weapon, "up from Sell: the selected weapon")
+	assert_eq(_screen._controls["merge"].find_valid_focus_neighbor(SIDE_TOP), weapon, "up from Merge too")

@@ -26,6 +26,9 @@ var _max_projectiles: int = 0
 var _sample_timer: float = 0.0
 var _endless_wave: int = 0
 var _coop: bool = false
+var _zoom: float = 0.0
+var _bare: bool = false
+var _off: PackedStringArray = []
 var _max_enemy_shots: int = 0
 var _max_vfx: int = 0
 
@@ -36,6 +39,12 @@ func _ready() -> void:
 			_duration = arg.trim_prefix("--duration=").to_float()
 		elif arg == "--coop":
 			_coop = true
+		elif arg.begins_with("--off="):
+			_off = arg.trim_prefix("--off=").split(",")
+		elif arg == "--bare":
+			_bare = true
+		elif arg.begins_with("--zoom="):
+			_zoom = arg.trim_prefix("--zoom=").to_float()
 		elif arg.begins_with("--speed="):
 			Engine.time_scale = arg.trim_prefix("--speed=").to_float()
 		elif arg.begins_with("--endless="):
@@ -46,6 +55,9 @@ func _ready() -> void:
 		_run.setup.difficulty = ContentDB.get_def(&"difficulties", &"danger_1")
 	else:
 		_run.config = STRESS_CONFIG
+		if _zoom > 0.0:
+			_run.config = STRESS_CONFIG.duplicate()
+			_run.config.camera_zoom = _zoom
 	_run.seed_override = 1
 	_run.player_invincible = true
 	_run.auto_choose_upgrades = true
@@ -56,9 +68,14 @@ func _ready() -> void:
 	# The six reference weapons at max level on top of the stress weapon: worst case
 	# for effects, kept fixed so measurements stay comparable as weapons are added.
 	for rp in _run.players:
-		for id in REFERENCE_WEAPONS:
+		for id in ([] if _bare else REFERENCE_WEAPONS):
 			var weapon: WeaponData = ContentDB.get_def(&"weapons", id)
 			rp.player.weapons.add_weapon(weapon, weapon.max_level())
+	# --off=projectiles,pickups,...: skip a manager's physics tick to find what costs the most.
+	for name in _off:
+		var node: Node = _run.get(name)
+		if node != null:
+			node.set_physics_process(false)
 	if _endless_wave > 0:
 		_run.stage.endless = true
 		_run.waves.start_wave(_endless_wave)
@@ -100,6 +117,7 @@ func _report() -> void:
 		_max_enemies, _max_projectiles, _max_enemy_shots, _run.pickups.active_count(), _max_vfx])
 	if _endless_wave > 0:
 		print("endless: started at wave %d, now wave %d" % [_endless_wave, _run.waves.wave])
+	print("camera zoom %.2f" % _run.camera.zoom.x)
 	print("FPS        avg %.1f | min %.1f" % [_avg(_samples_fps), _min(_samples_fps)])
 	print("physics ms avg %.2f | max %.2f" % [_avg(_samples_physics), _max(_samples_physics)])
 	print("process ms avg %.2f | max %.2f" % [_avg(_samples_process), _max(_samples_process)])
