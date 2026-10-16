@@ -109,12 +109,28 @@ func _start_pattern(state: BossState) -> void:
 		state.step = Step.RECOVERY
 		state.timer = 1.0
 		return
-	state.timer = pattern.windup
+	_apply_pace()
+	var windup := pattern.scaled_windup(_ctx)
+	state.timer = windup
 	state.aim = _ctx.target_position(state.enemy.position)
-	if pattern.windup > 0.0:
+	if windup > 0.0:
 		state.enemy.forced_velocity = Vector2.ZERO
-		state.enemy.forced_time = pattern.windup
+		state.enemy.forced_time = windup
 	pattern.telegraph(_ctx, state.enemy, state.aim)
+
+
+## Base pace of every boss fight (shorter dead time than the first data) and the seal's
+## aggression on top: danger 1 is 0, danger 6 is 0.5.
+const BASE_WINDUP := 0.85
+const BASE_RECOVERY := 0.55
+const BASE_SPEED := 1.1
+
+
+func _apply_pace() -> void:
+	var aggression := _stage.boss_aggression if _stage != null else 0.0
+	_ctx.windup_scale = BASE_WINDUP * (1.0 - 0.4 * aggression)
+	_ctx.recovery_scale = BASE_RECOVERY * (1.0 - aggression)
+	_ctx.speed_scale = BASE_SPEED * (1.0 + 0.6 * aggression)
 
 
 func _advance(state: BossState) -> void:
@@ -132,4 +148,4 @@ func _advance(state: BossState) -> void:
 		state.timer += pattern.repeat_interval
 	else:
 		state.step = Step.RECOVERY
-		state.timer += pattern.recovery
+		state.timer += pattern.recovery * _ctx.recovery_scale

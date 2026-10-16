@@ -68,6 +68,8 @@ var coop_spawn_factor: float = 1.0
 ## Final bosses (EnemyData.boss) take only this share of the wave HP multiplier:
 ## at full share the wave-20 boss was out of reach of any build (simulator).
 @export_range(0.05, 1.0) var boss_hp_share: float = 1.0
+## Pace of the boss fights (see BossDirector): 0 = base pace, 0.5 = the toughest seal.
+@export_range(0.0, 0.9) var boss_aggression: float = 0.0
 @export var elite_xp_multiplier: float = 10.0
 ## Visual size and collision radius multiplier.
 @export var elite_scale: float = 1.6
@@ -175,6 +177,7 @@ func with_difficulty(difficulty: DifficultyData) -> StageData:
 	dup.damage_multiplier_last *= difficulty.damage_multiplier
 	dup.spawn_rate_first *= _early(difficulty.spawn_rate_multiplier)
 	dup.spawn_rate_last *= difficulty.spawn_rate_multiplier
+	dup.boss_aggression = maxf(dup.boss_aggression, difficulty.boss_aggression)
 	dup.group_size_first += difficulty.group_size_bonus
 	dup.group_size_last += difficulty.group_size_bonus
 	dup.steady_elite_chance = maxf(dup.steady_elite_chance, difficulty.steady_elite_chance)

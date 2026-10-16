@@ -276,3 +276,43 @@ func test_summon_around_target_rings_the_player() -> void:
 		if enemy.position.distance_to(Vector2.ZERO) < 160.0:
 			near += 1
 	assert_eq(near, 4, "minions around the player, not the boss")
+
+
+func test_a_harder_seal_gives_the_boss_less_dead_time_and_faster_shots() -> void:
+	var calm := StageData.new()
+	var fierce := StageData.new()
+	fierce.boss_aggression = 0.5
+	var calm_director := BossDirector.new()
+	add_child_autofree(calm_director)
+	calm_director.setup(_enemies, _shots, Party.solo(_player), null, _rng, calm)
+	calm_director._apply_pace()
+	var calm_recovery := calm_director._ctx.recovery_scale
+	var calm_speed := calm_director._ctx.speed_scale
+	var fierce_director := BossDirector.new()
+	add_child_autofree(fierce_director)
+	fierce_director._stage = fierce
+	fierce_director._apply_pace()
+	assert_lt(fierce_director._ctx.recovery_scale, calm_recovery, "less dead time at danger 6")
+	assert_gt(fierce_director._ctx.speed_scale, calm_speed, "faster shots at danger 6")
+	assert_lt(calm_recovery, 1.0, "even the first seal rests less than the raw data")
+
+
+func test_a_telegraph_never_gets_shorter_than_half_a_second() -> void:
+	var ctx := BossContext.new()
+	ctx.windup_scale = 0.3
+	var pattern := BossPattern.new()
+	pattern.windup = 1.0
+	assert_almost_eq(pattern.scaled_windup(ctx), 0.5, 0.001)
+	pattern.windup = 0.3
+	assert_almost_eq(pattern.scaled_windup(ctx), 0.3, 0.001, "an already short windup stays as it is")
+
+
+func test_the_toughest_seal_has_the_highest_boss_aggression() -> void:
+	var base := StageData.new()
+	var last := 0.0
+	for level in 6:
+		var seal: DifficultyData = ContentDB.get_def(&"difficulties", StringName("danger_%d" % level))
+		var aggression := base.with_difficulty(seal).boss_aggression
+		assert_gte(aggression, last, "seal %d is at least as aggressive as the one below" % level)
+		last = aggression
+	assert_gt(last, 0.0)

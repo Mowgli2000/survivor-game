@@ -10,6 +10,11 @@ var vfx: Vfx
 var rng: RandomNumberGenerator
 ## Current wave HP scaling, for summoned minions.
 var hp_multiplier: float = 1.0
+## Pace of the fight (BossDirector sets them from the seal's boss aggression): multipliers
+## on the windup, the recovery and the projectile speed of every pattern.
+var windup_scale: float = 1.0
+var recovery_scale: float = 1.0
+var speed_scale: float = 1.0
 
 
 ## Where a boss at `from` aims: the nearest living player (the group center if none).

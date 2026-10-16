@@ -11,7 +11,7 @@ extends BossPattern
 
 
 func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
-	var length := projectile_speed * 0.8
+	var length := projectile_speed * ctx.speed_scale * 0.8
 	for k in 2:
 		var angle := volley_angle(boss.position, aim, k * maxi(repeats - 1, 0))
 		_warn_line(ctx, boss.position, boss.position + Vector2.from_angle(angle) * length, 6.0, boss.data.color)

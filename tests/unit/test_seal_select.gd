@@ -32,7 +32,7 @@ func test_effects_stack_and_places_are_named() -> void:
 	assert_eq(SealSelect.seal_place(levels[0], levels), tr("BIOME_DUNGEON"))
 	assert_eq(SealSelect.seal_place(levels[1], levels), tr("BIOME_TEMPLE"))
 	var astral := SealSelect.seal_effects(levels[5])
-	assert_string_contains(astral, tr("SEAL_FX_DOUBLE_BOSS"))
+	assert_false(astral.contains(tr("SEAL_FX_DOUBLE_BOSS")), "one Ancient Dragon, not two (dev decision 2026-10-16)")
 	assert_string_contains(astral, tr("SEAL_FX_HP_DAMAGE") % roundi((levels[5].hp_multiplier - 1.0) * 100.0))
 
 

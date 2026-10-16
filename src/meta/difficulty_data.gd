@@ -17,6 +17,8 @@ extends Resource
 @export var group_size_bonus: int = 0
 ## Chance that a steadily spawned enemy is an elite.
 @export_range(0.0, 1.0) var steady_elite_chance: float = 0.0
+## Pace of the boss fights (StageData.boss_aggression): shorter windups and dead time, faster shots.
+@export_range(0.0, 0.9) var boss_aggression: float = 0.0
 ## The final wave's boss event spawns two bosses.
 @export var double_final_boss: bool = false
 ## Where the seal's gate leads: bestiary, bosses and arena (null: the default dungeon).

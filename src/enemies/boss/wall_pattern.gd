@@ -13,7 +13,7 @@ func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
 	var direction := _direction(boss.position, aim)
 	var half := direction.orthogonal() * spacing * (count - 1) * 0.5
 	_warn_line(ctx, boss.position - half, boss.position + half, 10.0, boss.data.color)
-	_warn_line(ctx, boss.position, boss.position + direction * projectile_speed * 0.6, 6.0, boss.data.color)
+	_warn_line(ctx, boss.position, boss.position + direction * projectile_speed * ctx.speed_scale * 0.6, 6.0, boss.data.color)
 
 
 func fire(ctx: BossContext, boss: Enemy, aim: Vector2, _repeat: int) -> void:
@@ -24,7 +24,7 @@ func fire(ctx: BossContext, boss: Enemy, aim: Vector2, _repeat: int) -> void:
 		if k >= hole and k < hole + gap:
 			continue
 		var pos := boss.position + side * spacing * (k - (count - 1) * 0.5)
-		ctx.enemy_projectiles.spawn(pos, direction * projectile_speed,
+		ctx.enemy_projectiles.spawn(pos, direction * projectile_speed * ctx.speed_scale,
 			projectile_damage * boss.damage_multiplier, projectile_radius, boss.data.projectile_style)
 
 

@@ -10,6 +10,7 @@ level = 3
 hp_curve = 3.8
 steady_elite_chance = 0.015
 hp_multiplier = 1.45
+boss_aggression = 0.3
 damage_multiplier = 1.45
 spawn_rate_multiplier = 1.1
 group_size_bonus = 1

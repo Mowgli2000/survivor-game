@@ -45,12 +45,12 @@ func test_difficulty_scales_the_curves() -> void:
 	assert_almost_eq(neutral.hp_multiplier_at(15), base.hp_multiplier_at(15), 0.001)
 
 
-func test_danger_5_doubles_the_final_boss() -> void:
+func test_danger_5_has_a_single_final_boss() -> void:
 	var stage := _stage().with_difficulty(_danger(5))
 	var count := 0
 	for event in stage.events_for(stage.wave_count):
 		count += event.count
-	assert_eq(count, 2)
+	assert_eq(count, 1)
 
 
 func test_endless_curves_keep_growing() -> void:

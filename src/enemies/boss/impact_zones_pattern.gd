@@ -16,7 +16,7 @@ func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
 		return
 	for repeat in repeats:
 		for pos in zones(boss.position, aim, repeat):
-			ctx.vfx.warning_circle(pos, zone_radius, boss.data.color, windup + repeat * repeat_interval)
+			ctx.vfx.warning_circle(pos, zone_radius, boss.data.color, scaled_windup(ctx) + repeat * repeat_interval)
 
 
 func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:

@@ -17,6 +17,15 @@ extends Resource
 @export var projectile_radius: float = 12.0
 
 
+## A windup never gets shorter than this (readable telegraph), unless it is already shorter.
+const MIN_WINDUP := 0.5
+
+
+## `windup` with the fight's pace applied.
+func scaled_windup(ctx: BossContext) -> float:
+	return maxf(windup * ctx.windup_scale, minf(windup, MIN_WINDUP))
+
+
 ## Called once when the windup starts. `aim` = player position at that moment.
 func telegraph(_ctx: BossContext, _boss: Enemy, _aim: Vector2) -> void:
 	pass
@@ -35,15 +44,15 @@ func validate() -> String:
 
 
 func _shoot(ctx: BossContext, boss: Enemy, direction: Vector2) -> void:
-	ctx.enemy_projectiles.spawn(boss.position, direction * projectile_speed,
+	ctx.enemy_projectiles.spawn(boss.position, direction * projectile_speed * ctx.speed_scale,
 		projectile_damage * boss.damage_multiplier, projectile_radius, boss.data.projectile_style)
 
 
 func _warn_circle(ctx: BossContext, boss: Enemy, radius: float) -> void:
 	if ctx.vfx != null and windup > 0.0:
-		ctx.vfx.warning_circle(boss.position, radius, boss.data.color, windup)
+		ctx.vfx.warning_circle(boss.position, radius, boss.data.color, scaled_windup(ctx))
 
 
 func _warn_line(ctx: BossContext, from: Vector2, to: Vector2, width: float, color: Color) -> void:
 	if ctx.vfx != null and windup > 0.0:
-		ctx.vfx.warning_line(from, to, width, color, windup)
+		ctx.vfx.warning_line(from, to, width, color, scaled_windup(ctx))
