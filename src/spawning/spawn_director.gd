@@ -76,7 +76,8 @@ func _physics_process(delta: float) -> void:
 	var hp_multiplier := _stage.hp_multiplier_at(_wave)
 	var damage_multiplier := _stage.damage_multiplier_at(_wave)
 	_fire_events(_waves.wave_elapsed(), hp_multiplier, damage_multiplier)
-	_accumulator += _stage.spawn_rate_at(_wave) * delta * _boss_flow(delta)
+	var flow := 0.0 if _waves.pending_reward else _boss_flow(delta)  # the final boss is dead, its chest waits: quiet
+	_accumulator += _stage.spawn_rate_at(_wave) * delta * flow
 	var group := _stage.group_size_at(_wave)
 	while _accumulator >= group:
 		_accumulator -= group

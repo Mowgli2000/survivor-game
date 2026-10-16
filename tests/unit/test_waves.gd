@@ -492,3 +492,20 @@ func test_overtime_starts_once_when_the_clock_runs_out_on_a_living_boss() -> voi
 	blocked[0] = false
 	await wait_physics_frames(3)
 	assert_false(director.in_wave, "the boss is dead: the wave ends")
+
+
+func test_no_horde_comes_back_while_a_dead_final_boss_waits_for_its_chest() -> void:
+	var parts := _boss_duel_setup(true)
+	var director: WaveDirector = parts[0]
+	var spawner: SpawnDirector = parts[1]
+	var enemies: EnemyManager = parts[2]
+	director.start_wave(1)
+	spawner.begin_wave(1)
+	await wait_physics_frames(20)
+	director.pending_reward = true
+	enemies.damage_enemy(0, 100000.0, false, Vector2.RIGHT, 0.0)
+	await wait_physics_frames(90)
+	assert_eq(enemies.active_count(), 0, "the arena stays empty until the chest is opened")
+	director.pending_reward = false
+	await wait_physics_frames(60)
+	assert_gt(enemies.active_count(), 0, "(control) the spawning works again afterwards")

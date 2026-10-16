@@ -521,6 +521,7 @@ func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
 			return
 		# The wave (and the run) waits for the painted death, then for the chest to be opened.
 		_boss_dying = true
+		waves.pending_reward = true  # from the death on: no horde comes back while the boss dies and its chest waits
 		var wait := 0.0
 		if death_time > 0.0:
 			Engine.time_scale = DEATH_SLOWMO
