@@ -553,8 +553,8 @@ func _drop_chest(data: EnemyData, pos: Vector2, on_done: Callable = Callable()) 
 	var loot: Array[Dictionary] = []
 	chest.opened.connect(func() -> void:
 		if data.chest.reward_tier > 0:
-			loot.append_array(_grant_reward(data.chest.reward_tier, _sweeping)))  # (a lambda keeps the array, not a new one)
-	chest.finished.connect(func() -> void: _show_chest_loot(loot, on_done))
+			loot.append_array(_grant_reward(data.chest.reward_tier, _sweeping, data.chest.reward_count)))  # (a lambda keeps the array, not a new one)
+	chest.finished.connect(func() -> void: _show_chest_loot(loot, on_done, chest))
 	add_child(chest)
 	_chests.append(chest)
 	return chest
@@ -562,7 +562,9 @@ func _drop_chest(data: EnemyData, pos: Vector2, on_done: Callable = Callable()) 
 
 ## The chest is open: the game stops on what it gave until the player validates (a chest swept up at the
 ## end of a wave only announces its reward: the wave screens come next).
-func _show_chest_loot(loot: Array[Dictionary], on_done: Callable) -> void:
+func _show_chest_loot(loot: Array[Dictionary], on_done: Callable, chest: TreasureChest = null) -> void:
+	var chest_anchor := get_viewport().get_canvas_transform() * chest.global_position if is_instance_valid(chest) else get_viewport().get_visible_rect().size * Vector2(0.5, 0.7)
+	var chest_projection: EffectSheet = chest.projection() if is_instance_valid(chest) else null
 	if loot.is_empty() or _sweeping or state.is_over:
 		if on_done.is_valid():
 			on_done.call()
@@ -572,7 +574,7 @@ func _show_chest_loot(loot: Array[Dictionary], on_done: Callable) -> void:
 		get_tree().paused = false
 		if on_done.is_valid():
 			on_done.call(), CONNECT_ONE_SHOT)
-	chest_reward_screen.open(loot)
+	chest_reward_screen.open(loot, chest_anchor, chest_projection)
 
 
 ## End of a wave: a chest nobody opened gives its reward anyway.
@@ -642,18 +644,19 @@ func _record_run(won: bool) -> void:
 
 
 ## Boss reward: each player gets a random item of `min_tier` or higher they can still own.
-func _grant_reward(min_tier: int, announce: bool = true) -> Array[Dictionary]:
+func _grant_reward(min_tier: int, announce: bool = true, count: int = 1) -> Array[Dictionary]:
 	var pool: Array[ItemData] = []
 	pool.assign(_unlocked(&"items"))
 	var names: PackedStringArray = []
 	var loot: Array[Dictionary] = []
 	for rp in players:
-		var item := pick_reward(pool, rp.inventory, min_tier, state.rng)
-		if item == null:
-			continue
-		rp.inventory.add(item)
-		names.append(tr(item.name_key))
-		loot.append({"item": item, "title": tr("UI_PLAYER_N") % (rp.index + 1) if players.size() > 1 else "", "color": rp.color()})
+		for n in count:
+			var item := pick_reward(pool, rp.inventory, min_tier, state.rng)
+			if item == null:
+				continue
+			rp.inventory.add(item)
+			names.append(tr(item.name_key))
+			loot.append({"item": item, "title": tr("UI_PLAYER_N") % (rp.index + 1) if players.size() > 1 else "", "color": rp.color()})
 	if names.is_empty():
 		return loot
 	Audio.play(Sounds.LEVEL_UP, -4.0)

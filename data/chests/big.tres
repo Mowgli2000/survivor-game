@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://src/run/chest_data.gd" id="1_chest"]
 [ext_resource type="Resource" path="res://assets/sprites/chest_big.tres" id="2_sheet"]
+[ext_resource type="Resource" path="res://data/vfx/chest_projection.tres" id="3_proj"]
 
 [resource]
 script = ExtResource("1_chest")
@@ -11,3 +12,5 @@ open_fps = 9.0
 open_radius = 110.0
 reward_tier = 3
 burst_frame = 6
+reward_count = 3
+projection = ExtResource("3_proj")

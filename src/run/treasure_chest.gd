@@ -79,6 +79,10 @@ func open_now() -> void:
 	finished.emit()
 
 
+func projection() -> EffectSheet:
+	return _data.projection
+
+
 func _player_close() -> bool:
 	for player in _party.members:
 		if not player.is_dead and player.global_position.distance_to(global_position) <= _data.open_radius:

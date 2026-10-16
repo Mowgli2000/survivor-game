@@ -79,6 +79,7 @@ SHEETS_HD = {
     "knight_step": (1, 1.5, 2.2, 0.0, 0.35),
     "knight_iaido": (1, 1.7, 2.2, 0.0, 0.4),
     "knight_flame": (1, 1.6, 2.2, 0.0, 0.45),
+    "chest_projection": (1, 1.6, 1.0, 0.0, 1.2),
     "explosion_staff": (1, 1.6, 2.4, 0.0, 0.35),
     # seventh pass: gravity well, frost zone and cone
     "gravity_well": (1, 1.6, 2.4, 0.0, 0.9),

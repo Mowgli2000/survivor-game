@@ -14,3 +14,7 @@ extends Resource
 @export var reward_tier: int = 2
 ## Frame (0-based) of the opening where the light bursts out: the reward comes with it.
 @export var burst_frame: int = 8
+## Items it gives each player.
+@export_range(1, 5) var reward_count: int = 1
+## Painted light projection above the open chest (the rewards float in it); empty: a plain glow.
+@export var projection: EffectSheet
