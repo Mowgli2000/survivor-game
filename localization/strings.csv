@@ -99,6 +99,8 @@ ENEMY_IRON_SPAWNER,Cursed sarcophagus,Sarcophage maudit
 ENEMY_IRON_BOSS_MINI,Stone Guardian,Gardien de pierre
 ENEMY_IRON_BOSS_FINAL,Colossal Idol,Idole colossale
 UI_BOSS_REWARD,Reward: %s,Récompense : %s
+UI_BOSS_RAGE,The boss flies into a rage!,Le boss entre en fureur !
+UI_BOSS_RAGE_TIMER,RAGE,FUREUR
 WEAPON_STRESS,Stress test gun,Arme de test
 UI_WAVE,Wave,Vague
 UI_WAVE_CLEARED,Wave %d cleared!,Vague %d terminée !

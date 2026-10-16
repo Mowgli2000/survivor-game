@@ -28,6 +28,8 @@ var _materials_label: Label
 var _materials: int = 0
 var _shown_materials: int = -1
 var _timer_label: Label
+## The final boss rages (past the clock): the timer shows its rage.
+var _raging: bool = false
 var _wave_label: Label
 var _waves: WaveDirector
 var _progression: Progression
@@ -299,7 +301,18 @@ func _process(_delta: float) -> void:
 	if _waves == null:
 		return
 	var seconds := ceili(_waves.time_left)
-	if seconds != _last_second:
+	if _waves.overtime > 0.0:
+		if not _raging:
+			_raging = true
+			_timer_label.text = tr("UI_BOSS_RAGE_TIMER")
+			_timer_label.add_theme_color_override("font_color", UiTheme.BAD)
+			_timer_label.add_theme_font_size_override("font_size", TIMER_FONT_SIZE)
+			_timer_label.reset_size()
+			_timer_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE)
+			_timer_label.offset_top = 72
+			UiFx.bounce(_timer_label)
+	elif seconds != _last_second or _raging:
+		_raging = false
 		_last_second = seconds
 		_timer_label.text = format_time(seconds)
 		_update_timer_warning(seconds)

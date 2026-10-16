@@ -351,3 +351,33 @@ func test_a_boss_does_not_flash_white_when_hit_but_a_plain_enemy_does() -> void:
 	_enemies.damage_enemy(1, 5.0, false, Vector2.RIGHT, 0.0)
 	assert_eq(boss.flash, 0.0, "the boss keeps its painting")
 	assert_gt(plain.flash, 0.0, "the horde still flashes")
+
+
+func test_a_final_boss_past_the_clock_rages_and_a_mini_boss_does_not() -> void:
+	var waves := WaveDirector.new()
+	var stage := StageData.new()
+	waves.setup(stage)
+	add_child_autofree(waves)
+	var director := BossDirector.new()
+	director.setup(_enemies, _shots, Party.solo(_player), null, _rng, stage, waves)
+	add_child_autofree(director)
+	var final_data: EnemyData = ContentDB.get_def(&"enemies", &"shogun")
+	var mini_data: EnemyData = ContentDB.get_def(&"enemies", &"ronin")
+	var final_boss := _enemies.spawn(final_data, Vector2(300, 0))
+	var mini_boss := _enemies.spawn(mini_data, Vector2(-300, 0))
+	var damage_before := final_boss.damage_multiplier
+	var speed_before := final_boss.speed_multiplier
+	director.update(0.1)
+	assert_false(final_boss.enraged, "before the clock runs out: calm")
+	waves.overtime = 1.0
+	director.update(0.1)
+	assert_true(final_boss.enraged)
+	assert_almost_eq(final_boss.damage_multiplier, damage_before * BossDirector.RAGE_DAMAGE, 0.001)
+	assert_almost_eq(final_boss.speed_multiplier, speed_before * BossDirector.RAGE_SPEED, 0.001)
+	assert_false(mini_boss.enraged, "a mini-boss is not enraged")
+	director.update(0.1)
+	assert_almost_eq(final_boss.damage_multiplier, damage_before * BossDirector.RAGE_DAMAGE, 0.001, "the rage is applied once")
+	var calm_recovery := director._ctx.recovery_scale
+	waves.overtime = 90.0
+	director._apply_pace()
+	assert_lt(director._ctx.recovery_scale, calm_recovery, "the rage speeds the attacks up")

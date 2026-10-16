@@ -455,3 +455,21 @@ func test_coop_bosses_get_extra_life() -> void:
 	stage.boss_hp_share = 1.0
 	stage.apply_coop(1.5, 1.1, 1.6)
 	assert_almost_eq(stage.boss_hp_share, 1.6, 0.001)
+
+
+func test_overtime_starts_once_when_the_clock_runs_out_on_a_living_boss() -> void:
+	var director := WaveDirector.new()
+	director.setup(_stage(3))
+	add_child_autofree(director)
+	var blocked := [true]
+	director.end_blocked = func() -> bool: return blocked[0]
+	watch_signals(director)
+	director.start_wave(1)
+	director.time_left = 0.02
+	await wait_physics_frames(6)
+	assert_signal_emit_count(director, "overtime_started", 1)
+	assert_true(director.in_wave)
+	assert_gt(director.overtime, 0.0, "time spent past the clock is counted")
+	blocked[0] = false
+	await wait_physics_frames(3)
+	assert_false(director.in_wave, "the boss is dead: the wave ends")

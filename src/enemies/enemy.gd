@@ -12,6 +12,7 @@ const FLASH_TIME := 0.04
 const FLASH_TINT := Color(8.0, 8.0, 8.0)
 const BURN_TINT := Color(1.8, 1.0, 0.55)
 const SLOW_TINT := Color(0.55, 0.9, 1.8)
+const RAGE_TINT := Color(1.5, 0.6, 0.55)
 const POISON_TINT := Color(0.75, 1.5, 0.6)
 ## Sprite height in px per px of collision radius.
 const SPRITE_HEIGHT_PER_RADIUS := 5.0
@@ -61,6 +62,8 @@ var special_timer: float = 0.0
 var special_state: int = 0
 var special_dir := Vector2.ZERO
 var animator := SpriteAnimator.new()
+## A boss past the clock (BossDirector): redder, faster, harder.
+var enraged: bool = false
 ## Attack animation (EnemyData.attack_sheet): time left, total length and the frame shown.
 var attack_left: float = 0.0
 var attack_length: float = 1.0
@@ -96,6 +99,7 @@ func reset(p_data: EnemyData, pos: Vector2, hp_multiplier: float, p_elite: bool 
 	special_state = 0
 	special_dir = Vector2.ZERO
 	attack_left = 0.0
+	enraged = false
 	visible = true
 	if look_changed:
 		animator.reset(data.get_sheet(elite), 0.0)
@@ -169,6 +173,8 @@ func _refresh_tint() -> void:
 		self_modulate = POISON_TINT
 	elif slow_time > 0.0:
 		self_modulate = SLOW_TINT
+	elif enraged:
+		self_modulate = RAGE_TINT
 	else:
 		self_modulate = Color.WHITE
 

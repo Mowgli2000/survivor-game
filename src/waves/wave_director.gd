@@ -8,11 +8,15 @@ signal wave_started(wave: int)
 signal wave_ended(wave: int)
 ## Emitted right after wave_ended when the last wave is over.
 signal run_won
+## The clock ran out while a final boss lives: the boss enters its rage (once per wave).
+signal overtime_started
 
 ## Current wave, 1-based (0 before the first wave).
 var wave: int = 0
 var time_left: float = 0.0
 var in_wave: bool = false
+## Seconds spent past the clock waiting for the final boss to die (0 = not in overtime).
+var overtime: float = 0.0
 
 ## Optional: while it returns true when the timer runs out, the wave goes on (a living final boss:
 ## the run is won by killing it, not by surviving the clock).
@@ -34,6 +38,7 @@ func start_wave(p_wave: int) -> void:
 	wave = p_wave
 	time_left = _stage.duration_at(wave)
 	in_wave = true
+	overtime = 0.0
 	wave_started.emit(wave)
 
 
@@ -66,6 +71,9 @@ func _physics_process(delta: float) -> void:
 		return
 	time_left = 0.0
 	if end_blocked.is_valid() and end_blocked.call():
+		if overtime == 0.0:
+			overtime_started.emit()
+		overtime += delta
 		return
 	in_wave = false
 	# Keep the ended wave: a listener may already start the next one during the emit.

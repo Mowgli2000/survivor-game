@@ -64,6 +64,8 @@ func update(delta: float) -> void:
 			enemy.forced_time = 0.0
 			boss_ended.emit(enemy)
 			continue
+		if state.data.boss and not enemy.enraged and _waves != null and _waves.overtime > 0.0:
+			_enrage(state)
 		var phase := state.data.phase_index_for(enemy.hp / enemy.max_hp)
 		if phase != state.phase:
 			_enter_phase(state, phase)
@@ -72,6 +74,15 @@ func update(delta: float) -> void:
 		while state.timer <= 0.0 and guard < 8:
 			guard += 1
 			_advance(state)
+
+
+## The boss goes berserk: red, harder hits, faster (a new phase keeps the speed bonus).
+func _enrage(state: BossState) -> void:
+	var enemy := state.enemy
+	enemy.enraged = true
+	enemy.damage_multiplier *= RAGE_DAMAGE
+	enemy.speed_multiplier *= RAGE_SPEED
+	enemy._refresh_tint()
 
 
 func _on_boss_spawned(enemy: Enemy) -> void:
@@ -88,7 +99,7 @@ func _on_boss_spawned(enemy: Enemy) -> void:
 func _enter_phase(state: BossState, phase: int) -> void:
 	state.phase = phase
 	state.pattern_index = 0
-	state.enemy.speed_multiplier = state.data.phases[phase].speed_multiplier
+	state.enemy.speed_multiplier = state.data.phases[phase].speed_multiplier * (RAGE_SPEED if state.enemy.enraged else 1.0)
 	if _ctx.vfx != null:
 		_ctx.vfx.explosion(state.enemy.position, state.enemy.radius * 4.0, state.data.color, false)
 		_ctx.vfx.shake_requested.emit(PHASE_SHAKE)
@@ -128,8 +139,17 @@ const BASE_RECOVERY := 0.55
 const BASE_SPEED := 1.1
 
 
+## Past the clock the final boss rages: damage and speed up at once, the pace climbs to RAGE_AGGRESSION.
+const RAGE_DAMAGE := 1.5
+const RAGE_SPEED := 1.3
+const RAGE_AGGRESSION := 0.9
+const RAGE_RAMP := 60.0
+
+
 func _apply_pace() -> void:
 	var aggression := _stage.boss_aggression if _stage != null else 0.0
+	if _waves != null and _waves.overtime > 0.0:
+		aggression = lerpf(aggression, RAGE_AGGRESSION, clampf(_waves.overtime / RAGE_RAMP, 0.0, 1.0))
 	_ctx.windup_scale = BASE_WINDUP * (1.0 - 0.4 * aggression)
 	_ctx.recovery_scale = BASE_RECOVERY * (1.0 - aggression)
 	_ctx.speed_scale = BASE_SPEED * (1.0 + 0.6 * aggression)
