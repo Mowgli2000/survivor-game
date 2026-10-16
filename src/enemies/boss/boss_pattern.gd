@@ -79,6 +79,29 @@ func _hurt_sector(ctx: BossContext, boss: Enemy, center: Vector2, facing: float,
 
 ## The hit of this attack at `at`: the painted `sheet` (default `effect`) fitted to `size` px from its
 ## center and turned by `angle`, else a plain blast.
+## Hurts every living player within `radius` of `center`.
+func _hurt_circle(ctx: BossContext, boss: Enemy, center: Vector2, radius: float) -> void:
+	for player in ctx.party.members:
+		if not player.is_dead and player.global_position.distance_to(center) <= radius + player.radius:
+			player.take_damage(_damage(boss))
+
+
+## Hurts every living player whose distance to `center` is between `inner` and `outer`.
+func _hurt_ring(ctx: BossContext, boss: Enemy, center: Vector2, inner: float, outer: float) -> void:
+	for player in ctx.party.members:
+		if player.is_dead:
+			continue
+		var distance := player.global_position.distance_to(center)
+		if distance + player.radius >= inner and distance - player.radius <= outer:
+			player.take_damage(_damage(boss))
+
+
+## Unit vector from `from` to `to` (right when they coincide).
+func _dir_to(from: Vector2, to: Vector2) -> Vector2:
+	var offset := to - from
+	return offset.normalized() if offset.length_squared() > 1.0 else Vector2.RIGHT
+
+
 func _strike_fx(ctx: BossContext, boss: Enemy, at: Vector2, size: float, angle: float = 0.0, sheet: EffectSheet = null) -> void:
 	if ctx.vfx == null:
 		return

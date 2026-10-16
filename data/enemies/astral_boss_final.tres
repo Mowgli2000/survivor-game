@@ -1,114 +1,64 @@
 [gd_resource type="Resource" script_class="EnemyData" format=3]
 
 [ext_resource type="Script" path="res://src/enemies/enemy_data.gd" id="1_enemy"]
-[ext_resource type="Resource" path="res://data/chests/big.tres" id="c_chest"]
 [ext_resource type="Script" path="res://src/enemies/boss/boss_phase.gd" id="2_phase"]
-[ext_resource type="Script" path="res://src/enemies/boss/boss_pattern.gd" id="3_pattern"]
-[ext_resource type="Script" path="res://src/enemies/boss/cone_breath_pattern.gd" id="s_cone"]
-[ext_resource type="Script" path="res://src/enemies/boss/dash_pattern.gd" id="s_dash"]
-[ext_resource type="Script" path="res://src/enemies/boss/summon_pattern.gd" id="s_summon"]
-[ext_resource type="Script" path="res://src/enemies/boss/wall_pattern.gd" id="s_wall"]
-[ext_resource type="Script" path="res://src/enemies/boss/impact_zones_pattern.gd" id="s_zones"]
-[ext_resource type="Resource" path="res://data/enemies/astral_kamikaze.tres" id="m_kamikaze"]
+[ext_resource type="Script" path="res://src/enemies/boss/boss_pattern.gd" id="7_pattern"]
+[ext_resource type="Resource" path="res://data/chests/big.tres" id="c_chest"]
+[ext_resource type="Script" path="res://src/enemies/boss/fire_breath_pattern.gd" id="s_breath"]
+[ext_resource type="Script" path="res://src/enemies/boss/storm_front_pattern.gd" id="s_storm"]
+[ext_resource type="Script" path="res://src/enemies/boss/dragon_flyby_pattern.gd" id="s_flyby"]
+[ext_resource type="Script" path="res://src/enemies/boss/tail_sweep_pattern.gd" id="s_tail"]
+[ext_resource type="Script" path="res://src/enemies/boss/meteor_shower_pattern.gd" id="s_meteors"]
 
-[sub_resource type="Resource" id="P1_1_cone"]
-script = ExtResource("s_cone")
-windup = 0.8
-repeats = 5
-repeat_interval = 0.16
-recovery = 1.4
-count = 4
-spread_degrees = 20.0
-sweep_degrees = 100.0
+[sub_resource type="Resource" id="P_breath"]
+script = ExtResource("s_breath")
+windup = 1.1
+repeats = 9
+repeat_interval = 0.11
+recovery = 1.5
+projectile_damage = 9.0
 
-[sub_resource type="Resource" id="P1_2_zones"]
-script = ExtResource("s_zones")
+[sub_resource type="Resource" id="P_storm"]
+script = ExtResource("s_storm")
 windup = 1.0
-recovery = 1.4
+repeats = 8
+repeat_interval = 0.28
+recovery = 1.3
 projectile_damage = 16.0
-count = 5
-zone_radius = 75.0
-scatter = 170.0
+
+[sub_resource type="Resource" id="P_flyby"]
+script = ExtResource("s_flyby")
+windup = 0.9
+recovery = 1.2
+
+[sub_resource type="Resource" id="P_tail"]
+script = ExtResource("s_tail")
+windup = 0.9
+recovery = 1.3
+projectile_damage = 22.0
+
+[sub_resource type="Resource" id="P_meteors"]
+script = ExtResource("s_meteors")
+windup = 1.5
+recovery = 1.5
+projectile_damage = 26.0
 
 [sub_resource type="Resource" id="Phase_1"]
 script = ExtResource("2_phase")
 hp_ratio = 1.0
-patterns = Array[ExtResource("3_pattern")]([SubResource("P1_1_cone"), SubResource("P1_2_zones")])
+patterns = Array[ExtResource("7_pattern")]([SubResource("P_breath"), SubResource("P_storm")])
 speed_multiplier = 1.0
-
-[sub_resource type="Resource" id="P2_1_wall"]
-script = ExtResource("s_wall")
-windup = 0.8
-recovery = 1.2
-projectile_speed = 260.0
-count = 16
-gap = 3
-
-[sub_resource type="Resource" id="P2_2_cone"]
-script = ExtResource("s_cone")
-windup = 0.7
-repeats = 6
-repeat_interval = 0.14
-recovery = 1.2
-count = 5
-spread_degrees = 20.0
-sweep_degrees = 120.0
-
-[sub_resource type="Resource" id="P2_3_dash"]
-script = ExtResource("s_dash")
-windup = 0.7
-recovery = 1.0
-dash_speed = 900.0
-dash_duration = 0.55
 
 [sub_resource type="Resource" id="Phase_2"]
 script = ExtResource("2_phase")
 hp_ratio = 0.6
-patterns = Array[ExtResource("3_pattern")]([SubResource("P2_1_wall"), SubResource("P2_2_cone"), SubResource("P2_3_dash")])
+patterns = Array[ExtResource("7_pattern")]([SubResource("P_flyby"), SubResource("P_tail"), SubResource("P_meteors"), SubResource("P_breath")])
 speed_multiplier = 1.15
-
-[sub_resource type="Resource" id="P3_1_zones"]
-script = ExtResource("s_zones")
-windup = 0.8
-repeats = 3
-repeat_interval = 0.45
-recovery = 1.2
-projectile_damage = 16.0
-count = 6
-zone_radius = 80.0
-scatter = 150.0
-
-[sub_resource type="Resource" id="P3_2_wall"]
-script = ExtResource("s_wall")
-windup = 0.7
-repeats = 2
-repeat_interval = 0.6
-recovery = 1.2
-projectile_speed = 280.0
-count = 16
-gap = 3
-
-[sub_resource type="Resource" id="P3_3_cone"]
-script = ExtResource("s_cone")
-windup = 0.6
-repeats = 7
-repeat_interval = 0.12
-recovery = 1.0
-count = 5
-spread_degrees = 20.0
-sweep_degrees = 140.0
-
-[sub_resource type="Resource" id="P3_4_summon"]
-script = ExtResource("s_summon")
-windup = 0.8
-recovery = 1.0
-enemy = ExtResource("m_kamikaze")
-count = 5
 
 [sub_resource type="Resource" id="Phase_3"]
 script = ExtResource("2_phase")
 hp_ratio = 0.3
-patterns = Array[ExtResource("3_pattern")]([SubResource("P3_1_zones"), SubResource("P3_2_wall"), SubResource("P3_3_cone"), SubResource("P3_4_summon")])
+patterns = Array[ExtResource("7_pattern")]([SubResource("P_meteors"), SubResource("P_storm"), SubResource("P_tail"), SubResource("P_flyby"), SubResource("P_breath")])
 speed_multiplier = 1.3
 
 [resource]
