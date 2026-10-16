@@ -20,9 +20,12 @@ func fire(ctx: BossContext, boss: Enemy, aim: Vector2, _repeat: int) -> void:
 	var facing := (aim - boss.position).angle()
 	var half := deg_to_rad(half_degrees)
 	_hurt_sector(ctx, boss, boss.position, facing, radius, half)
-	for k in 7:
-		var angle := facing - half + 2.0 * half * k / 6.0
-		_strike_fx(ctx, boss, boss.position + Vector2.from_angle(angle) * radius * 0.7, radius * 0.45)
+	if effect != null:
+		_strike_fx(ctx, boss, boss.position, radius, facing)  # the painted crescent, centered on the knight
+	else:
+		for k in 7:
+			var angle := facing - half + 2.0 * half * k / 6.0
+			_strike_fx(ctx, boss, boss.position + Vector2.from_angle(angle) * radius * 0.7, radius * 0.45)
 	_shake(ctx, 0.5)
 
 

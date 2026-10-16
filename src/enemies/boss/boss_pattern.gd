@@ -10,6 +10,9 @@ extends Resource
 @export var repeat_interval: float = 0.3
 @export var recovery: float = 1.2
 
+## Painted effect of this attack (EffectSheet), played where it hits; empty: the plain blast.
+@export var effect: EffectSheet
+
 @export_group("Projectiles")
 @export var projectile_speed: float = 320.0
 ## Multiplied by the boss's wave damage multiplier.
@@ -74,8 +77,15 @@ func _hurt_sector(ctx: BossContext, boss: Enemy, center: Vector2, facing: float,
 			player.take_damage(_damage(boss))
 
 
-func _strike_fx(ctx: BossContext, boss: Enemy, at: Vector2, size: float) -> void:
-	if ctx.vfx != null:
+## The hit of this attack at `at`: the painted `sheet` (default `effect`) fitted to `size` px from its
+## center and turned by `angle`, else a plain blast.
+func _strike_fx(ctx: BossContext, boss: Enemy, at: Vector2, size: float, angle: float = 0.0, sheet: EffectSheet = null) -> void:
+	if ctx.vfx == null:
+		return
+	var painted := sheet if sheet != null else effect
+	if painted != null:
+		ctx.vfx.sheet_at(painted, at, angle, size)
+	else:
 		ctx.vfx.explosion(at, size, boss.data.color, false)
 
 

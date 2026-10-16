@@ -7,6 +7,8 @@ extends BossPattern
 @export var landing_distance: float = 150.0
 @export var arc_radius: float = 190.0
 @export var arc_half_degrees: float = 80.0
+## Painted strike of the arc (`effect` is the smoke of the vanish and the return).
+@export var strike_effect: EffectSheet
 
 
 func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
@@ -26,7 +28,10 @@ func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
 		return
 	var facing := (ctx.target_position(boss.position) - boss.position).angle()
 	_hurt_sector(ctx, boss, boss.position, facing, arc_radius, deg_to_rad(arc_half_degrees))
-	_strike_fx(ctx, boss, boss.position + Vector2.from_angle(facing) * arc_radius * 0.6, arc_radius * 0.8)
+	if strike_effect != null:
+		_strike_fx(ctx, boss, boss.position, arc_radius, facing, strike_effect)
+	else:
+		_strike_fx(ctx, boss, boss.position + Vector2.from_angle(facing) * arc_radius * 0.6, arc_radius * 0.8)
 	_shake(ctx, 0.3)
 
 

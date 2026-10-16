@@ -16,8 +16,11 @@ func fire(ctx: BossContext, boss: Enemy, aim: Vector2, _repeat: int) -> void:
 	var steps := ceili(arm_length / half_width)
 	for line in _lines(boss, aim):
 		_hurt_segment(ctx, boss, line[0], line[1], half_width)
-		for k in steps + 1:
-			_strike_fx(ctx, boss, line[0].lerp(line[1], float(k) / steps), half_width * 1.8)
+		if effect == null:
+			for k in steps + 1:
+				_strike_fx(ctx, boss, line[0].lerp(line[1], float(k) / steps), half_width * 1.8)
+	if effect != null:
+		_strike_fx(ctx, boss, aim, arm_length, (aim - boss.position).angle())  # the painted X, turned like the lines
 	_shake(ctx, 0.35)
 
 
