@@ -40,7 +40,7 @@ BOSSES = {
                    (0.3, 1.3, ["seal", "pillar", "rings", "summon", "whirl"])],
     },
     "silver_boss_final": {
-        "color": "Color(0.45, 0.9, 1.0, 1)", "style": 18, "scale": 1.8,
+        "color": "Color(0.45, 0.9, 1.0, 1)", "style": 18, "scale": 1.3,
         "summon": "silver_runner",
         "patterns": {
             "spikes": ("windup = 0.9\nrepeats = 7\nrepeat_interval = 0.12\nrecovery = 1.3\nprojectile_damage = 15.0\nspikes = 7\n", 1),
@@ -54,7 +54,7 @@ BOSSES = {
                    (0.3, 1.3, ["patch", "club", "wall", "summon", "hail"])],
     },
     "gold_boss_final": {
-        "color": "Color(1.0, 0.3, 0.2, 1)", "style": 19, "scale": 1.74,
+        "color": "Color(1.0, 0.3, 0.2, 1)", "style": 19, "scale": 1.29,
         "summon": "gold_kamikaze",
         "patterns": {
             "beam": ("windup = 1.0\nrepeats = 12\nrepeat_interval = 0.13\nrecovery = 1.4\nprojectile_damage = 10.0\n", 4),

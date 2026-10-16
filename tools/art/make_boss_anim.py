@@ -52,6 +52,18 @@ def cut(sheet: Image.Image) -> list:
         cy, cx = centers[i]
         owner[i + 1] = min(int(cy // ch), ROWS - 1) * COLUMNS + min(int(cx // cw), COLUMNS - 1)
     cell_of_pixel = owner[labels]
+    # A shape that spans two poses (wings touching the neighbour's) cannot be given to one of them:
+    # its pixels go to the cell they lie in.
+    boxes = ndi.find_objects(labels)
+    ys_all, xs_all = np.indices(labels.shape)
+    by_cell = np.minimum(ys_all // ch, ROWS - 1) * COLUMNS + np.minimum(xs_all // cw, COLUMNS - 1)
+    for i, box in enumerate(boxes):
+        if box is None or owner[i + 1] < 0:
+            continue
+        height, width = box[0].stop - box[0].start, box[1].stop - box[1].start
+        if width > cw * 1.3 or height > ch * 1.3:
+            mask = labels == i + 1
+            cell_of_pixel[mask] = by_cell[mask]
     result = []
     padded = np.pad(pixels, ((CELL_PAD, CELL_PAD), (CELL_PAD, CELL_PAD), (0, 0)))
     padded_owner = np.pad(cell_of_pixel, CELL_PAD, constant_values=-1)
