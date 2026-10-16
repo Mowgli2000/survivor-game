@@ -77,6 +77,29 @@ enum Movement {
 @export var attack_sheet: SpriteSheet
 ## Size of the attack frames relative to the walk ones (the knight's share of the cell).
 @export var attack_scale: float = 1.0
+## How long each attack frame lasts, relative to the others (empty: all equal). Slow windup, fast strike.
+@export var attack_frame_weights: PackedFloat32Array = PackedFloat32Array()
+## The frame where the blow lands: it starts as the pattern's windup ends (-1: half way through).
+@export var attack_strike_frame: int = -1
+
+
+## Share (0..1) of the attack animation that comes before the strike frame.
+func attack_strike_share() -> float:
+	if attack_sheet == null or attack_strike_frame < 0:
+		return 0.5
+	var total := 0.0
+	var before := 0.0
+	var frames := maxi(attack_sheet.animations.get(&"attack", Vector3i(0, 1, 1)).y, 1)
+	for i in frames:
+		var weight := attack_frame_weight(i)
+		total += weight
+		if i < attack_strike_frame:
+			before += weight
+	return clampf(before / maxf(total, 0.001), 0.05, 0.95)
+
+
+func attack_frame_weight(index: int) -> float:
+	return attack_frame_weights[index] if index < attack_frame_weights.size() else 1.0
 
 var _texture: Texture2D
 var _elite_texture: Texture2D

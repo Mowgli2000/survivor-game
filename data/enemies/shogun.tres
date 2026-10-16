@@ -126,5 +126,7 @@ sprite_id = &"shogun"
 sprite_scale = 1.15
 attack_sheet = ExtResource("9_attack")
 attack_scale = 1.31
+attack_frame_weights = PackedFloat32Array(0.6, 0.1, 0.1, 0.8, 0.8, 0.8, 0.9, 0.06, 0.06, 0.7, 0.3, 0.3, 0.5, 0.3, 0.3, 0.6)
+attack_strike_frame = 9
 phases = Array[ExtResource("2_phase")]([SubResource("Phase_1"), SubResource("Phase_2"), SubResource("Phase_3")])
 projectile_style = 19

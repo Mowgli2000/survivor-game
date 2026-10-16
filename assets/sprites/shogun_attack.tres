@@ -8,5 +8,5 @@ script = ExtResource("1_sheet")
 texture = ExtResource("2_tex")
 cell_size = Vector2i(357, 320)
 animations = Dictionary[StringName, Vector3i]({
-&"attack": Vector3i(0, 6, 6)
+&"attack": Vector3i(0, 16, 6)
 })

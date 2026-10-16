@@ -329,7 +329,7 @@ func test_an_attack_animation_runs_its_frames_over_the_windup_and_ends() -> void
 	assert_gt(enemy.attack_frame, 1, "mid-way the sword is up or coming down")
 	enemy.tick_attack(1.0)
 	assert_eq(enemy.attack_left, 0.0, "the animation ends by itself")
-	assert_eq(enemy.attack_frame, 5, "on the last frame")
+	assert_eq(enemy.attack_frame, 15, "on the last frame")
 
 
 func test_an_enemy_without_attack_frames_ignores_the_animation_request() -> void:
@@ -381,3 +381,31 @@ func test_a_final_boss_past_the_clock_rages_and_a_mini_boss_does_not() -> void:
 	waves.overtime = 90.0
 	director._apply_pace()
 	assert_lt(director._ctx.recovery_scale, calm_recovery, "the rage speeds the attacks up")
+
+
+func test_the_strike_frame_lands_as_the_windup_ends_and_the_strike_is_quick() -> void:
+	var shogun: EnemyData = ContentDB.get_def(&"enemies", &"shogun")
+	var share := shogun.attack_strike_share()
+	assert_between(share, 0.4, 0.8, "most of the animation is the windup")
+	var enemy := _enemies.spawn(shogun, Vector2(300, 0))
+	var windup := 1.0
+	enemy.start_attack(windup / share)
+	enemy.tick_attack(windup * 0.98)
+	assert_lt(enemy.attack_frame, shogun.attack_strike_frame, "just before the windup ends: still preparing")
+	enemy.tick_attack(windup * 0.05)
+	assert_gte(enemy.attack_frame, shogun.attack_strike_frame, "as the windup ends: the blow")
+	# The swing itself (frames between the top pose and the slash) lasts a blink.
+	var swing := (shogun.attack_frame_weight(7) + shogun.attack_frame_weight(8)) / (windup / share)
+	assert_lt(swing, 0.15)
+	assert_eq(EnemyData.new().attack_strike_share(), 0.5, "no sheet: half way")
+
+
+func test_attack_frames_blend_into_the_next_one_in_between() -> void:
+	var shogun: EnemyData = ContentDB.get_def(&"enemies", &"shogun")
+	var enemy := _enemies.spawn(shogun, Vector2(300, 0))
+	enemy.start_attack(2.0)
+	enemy.tick_attack(0.4)
+	assert_gte(enemy.attack_blend, 0.0)
+	assert_lte(enemy.attack_blend, 1.0)
+	enemy.tick_attack(5.0)
+	assert_eq(enemy.attack_blend, 0.0, "nothing to blend at the end")

@@ -68,6 +68,8 @@ var enraged: bool = false
 var attack_left: float = 0.0
 var attack_length: float = 1.0
 var attack_frame: int = 0
+## Share (0..1) of the next frame cross-faded over the current one (smooth hold poses).
+var attack_blend: float = 0.0
 
 
 func reset(p_data: EnemyData, pos: Vector2, hp_multiplier: float, p_elite: bool = false,
@@ -196,6 +198,7 @@ func start_attack(length: float) -> void:
 	attack_length = maxf(length, 0.1)
 	attack_left = attack_length
 	attack_frame = 0
+	attack_blend = 0.0
 	queue_redraw()
 
 
@@ -203,10 +206,24 @@ func start_attack(length: float) -> void:
 func tick_attack(delta: float) -> bool:
 	attack_left = maxf(attack_left - delta, 0.0)
 	var frames := maxi(data.attack_sheet.animations.get(&"attack", Vector3i(0, 1, 1)).y, 1)
-	var frame := mini(int((1.0 - attack_left / attack_length) * frames), frames - 1)
-	if frame == attack_frame and attack_left > 0.0:
-		return false
+	var total := 0.0
+	for i in frames:
+		total += data.attack_frame_weight(i)
+	# Position in the animation, in weight units, then the frame it falls in and how far through it.
+	var at := (1.0 - attack_left / attack_length) * total
+	var frame := frames - 1
+	var local := 0.0
+	var passed := 0.0
+	for i in frames:
+		var weight := data.attack_frame_weight(i)
+		if at < passed + weight:
+			frame = i
+			local = (at - passed) / maxf(weight, 0.001)
+			break
+		passed += weight
+	var blend := local if frame < frames - 1 and attack_left > 0.0 else 0.0
 	attack_frame = frame
+	attack_blend = blend
 	return true
 
 
@@ -214,8 +231,11 @@ func _draw() -> void:
 	if data == null:
 		return
 	if attack_left > 0.0 and data.attack_sheet != null:
-		data.attack_sheet.draw(self, attack_frame, sprite_height() * data.attack_scale, foot_offset(),
-			animator.facing, data.sprite_tint)
+		var height := sprite_height() * data.attack_scale
+		data.attack_sheet.draw(self, attack_frame, height, foot_offset(), animator.facing, data.sprite_tint)
+		if attack_blend > 0.02:
+			var faded := Color(data.sprite_tint, data.sprite_tint.a * attack_blend)
+			data.attack_sheet.draw(self, attack_frame + 1, height, foot_offset(), animator.facing, faded)
 		return
 	var sheet := animator.sheet
 	if sheet != null:
