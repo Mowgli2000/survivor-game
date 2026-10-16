@@ -5,15 +5,22 @@
 [ext_resource type="Script" path="res://src/enemies/boss/boss_pattern.gd" id="7_pattern"]
 [ext_resource type="Resource" path="res://data/chests/big.tres" id="c_chest"]
 [ext_resource type="Script" path="res://src/enemies/boss/crack_rays_pattern.gd" id="s_crack"]
+[ext_resource type="Resource" path="res://data/vfx/iron_boss_final_fx1.tres" id="v_crack"]
 [ext_resource type="Script" path="res://src/enemies/boss/pillar_drop_pattern.gd" id="s_pillar"]
+[ext_resource type="Resource" path="res://data/vfx/iron_boss_final_fx2.tres" id="v_pillar"]
 [ext_resource type="Script" path="res://src/enemies/boss/shock_rings_pattern.gd" id="s_rings"]
+[ext_resource type="Resource" path="res://data/vfx/iron_boss_final_fx3.tres" id="v_rings"]
 [ext_resource type="Script" path="res://src/enemies/boss/blade_whirl_pattern.gd" id="s_whirl"]
+[ext_resource type="Resource" path="res://data/vfx/iron_boss_final_fx5.tres" id="v_whirl"]
 [ext_resource type="Script" path="res://src/enemies/boss/rune_seal_pattern.gd" id="s_seal"]
+[ext_resource type="Resource" path="res://data/vfx/iron_boss_final_fx4.tres" id="v_seal"]
 [ext_resource type="Script" path="res://src/enemies/boss/summon_pattern.gd" id="s_summon"]
 [ext_resource type="Resource" path="res://data/enemies/iron_runner.tres" id="m_summon"]
+[ext_resource type="Resource" path="res://assets/sprites/iron_boss_final_attack.tres" id="9_attack"]
 
 [sub_resource type="Resource" id="P_crack"]
 script = ExtResource("s_crack")
+effect = ExtResource("v_crack")
 windup = 1.0
 repeats = 2
 repeat_interval = 0.7
@@ -23,6 +30,7 @@ rays = 6
 
 [sub_resource type="Resource" id="P_pillar"]
 script = ExtResource("s_pillar")
+effect = ExtResource("v_pillar")
 windup = 0.9
 repeats = 4
 repeat_interval = 0.6
@@ -31,6 +39,7 @@ projectile_damage = 16.0
 
 [sub_resource type="Resource" id="P_rings"]
 script = ExtResource("s_rings")
+effect = ExtResource("v_rings")
 windup = 1.0
 repeats = 4
 repeat_interval = 0.45
@@ -39,6 +48,7 @@ projectile_damage = 14.0
 
 [sub_resource type="Resource" id="P_whirl"]
 script = ExtResource("s_whirl")
+effect = ExtResource("v_whirl")
 windup = 0.8
 repeats = 4
 repeat_interval = 0.4
@@ -47,6 +57,7 @@ projectile_damage = 12.0
 
 [sub_resource type="Resource" id="P_seal"]
 script = ExtResource("s_seal")
+effect = ExtResource("v_seal")
 windup = 1.4
 recovery = 1.4
 projectile_damage = 24.0
@@ -92,6 +103,10 @@ color = Color(0.2, 0.9, 1, 1)
 shape_sides = 8
 sprite_id = &"iron_boss_final"
 sprite_scale = 1.15
+attack_sheet = ExtResource("9_attack")
+attack_scale = 1.32
+attack_frame_weights = PackedFloat32Array(0.9, 0.9, 0.9, 0.35, 0.35, 0.35, 0.35, 0.35, 0.7, 0.9, 0.9, 0.9, 0.9, 0.15, 0.25, 0.3, 0.3, 0.3, 0.4, 0.4, 0.4)
+attack_strike_frame = 14
 phases = Array[ExtResource("2_phase")]([SubResource("Phase_1"), SubResource("Phase_2"), SubResource("Phase_3")])
 projectile_style = 21
 chest = ExtResource("c_chest")

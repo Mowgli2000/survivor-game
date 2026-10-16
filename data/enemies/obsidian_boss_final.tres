@@ -5,14 +5,20 @@
 [ext_resource type="Script" path="res://src/enemies/boss/boss_pattern.gd" id="7_pattern"]
 [ext_resource type="Resource" path="res://data/chests/big.tres" id="c_chest"]
 [ext_resource type="Script" path="res://src/enemies/boss/venom_pools_pattern.gd" id="s_pools"]
+[ext_resource type="Resource" path="res://data/vfx/obsidian_boss_final_fx1.tres" id="v_pools"]
 [ext_resource type="Script" path="res://src/enemies/boss/venom_spit_pattern.gd" id="s_spit"]
 [ext_resource type="Script" path="res://src/enemies/boss/web_net_pattern.gd" id="s_net"]
+[ext_resource type="Resource" path="res://data/vfx/obsidian_boss_final_fx3.tres" id="v_net"]
 [ext_resource type="Script" path="res://src/enemies/boss/egg_clutch_pattern.gd" id="s_eggs"]
+[ext_resource type="Resource" path="res://data/vfx/obsidian_boss_final_fx4.tres" id="v_eggs"]
 [ext_resource type="Resource" path="res://data/enemies/obsidian_runner.tres" id="larva"]
 [ext_resource type="Script" path="res://src/enemies/boss/leg_cage_pattern.gd" id="s_cage"]
+[ext_resource type="Resource" path="res://data/vfx/obsidian_boss_final_fx5.tres" id="v_cage"]
+[ext_resource type="Resource" path="res://assets/sprites/obsidian_boss_final_attack.tres" id="9_attack"]
 
 [sub_resource type="Resource" id="P_pools"]
 script = ExtResource("s_pools")
+effect = ExtResource("v_pools")
 windup = 1.0
 repeats = 5
 repeat_interval = 0.5
@@ -29,12 +35,14 @@ projectile_damage = 9.0
 
 [sub_resource type="Resource" id="P_net"]
 script = ExtResource("s_net")
+effect = ExtResource("v_net")
 windup = 1.0
 recovery = 1.3
 projectile_damage = 16.0
 
 [sub_resource type="Resource" id="P_eggs"]
 script = ExtResource("s_eggs")
+effect = ExtResource("v_eggs")
 windup = 1.2
 recovery = 1.4
 projectile_damage = 14.0
@@ -42,6 +50,7 @@ larva = ExtResource("larva")
 
 [sub_resource type="Resource" id="P_cage"]
 script = ExtResource("s_cage")
+effect = ExtResource("v_cage")
 windup = 1.0
 repeats = 2
 repeat_interval = 0.6
@@ -82,6 +91,10 @@ color = Color(0.6, 1.0, 0.3, 1)
 shape_sides = 8
 sprite_id = &"obsidian_boss_final"
 sprite_scale = 1.15
+attack_sheet = ExtResource("9_attack")
+attack_scale = 1.4
+attack_frame_weights = PackedFloat32Array(0.9, 0.9, 0.9, 0.35, 0.35, 0.35, 0.35, 0.35, 0.7, 0.9, 0.9, 0.9, 0.9, 0.15, 0.25, 0.3, 0.3, 0.3, 0.4, 0.4, 0.4)
+attack_strike_frame = 14
 phases = Array[ExtResource("2_phase")]([SubResource("Phase_1"), SubResource("Phase_2"), SubResource("Phase_3")])
 projectile_style = 20
 chest = ExtResource("c_chest")

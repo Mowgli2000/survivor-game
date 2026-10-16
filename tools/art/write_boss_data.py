@@ -26,7 +26,7 @@ SCRIPTS = {
 # pattern key: (properties, fx number or 0)
 BOSSES = {
     "iron_boss_final": {
-        "color": "Color(0.2, 0.9, 1, 1)", "style": 21, "scale": 1.62,
+        "color": "Color(0.2, 0.9, 1, 1)", "style": 21, "scale": 1.32,
         "summon": "iron_runner",
         "patterns": {
             "crack": ("windup = 1.0\nrepeats = 2\nrepeat_interval = 0.7\nrecovery = 1.3\nprojectile_damage = 16.0\nrays = 6\n", 1),
@@ -40,7 +40,7 @@ BOSSES = {
                    (0.3, 1.3, ["seal", "pillar", "rings", "summon", "whirl"])],
     },
     "silver_boss_final": {
-        "color": "Color(0.45, 0.9, 1.0, 1)", "style": 18, "scale": 1.62,
+        "color": "Color(0.45, 0.9, 1.0, 1)", "style": 18, "scale": 1.8,
         "summon": "silver_runner",
         "patterns": {
             "spikes": ("windup = 0.9\nrepeats = 7\nrepeat_interval = 0.12\nrecovery = 1.3\nprojectile_damage = 15.0\nspikes = 7\n", 1),
@@ -54,7 +54,7 @@ BOSSES = {
                    (0.3, 1.3, ["patch", "club", "wall", "summon", "hail"])],
     },
     "gold_boss_final": {
-        "color": "Color(1.0, 0.3, 0.2, 1)", "style": 19, "scale": 1.62,
+        "color": "Color(1.0, 0.3, 0.2, 1)", "style": 19, "scale": 1.74,
         "summon": "gold_kamikaze",
         "patterns": {
             "beam": ("windup = 1.0\nrepeats = 12\nrepeat_interval = 0.13\nrecovery = 1.4\nprojectile_damage = 10.0\n", 4),
@@ -67,7 +67,7 @@ BOSSES = {
                    (0.3, 1.3, ["beam", "wings", "summon", "checker", "chains"])],
     },
     "obsidian_boss_final": {
-        "color": "Color(0.6, 1.0, 0.3, 1)", "style": 20, "scale": 1.62,
+        "color": "Color(0.6, 1.0, 0.3, 1)", "style": 20, "scale": 1.4,
         "summon": "obsidian_runner",
         "patterns": {
             "pools": ("windup = 1.0\nrepeats = 5\nrepeat_interval = 0.5\nrecovery = 1.3\nprojectile_damage = 7.0\n", 1),
@@ -81,7 +81,7 @@ BOSSES = {
                    (0.3, 1.3, ["cage", "pools", "eggs", "net", "spit"])],
     },
     "astral_boss_final": {
-        "color": "Color(1.0, 0.35, 0.2, 1)", "style": 19, "scale": 1.62,
+        "color": "Color(1.0, 0.35, 0.2, 1)", "style": 19, "scale": 1.32,
         "summon": "astral_runner",
         "patterns": {
             "breath": ("windup = 1.1\nrepeats = 9\nrepeat_interval = 0.11\nrecovery = 1.5\nprojectile_damage = 9.0\n", 1),

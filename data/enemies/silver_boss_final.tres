@@ -5,15 +5,22 @@
 [ext_resource type="Script" path="res://src/enemies/boss/boss_pattern.gd" id="7_pattern"]
 [ext_resource type="Resource" path="res://data/chests/big.tres" id="c_chest"]
 [ext_resource type="Script" path="res://src/enemies/boss/ice_spike_line_pattern.gd" id="s_spikes"]
+[ext_resource type="Resource" path="res://data/vfx/silver_boss_final_fx1.tres" id="v_spikes"]
 [ext_resource type="Script" path="res://src/enemies/boss/club_shockwave_pattern.gd" id="s_club"]
+[ext_resource type="Resource" path="res://data/vfx/silver_boss_final_fx2.tres" id="v_club"]
 [ext_resource type="Script" path="res://src/enemies/boss/frost_wall_pattern.gd" id="s_wall"]
+[ext_resource type="Resource" path="res://data/vfx/silver_boss_final_fx3.tres" id="v_wall"]
 [ext_resource type="Script" path="res://src/enemies/boss/hail_pattern.gd" id="s_hail"]
+[ext_resource type="Resource" path="res://data/vfx/silver_boss_final_fx5.tres" id="v_hail"]
 [ext_resource type="Script" path="res://src/enemies/boss/freezing_patch_pattern.gd" id="s_patch"]
+[ext_resource type="Resource" path="res://data/vfx/silver_boss_final_fx4.tres" id="v_patch"]
 [ext_resource type="Script" path="res://src/enemies/boss/summon_pattern.gd" id="s_summon"]
 [ext_resource type="Resource" path="res://data/enemies/silver_runner.tres" id="m_summon"]
+[ext_resource type="Resource" path="res://assets/sprites/silver_boss_final_attack.tres" id="9_attack"]
 
 [sub_resource type="Resource" id="P_spikes"]
 script = ExtResource("s_spikes")
+effect = ExtResource("v_spikes")
 windup = 0.9
 repeats = 7
 repeat_interval = 0.12
@@ -23,12 +30,14 @@ spikes = 7
 
 [sub_resource type="Resource" id="P_club"]
 script = ExtResource("s_club")
+effect = ExtResource("v_club")
 windup = 1.1
 recovery = 1.3
 projectile_damage = 24.0
 
 [sub_resource type="Resource" id="P_wall"]
 script = ExtResource("s_wall")
+effect = ExtResource("v_wall")
 windup = 1.0
 repeats = 2
 repeat_interval = 0.55
@@ -37,6 +46,7 @@ projectile_damage = 18.0
 
 [sub_resource type="Resource" id="P_hail"]
 script = ExtResource("s_hail")
+effect = ExtResource("v_hail")
 windup = 0.9
 repeats = 5
 repeat_interval = 0.55
@@ -45,6 +55,7 @@ projectile_damage = 14.0
 
 [sub_resource type="Resource" id="P_patch"]
 script = ExtResource("s_patch")
+effect = ExtResource("v_patch")
 windup = 0.9
 repeats = 6
 repeat_interval = 0.5
@@ -92,6 +103,10 @@ color = Color(0.45, 0.9, 1.0, 1)
 shape_sides = 8
 sprite_id = &"silver_boss_final"
 sprite_scale = 1.15
+attack_sheet = ExtResource("9_attack")
+attack_scale = 1.8
+attack_frame_weights = PackedFloat32Array(0.9, 0.9, 0.9, 0.35, 0.35, 0.35, 0.35, 0.35, 0.7, 0.9, 0.9, 0.9, 0.9, 0.15, 0.25, 0.3, 0.3, 0.3, 0.4, 0.4, 0.4)
+attack_strike_frame = 14
 phases = Array[ExtResource("2_phase")]([SubResource("Phase_1"), SubResource("Phase_2"), SubResource("Phase_3")])
 projectile_style = 18
 chest = ExtResource("c_chest")

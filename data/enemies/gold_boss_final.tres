@@ -5,14 +5,20 @@
 [ext_resource type="Script" path="res://src/enemies/boss/boss_pattern.gd" id="7_pattern"]
 [ext_resource type="Resource" path="res://data/chests/big.tres" id="c_chest"]
 [ext_resource type="Script" path="res://src/enemies/boss/flame_checker_pattern.gd" id="s_checker"]
+[ext_resource type="Resource" path="res://data/vfx/gold_boss_final_fx1.tres" id="v_checker"]
 [ext_resource type="Script" path="res://src/enemies/boss/chain_lash_pattern.gd" id="s_chains"]
+[ext_resource type="Resource" path="res://data/vfx/gold_boss_final_fx3.tres" id="v_chains"]
 [ext_resource type="Script" path="res://src/enemies/boss/fire_beam_pattern.gd" id="s_beam"]
+[ext_resource type="Resource" path="res://data/vfx/gold_boss_final_fx4.tres" id="v_beam"]
 [ext_resource type="Script" path="res://src/enemies/boss/wing_blast_pattern.gd" id="s_wings"]
+[ext_resource type="Resource" path="res://data/vfx/gold_boss_final_fx2.tres" id="v_wings"]
 [ext_resource type="Script" path="res://src/enemies/boss/summon_pattern.gd" id="s_summon"]
 [ext_resource type="Resource" path="res://data/enemies/gold_kamikaze.tres" id="m_summon"]
+[ext_resource type="Resource" path="res://assets/sprites/gold_boss_final_attack.tres" id="9_attack"]
 
 [sub_resource type="Resource" id="P_checker"]
 script = ExtResource("s_checker")
+effect = ExtResource("v_checker")
 windup = 1.0
 repeats = 2
 repeat_interval = 0.7
@@ -21,6 +27,7 @@ projectile_damage = 18.0
 
 [sub_resource type="Resource" id="P_chains"]
 script = ExtResource("s_chains")
+effect = ExtResource("v_chains")
 windup = 0.9
 repeats = 3
 repeat_interval = 0.35
@@ -29,6 +36,7 @@ projectile_damage = 16.0
 
 [sub_resource type="Resource" id="P_beam"]
 script = ExtResource("s_beam")
+effect = ExtResource("v_beam")
 windup = 1.0
 repeats = 12
 repeat_interval = 0.13
@@ -37,6 +45,7 @@ projectile_damage = 10.0
 
 [sub_resource type="Resource" id="P_wings"]
 script = ExtResource("s_wings")
+effect = ExtResource("v_wings")
 windup = 1.0
 recovery = 1.3
 projectile_damage = 22.0
@@ -82,6 +91,10 @@ color = Color(1.0, 0.3, 0.2, 1)
 shape_sides = 8
 sprite_id = &"gold_boss_final"
 sprite_scale = 1.15
+attack_sheet = ExtResource("9_attack")
+attack_scale = 1.74
+attack_frame_weights = PackedFloat32Array(0.9, 0.9, 0.9, 0.35, 0.35, 0.35, 0.35, 0.35, 0.7, 0.9, 0.9, 0.9, 0.9, 0.15, 0.25, 0.3, 0.3, 0.3, 0.4, 0.4, 0.4)
+attack_strike_frame = 14
 phases = Array[ExtResource("2_phase")]([SubResource("Phase_1"), SubResource("Phase_2"), SubResource("Phase_3")])
 projectile_style = 19
 chest = ExtResource("c_chest")
