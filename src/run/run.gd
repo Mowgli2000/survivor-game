@@ -522,11 +522,18 @@ func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
 		# The wave (and the run) waits for the painted death, then for the chest to be opened.
 		_boss_dying = true
 		waves.pending_reward = true  # from the death on: no horde comes back while the boss dies and its chest waits
+		_clear_arena.call_deferred()  # whatever was still on the field (not inside the hit that killed the boss)
 		var wait := 0.0
 		if death_time > 0.0:
 			Engine.time_scale = DEATH_SLOWMO
 			wait = death_time + BossCorpse.FADE_TIME * 0.5
 		get_tree().create_timer(maxf(wait, 0.05), true, false, true).timeout.connect(_after_boss_death.bind(data, pos))
+
+
+## The final boss is dead: the arena empties, so its death and its chest are seen alone.
+func _clear_arena() -> void:
+	enemies.clear_all()
+	enemy_projectiles.clear_all()
 
 
 ## The death animation is over: the final boss's chest drops (the run is won when it is opened),

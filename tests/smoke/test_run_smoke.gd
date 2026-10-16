@@ -229,6 +229,7 @@ func test_killing_the_boss_wins_before_the_timer() -> void:
 	run.enemies.damage_enemy(index, 1.0e9, false, Vector2.RIGHT, 0.0)
 	await wait_physics_frames(3)
 	assert_false(run.state.is_over, "the painted death plays first")
+	assert_eq(run.enemies.active_count(), 0, "the arena is emptied when the final boss dies")
 	assert_lt(Engine.time_scale, 1.0, "the death is in slow motion")
 	Engine.time_scale = 1.0  # test clocks run on game time: keep them real
 	await _open_the_boss_chest(run)
