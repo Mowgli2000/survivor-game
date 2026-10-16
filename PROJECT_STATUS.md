@@ -163,7 +163,8 @@ Dernière mise à jour : 2026-10-09 (nuit, session 11 : refonte visuelle « Cris
 - Captures de tous les écrans (solo et coop, 16:9, 5:4, 21:9) relues une par une.
 - Corrigé : barres d'aide manette affichées en double sous un sous-écran (Valider/Retour superposés) ; cadre de sélection coop qui remplissait les petits boutons (barre verte sur le texte d'Acheter) ; noms coupés en plein mot sur les cartes de niveau supérieur en coop ; bloc du joueur 2 aligné sur celui du joueur 1 ; navigation manette bas depuis une arme vers Vendre/Fusionner ; libellés « Débloqué » alignés.
 - Nouveau test `test_focus_reachability` : depuis le focus, les quatre directions atteignent tous les boutons (boutique, niveau supérieur, pause, paramètres).
-- Reste : barre d'aide de la pause qui chevauche l'icône d'arme du joueur 1 en coop ; cartes de boutique coop à 15 px du bord ; infobulle qui couvre le titre du joueur 2 en 21:9 ; barre d'XP du haut en coop = joueur 1 sur toute la largeur. Non testé avec une vraie manette.
+- Corrigé l'après-midi : aide de la pause centrée en bas (plus sur l'icône d'arme du joueur 1) ; cartes de boutique coop à ~33 px du bord (bouton d'achat à marges réduites, cartes 204 px) ; barre d'XP du haut coupée en deux en coop (joueur 1 à gauche, joueur 2 à droite).
+- Reste : l'infobulle de survol (moteur, suit la souris) peut couvrir le titre du joueur 2 en 21:9 ; non corrigé. Non testé avec une vraie manette.
 
 ### Session 1 — 2026-10-02
 

@@ -11,7 +11,7 @@ signal next_wave_requested
 const INPUT_DELAY_MS := 350
 const CARD_SIZE := Vector2(300, 370)
 ## Coop: each player's shop fills half of the screen (compact layout).
-const COMPACT_CARD_SIZE := Vector2(214, 372)
+const COMPACT_CARD_SIZE := Vector2(204, 372)
 const COMPACT_ITEMS_WIDTH := 800.0
 ## Height kept free at the bottom for the pinned "Next wave" button (solo / coop).
 const NEXT_AREA := 140.0
@@ -158,7 +158,7 @@ func _init(p_compact: bool = false) -> void:
 	header.add_child(UiIcons.tile(UiIcons.coin(), 34.0 if _compact else 44.0))
 
 	_cards = HBoxContainer.new()
-	_cards.add_theme_constant_override("separation", 10 if _compact else 24)
+	_cards.add_theme_constant_override("separation", 8 if _compact else 24)
 	_cards.alignment = BoxContainer.ALIGNMENT_CENTER
 	box.add_child(_cards)
 
@@ -527,6 +527,8 @@ func _make_card(index: int, offer: ShopOffer) -> Control:
 		box.add_child(effects)
 	var buy := _button(tr("UI_SHOP_BUY") % offer.price, 20 if _compact else 24)
 	UiIcons.put_after_text(buy, UiIcons.coin(), 22 if _compact else 28)
+	if _compact:
+		_slim_button(buy)
 	UiFx.hover_lift(buy)
 	buy.disabled = not _shop.can_buy(index)
 	if not _wallet.can_afford(offer.price):
@@ -863,6 +865,16 @@ func _label(size: int, color: Color, variation: StringName = &"") -> Label:
 
 
 ## `size` 0 keeps the theme's font size.
+## Narrower side margins: a half-screen card cannot afford the theme's 30 px each side.
+func _slim_button(button: Button) -> void:
+	var theme := UiTheme.get_theme()
+	for state in [&"normal", &"hover", &"pressed", &"disabled"]:
+		var box := theme.get_stylebox(state, &"Button").duplicate() as StyleBox
+		box.content_margin_left = 12.0
+		box.content_margin_right = 12.0
+		button.add_theme_stylebox_override(state, box)
+
+
 func _button(text: String, size: int) -> Button:
 	var button := Button.new()
 	button.text = text

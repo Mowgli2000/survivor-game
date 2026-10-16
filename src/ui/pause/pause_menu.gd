@@ -93,6 +93,11 @@ func _init() -> void:
 	_settings.closed.connect(_on_settings_closed)
 	root.add_child(_settings)
 	_hints = ButtonHints.create([[&"A", "UI_HINT_CONFIRM"], [&"B", "UI_HINT_RESUME"]])
+	# Bottom centre: the corners hold the HUD's weapon icons (coop: hints sat over player 1's).
+	_hints.set_anchors_and_offsets_preset(Control.PRESET_CENTER_BOTTOM)
+	_hints.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	_hints.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	_hints.offset_bottom = -28.0
 	root.add_child(_hints)
 
 

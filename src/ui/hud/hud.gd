@@ -105,9 +105,22 @@ func setup_second_player(player: Player, progression: Progression, wallet: Walle
 		hp_bar.max_value = max_hp
 		hp_bar.value = hp
 		hp_label.text = "%d / %d" % [ceili(hp), roundi(max_hp)] if not player.is_dead else tr("UI_PLAYER_DOWN")
+	# The top XP bar is player 1's: it takes the left half, and player 2 gets the right one.
+	_xp_bar.anchor_right = 0.5
+	_xp_bar.offset_right = -4
+	var top_xp_bar := _make_bar(UiTheme.XP)
+	top_xp_bar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	top_xp_bar.anchor_left = 0.5
+	top_xp_bar.offset_left = 4
+	top_xp_bar.offset_right = -8
+	top_xp_bar.offset_top = 6
+	top_xp_bar.offset_bottom = 22
+	_root.add_child(top_xp_bar)
 	var refresh_xp := func(xp: int, needed: int) -> void:
 		xp_bar.max_value = needed
 		xp_bar.value = xp
+		top_xp_bar.max_value = needed
+		top_xp_bar.value = xp
 	var refresh_info := func(_value: int = 0) -> void:
 		level_info.text = "%s %d" % [tr("UI_LEVEL"), progression.level]
 		gold_info.text = "%s %d" % [tr("UI_MATERIALS"), wallet.amount]
