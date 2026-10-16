@@ -25,10 +25,44 @@ BELOW_FEET = 24
 EDGE_CLEAR = 10
 
 
+SOLID_ALPHA = 40  # what counts as drawn when looking for the pieces of a pose
+MERGE_PIXELS = 3  # pieces closer than this belong together (outline gaps)
+HAZE_ALPHA = 22  # fainter than this is the generator's haze: no square of it may remain
+MIN_PIECE = 30  # smaller pieces are specks
+CELL_PAD = 220  # a sword may cross its cell: each pose gets this margin around its cell
+
+
 def cut(sheet: Image.Image) -> list:
+    """The 16 poses of a sheet, each rebuilt from the pieces (connected shapes) whose center lies in
+    its cell: a sword crossing the cell border stays whole, a fragment of the neighbouring pose is left out,
+    and the haze of the generator is cleared (no visible square around the boss)."""
+    from scipy import ndimage as ndi
     cw, ch = sheet.width // COLUMNS, sheet.height // ROWS
-    return [sheet.crop(((i % COLUMNS) * cw, (i // COLUMNS) * ch, (i % COLUMNS + 1) * cw, (i // COLUMNS + 1) * ch))
-            for i in range(COLUMNS * ROWS)]
+    pixels = np.array(sheet)
+    solid = pixels[..., 3] > SOLID_ALPHA
+    grown = ndi.binary_dilation(solid, structure=np.ones((3, 3)), iterations=MERGE_PIXELS)
+    labels, count = ndi.label(grown)
+    sizes = ndi.sum(solid, labels, range(1, count + 1))
+    centers = ndi.center_of_mass(solid, labels, range(1, count + 1))
+    owner = np.full(count + 1, -1, dtype=np.int32)
+    for i in range(count):
+        if sizes[i] < MIN_PIECE:
+            continue
+        cy, cx = centers[i]
+        owner[i + 1] = min(int(cy // ch), ROWS - 1) * COLUMNS + min(int(cx // cw), COLUMNS - 1)
+    cell_of_pixel = owner[labels]
+    result = []
+    padded = np.pad(pixels, ((CELL_PAD, CELL_PAD), (CELL_PAD, CELL_PAD), (0, 0)))
+    padded_owner = np.pad(cell_of_pixel, CELL_PAD, constant_values=-1)
+    for i in range(COLUMNS * ROWS):
+        # The pose's pieces, wherever they reach (up to CELL_PAD beyond its cell).
+        x0, y0 = (i % COLUMNS) * cw, (i // COLUMNS) * ch
+        window = (slice(y0, y0 + ch + 2 * CELL_PAD), slice(x0, x0 + cw + 2 * CELL_PAD))
+        piece = padded[window].copy()
+        piece[padded_owner[window] != i, 3] = 0
+        piece[piece[..., 3] < HAZE_ALPHA, 3] = 0
+        result.append(Image.fromarray(piece))
+    return result
 
 
 def feet_of(alpha: np.ndarray):
@@ -76,7 +110,7 @@ def main() -> None:
             frames.extend(cells)
         names.append(name)
         poses.append(frames)
-    cw, ch = poses[0][0].size
+    cw, ch = poses[0][0].size  # a padded pose (cell + CELL_PAD each side)
     # Ground line of the reference: the first pose of the first animation.
     ref = feet_of(np.array(poses[0][0])[..., 3])
     if ref is None:

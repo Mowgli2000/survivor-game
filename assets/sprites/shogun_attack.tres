@@ -6,13 +6,13 @@
 [resource]
 script = ExtResource("1_sheet")
 texture = ExtResource("2_tex")
-cell_size = Vector2i(374, 320)
+cell_size = Vector2i(404, 320)
 columns = 8
 animations = Dictionary[StringName, Vector3i]({
 &"attack": Vector3i(0, 21, 24),
-&"death": Vector3i(53, 16, 14),
-&"entrance": Vector3i(21, 16, 16),
-&"idle": Vector3i(69, 16, 8),
-&"phase": Vector3i(37, 16, 16),
-&"walk": Vector3i(85, 16, 12)
+&"death": Vector3i(85, 16, 8),
+&"entrance": Vector3i(21, 32, 14),
+&"idle": Vector3i(101, 16, 8),
+&"phase": Vector3i(53, 32, 14),
+&"walk": Vector3i(117, 16, 12)
 })

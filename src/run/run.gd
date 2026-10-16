@@ -42,6 +42,8 @@ var bot_policy: Object
 var record_profile: bool = true
 ## True: every weapon and item can show up, whatever the profile unlocked.
 var unlock_all: bool = false
+## True while a final boss's death animation plays: the wave (and the run) must not end under it.
+var _boss_dying: bool = false
 ## Wave the run opens on (the boss test arena starts on the boss wave).
 var first_wave: int = 1
 ## Character and weapon chosen in the menu (SceneRouter.next_run when null).
@@ -281,8 +283,10 @@ func _ready() -> void:
 	waves.wave_started.connect(_update_material_scale)
 	waves.wave_ended.connect(_on_wave_ended)
 	waves.run_won.connect(_on_run_won)
-	waves.end_blocked = func() -> bool: return enemies.has_living_boss()
+	waves.end_blocked = func() -> bool: return enemies.has_living_boss() or _boss_dying
 	waves.overtime_started.connect(func() -> void:
+		if _boss_dying:
+			return  # the boss is already dead: no rage message over its death
 		Audio.play(Sounds.BOSS_ALERT, -2.0)
 		hud.show_toast(tr("UI_BOSS_RAGE")))
 	waves.wave_started.connect(func(_wave: int) -> void: Audio.play(Sounds.WAVE_START, -6.0))
@@ -507,9 +511,11 @@ func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
 			waves.finish_wave()
 			return
 		# The painted death plays in slow motion before the wave ends and the screens come up.
+		_boss_dying = true
 		Engine.time_scale = DEATH_SLOWMO
 		get_tree().create_timer(death_time + BossCorpse.FADE_TIME * 0.5, true, false, true).timeout.connect(func() -> void:
 			Engine.time_scale = 1.0
+			_boss_dying = false
 			waves.finish_wave())
 
 

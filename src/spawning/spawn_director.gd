@@ -16,6 +16,9 @@ const BOSS_RAMP := 30.0
 ## During a mini-boss fight (phases, `boss = false`) this share of the steady flow stays: gold to
 ## collect and a crowd around the duel. Only the final boss clears the arena.
 const MINI_BOSS_FLOW := 0.4
+## A boss with an entrance animation appears this far from the players (on screen), at least this far from the walls.
+const ENTRANCE_DISTANCE := 420.0
+const ENTRANCE_MARGIN := 120.0
 const BOSS_POLL := 0.5
 
 var _stage: StageData
@@ -135,9 +138,23 @@ func _fire_events(elapsed: float, hp_multiplier: float, damage_multiplier: float
 		for k in event.count:
 			var angle := offset + TAU * k / event.count
 			var pos := _party.center() + Vector2.from_angle(angle) * _stage.spawn_distance
+			if enemy.attack_sheet != null and enemy.attack_sheet.has_animation(&"entrance"):
+				pos = _entrance_spot(angle)
 			_enemies.spawn(enemy, pos.clamp(_arena.position, _arena.end), hp, event.elite,
 				damage_multiplier)
 		_state.wave_spawned += event.count
+
+
+## Where a boss with an entrance animation appears: in view of the players, so the entrance is seen. Starts
+## from `angle` and turns until the spot is inside the arena (a wall behind the players, say).
+func _entrance_spot(angle: float) -> Vector2:
+	var center := _party.center()
+	var inside := _arena.grow(-ENTRANCE_MARGIN)
+	for step in 12:
+		var spot := center + Vector2.from_angle(angle + TAU * step / 12.0) * ENTRANCE_DISTANCE
+		if inside.has_point(spot):
+			return spot
+	return (center + Vector2.from_angle(angle) * ENTRANCE_DISTANCE).clamp(inside.position, inside.end)
 
 
 ## A point at `spawn_distance` from the players' center, inside the arena when possible.

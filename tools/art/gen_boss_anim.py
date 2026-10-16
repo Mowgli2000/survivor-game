@@ -29,6 +29,15 @@ JOBS = {
             "right. The knight marches with big heavy stomping steps, the greatsword held low in front and swaying with each step, the "
             "body bobbing up and down, the cape swaying behind him. Poses 1-8 are the left foot stepping forward, poses 9-16 the right "
             "foot stepping forward. The ground line stays the same in every cell."),
+        "entrance_b": (True, "The second half of a boss entrance, 16 poses. Pose 1 is exactly the last pose of the reference (the "
+            "ready stance after the first roar). Poses 2-5: he slams the tip of the greatsword into the ground in front of him, "
+            "leaning on it, chest swelling. Poses 6-10: he lifts the greatsword high overhead with both hands and roars again, a "
+            "second, bigger roar, cape whipping. Poses 11-16: he lowers the sword, takes one heavy step forward and settles into the "
+            "ready stance, pose 16 identical to the ready stance of the reference image."),
+        "phase_b": (True, "The second half of a boss changing phase, 16 poses. Pose 1 is exactly the last pose of the reference (the "
+            "ready stance with glowing red cracks in the armor). Poses 2-6: the cracks flare brighter, he clenches his fists and rocks "
+            "with power, the horns glowing. Poses 7-11: he spins the greatsword in a showy flourish and points it forward. Poses 12-16: "
+            "he settles back into the ready stance with the cracks still glowing hot crimson."),
         "attack_windup": (False, "The wind-up of a huge overhead sword strike, 16 poses. Poses 1-3: from the ready stance (sword lowered "
             "in front, like the reference) he shifts his weight and crouches slightly. Poses 4-8: he swings the greatsword up in an arc "
             "until it is high above his head, leaning back. Poses 9-12: he holds the sword at the top, body coiled, armor trembling, "

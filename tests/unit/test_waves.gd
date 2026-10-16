@@ -422,6 +422,25 @@ func test_the_flow_comes_back_when_a_mini_boss_fight_drags_on() -> void:
 	assert_almost_eq(spawner._boss_flow(0.0), 0.5, 0.01, "halfway through the ramp")
 
 
+func test_a_boss_with_an_entrance_appears_in_view_of_the_players() -> void:
+	var stage := _stage(3)
+	var event := _event(1, 0.0)
+	event.enemy = ContentDB.get_def(&"enemies", &"shogun")
+	event.count = 1
+	stage.events = [event]
+	var parts := _spawn_setup(stage)
+	var director: WaveDirector = parts[0]
+	var spawner: SpawnDirector = parts[1]
+	var enemies: EnemyManager = parts[2]
+	director.start_wave(1)
+	spawner.begin_wave(1)
+	await wait_physics_frames(5)
+	assert_eq(enemies.active_count(), 1)
+	var boss := enemies.get_enemy(0)
+	var distance := boss.position.distance_to(spawner._party.center())
+	assert_lt(distance, SpawnDirector.ENTRANCE_DISTANCE + 5.0, "close enough to be on screen, not at the edge of the map")
+
+
 func test_a_final_boss_duel_never_lets_the_horde_back() -> void:
 	var parts := _boss_duel_setup(true)
 	var director: WaveDirector = parts[0]

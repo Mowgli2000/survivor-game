@@ -209,10 +209,34 @@ func test_killing_the_boss_wins_before_the_timer() -> void:
 	assert_false(run.state.is_over, "the painted death plays first")
 	assert_lt(Engine.time_scale, 1.0, "the death is in slow motion")
 	Engine.time_scale = 1.0  # test clocks run on game time: keep them real
-	await wait_seconds(1.2)  # the death animation (the wave ends after it, and the tree pauses)
+	await wait_seconds(BossCorpse.duration_of(ContentDB.get_def(&"enemies", &"shogun")) - 0.2)  # the death animation (the wave ends after it, and the tree pauses)
 	await wait_physics_frames(60)
 	assert_true(run.state.is_over)
 	assert_true(run.game_over_screen.is_victory)
+
+
+func test_a_final_boss_killed_after_the_clock_still_gets_its_death_animation() -> void:
+	var run := _swap_run(true, true)
+	await wait_physics_frames(2)
+	for i in 2:
+		await _end_wave()
+	run.waves.time_left = 0.01
+	var boss := run.enemies.spawn(ContentDB.get_def(&"enemies", &"shogun"), run.player.position + Vector2(400, 0))
+	boss.invulnerable_left = 0.0
+	await wait_physics_frames(10)
+	assert_false(run.state.is_over, "the clock ran out but the boss lives: overtime")
+	assert_gt(run.waves.overtime, 0.0)
+	var index := 0
+	for i in run.enemies.active_count():
+		if run.enemies.get_enemy(i) == boss:
+			index = i
+	run.enemies.damage_enemy(index, 1.0e9, false, Vector2.RIGHT, 0.0)
+	Engine.time_scale = 1.0
+	await wait_physics_frames(5)
+	assert_false(run.state.is_over, "the victory waits for the death animation, even in overtime")
+	await wait_seconds(BossCorpse.duration_of(ContentDB.get_def(&"enemies", &"shogun")) - 0.2)
+	await wait_physics_frames(90)
+	assert_true(run.state.is_over)
 
 
 func test_death_on_wave_end_keeps_game_over() -> void:
