@@ -117,9 +117,7 @@ func _draw() -> void:
 	draw_texture_rect_region(_data.sheet.texture, shown, _data.sheet.region(frame), Color(1, 1, 1, alpha))
 
 
-## A pulsing golden ring on the ground and a bobbing arrow: "walk on it".
+## A bobbing arrow above the chest: "walk on it".
 func _draw_beacon() -> void:
-	var pulse := 0.5 + 0.5 * sin(_time * 4.0)
-	draw_arc(Vector2.ZERO, _data.open_radius * (0.8 + 0.1 * pulse), 0.0, TAU, 48, Color(GOLD, 0.35 + 0.35 * pulse), 4.0)
 	var top := -_data.height - 14.0 + 8.0 * sin(_time * 5.0)
 	draw_colored_polygon(PackedVector2Array([Vector2(-16, top - 22), Vector2(16, top - 22), Vector2(0, top)]), Color(GOLD, 0.9))

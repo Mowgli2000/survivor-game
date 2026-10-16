@@ -10,7 +10,9 @@ signal closed
 const ICON_SIZE := 150.0
 const SLOT_WIDTH := 300.0
 ## Height of the beam above the chest, and how far above the chest the icons float.
-const BEAM_HEIGHT := 560.0
+const BEAM_HEIGHT := 270.0
+## Where the beam's halo ring sits above the chest, as a share of the beam's height (from the painting).
+const RING_SHARE := 0.65
 const ICON_RISE := 360.0
 const SPOT_RADIUS := 640.0
 const LOOP_FIRST := 8  # the beam's frames 9-16 loop (frame index 8..15)
@@ -26,7 +28,7 @@ var _time := 0.0
 var _cards := 0
 var _gradient: GradientTexture2D
 var _scale := 1.0
-var _icons_y := 400.0
+var _ring_y := 400.0
 
 
 func _init() -> void:
@@ -88,7 +90,7 @@ func open(rewards: Array[Dictionary], anchor: Vector2 = Vector2.ZERO, sheet: Eff
 	_anchor.x = clampf(_anchor.x, 260.0 * _scale, view.x - 260.0 * _scale)
 	_anchor.y = clampf(_anchor.y, 300.0 * _scale, view.y - 140.0 * _scale)
 	# The icons float above the chest, but never into the title.
-	_icons_y = maxf(_anchor.y - ICON_RISE * _scale, 190.0 * _scale + ICON_SIZE * _scale * 0.5)
+	_ring_y = _anchor.y - RING_SHARE * BEAM_HEIGHT * _scale
 	_sheet = sheet
 	_time = 0.0
 	_cards = rewards.size()
@@ -99,8 +101,12 @@ func open(rewards: Array[Dictionary], anchor: Vector2 = Vector2.ZERO, sheet: Eff
 		var width := minf(SLOT_WIDTH * _scale, (view.x - 200.0) / maxf(rewards.size(), 1.0))
 		var x := _anchor.x + (i - (rewards.size() - 1) * 0.5) * width
 		slot.scale = Vector2.ONE * _scale
-		slot.position = Vector2(x - SLOT_WIDTH * _scale * 0.5, _icons_y - ICON_SIZE * _scale * 0.5)
 		slot.size = Vector2(SLOT_WIDTH, 0.0)
+		# The icon rests just above the halo (its name and effect hang below it, over the beam), under the title.
+		var header: float = (slot.get_child(0).get_combined_minimum_size().y + 8.0) if rewards[i].title != "" else 0.0
+		var top := maxf(_ring_y - 24.0 * _scale - (ICON_SIZE + header) * _scale, 100.0 * _scale)
+		slot.position = Vector2(x - SLOT_WIDTH * _scale * 0.5, top)
+		slot.set_meta(&"top", top)
 		UiFx.pop_in(slot, delay)
 		delay += 0.18
 	visible = true
@@ -128,7 +134,7 @@ func _process(delta: float) -> void:
 	# The floating icons bob gently, each out of step with the next.
 	for i in _slots.get_child_count():
 		var slot := _slots.get_child(i) as Control
-		slot.position.y = _icons_y - ICON_SIZE * _scale * 0.5 + 8.0 * sin(_time * 2.2 + i * 1.3)
+		slot.position.y = float(slot.get_meta(&"top", 0.0)) + 6.0 * sin(_time * 2.2 + i * 1.3)
 
 
 ## The screen goes dark except around the chest: a radial gradient (clear in the middle, dark at the
