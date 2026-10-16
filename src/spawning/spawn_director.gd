@@ -12,6 +12,9 @@ const GROUP_SPREAD := 90.0
 ## flow comes back over BOSS_RAMP seconds, so a fight nobody can finish is not a free rest.
 const BOSS_PAUSE := 45.0
 const BOSS_RAMP := 30.0
+## During a mini-boss fight (phases, `boss = false`) this share of the steady flow stays: gold to
+## collect and a crowd around the duel. Only the final boss clears the arena.
+const MINI_BOSS_FLOW := 0.4
 const BOSS_POLL := 0.5
 
 var _stage: StageData
@@ -27,6 +30,8 @@ var _eligible: Array[EnemyData] = []
 var _pending_events: Array[WaveEvent] = []
 ## Seconds since the first boss of the wave appeared; -1 when no fight is on.
 var _boss_clock: float = -1.0
+## True while the living phased enemies are mini-bosses only (refreshed by the poll).
+var _mini_only: bool = false
 var _boss_poll: float = 0.0
 
 
@@ -87,10 +92,13 @@ func _physics_process(delta: float) -> void:
 			_state.wave_spawned += 1
 
 
-func _on_boss_spawned(_enemy: Enemy) -> void:
+func _on_boss_spawned(enemy: Enemy) -> void:
 	if _boss_clock < 0.0:
 		_boss_clock = 0.0
 		_boss_poll = BOSS_POLL
+		_mini_only = true
+	if enemy.data.boss:
+		_mini_only = false
 
 
 ## Share (0..1) of the steady spawn flow right now: 1 outside a boss fight, 0 during the duel, then back up.
@@ -104,7 +112,9 @@ func _boss_flow(delta: float) -> float:
 		if not _enemies.has_living_phased():
 			_boss_clock = -1.0
 			return 1.0
-	return clampf((_boss_clock - BOSS_PAUSE) / BOSS_RAMP, 0.0, 1.0)
+		_mini_only = not _enemies.has_living_boss()
+	var ramp := clampf((_boss_clock - BOSS_PAUSE) / BOSS_RAMP, 0.0, 1.0)
+	return maxf(ramp, MINI_BOSS_FLOW) if _mini_only else ramp
 
 
 func _fire_events(elapsed: float, hp_multiplier: float, damage_multiplier: float) -> void:

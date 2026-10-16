@@ -358,7 +358,7 @@ func test_coop_extra_enemies_do_not_thin_out_each_kill_drop() -> void:
 	assert_almost_eq(coop.material_rate_at(15), solo.material_rate_at(15), 0.0001, "same drop per kill, so 1.5x the team income")
 
 
-func _boss_duel_setup() -> Array:
+func _boss_duel_setup(final_boss: bool = true) -> Array:
 	var stage := _stage(3)
 	stage.spawn_rate_first = 60.0
 	stage.spawn_rate_last = 60.0
@@ -368,6 +368,7 @@ func _boss_duel_setup() -> Array:
 	var boss := EnemyData.new()
 	boss.max_hp = 100.0
 	boss.phases = [BossPhase.new()]
+	boss.boss = final_boss
 	var event := _event(1, 0.0)
 	event.enemy = boss
 	event.count = 1
@@ -388,6 +389,24 @@ func test_no_steady_spawn_while_a_boss_lives_then_the_flow_comes_back() -> void:
 	enemies.damage_enemy(0, 1000.0, false, Vector2.RIGHT, 0.0)
 	await wait_physics_frames(60)
 	assert_gt(enemies.active_count(), 5, "the boss is dead: the horde comes back")
+
+
+func test_a_mini_boss_fight_keeps_part_of_the_flow_a_final_boss_clears_it() -> void:
+	var parts := _boss_duel_setup(false)
+	var director: WaveDirector = parts[0]
+	var spawner: SpawnDirector = parts[1]
+	var enemies: EnemyManager = parts[2]
+	director.start_wave(1)
+	spawner.begin_wave(1)
+	await wait_physics_frames(40)
+	assert_gt(enemies.active_count(), 1, "mini-boss: ordinary monsters still come (gold to collect)")
+	assert_almost_eq(spawner._boss_flow(0.0), SpawnDirector.MINI_BOSS_FLOW, 0.001, "40 % of the flow during the pause")
+	var finals := _boss_duel_setup(true)
+	finals[0].start_wave(1)
+	finals[1].begin_wave(1)
+	await wait_physics_frames(40)
+	assert_eq(finals[2].active_count(), 1, "final boss: nobody else")
+	assert_almost_eq(finals[1]._boss_flow(0.0), 0.0, 0.001)
 
 
 func test_the_flow_comes_back_when_a_boss_fight_drags_on() -> void:
