@@ -8,8 +8,9 @@ extends Node
 const POSITION_ATTEMPTS := 8
 ## Members of a group appear within this distance of the group's center.
 const GROUP_SPREAD := 90.0
-## Boss duel: no steady spawn while a boss or mini-boss lives; after BOSS_PAUSE seconds of fight the
-## flow comes back over BOSS_RAMP seconds, so a fight nobody can finish is not a free rest.
+## Boss duel: no steady spawn while the final boss lives, however long it takes (the wave only ends when it
+## dies). A mini-boss keeps MINI_BOSS_FLOW of the flow; after BOSS_PAUSE seconds of fight the flow comes back
+## over BOSS_RAMP seconds, so a fight nobody can finish is not a free rest.
 const BOSS_PAUSE := 45.0
 const BOSS_RAMP := 30.0
 ## During a mini-boss fight (phases, `boss = false`) this share of the steady flow stays: gold to
@@ -113,8 +114,10 @@ func _boss_flow(delta: float) -> float:
 			_boss_clock = -1.0
 			return 1.0
 		_mini_only = not _enemies.has_living_boss()
+	if not _mini_only:
+		return 0.0  # the final boss is a duel: nobody else comes until it is dead
 	var ramp := clampf((_boss_clock - BOSS_PAUSE) / BOSS_RAMP, 0.0, 1.0)
-	return maxf(ramp, MINI_BOSS_FLOW) if _mini_only else ramp
+	return maxf(ramp, MINI_BOSS_FLOW)
 
 
 func _fire_events(elapsed: float, hp_multiplier: float, damage_multiplier: float) -> void:

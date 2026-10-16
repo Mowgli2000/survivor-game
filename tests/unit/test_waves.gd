@@ -409,8 +409,8 @@ func test_a_mini_boss_fight_keeps_part_of_the_flow_a_final_boss_clears_it() -> v
 	assert_almost_eq(finals[1]._boss_flow(0.0), 0.0, 0.001)
 
 
-func test_the_flow_comes_back_when_a_boss_fight_drags_on() -> void:
-	var parts := _boss_duel_setup()
+func test_the_flow_comes_back_when_a_mini_boss_fight_drags_on() -> void:
+	var parts := _boss_duel_setup(false)
 	var director: WaveDirector = parts[0]
 	var spawner: SpawnDirector = parts[1]
 	director.start_wave(1)
@@ -420,6 +420,34 @@ func test_the_flow_comes_back_when_a_boss_fight_drags_on() -> void:
 	assert_almost_eq(spawner._boss_flow(0.0), 1.0, 0.001, "after pause and ramp: full flow")
 	spawner._boss_clock = SpawnDirector.BOSS_PAUSE + SpawnDirector.BOSS_RAMP * 0.5
 	assert_almost_eq(spawner._boss_flow(0.0), 0.5, 0.01, "halfway through the ramp")
+
+
+func test_a_final_boss_duel_never_lets_the_horde_back() -> void:
+	var parts := _boss_duel_setup(true)
+	var director: WaveDirector = parts[0]
+	var spawner: SpawnDirector = parts[1]
+	director.start_wave(1)
+	spawner.begin_wave(1)
+	await wait_physics_frames(3)
+	spawner._boss_clock = SpawnDirector.BOSS_PAUSE + SpawnDirector.BOSS_RAMP * 3.0
+	assert_almost_eq(spawner._boss_flow(0.0), 0.0, 0.001, "however long the fight, the duel stays a duel")
+
+
+func test_the_wave_does_not_end_on_the_clock_while_a_final_boss_lives() -> void:
+	var parts := _boss_duel_setup(true)
+	var director: WaveDirector = parts[0]
+	var enemies: EnemyManager = parts[2]
+	var spawner: SpawnDirector = parts[1]
+	director.end_blocked = func() -> bool: return enemies.has_living_boss()
+	director.start_wave(1)
+	spawner.begin_wave(1)
+	await wait_physics_frames(5)
+	director.time_left = 0.01
+	await wait_physics_frames(10)
+	assert_true(director.in_wave, "the clock ran out but the boss is alive: the wave goes on")
+	enemies.damage_enemy(0, 100000.0, false, Vector2.RIGHT, 0.0)
+	await wait_physics_frames(10)
+	assert_false(director.in_wave, "the boss is dead: the wave ends")
 
 
 func test_coop_bosses_get_extra_life() -> void:

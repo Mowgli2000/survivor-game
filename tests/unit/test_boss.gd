@@ -342,3 +342,12 @@ func test_the_director_starts_the_attack_animation_with_each_pattern() -> void:
 	var shogun: EnemyData = ContentDB.get_def(&"enemies", &"shogun")
 	var enemy := _enemies.spawn(shogun, Vector2(300, 0))
 	assert_gt(enemy.attack_left, 0.0, "the first pattern is announced with its animation")
+
+
+func test_a_boss_does_not_flash_white_when_hit_but_a_plain_enemy_does() -> void:
+	var boss := _enemies.spawn(ContentDB.get_def(&"enemies", &"shogun"), Vector2(300, 0))
+	var plain := _enemies.spawn(ContentDB.get_def(&"enemies", &"grunt"), Vector2(-300, 0))
+	_enemies.damage_enemy(0, 5.0, false, Vector2.RIGHT, 0.0)
+	_enemies.damage_enemy(1, 5.0, false, Vector2.RIGHT, 0.0)
+	assert_eq(boss.flash, 0.0, "the boss keeps its painting")
+	assert_gt(plain.flash, 0.0, "the horde still flashes")

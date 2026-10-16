@@ -221,7 +221,8 @@ func damage_enemy(index: int, amount: float, crit: bool, direction: Vector2, kno
 	if not enemy.is_alive():
 		return
 	var damage := CombatMath.apply_armor(amount, enemy.data.armor)
-	enemy.set_flash(Enemy.FLASH_TIME)
+	if enemy.data.phases.is_empty():  # a boss does not turn white: it would hide the painting
+		enemy.set_flash(Enemy.FLASH_TIME)
 	enemy.knockback += direction * knockback_force * enemy.data.knockback_taken
 	enemy_damaged.emit(enemy.position, damage, crit)
 	_lose_hp(enemy, damage, crit)

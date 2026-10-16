@@ -14,6 +14,10 @@ var wave: int = 0
 var time_left: float = 0.0
 var in_wave: bool = false
 
+## Optional: while it returns true when the timer runs out, the wave goes on (a living final boss:
+## the run is won by killing it, not by surviving the clock).
+var end_blocked: Callable
+
 var _stage: StageData
 
 
@@ -61,6 +65,8 @@ func _physics_process(delta: float) -> void:
 	if time_left > 0.0:
 		return
 	time_left = 0.0
+	if end_blocked.is_valid() and end_blocked.call():
+		return
 	in_wave = false
 	# Keep the ended wave: a listener may already start the next one during the emit.
 	var ended := wave
