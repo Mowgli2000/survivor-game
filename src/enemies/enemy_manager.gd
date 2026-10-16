@@ -130,6 +130,11 @@ func active_count() -> int:
 	return _active.size()
 
 
+## The playable rectangle (boss patterns keep their jumps inside it).
+func arena_rect() -> Rect2:
+	return _arena
+
+
 ## True while a boss or mini-boss (an enemy with phases) is alive. Linear scan: poll it rarely.
 func has_living_phased() -> bool:
 	for enemy in _active:

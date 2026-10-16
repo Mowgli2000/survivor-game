@@ -48,6 +48,42 @@ func _shoot(ctx: BossContext, boss: Enemy, direction: Vector2) -> void:
 		projectile_damage * boss.damage_multiplier, projectile_radius, boss.data.projectile_style)
 
 
+## Damage of one hit of this pattern.
+func _damage(boss: Enemy) -> float:
+	return projectile_damage * boss.damage_multiplier
+
+
+## Hurts every living player within `half_width` of the segment (a slash, a falling blade).
+func _hurt_segment(ctx: BossContext, boss: Enemy, from: Vector2, to: Vector2, half_width: float) -> void:
+	for player in ctx.party.members:
+		if player.is_dead:
+			continue
+		var closest := Geometry2D.get_closest_point_to_segment(player.global_position, from, to)
+		if closest.distance_to(player.global_position) <= half_width + player.radius:
+			player.take_damage(_damage(boss))
+
+
+## Hurts every living player in the sector of `radius` around `center`, `half_angle` (rad) each
+## side of `facing` (rad).
+func _hurt_sector(ctx: BossContext, boss: Enemy, center: Vector2, facing: float, radius: float, half_angle: float) -> void:
+	for player in ctx.party.members:
+		if player.is_dead:
+			continue
+		var offset := player.global_position - center
+		if offset.length() <= radius + player.radius and absf(angle_difference(facing, offset.angle())) <= half_angle:
+			player.take_damage(_damage(boss))
+
+
+func _strike_fx(ctx: BossContext, boss: Enemy, at: Vector2, size: float) -> void:
+	if ctx.vfx != null:
+		ctx.vfx.explosion(at, size, boss.data.color, false)
+
+
+func _shake(ctx: BossContext, amount: float) -> void:
+	if ctx.vfx != null:
+		ctx.vfx.shake_requested.emit(amount)
+
+
 func _warn_circle(ctx: BossContext, boss: Enemy, radius: float) -> void:
 	if ctx.vfx != null and windup > 0.0:
 		ctx.vfx.warning_circle(boss.position, radius, boss.data.color, scaled_windup(ctx))
