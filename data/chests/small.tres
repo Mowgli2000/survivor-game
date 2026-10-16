@@ -13,3 +13,4 @@ open_radius = 80.0
 reward_tier = 2
 burst_frame = 6
 projection = ExtResource("3_proj")
+show_screen = false

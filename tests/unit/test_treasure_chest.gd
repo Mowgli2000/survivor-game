@@ -86,3 +86,13 @@ func test_the_reward_screen_shows_one_card_per_reward_and_waits_for_the_player()
 	assert_signal_emit_count(screen, "closed", 1)
 	screen.close()
 	assert_signal_emit_count(screen, "closed", 1, "closing twice does nothing")
+
+
+func test_a_small_chest_shows_no_screen_and_the_final_one_does() -> void:
+	assert_false(ContentDB.get_def(&"chests", &"small").show_screen, "a mini-boss chest never stops the game")
+	assert_true(ContentDB.get_def(&"chests", &"big").show_screen)
+	var popup := RewardPopup.create(ContentDB.get_all(&"items")[0], Vector2.ZERO, 0)
+	add_child_autofree(popup)
+	assert_not_null(popup)
+	var chest := _chest(Vector2.ZERO)
+	assert_gt(chest.middle_height(), 0.0)

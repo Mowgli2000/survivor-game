@@ -107,6 +107,7 @@ UI_UNLOCKED_TITLE,Unlocked!,Débloqué !
 UI_CONTINUE,Continue,Continuer
 UI_CHEST_REWARDS,Chest rewards,Récompenses du coffre
 UI_VALIDATE,Confirm,Valider
+UI_RECAP_REWARDS,Chest rewards,Récompenses des coffres
 WEAPON_STRESS,Stress test gun,Arme de test
 UI_WAVE,Wave,Vague
 UI_WAVE_CLEARED,Wave %d cleared!,Vague %d terminée !

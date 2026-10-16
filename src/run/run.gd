@@ -48,6 +48,7 @@ var _boss_dying: bool = false
 var _chests: Array[TreasureChest] = []
 ## True while the end of a wave opens the chests nobody opened (no reward screen then).
 var _sweeping: bool = false
+var _run_rewards: Array[Dictionary] = []
 var chest_reward_screen: ChestRewardScreen
 ## Wave the run opens on (the boss test arena starts on the boss wave).
 var first_wave: int = 1
@@ -560,7 +561,7 @@ func _drop_chest(data: EnemyData, pos: Vector2, on_done: Callable = Callable()) 
 	var loot: Array[Dictionary] = []
 	chest.opened.connect(func() -> void:
 		if data.chest.reward_tier > 0:
-			loot.append_array(_grant_reward(data.chest.reward_tier, _sweeping, data.chest.reward_count)))  # (a lambda keeps the array, not a new one)
+			loot.append_array(_record_loot(_grant_reward(data.chest.reward_tier, _sweeping, data.chest.reward_count))))  # (a lambda keeps the array, not a new one)
 	chest.finished.connect(func() -> void: _show_chest_loot(loot, on_done, chest))
 	add_child(chest)
 	_chests.append(chest)
@@ -569,10 +570,23 @@ func _drop_chest(data: EnemyData, pos: Vector2, on_done: Callable = Callable()) 
 
 ## The chest is open: the game stops on what it gave until the player validates (a chest swept up at the
 ## end of a wave only announces its reward: the wave screens come next).
+## Everything the boss chests gave, for the victory screen's recap.
+func _record_loot(loot: Array[Dictionary]) -> Array[Dictionary]:
+	_run_rewards.append_array(loot)
+	return loot
+
+
 func _show_chest_loot(loot: Array[Dictionary], on_done: Callable, chest: TreasureChest = null) -> void:
-	var chest_anchor := get_viewport().get_canvas_transform() * chest.global_position if is_instance_valid(chest) else get_viewport().get_visible_rect().size * Vector2(0.5, 0.7)
+	# The glow comes out of the middle of what is inside, not from the foot of the chest.
+	var chest_anchor := get_viewport().get_canvas_transform() * (chest.global_position + Vector2(0.0, -chest.middle_height())) if is_instance_valid(chest) else get_viewport().get_visible_rect().size * Vector2(0.5, 0.7)
 	var chest_projection: EffectSheet = chest.projection() if is_instance_valid(chest) else null
 	if loot.is_empty() or _sweeping or state.is_over:
+		if on_done.is_valid():
+			on_done.call()
+		return
+	if is_instance_valid(chest) and not chest.shows_screen():
+		for i in loot.size():
+			add_child(RewardPopup.create(loot[i].item, chest.global_position, i - (loot.size() - 1) * 0.5))
 		if on_done.is_valid():
 			on_done.call()
 		return
@@ -841,6 +855,7 @@ func _on_run_won() -> void:
 	get_tree().paused = true
 	game_over_screen.open(state.elapsed, progression.level, state.kills, waves.wave, true)
 	_show_recap()
+	game_over_screen.show_rewards(_run_rewards)
 	_record_run(true)
 
 

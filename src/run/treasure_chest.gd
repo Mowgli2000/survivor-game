@@ -79,6 +79,15 @@ func open_now() -> void:
 	finished.emit()
 
 
+## Height above the chest's foot of the middle of what it holds (where the light comes out).
+func middle_height() -> float:
+	return _data.height * 0.3
+
+
+func shows_screen() -> bool:
+	return _data.show_screen
+
+
 func projection() -> EffectSheet:
 	return _data.projection
 

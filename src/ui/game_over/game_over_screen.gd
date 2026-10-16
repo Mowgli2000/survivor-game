@@ -38,6 +38,10 @@ var _recap: HBoxContainer
 ## Scrolling lists of the recap columns (only the ones with more than RECAP_ROWS rows).
 var _recap_scrolls: Array[ScrollContainer] = []
 var _unlocks: HBoxContainer
+## Rewards of the boss chests: icons to hover (mouse) or focus (gamepad); the description appears below.
+var _rewards_box: VBoxContainer
+var _rewards_row: HBoxContainer
+var _reward_text: Label
 ## Victory with new unlocks: the cards come alone first, "Continue" then shows the statistics.
 var _middle: HBoxContainer
 var _buttons: HBoxContainer
@@ -100,6 +104,25 @@ func _init() -> void:
 	_recap.visible = false
 	middle.add_child(_recap)
 
+	_rewards_box = VBoxContainer.new()
+	_rewards_box.add_theme_constant_override("separation", 8)
+	_rewards_box.visible = false
+	box.add_child(_rewards_box)
+	var rewards_title := Label.new()
+	rewards_title.text = "UI_RECAP_REWARDS"
+	rewards_title.theme_type_variation = &"SubtitleLabel"
+	rewards_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_rewards_box.add_child(rewards_title)
+	_rewards_row = HBoxContainer.new()
+	_rewards_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	_rewards_row.add_theme_constant_override("separation", 14)
+	_rewards_box.add_child(_rewards_row)
+	_reward_text = Label.new()
+	_reward_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_reward_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_reward_text.custom_minimum_size = Vector2(900, 90)
+	_rewards_box.add_child(_reward_text)
+
 	_unlocks = HBoxContainer.new()
 	_unlocks.alignment = BoxContainer.ALIGNMENT_CENTER
 	_unlocks.add_theme_constant_override("separation", 18)
@@ -157,6 +180,7 @@ func open(time_survived: float, level: int, kills: int, wave: int, victory: bool
 	]
 	_unlocks.visible = false
 	_recap.visible = false
+	_rewards_box.visible = false
 	_revealing = false
 	_middle.visible = true
 	_buttons.visible = true
@@ -363,9 +387,36 @@ func show_unlocks(challenges: Array[ChallengeData]) -> void:
 		_begin_reveal()
 
 
+## What the boss chests gave (victory): [{"item": ItemData, ...}, ...]. Hover an icon, or move the
+## focus to it with the gamepad, to read what it does.
+func show_rewards(rewards: Array[Dictionary]) -> void:
+	for child in _rewards_row.get_children():
+		_rewards_row.remove_child(child)
+		child.queue_free()
+	_reward_text.text = ""
+	_rewards_box.visible = not rewards.is_empty()
+	for reward in rewards:
+		var item: ItemData = reward.item
+		var button := Button.new()
+		button.icon = item.icon
+		button.expand_icon = true
+		button.custom_minimum_size = Vector2(84, 84)
+		button.focus_mode = Control.FOCUS_ALL
+		button.tooltip_text = ShopScreen.item_tooltip(item, 1)
+		var text := ShopScreen.item_tooltip(item, 1)
+		button.mouse_entered.connect(func() -> void: _reward_text.text = text)
+		button.focus_entered.connect(func() -> void: _reward_text.text = text)
+		_rewards_row.add_child(button)
+
+
+func reward_icon_count() -> int:
+	return _rewards_row.get_child_count()
+
+
 ## The chest is open: the unlocks alone on the screen, before the statistics.
 func _begin_reveal() -> void:
 	_revealing = true
+	_rewards_box.visible = false
 	_title.text = "UI_UNLOCKED_TITLE"
 	_middle.visible = false
 	_buttons.visible = false
@@ -376,6 +427,7 @@ func _begin_reveal() -> void:
 
 func _end_reveal() -> void:
 	_revealing = false
+	_rewards_box.visible = _rewards_row.get_child_count() > 0
 	_title.text = "UI_VICTORY"
 	_unlocks.visible = false
 	_middle.visible = true

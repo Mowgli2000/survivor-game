@@ -108,3 +108,19 @@ func test_a_defeat_or_a_victory_without_unlocks_goes_straight_to_the_statistics(
 	var challenges: Array[ChallengeData] = [ContentDB.get_def(&"challenges", &"win_drifter")]
 	screen.show_unlocks(challenges)
 	assert_false(screen.is_revealing(), "a defeat shows the cards with the statistics")
+
+
+func test_the_victory_screen_lists_the_chest_rewards_with_their_description_on_hover() -> void:
+	var screen := GameOverScreen.new()
+	add_child_autofree(screen)
+	screen.open(100.0, 10, 40, 20, true)
+	var item: ItemData = ContentDB.get_all(&"items")[0]
+	var rewards: Array[Dictionary] = [{"item": item, "title": "", "color": Color.WHITE}]
+	screen.show_rewards(rewards)
+	assert_eq(screen.reward_icon_count(), 1)
+	assert_true(screen._rewards_box.visible)
+	assert_eq(screen._reward_text.text, "")
+	(screen._rewards_row.get_child(0) as Button).focus_entered.emit()
+	assert_ne(screen._reward_text.text, "", "the description shows on focus")
+	screen.show_rewards([])
+	assert_false(screen._rewards_box.visible, "no chest, no recap")

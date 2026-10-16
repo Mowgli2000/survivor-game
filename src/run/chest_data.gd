@@ -16,5 +16,8 @@ extends Resource
 @export var burst_frame: int = 8
 ## Items it gives each player.
 @export_range(1, 5) var reward_count: int = 1
+## True: a screen shows the rewards until the player validates (final boss). False: their icons just float up
+## from the chest and fade (mini-boss), nothing stops.
+@export var show_screen: bool = true
 ## Painted light projection above the open chest (the rewards float in it); empty: a plain glow.
 @export var projection: EffectSheet

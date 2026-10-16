@@ -201,13 +201,4 @@ func _slot(reward: Dictionary) -> Control:
 	name_label.custom_minimum_size.x = SLOT_WIDTH - 30.0
 	name_label.add_theme_color_override("font_color", accent)
 	box.add_child(name_label)
-	var text := LevelUpScreen.describe_modifiers(item.modifiers)
-	if item.effect_key != "":
-		text += ("\n" if text != "" else "") + TranslationServer.translate(item.effect_key)
-	var effect := Label.new()
-	effect.text = text
-	effect.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	effect.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	effect.custom_minimum_size.x = SLOT_WIDTH - 30.0
-	box.add_child(effect)
 	return box
