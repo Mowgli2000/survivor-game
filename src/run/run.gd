@@ -40,6 +40,8 @@ var bot_policy: Object
 var record_profile: bool = true
 ## True: every weapon and item can show up, whatever the profile unlocked.
 var unlock_all: bool = false
+## Wave the run opens on (the boss test arena starts on the boss wave).
+var first_wave: int = 1
 ## Character and weapon chosen in the menu (SceneRouter.next_run when null).
 ## Only runs with a setup are recorded in the profile: tests and debug
 ## tools instantiate run.tscn without one.
@@ -292,9 +294,9 @@ func _ready() -> void:
 		# The first wave waits for the gate to close.
 		get_tree().create_timer(PortalArrival.start_delay()).timeout.connect(func() -> void:
 			if not state.is_over:
-				waves.start_wave(1))
+				waves.start_wave(first_wave))
 	else:
-		waves.start_wave(1)
+		waves.start_wave(first_wave)
 
 
 ## Two players: chosen in the menu (setup.character_2) or forced by player_count.
