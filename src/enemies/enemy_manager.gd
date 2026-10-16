@@ -218,7 +218,7 @@ func _record_damage(amount: float) -> void:
 func damage_enemy(index: int, amount: float, crit: bool, direction: Vector2, knockback_force: float,
 		status: StatusData = null, status_chance: float = 1.0) -> void:
 	var enemy := _active[index]
-	if not enemy.is_alive():
+	if not enemy.is_alive() or enemy.invulnerable_left > 0.0:
 		return
 	var damage := CombatMath.apply_armor(amount, enemy.data.armor)
 	if enemy.data.phases.is_empty():  # a boss does not turn white: it would hide the painting
@@ -374,6 +374,8 @@ func clear_all() -> void:
 
 ## `crit`: the hit was critical (its own sound). `silent`: damage over time (no hit sound).
 func _lose_hp(enemy: Enemy, amount: float, crit: bool = false, silent: bool = false) -> void:
+	if enemy.invulnerable_left > 0.0:
+		return
 	_record_damage(minf(amount, maxf(enemy.hp, 0.0)))
 	enemy.hp -= amount
 	if enemy.is_alive():
@@ -381,7 +383,9 @@ func _lose_hp(enemy: Enemy, amount: float, crit: bool = false, silent: bool = fa
 			_play_hit(amount, crit, enemy.data.boss)
 		return
 	enemy.visible = false
-	if _vfx != null:
+	if BossCorpse.duration_of(enemy.data) > 0.0:
+		add_child(BossCorpse.create(enemy))  # the painted death plays on its own node
+	elif _vfx != null:
 		_vfx.death(enemy.position, enemy.radius * 1.4, enemy.data.color)
 	if enemy.elite or enemy.data.boss:
 		Audio.play(Sounds.ELITE_DEATH, ELITE_DEATH_DB)

@@ -12,6 +12,8 @@ const FALLBACK := &"walk"
 ## Top-left corner of this strip in the atlas texture.
 @export var origin := Vector2i.ZERO
 @export var cell_size := Vector2i(1, 1)
+## Cells per row when the frames are laid out as a grid (big texture: boss animations); 0 = one row.
+@export var columns: int = 0
 ## Animation name -> Vector3i(first cell, frame count, frames per second).
 @export var animations: Dictionary[StringName, Vector3i] = {}
 
@@ -28,6 +30,8 @@ func frame_at(anim: StringName, time: float) -> int:
 
 
 func region(frame: int) -> Rect2:
+	if columns > 0:
+		return Rect2(origin.x + (frame % columns) * cell_size.x, origin.y + (frame / columns) * cell_size.y, cell_size.x, cell_size.y)
 	return Rect2(origin.x + frame * cell_size.x, origin.y, cell_size.x, cell_size.y)
 
 

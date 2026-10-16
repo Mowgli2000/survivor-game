@@ -250,6 +250,9 @@ func test_sprite_sheets_fit_their_atlas_page() -> void:
 		for info: Vector3i in sheet.animations.values():
 			frames = maxi(frames, info.x + info.y)
 		var strip := Rect2i(sheet.origin, Vector2i(sheet.cell_size.x * frames, sheet.cell_size.y))
+		if sheet.columns > 0:  # a grid (boss animations)
+			var rows := ceili(frames / float(sheet.columns))
+			strip = Rect2i(sheet.origin, Vector2i(sheet.cell_size.x * sheet.columns, sheet.cell_size.y * rows))
 		var page := Rect2i(Vector2i.ZERO, Vector2i(sheet.texture.get_size()))
 		assert_true(page.encloses(strip), "%s: %s outside %s" % [file, strip, page])
 		assert_lte(maxi(page.size.x, page.size.y), 8192, file + ": atlas page over 8192 px")

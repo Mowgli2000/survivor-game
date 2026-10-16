@@ -329,7 +329,7 @@ func test_an_attack_animation_runs_its_frames_over_the_windup_and_ends() -> void
 	assert_gt(enemy.attack_frame, 1, "mid-way the sword is up or coming down")
 	enemy.tick_attack(1.0)
 	assert_eq(enemy.attack_left, 0.0, "the animation ends by itself")
-	assert_eq(enemy.attack_frame, 15, "on the last frame")
+	assert_eq(enemy.attack_frame, 20, "on the last frame")
 
 
 func test_an_enemy_without_attack_frames_ignores_the_animation_request() -> void:
@@ -394,8 +394,8 @@ func test_the_strike_frame_lands_as_the_windup_ends_and_the_strike_is_quick() ->
 	assert_lt(enemy.attack_frame, shogun.attack_strike_frame, "just before the windup ends: still preparing")
 	enemy.tick_attack(windup * 0.05)
 	assert_gte(enemy.attack_frame, shogun.attack_strike_frame, "as the windup ends: the blow")
-	# The swing itself (frames between the top pose and the slash) lasts a blink.
-	var swing := (shogun.attack_frame_weight(7) + shogun.attack_frame_weight(8)) / (windup / share)
+	# The swing itself (the frames just before the impact) lasts a blink.
+	var swing := shogun.attack_frame_weight(shogun.attack_strike_frame - 1) / (windup / share)
 	assert_lt(swing, 0.15)
 	assert_eq(EnemyData.new().attack_strike_share(), 0.5, "no sheet: half way")
 
@@ -409,3 +409,45 @@ func test_attack_frames_blend_into_the_next_one_in_between() -> void:
 	assert_lte(enemy.attack_blend, 1.0)
 	enemy.tick_attack(5.0)
 	assert_eq(enemy.attack_blend, 0.0, "nothing to blend at the end")
+
+
+func test_a_boss_makes_its_entrance_unhurtable_then_starts_its_patterns() -> void:
+	var shogun: EnemyData = ContentDB.get_def(&"enemies", &"shogun")
+	var boss := _enemies.spawn(shogun, Vector2(300, 0))
+	assert_eq(boss.anim, &"entrance")
+	assert_gt(boss.invulnerable_left, 0.5, "protected while it arrives")
+	var hp := boss.hp
+	_enemies.damage_enemy(0, 500.0, false, Vector2.RIGHT, 0.0)
+	assert_eq(boss.hp, hp, "no damage during the entrance")
+	assert_eq(_shots.active_count(), 0)
+	var info: Vector3i = shogun.attack_sheet.animations[&"entrance"]
+	var length := info.y / float(info.z)
+	_director.update(length - 0.05)
+	assert_gt(boss.invulnerable_left, 0.0, "still arriving")
+	_director.update(0.1)
+	assert_eq(boss.invulnerable_left, 0.0, "the entrance is over")
+	_director.update(0.1)
+	assert_eq(boss.anim, &"attack", "its first pattern starts")
+
+
+func test_a_phase_change_plays_its_animation_and_protects_the_boss_meanwhile() -> void:
+	var shogun: EnemyData = ContentDB.get_def(&"enemies", &"shogun")
+	var boss := _enemies.spawn(shogun, Vector2(300, 0))
+	boss.invulnerable_left = 0.0
+	_director.update(0.05)
+	boss.hp = boss.max_hp * 0.5
+	_director.update(0.05)
+	assert_eq(boss.anim, &"phase")
+	assert_gt(boss.invulnerable_left, 0.5)
+	assert_eq(boss.forced_velocity, Vector2.ZERO, "it stands still")
+
+
+func test_a_dying_boss_leaves_a_painted_corpse_that_plays_its_death() -> void:
+	var shogun: EnemyData = ContentDB.get_def(&"enemies", &"shogun")
+	var boss := _enemies.spawn(shogun, Vector2(300, 0))
+	boss.invulnerable_left = 0.0
+	_enemies.damage_enemy(0, 1.0e9, false, Vector2.RIGHT, 0.0)
+	var corpses := _enemies.get_children().filter(func(n: Node) -> bool: return n is BossCorpse)
+	assert_eq(corpses.size(), 1, "the death animation has its own node")
+	assert_gt(BossCorpse.duration_of(shogun), 0.5)
+	assert_eq(BossCorpse.duration_of(EnemyData.new()), 0.0, "no sheet, no corpse")

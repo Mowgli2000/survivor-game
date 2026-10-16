@@ -66,6 +66,7 @@ func update(delta: float) -> void:
 			continue
 		if state.data.boss and not enemy.enraged and _waves != null and _waves.overtime > 0.0:
 			_enrage(state)
+		enemy.invulnerable_left = maxf(enemy.invulnerable_left - delta, 0.0)
 		var phase := state.data.phase_index_for(enemy.hp / enemy.max_hp)
 		if phase != state.phase:
 			_enter_phase(state, phase)
@@ -93,7 +94,10 @@ func _on_boss_spawned(enemy: Enemy) -> void:
 	enemy.speed_multiplier = enemy.data.phases[state.phase].speed_multiplier
 	_bosses.append(state)
 	boss_started.emit(enemy)
-	_start_pattern(state)
+	if enemy.data.attack_sheet != null and enemy.data.attack_sheet.has_animation(&"entrance"):
+		_hold(state, &"entrance")
+	else:
+		_start_pattern(state)
 
 
 func _enter_phase(state: BossState, phase: int) -> void:
@@ -104,7 +108,25 @@ func _enter_phase(state: BossState, phase: int) -> void:
 		_ctx.vfx.explosion(state.enemy.position, state.enemy.radius * 4.0, state.data.color, false)
 		_ctx.vfx.shake_requested.emit(PHASE_SHAKE)
 	boss_phase_changed.emit(state.enemy, phase)
-	_start_pattern(state)
+	if state.data.attack_sheet != null and state.data.attack_sheet.has_animation(&"phase"):
+		_hold(state, &"phase")
+	else:
+		_start_pattern(state)
+
+
+## The boss plays a story animation (entrance, phase change): still and unhurtable for its length, then
+## its patterns start from the first one.
+func _hold(state: BossState, anim: StringName) -> void:
+	var info: Vector3i = state.data.attack_sheet.animations[anim]
+	var length := info.y / float(maxi(info.z, 1))
+	var enemy := state.enemy
+	enemy.start_anim(anim, length)
+	enemy.invulnerable_left = length
+	enemy.forced_velocity = Vector2.ZERO
+	enemy.forced_time = length
+	state.step = Step.RECOVERY
+	state.pattern_index = -1
+	state.timer = length
 
 
 func _pattern(state: BossState) -> BossPattern:

@@ -17,6 +17,8 @@ const PLAYER_HIT_SHAKE := 0.35
 const HEARTBEAT_BELOW := 0.3
 ## Coop: players start this far apart, side by side.
 const COOP_START_GAP := 120.0
+## Game speed while a final boss dies (its death animation plays in real time: the timer ignores the scale).
+const DEATH_SLOWMO := 0.5
 
 ## Leave empty to use data/runs/default.tres.
 @export var config: RunConfig
@@ -477,6 +479,10 @@ func _update_heartbeat(delta: float) -> void:
 			Audio.play(Sounds.HEARTBEAT, -6.0, 0.0)
 
 
+func _exit_tree() -> void:
+	Engine.time_scale = 1.0
+
+
 func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
 	state.kills += 1
 	state.wave_kills += 1
@@ -496,7 +502,15 @@ func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
 	if data.reward_item_tier > 0:
 		_grant_reward(data.reward_item_tier)
 	if data.boss and not enemies.has_living_boss():
-		waves.finish_wave()
+		var death_time := BossCorpse.duration_of(data)
+		if death_time <= 0.0:
+			waves.finish_wave()
+			return
+		# The painted death plays in slow motion before the wave ends and the screens come up.
+		Engine.time_scale = DEATH_SLOWMO
+		get_tree().create_timer(death_time + BossCorpse.FADE_TIME * 0.5, true, false, true).timeout.connect(func() -> void:
+			Engine.time_scale = 1.0
+			waves.finish_wave())
 
 
 ## XP crystals give XP, material coins give materials (fewer per kill as the run goes

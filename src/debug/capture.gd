@@ -23,6 +23,9 @@ var _boss_id: StringName = &""
 var _boss_hp := 1.0
 ## --rage: the wave clock runs out 3 s after the boss appears (see the rage).
 var _rage := false
+## --killat=<seconds>: the boss dies at that time (to see its death animation).
+var _kill_at := -1.0
+var _killed := false
 ## --clean: hide the debug overlay and the gamepad hint bars before the picture is taken.
 var _clean := false
 
@@ -61,6 +64,8 @@ func _ready() -> void:
 			character_id = arg.trim_prefix("--character=")
 		elif arg.begins_with("--boss="):
 			_boss_id = StringName(arg.trim_prefix("--boss="))
+		elif arg.begins_with("--killat="):
+			_kill_at = arg.trim_prefix("--killat=").to_float()
 		elif arg == "--rage":
 			_rage = true
 		elif arg.begins_with("--bosshp="):
@@ -191,6 +196,14 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_time += delta
+	if _kill_at >= 0.0 and not _killed and _time >= _kill_at and _run != null:
+		_killed = true
+		for i in _run.enemies.active_count():
+			var enemy := _run.enemies.get_enemy(i)
+			if enemy.data.boss:
+				enemy.invulnerable_left = 0.0
+				_run.enemies.damage_enemy(i, 1.0e12, false, Vector2.RIGHT, 0.0)
+				break
 	if _mouse.x >= 0.0:
 		Input.warp_mouse(_mouse)
 	if _done or _time < _capture_at:

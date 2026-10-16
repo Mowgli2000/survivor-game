@@ -1,12 +1,18 @@
 [gd_resource type="Resource" script_class="SpriteSheet" format=3]
 
 [ext_resource type="Script" path="res://src/core/sprite_sheet.gd" id="1_sheet"]
-[ext_resource type="Texture2D" path="res://assets/sprites/shogun_attack.png" id="2_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/shogun_anim.png" id="2_tex"]
 
 [resource]
 script = ExtResource("1_sheet")
 texture = ExtResource("2_tex")
-cell_size = Vector2i(357, 320)
+cell_size = Vector2i(374, 320)
+columns = 8
 animations = Dictionary[StringName, Vector3i]({
-&"attack": Vector3i(0, 16, 6)
+&"attack": Vector3i(0, 21, 24),
+&"death": Vector3i(53, 16, 14),
+&"entrance": Vector3i(21, 16, 16),
+&"idle": Vector3i(69, 16, 8),
+&"phase": Vector3i(37, 16, 16),
+&"walk": Vector3i(85, 16, 12)
 })

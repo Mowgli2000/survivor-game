@@ -64,7 +64,10 @@ var special_dir := Vector2.ZERO
 var animator := SpriteAnimator.new()
 ## A boss past the clock (BossDirector): redder, faster, harder.
 var enraged: bool = false
-## Attack animation (EnemyData.attack_sheet): time left, total length and the frame shown.
+## Boss animation (EnemyData.attack_sheet): which one, time left, total length and the frame shown.
+var anim: StringName = &"attack"
+## Seconds during which nothing can hurt the boss (its entrance, its phase change).
+var invulnerable_left: float = 0.0
 var attack_left: float = 0.0
 var attack_length: float = 1.0
 var attack_frame: int = 0
@@ -101,6 +104,7 @@ func reset(p_data: EnemyData, pos: Vector2, hp_multiplier: float, p_elite: bool 
 	special_state = 0
 	special_dir = Vector2.ZERO
 	attack_left = 0.0
+	invulnerable_left = 0.0
 	enraged = false
 	visible = true
 	if look_changed:
@@ -193,8 +197,14 @@ func foot_offset() -> float:
 
 ## Plays the attack frames over `length` seconds (no sheet: nothing happens).
 func start_attack(length: float) -> void:
-	if data.attack_sheet == null:
+	start_anim(&"attack", length)
+
+
+## Plays animation `name` of the boss sheet over `length` seconds (missing: nothing happens).
+func start_anim(name: StringName, length: float) -> void:
+	if data.attack_sheet == null or not data.attack_sheet.has_animation(name):
 		return
+	anim = name
 	attack_length = maxf(length, 0.1)
 	attack_left = attack_length
 	attack_frame = 0
@@ -202,20 +212,25 @@ func start_attack(length: float) -> void:
 	queue_redraw()
 
 
-## Advances the attack animation; true when the frame changed or it ended (redraw needed).
+## Duration weight of frame `index` of the playing animation (only the attack has uneven frames).
+func _frame_weight(index: int) -> float:
+	return data.attack_frame_weight(index) if anim == &"attack" else 1.0
+
+
+## Advances the playing boss animation; true when the frame changed or it ended (redraw needed).
 func tick_attack(delta: float) -> bool:
 	attack_left = maxf(attack_left - delta, 0.0)
-	var frames := maxi(data.attack_sheet.animations.get(&"attack", Vector3i(0, 1, 1)).y, 1)
+	var frames := maxi(data.attack_sheet.animations[anim].y, 1)
 	var total := 0.0
 	for i in frames:
-		total += data.attack_frame_weight(i)
+		total += _frame_weight(i)
 	# Position in the animation, in weight units, then the frame it falls in and how far through it.
 	var at := (1.0 - attack_left / attack_length) * total
 	var frame := frames - 1
 	var local := 0.0
 	var passed := 0.0
 	for i in frames:
-		var weight := data.attack_frame_weight(i)
+		var weight := _frame_weight(i)
 		if at < passed + weight:
 			frame = i
 			local = (at - passed) / maxf(weight, 0.001)
@@ -232,14 +247,16 @@ func _draw() -> void:
 		return
 	if attack_left > 0.0 and data.attack_sheet != null:
 		var height := sprite_height() * data.attack_scale
-		data.attack_sheet.draw(self, attack_frame, height, foot_offset(), animator.facing, data.sprite_tint)
+		var first: int = data.attack_sheet.animations[anim].x
+		data.attack_sheet.draw(self, first + attack_frame, height, foot_offset(), animator.facing, data.sprite_tint)
 		if attack_blend > 0.02:
 			var faded := Color(data.sprite_tint, data.sprite_tint.a * attack_blend)
-			data.attack_sheet.draw(self, attack_frame + 1, height, foot_offset(), animator.facing, faded)
+			data.attack_sheet.draw(self, first + attack_frame + 1, height, foot_offset(), animator.facing, faded)
 		return
 	var sheet := animator.sheet
 	if sheet != null:
-		sheet.draw(self, animator.frame, sprite_height(), foot_offset(), animator.facing, data.sprite_tint)
+		var scale := data.attack_scale if sheet == data.attack_sheet else 1.0  # a boss sheet is cropped wider than the body
+		sheet.draw(self, animator.frame, sprite_height() * scale, foot_offset(), animator.facing, data.sprite_tint)
 		return
 	var texture := data.get_elite_texture(radius / data.radius) if elite else data.get_texture()
 	draw_texture(texture, -texture.get_size() * 0.5)

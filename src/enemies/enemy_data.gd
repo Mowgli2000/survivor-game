@@ -133,6 +133,8 @@ func phase_index_for(hp_ratio: float) -> int:
 
 ## Animated sprite of this type (null: placeholder). Elites use "<id>_elite" when it exists.
 func get_sheet(elite: bool) -> SpriteSheet:
+	if attack_sheet != null and attack_sheet.has_animation(&"walk"):
+		return attack_sheet  # a boss painted entirely in its own sheet (walk, idle, attack, entrance...)
 	if sprite_id == &"":
 		return null
 	if _sheet == null:

@@ -203,8 +203,14 @@ func test_killing_the_boss_wins_before_the_timer() -> void:
 	for i in run.enemies.active_count():
 		if run.enemies.get_enemy(i) == boss:
 			index = i
+	boss.invulnerable_left = 0.0  # its entrance animation protects it
 	run.enemies.damage_enemy(index, 1.0e9, false, Vector2.RIGHT, 0.0)
 	await wait_physics_frames(3)
+	assert_false(run.state.is_over, "the painted death plays first")
+	assert_lt(Engine.time_scale, 1.0, "the death is in slow motion")
+	Engine.time_scale = 1.0  # test clocks run on game time: keep them real
+	await wait_seconds(1.2)  # the death animation (the wave ends after it, and the tree pauses)
+	await wait_physics_frames(60)
 	assert_true(run.state.is_over)
 	assert_true(run.game_over_screen.is_victory)
 
