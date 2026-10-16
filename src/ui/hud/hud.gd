@@ -65,20 +65,25 @@ func setup_second_player(player: Player, progression: Progression, wallet: Walle
 	_p1_box.add_child(tag_1)
 	_p1_box.move_child(tag_1, 0)
 
+	# Same plate, bar size and stacked lines as player 1's block, mirrored on the right.
+	var plate := PanelContainer.new()
+	plate.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	plate.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	plate.offset_right = -24
+	plate.offset_top = 34
+	plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	plate.add_theme_stylebox_override("panel", _plate_style())
+	_root.add_child(plate)
 	var box := VBoxContainer.new()
-	box.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
-	box.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	box.offset_right = -32
-	box.offset_top = 40
-	box.add_theme_constant_override("separation", 6)
-	_root.add_child(box)
+	box.add_theme_constant_override("separation", 8)
+	plate.add_child(box)
 	var tag := _make_label(&"SubtitleLabel", 24)
 	tag.text = tr("UI_PLAYER_N") % 2
 	tag.add_theme_color_override("font_color", color)
 	tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	box.add_child(tag)
 	var hp_bar := _make_bar(UiTheme.HEALTH_RED)
-	hp_bar.custom_minimum_size = Vector2(320, 32)
+	hp_bar.custom_minimum_size = Vector2(380, 38)
 	box.add_child(hp_bar)
 	var hp_label := _make_label(&"ValueLabel", 20)
 	hp_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -86,11 +91,15 @@ func setup_second_player(player: Player, progression: Progression, wallet: Walle
 	hp_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	hp_bar.add_child(hp_label)
 	var xp_bar := _make_bar(UiTheme.XP)
-	xp_bar.custom_minimum_size = Vector2(320, 10)
+	xp_bar.custom_minimum_size = Vector2(380, 10)
 	box.add_child(xp_bar)
-	var info := _make_label(&"ValueLabel", 24)
-	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	box.add_child(info)
+	var level_info := _make_label(&"ValueLabel", 28)
+	level_info.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	box.add_child(level_info)
+	var gold_info := _make_label(&"ValueLabel", 28)
+	gold_info.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	gold_info.add_theme_color_override("font_color", UiTheme.GOLD_VIVID)
+	box.add_child(gold_info)
 
 	var refresh_hp := func(hp: float, max_hp: float) -> void:
 		hp_bar.max_value = max_hp
@@ -100,7 +109,8 @@ func setup_second_player(player: Player, progression: Progression, wallet: Walle
 		xp_bar.max_value = needed
 		xp_bar.value = xp
 	var refresh_info := func(_value: int = 0) -> void:
-		info.text = "%s %d   %s %d" % [tr("UI_LEVEL"), progression.level, tr("UI_MATERIALS"), wallet.amount]
+		level_info.text = "%s %d" % [tr("UI_LEVEL"), progression.level]
+		gold_info.text = "%s %d" % [tr("UI_MATERIALS"), wallet.amount]
 	player.health_changed.connect(refresh_hp)
 	player.died.connect(func() -> void: refresh_hp.call(0.0, player.stats.get_value(StatIds.MAX_HP)))
 	progression.xp_changed.connect(refresh_xp)
