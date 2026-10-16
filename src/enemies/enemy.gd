@@ -236,7 +236,8 @@ func tick_attack(delta: float) -> bool:
 			local = (at - passed) / maxf(weight, 0.001)
 			break
 		passed += weight
-	var blend := local if frame < frames - 1 and attack_left > 0.0 else 0.0
+	# No cross-fade between poses: the frames are real drawings, a blend only made the boss look blurred.
+	var blend := 0.0
 	attack_frame = frame
 	attack_blend = blend
 	return true

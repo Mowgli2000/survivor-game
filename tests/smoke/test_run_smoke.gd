@@ -203,8 +203,13 @@ func _open_the_boss_chest(run: Run) -> void:
 	assert_true(run.waves.pending_reward)
 	await wait_seconds(0.8)  # it drops
 	run.player.global_position = chest.global_position
-	await wait_seconds(1.4)  # the opening animation (the wave ends after it, and the tree pauses)
-	await wait_physics_frames(120)
+	await wait_seconds(1.4)  # the opening animation
+	await wait_physics_frames(60)
+	assert_true(run.chest_reward_screen.visible, "the chest rewards wait for the player")
+	assert_gt(run.chest_reward_screen.card_count(), 0)
+	assert_false(run.state.is_over, "the victory waits for the validation")
+	run.chest_reward_screen._validate.pressed.emit()
+	await wait_physics_frames(90)
 
 
 func test_killing_the_boss_wins_before_the_timer() -> void:

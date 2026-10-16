@@ -105,6 +105,8 @@ UI_OPEN_CHEST,Walk onto the chest!,Marche sur le coffre !
 UI_CHEST_TIMER,CHEST,COFFRE
 UI_UNLOCKED_TITLE,Unlocked!,Débloqué !
 UI_CONTINUE,Continue,Continuer
+UI_CHEST_REWARDS,Chest rewards,Récompenses du coffre
+UI_VALIDATE,Confirm,Valider
 WEAPON_STRESS,Stress test gun,Arme de test
 UI_WAVE,Wave,Vague
 UI_WAVE_CLEARED,Wave %d cleared!,Vague %d terminée !

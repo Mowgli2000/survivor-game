@@ -23,6 +23,7 @@ MIN_BODY_PIXELS = 4000  # fewer: the pose is smoke or embers, no ground line can
 FEET_SHARE = 0.25
 BELOW_FEET = 24
 EDGE_CLEAR = 10
+BOX_MARGIN = 28  # source pixels of empty space around the union of all poses
 
 
 SOLID_ALPHA = 40  # what counts as drawn when looking for the pieces of a pose
@@ -137,6 +138,8 @@ def main() -> None:
         aligned.append(row)
     feet_y = pad + ref[1]
     box = (box[0], box[1], box[2], min(box[3], int(feet_y) + BELOW_FEET))
+    # A margin all round: a sword tip must never touch the border of its cell (it would show as a cut).
+    box = (box[0] - BOX_MARGIN, box[1] - BOX_MARGIN, box[2] + BOX_MARGIN, box[3] + BOX_MARGIN)
     box_w, box_h = box[2] - box[0], box[3] - box[1]
     scale = args.height / box_h
     cell_w = round(box_w * scale)

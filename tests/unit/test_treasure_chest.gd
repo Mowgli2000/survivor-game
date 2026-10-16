@@ -68,3 +68,21 @@ func test_a_chest_opened_in_a_hurry_gives_its_reward_at_once() -> void:
 	assert_signal_emit_count(chest, "finished", 1)
 	chest.open_now()
 	assert_signal_emit_count(chest, "opened", 1, "the reward is given once")
+
+
+func test_the_reward_screen_shows_one_card_per_reward_and_waits_for_the_player() -> void:
+	var screen := ChestRewardScreen.new()
+	add_child_autofree(screen)
+	var item: ItemData = ContentDB.get_all(&"items")[0]
+	var rewards: Array[Dictionary] = [{"item": item, "title": "", "color": Color.WHITE},
+		{"item": item, "title": "Player 2", "color": Color.ORANGE}]
+	watch_signals(screen)
+	screen.open(rewards)
+	assert_true(screen.visible)
+	assert_eq(screen.card_count(), 2)
+	assert_signal_not_emitted(screen, "closed")
+	screen._validate.pressed.emit()
+	assert_false(screen.visible)
+	assert_signal_emit_count(screen, "closed", 1)
+	screen.close()
+	assert_signal_emit_count(screen, "closed", 1, "closing twice does nothing")

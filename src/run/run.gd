@@ -46,6 +46,9 @@ var unlock_all: bool = false
 var _boss_dying: bool = false
 ## The treasure chests on the ground (a mini-boss's, a final boss's).
 var _chests: Array[TreasureChest] = []
+## True while the end of a wave opens the chests nobody opened (no reward screen then).
+var _sweeping: bool = false
+var chest_reward_screen: ChestRewardScreen
 ## Wave the run opens on (the boss test arena starts on the boss wave).
 var first_wave: int = 1
 ## Character and weapon chosen in the menu (SceneRouter.next_run when null).
@@ -240,6 +243,8 @@ func _ready() -> void:
 	shop_screen = players[0].shop_screen
 	game_over_screen = GameOverScreen.new()
 	add_child(game_over_screen)
+	chest_reward_screen = ChestRewardScreen.new()
+	add_child(chest_reward_screen)
 	pause_menu = PauseMenu.new()
 	add_child(pause_menu)
 	# Share / Tab shows the holder's stats over every screen (wave, shop, end screens...).
@@ -535,28 +540,48 @@ func _after_boss_death(data: EnemyData, pos: Vector2) -> void:
 		return
 	waves.pending_reward = true
 	hud.show_toast(tr("UI_OPEN_CHEST"))
-	_drop_chest(data, pos).finished.connect(func() -> void:
+	_drop_chest(data, pos, func() -> void:
 		_boss_dying = false
 		waves.pending_reward = false
 		waves.finish_wave())
 
 
-func _drop_chest(data: EnemyData, pos: Vector2) -> TreasureChest:
+## `on_done`: called once the player has seen the reward and validated (the run goes on from there).
+func _drop_chest(data: EnemyData, pos: Vector2, on_done: Callable = Callable()) -> TreasureChest:
 	var chest := TreasureChest.create(data.chest, party, pos.clamp(enemies.arena_rect().position, enemies.arena_rect().end))
+	var loot: Array[Dictionary] = []
 	chest.opened.connect(func() -> void:
 		if data.chest.reward_tier > 0:
-			_grant_reward(data.chest.reward_tier))
+			loot.append_array(_grant_reward(data.chest.reward_tier, _sweeping)))  # (a lambda keeps the array, not a new one)
+	chest.finished.connect(func() -> void: _show_chest_loot(loot, on_done))
 	add_child(chest)
 	_chests.append(chest)
 	return chest
 
 
+## The chest is open: the game stops on what it gave until the player validates (a chest swept up at the
+## end of a wave only announces its reward: the wave screens come next).
+func _show_chest_loot(loot: Array[Dictionary], on_done: Callable) -> void:
+	if loot.is_empty() or _sweeping or state.is_over:
+		if on_done.is_valid():
+			on_done.call()
+		return
+	get_tree().paused = true
+	chest_reward_screen.closed.connect(func() -> void:
+		get_tree().paused = false
+		if on_done.is_valid():
+			on_done.call(), CONNECT_ONE_SHOT)
+	chest_reward_screen.open(loot)
+
+
 ## End of a wave: a chest nobody opened gives its reward anyway.
 func _sweep_chests() -> void:
+	_sweeping = true
 	for chest in _chests:
 		if is_instance_valid(chest):
 			chest.open_now()
 	_chests.clear()
+	_sweeping = false
 
 
 ## XP crystals give XP, material coins give materials (fewer per kill as the run goes
@@ -616,20 +641,24 @@ func _record_run(won: bool) -> void:
 
 
 ## Boss reward: each player gets a random item of `min_tier` or higher they can still own.
-func _grant_reward(min_tier: int) -> void:
+func _grant_reward(min_tier: int, announce: bool = true) -> Array[Dictionary]:
 	var pool: Array[ItemData] = []
 	pool.assign(_unlocked(&"items"))
 	var names: PackedStringArray = []
+	var loot: Array[Dictionary] = []
 	for rp in players:
 		var item := pick_reward(pool, rp.inventory, min_tier, state.rng)
 		if item == null:
 			continue
 		rp.inventory.add(item)
 		names.append(tr(item.name_key))
+		loot.append({"item": item, "title": tr("UI_PLAYER_N") % (rp.index + 1) if players.size() > 1 else "", "color": rp.color()})
 	if names.is_empty():
-		return
+		return loot
 	Audio.play(Sounds.LEVEL_UP, -4.0)
-	hud.show_toast(tr("UI_BOSS_REWARD") % " / ".join(names))
+	if announce:
+		hud.show_toast(tr("UI_BOSS_REWARD") % " / ".join(names))
+	return loot
 
 
 static func pick_reward(pool: Array[ItemData], owned: Inventory, min_tier: int,
