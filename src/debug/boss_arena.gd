@@ -17,12 +17,15 @@ const PHASES: Array = [["Phase 1 (PV pleins)", 1.0], ["Phase 2 (60 % des PV)", 0
 const BUILDS: Array = ["Départ (armes du personnage)", "Moyen (6 armes rang III)", "Fort (6 armes rang IV + 25 objets)"]
 const BUILD_WEAPONS: Array[StringName] = [&"spear", &"scythe", &"longbow", &"shadow_blades", &"runic_blade", &"lightning_staff"]
 const RETURN_DELAY := 3.0
+## "Kill now": the boss dies this long after it appears.
+const KILL_DELAY := 0.6
 
 var _boss: OptionButton
 var _phase: OptionButton
 var _build: OptionButton
 var _character: OptionButton
 var _invincible: CheckBox
+var _kill_now: CheckBox
 var _panel: Control
 var _column: VBoxContainer
 var _run: Run
@@ -58,6 +61,9 @@ func _ready() -> void:
 	_invincible = CheckBox.new()
 	_invincible.text = "Joueur invincible (pour voir les attaques)"
 	column.add_child(_invincible)
+	_kill_now = CheckBox.new()
+	_kill_now.text = "Tuer le boss tout de suite (voir sa mort puis le coffre)"
+	column.add_child(_kill_now)
 	var start := Button.new()
 	start.text = "Combattre"
 	start.theme_type_variation = &"BigButton"
@@ -134,11 +140,24 @@ func _give_build(kind: int) -> void:
 
 
 func _on_boss_spawned(enemy: Enemy) -> void:
+	if _kill_now.button_pressed and not enemy.data.phases.is_empty():
+		get_tree().create_timer(KILL_DELAY).timeout.connect(_kill.bind(enemy))
 	if _hp_ratio < 1.0 and not enemy.data.phases.is_empty():
 		enemy.hp = enemy.max_hp * _hp_ratio
 
 
 ## The wave ends once the boss is dead, its death animation played and its chest opened.
+## One blow that kills the boss, whatever its entrance protection (to watch its death and its chest).
+func _kill(enemy: Enemy) -> void:
+	if _run == null or not is_instance_valid(enemy) or not enemy.is_alive():
+		return
+	enemy.invulnerable_left = 0.0
+	for i in _run.enemies.active_count():
+		if _run.enemies.get_enemy(i) == enemy:
+			_run.enemies.damage_enemy(i, enemy.max_hp * 2.0, false, Vector2.RIGHT, 0.0)
+			return
+
+
 func _on_wave_ended(_wave: int) -> void:
 	get_tree().create_timer(RETURN_DELAY, true).timeout.connect(_back_to_selector)
 
