@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="EnemyData" format=3]
 
 [ext_resource type="Script" path="res://src/enemies/enemy_data.gd" id="1_enemy"]
+[ext_resource type="Resource" path="res://data/chests/big.tres" id="c_chest"]
 [ext_resource type="Script" path="res://src/enemies/boss/boss_phase.gd" id="2_phase"]
 [ext_resource type="Script" path="res://src/enemies/boss/boss_pattern.gd" id="3_pattern"]
 [ext_resource type="Script" path="res://src/enemies/boss/cone_breath_pattern.gd" id="s_cone"]
@@ -128,3 +129,4 @@ sprite_id = &"astral_boss_final"
 sprite_scale = 1.15
 phases = Array[ExtResource("2_phase")]([SubResource("Phase_1"), SubResource("Phase_2"), SubResource("Phase_3")])
 projectile_style = 19
+chest = ExtResource("c_chest")

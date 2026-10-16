@@ -101,6 +101,10 @@ ENEMY_IRON_BOSS_FINAL,Colossal Idol,Idole colossale
 UI_BOSS_REWARD,Reward: %s,Récompense : %s
 UI_BOSS_RAGE,The boss flies into a rage!,Le boss entre en fureur !
 UI_BOSS_RAGE_TIMER,RAGE,FUREUR
+UI_OPEN_CHEST,Walk onto the chest!,Marche sur le coffre !
+UI_CHEST_TIMER,CHEST,COFFRE
+UI_UNLOCKED_TITLE,Unlocked!,Débloqué !
+UI_CONTINUE,Continue,Continuer
 WEAPON_STRESS,Stress test gun,Arme de test
 UI_WAVE,Wave,Vague
 UI_WAVE_CLEARED,Wave %d cleared!,Vague %d terminée !

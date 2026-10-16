@@ -44,6 +44,8 @@ var record_profile: bool = true
 var unlock_all: bool = false
 ## True while a final boss's death animation plays: the wave (and the run) must not end under it.
 var _boss_dying: bool = false
+## The treasure chests on the ground (a mini-boss's, a final boss's).
+var _chests: Array[TreasureChest] = []
 ## Wave the run opens on (the boss test arena starts on the boss wave).
 var first_wave: int = 1
 ## Character and weapon chosen in the menu (SceneRouter.next_run when null).
@@ -503,20 +505,58 @@ func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
 		xp * stage.material_rate_at(waves.wave), killer)
 	if data.boss or not data.phases.is_empty():
 		_killed_special.append(data.id)
-	if data.reward_item_tier > 0:
+	if data.reward_item_tier > 0 and data.chest == null:
 		_grant_reward(data.reward_item_tier)
+	if data.chest != null and not data.boss:
+		_drop_chest(data, pos)  # a mini-boss's chest: walk on it before the wave ends
 	if data.boss and not enemies.has_living_boss():
 		var death_time := BossCorpse.duration_of(data)
-		if death_time <= 0.0:
+		if death_time <= 0.0 and data.chest == null:
 			waves.finish_wave()
 			return
-		# The painted death plays in slow motion before the wave ends and the screens come up.
+		# The wave (and the run) waits for the painted death, then for the chest to be opened.
 		_boss_dying = true
-		Engine.time_scale = DEATH_SLOWMO
-		get_tree().create_timer(death_time + BossCorpse.FADE_TIME * 0.5, true, false, true).timeout.connect(func() -> void:
-			Engine.time_scale = 1.0
-			_boss_dying = false
-			waves.finish_wave())
+		var wait := 0.0
+		if death_time > 0.0:
+			Engine.time_scale = DEATH_SLOWMO
+			wait = death_time + BossCorpse.FADE_TIME * 0.5
+		get_tree().create_timer(maxf(wait, 0.05), true, false, true).timeout.connect(_after_boss_death.bind(data, pos))
+
+
+## The death animation is over: the final boss's chest drops (the run is won when it is opened),
+## or the wave simply ends.
+func _after_boss_death(data: EnemyData, pos: Vector2) -> void:
+	Engine.time_scale = 1.0
+	if state.is_over:
+		return
+	if data.chest == null:
+		_boss_dying = false
+		waves.finish_wave()
+		return
+	waves.pending_reward = true
+	hud.show_toast(tr("UI_OPEN_CHEST"))
+	_drop_chest(data, pos).finished.connect(func() -> void:
+		_boss_dying = false
+		waves.pending_reward = false
+		waves.finish_wave())
+
+
+func _drop_chest(data: EnemyData, pos: Vector2) -> TreasureChest:
+	var chest := TreasureChest.create(data.chest, party, pos.clamp(enemies.arena_rect().position, enemies.arena_rect().end))
+	chest.opened.connect(func() -> void:
+		if data.chest.reward_tier > 0:
+			_grant_reward(data.chest.reward_tier))
+	add_child(chest)
+	_chests.append(chest)
+	return chest
+
+
+## End of a wave: a chest nobody opened gives its reward anyway.
+func _sweep_chests() -> void:
+	for chest in _chests:
+		if is_instance_valid(chest):
+			chest.open_now()
+	_chests.clear()
 
 
 ## XP crystals give XP, material coins give materials (fewer per kill as the run goes
@@ -609,6 +649,7 @@ func _on_wave_ended(wave: int) -> void:
 	if state.is_over:
 		return
 	_log_wave_stats(wave)
+	_sweep_chests()
 	enemies.clear_all()
 	enemy_projectiles.clear_all()
 	pickups.collect_all()

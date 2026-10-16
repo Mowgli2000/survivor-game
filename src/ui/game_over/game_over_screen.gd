@@ -38,6 +38,11 @@ var _recap: HBoxContainer
 ## Scrolling lists of the recap columns (only the ones with more than RECAP_ROWS rows).
 var _recap_scrolls: Array[ScrollContainer] = []
 var _unlocks: HBoxContainer
+## Victory with new unlocks: the cards come alone first, "Continue" then shows the statistics.
+var _middle: HBoxContainer
+var _buttons: HBoxContainer
+var _continue: Button
+var _revealing := false
 var _retry: Button
 var _main_menu: Button
 var _endless: Button
@@ -83,6 +88,7 @@ func _init() -> void:
 	middle.alignment = BoxContainer.ALIGNMENT_CENTER
 	middle.add_theme_constant_override("separation", 64)
 	box.add_child(middle)
+	_middle = middle
 	_summary = Label.new()
 	_summary.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_summary.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -105,6 +111,14 @@ func _init() -> void:
 	buttons.alignment = BoxContainer.ALIGNMENT_CENTER
 	buttons.add_theme_constant_override("separation", 24)
 	box.add_child(buttons)
+	_buttons = buttons
+	_continue = Button.new()
+	_continue.text = "UI_CONTINUE"
+	_continue.custom_minimum_size = Vector2(340, 84)
+	_continue.theme_type_variation = &"BigButton"
+	_continue.visible = false
+	_continue.pressed.connect(_end_reveal)
+	box.add_child(_continue)
 	_retry = Button.new()
 	_retry.text = "UI_RETRY"
 	_retry.custom_minimum_size = Vector2(340, 84)
@@ -143,6 +157,10 @@ func open(time_survived: float, level: int, kills: int, wave: int, victory: bool
 	]
 	_unlocks.visible = false
 	_recap.visible = false
+	_revealing = false
+	_middle.visible = true
+	_buttons.visible = true
+	_continue.visible = false
 	_endless.visible = victory
 	visible = true
 	UiFx.pop_in(_title)
@@ -341,6 +359,36 @@ func show_unlocks(challenges: Array[ChallengeData]) -> void:
 		_unlocks.add_child(card)
 		UiFx.pop_in(card, delay)
 	_unlocks.visible = _unlocks.get_child_count() > 0
+	if _unlocks.visible and is_victory:
+		_begin_reveal()
+
+
+## The chest is open: the unlocks alone on the screen, before the statistics.
+func _begin_reveal() -> void:
+	_revealing = true
+	_title.text = "UI_UNLOCKED_TITLE"
+	_middle.visible = false
+	_buttons.visible = false
+	_continue.visible = true
+	UiFx.pop_in(_title)
+	_continue.grab_focus()
+
+
+func _end_reveal() -> void:
+	_revealing = false
+	_title.text = "UI_VICTORY"
+	_unlocks.visible = false
+	_middle.visible = true
+	_buttons.visible = true
+	_continue.visible = false
+	UiFx.pop_in(_title)
+	UiFx.pop_in(_summary, 0.08)
+	_retry.grab_focus()
+
+
+## True while the unlocks are shown alone, before the statistics.
+func is_revealing() -> bool:
+	return _revealing
 
 
 ## Names (translation keys) of the unlock cards shown, in order (tests).

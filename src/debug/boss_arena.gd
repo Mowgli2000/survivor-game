@@ -3,7 +3,7 @@ extends Control
 ## before it. Open res://src/debug/boss_arena.tscn in the Godot editor and press F6.
 ## The fight is a real run on the boss wave of the chosen seal (its biome, its HP and damage
 ## curves, its boss pace), played with your keyboard / gamepad. Nothing is saved to the profile.
-## F10 during the fight: back to this selector.
+## F10 during the fight: back to this selector (it also comes back by itself a few seconds after the chest is opened).
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
 
@@ -111,7 +111,7 @@ func _start_fight() -> void:
 	_panel.visible = false
 	add_child(_run)
 	_run.enemies.boss_spawned.connect(_on_boss_spawned)
-	_run.bosses.boss_ended.connect(_on_boss_ended)
+	_run.waves.wave_ended.connect(_on_wave_ended)
 	_give_build(_build.selected)
 
 
@@ -138,9 +138,9 @@ func _on_boss_spawned(enemy: Enemy) -> void:
 		enemy.hp = enemy.max_hp * _hp_ratio
 
 
-func _on_boss_ended(_enemy: Enemy) -> void:
-	if _run.bosses.boss_count() == 0:
-		get_tree().create_timer(RETURN_DELAY).timeout.connect(_back_to_selector)
+## The wave ends once the boss is dead, its death animation played and its chest opened.
+func _on_wave_ended(_wave: int) -> void:
+	get_tree().create_timer(RETURN_DELAY, true).timeout.connect(_back_to_selector)
 
 
 func _back_to_selector() -> void:

@@ -54,6 +54,8 @@ enum Movement {
 @export var xp_value: int = 1
 ## > 0: killing it grants a random item of this tier or higher (bosses).
 @export var reward_item_tier: int = 0
+## A boss that drops a treasure chest when it dies (its reward comes out of the chest instead of at once).
+@export var chest: ChestData
 
 @export_group("Boss")
 ## Non-empty: boss bar and telegraphed patterns (ADR 0014). Sorted by

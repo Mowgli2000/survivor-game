@@ -190,6 +190,23 @@ func test_last_wave_wins_the_run() -> void:
 	assert_true(run.game_over_screen.is_victory)
 
 
+## After a final boss dies: waits for its death animation, then walks the player onto its chest and waits for it to open.
+func _open_the_boss_chest(run: Run) -> void:
+	var shogun: EnemyData = ContentDB.get_def(&"enemies", &"shogun")
+	await wait_seconds(BossCorpse.duration_of(shogun) + BossCorpse.FADE_TIME * 0.5 + 0.3)
+	var chest: TreasureChest = null
+	for child in run.get_children():
+		if child is TreasureChest:
+			chest = child
+	assert_not_null(chest, "the boss dropped its chest")
+	assert_false(run.state.is_over, "the victory waits for the chest")
+	assert_true(run.waves.pending_reward)
+	await wait_seconds(0.8)  # it drops
+	run.player.global_position = chest.global_position
+	await wait_seconds(1.4)  # the opening animation (the wave ends after it, and the tree pauses)
+	await wait_physics_frames(120)
+
+
 func test_killing_the_boss_wins_before_the_timer() -> void:
 	var run := _swap_run(true, true)
 	await wait_physics_frames(2)
@@ -209,8 +226,7 @@ func test_killing_the_boss_wins_before_the_timer() -> void:
 	assert_false(run.state.is_over, "the painted death plays first")
 	assert_lt(Engine.time_scale, 1.0, "the death is in slow motion")
 	Engine.time_scale = 1.0  # test clocks run on game time: keep them real
-	await wait_seconds(BossCorpse.duration_of(ContentDB.get_def(&"enemies", &"shogun")) - 0.2)  # the death animation (the wave ends after it, and the tree pauses)
-	await wait_physics_frames(60)
+	await _open_the_boss_chest(run)
 	assert_true(run.state.is_over)
 	assert_true(run.game_over_screen.is_victory)
 
@@ -234,8 +250,7 @@ func test_a_final_boss_killed_after_the_clock_still_gets_its_death_animation() -
 	Engine.time_scale = 1.0
 	await wait_physics_frames(5)
 	assert_false(run.state.is_over, "the victory waits for the death animation, even in overtime")
-	await wait_seconds(BossCorpse.duration_of(ContentDB.get_def(&"enemies", &"shogun")) - 0.2)
-	await wait_physics_frames(90)
+	await _open_the_boss_chest(run)
 	assert_true(run.state.is_over)
 
 

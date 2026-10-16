@@ -301,11 +301,14 @@ func _process(_delta: float) -> void:
 	if _waves == null:
 		return
 	var seconds := ceili(_waves.time_left)
-	if _waves.overtime > 0.0:
+	if _waves.pending_reward or _waves.overtime > 0.0:
+		var text := tr("UI_CHEST_TIMER") if _waves.pending_reward else tr("UI_BOSS_RAGE_TIMER")
+		if _raging and _timer_label.text != text:
+			_raging = false  # the chest replaces the rage: show it
 		if not _raging:
 			_raging = true
-			_timer_label.text = tr("UI_BOSS_RAGE_TIMER")
-			_timer_label.add_theme_color_override("font_color", UiTheme.BAD)
+			_timer_label.text = text
+			_timer_label.add_theme_color_override("font_color", UiTheme.GOLD if _waves.pending_reward else UiTheme.BAD)
 			_timer_label.add_theme_font_size_override("font_size", TIMER_FONT_SIZE)
 			_timer_label.reset_size()
 			_timer_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE)

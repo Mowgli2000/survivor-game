@@ -78,3 +78,33 @@ func test_short_list_does_not_scroll() -> void:
 	screen.show_recap([{"title": "", "color": Color.WHITE,
 		"rows": GameOverScreen.recap_rows({&"katana": 120.0, &"bomb": 80.0}, final_ids)}])
 	assert_true(screen._recap_scrolls.is_empty())
+
+
+func test_a_victory_shows_the_unlocks_alone_before_the_statistics() -> void:
+	var screen := GameOverScreen.new()
+	add_child_autofree(screen)
+	screen.open(120.0, 10, 50, 20, true)
+	var challenges: Array[ChallengeData] = [ContentDB.get_def(&"challenges", &"win_drifter")]
+	screen.show_unlocks(challenges)
+	assert_true(screen.is_revealing(), "the unlocks come first")
+	assert_false(screen._middle.visible, "no statistics yet")
+	assert_false(screen._buttons.visible)
+	assert_true(screen._continue.visible)
+	screen._continue.pressed.emit()
+	assert_false(screen.is_revealing())
+	assert_true(screen._middle.visible, "now the statistics")
+	assert_true(screen._buttons.visible)
+	assert_false(screen._unlocks.visible, "the cards were seen")
+
+
+func test_a_defeat_or_a_victory_without_unlocks_goes_straight_to_the_statistics() -> void:
+	var screen := GameOverScreen.new()
+	add_child_autofree(screen)
+	screen.open(120.0, 10, 50, 20, true)
+	screen.show_unlocks([])
+	assert_false(screen.is_revealing())
+	assert_true(screen._middle.visible)
+	screen.open(60.0, 5, 10, 8, false)
+	var challenges: Array[ChallengeData] = [ContentDB.get_def(&"challenges", &"win_drifter")]
+	screen.show_unlocks(challenges)
+	assert_false(screen.is_revealing(), "a defeat shows the cards with the statistics")

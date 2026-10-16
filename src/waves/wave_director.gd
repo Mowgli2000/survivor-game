@@ -17,6 +17,8 @@ var time_left: float = 0.0
 var in_wave: bool = false
 ## Seconds spent past the clock waiting for the final boss to die (0 = not in overtime).
 var overtime: float = 0.0
+## A boss chest waits to be opened: the run is won when it is (the HUD tells the player).
+var pending_reward: bool = false
 
 ## Optional: while it returns true when the timer runs out, the wave goes on (a living final boss:
 ## the run is won by killing it, not by surviving the clock).

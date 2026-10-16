@@ -26,6 +26,10 @@ var _rage := false
 ## --killat=<seconds>: the boss dies at that time (to see its death animation).
 var _kill_at := -1.0
 var _killed := false
+## --chest=<enemy id>: that boss's treasure chest drops 0.5 s in; the hero walks onto it at 2 s.
+var _chest_of := &""
+var _chest: TreasureChest
+var _chest_dropped := false
 ## --clean: hide the debug overlay and the gamepad hint bars before the picture is taken.
 var _clean := false
 
@@ -64,6 +68,8 @@ func _ready() -> void:
 			character_id = arg.trim_prefix("--character=")
 		elif arg.begins_with("--boss="):
 			_boss_id = StringName(arg.trim_prefix("--boss="))
+		elif arg.begins_with("--chest="):
+			_chest_of = StringName(arg.trim_prefix("--chest="))
 		elif arg.begins_with("--killat="):
 			_kill_at = arg.trim_prefix("--killat=").to_float()
 		elif arg == "--rage":
@@ -196,6 +202,13 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_time += delta
+	if _chest_of != &"" and _run != null:
+		if not _chest_dropped and _time >= 0.5:
+			_chest_dropped = true
+			_chest = _run._drop_chest(ContentDB.get_def(&"enemies", _chest_of), _run.player.global_position + Vector2(260, -60))
+			_run.player.bot_input = func() -> Vector2: return Vector2.ZERO
+		elif _chest != null and _time >= 2.0 and is_instance_valid(_chest) and _chest.state == TreasureChest.State.WAITING:
+			_run.player.global_position = _chest.global_position + Vector2(0, 30)
 	if _kill_at >= 0.0 and not _killed and _time >= _kill_at and _run != null:
 		_killed = true
 		for i in _run.enemies.active_count():

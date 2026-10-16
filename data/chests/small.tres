@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ChestData" format=3]
+
+[ext_resource type="Script" path="res://src/run/chest_data.gd" id="1_chest"]
+[ext_resource type="Resource" path="res://assets/sprites/chest_small.tres" id="2_sheet"]
+
+[resource]
+script = ExtResource("1_chest")
+sheet = ExtResource("2_sheet")
+height = 150.0
+open_fps = 10.0
+open_radius = 80.0
+reward_tier = 2
+burst_frame = 6
