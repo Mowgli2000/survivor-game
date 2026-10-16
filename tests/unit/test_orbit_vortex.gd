@@ -61,8 +61,8 @@ func test_the_range_stat_widens_the_orbit_of_the_blades() -> void:
 
 
 func test_a_blade_hurts_the_same_enemy_again_and_again() -> void:
-	var s := await _setup(Vector2(150.0, 0.0))
 	var weapon: WeaponData = ContentDB.get_def(&"weapons", &"shadow_blades")
+	var s := await _setup(Vector2(weapon.attack_range, 0.0))  # on the ring
 	assert_true(weapon.behavior.fire(WeaponSlot.new(weapon, 1), _context(s)))
 	await wait_seconds(0.8)
 	var after_first: float = s.enemies.get_enemy(0).hp
