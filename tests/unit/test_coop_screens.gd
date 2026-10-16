@@ -125,3 +125,23 @@ func test_left_stick_moves_the_selection_one_step_per_push() -> void:
 	var moved := halves.viewport_of(0).gui_get_focus_owner()
 	assert_ne(moved, first, "the stick moves the selection")
 	assert_eq(cards.find(moved), cards.find(first) + 1, "by one card only")
+
+
+func test_selection_frame_of_a_small_button_is_an_outline_not_a_fill() -> void:
+	var button := Button.new()
+	button.theme = UiTheme.get_theme()
+	button.size = Vector2(300, 40)  # shorter than the button frame's two borders
+	add_child_autofree(button)
+	var fallback := UiTheme.focus_style(Color.GREEN)
+	var outline := CoopScreens.FocusFrame.outline_of(button, Color.GREEN, fallback)
+	assert_eq(outline, fallback, "no centre to leave empty: the ring style is used")
+
+
+func test_selection_frame_of_a_large_card_keeps_the_card_shape_without_fill() -> void:
+	var card := Button.new()
+	card.theme = UiTheme.get_theme()
+	card.add_theme_stylebox_override("focus", UiTheme.card_focus_style())
+	card.size = Vector2(300, 400)
+	add_child_autofree(card)
+	var outline := CoopScreens.FocusFrame.outline_of(card, Color.GREEN, UiTheme.focus_style(Color.GREEN))
+	assert_false((outline as StyleBoxTexture).draw_center, "the card's focus box, centre left empty")

@@ -228,8 +228,9 @@ func _process(delta: float) -> void:
 		_capture_at = _time + 0.8
 		return
 	if _mode in ["--die", "--unlocks"] and not _run.state.is_over:
-		_run.player.invincible = false
-		_run.player.take_damage(1e9)
+		for rp in _run.players:  # coop: the run is lost only when both are dead
+			rp.player.invincible = false
+			rp.player.take_damage(1e9)
 		if _mode == "--unlocks":
 			# Sample unlock cards: a character and two items.
 			var samples: Array[ChallengeData] = []

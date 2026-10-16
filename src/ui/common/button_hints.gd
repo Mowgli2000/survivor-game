@@ -48,10 +48,20 @@ static func create(items: Array, top_right: bool = false) -> ButtonHints:
 		action.add_theme_font_size_override("font_size", 24)
 		pair.add_child(action)
 		bar.add_child(pair)
-	bar.visible = show_always or not Input.get_connected_joypads().is_empty()
+	bar._pad_present = not Input.get_connected_joypads().is_empty()
+	bar.visible = show_always or bar._pad_present
 	return bar
 
 
+## Whether a pad was connected at the last check.
+var _pad_present: bool = false
+
+
 # A pad plugged in (or unplugged) after the screen was built still shows (or hides) the bar.
+# Only a change acts: a screen that hides its bar (a menu covered by another screen)
+# keeps it hidden until its own code shows it again.
 func _process(_delta: float) -> void:
-	visible = show_always or not Input.get_connected_joypads().is_empty()
+	var present := not Input.get_connected_joypads().is_empty()
+	if present != _pad_present:
+		_pad_present = present
+		visible = show_always or present

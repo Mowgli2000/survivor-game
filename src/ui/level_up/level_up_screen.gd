@@ -15,6 +15,8 @@ const ICON_SIZE := 112.0
 const CARD_SIZE := Vector2(360, 450)
 ## Coop: half-screen layout.
 const COMPACT_CARD_SIZE := Vector2(218, 450)
+## Smallest card text in the half-screen layout.
+const MIN_FIT_SIZE := 14
 ## Delay between two cards appearing.
 const CARD_STAGGER := 0.04
 
@@ -234,7 +236,7 @@ func _make_card(offer: UpgradeOffer) -> Button:
 	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	for side in ["left", "right", "top", "bottom"]:
-		margin.add_theme_constant_override("margin_" + side, 20)
+		margin.add_theme_constant_override("margin_" + side, 12 if _compact else 20)
 	button.add_child(margin)
 
 	var box := VBoxContainer.new()
@@ -268,10 +270,24 @@ func _card_label(text: String, variation: StringName, size: int, color: Color) -
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.custom_minimum_size.x = _card_size.x - 40.0
+	label.custom_minimum_size.x = _card_size.x - (24.0 if _compact else 40.0)
+	if _compact:
+		var font := UiTheme.get_theme().get_font(&"font", variation if variation != &"" else &"Label")
+		size = fit_font_size(text, font, size, label.custom_minimum_size.x)
 	label.add_theme_font_size_override("font_size", size)
 	label.add_theme_color_override("font_color", color)
 	return label
+
+
+## Largest font size (at most `size`, at least MIN_FIT_SIZE) at which the longest word of
+## `text` fits in `width`: a card text wraps between words, never inside one.
+static func fit_font_size(text: String, font: Font, size: int, width: float) -> int:
+	var widest := 0.0
+	for word in text.split(" ", false):
+		widest = maxf(widest, font.get_string_size(word, HORIZONTAL_ALIGNMENT_LEFT, -1, size).x)
+	if widest <= width or widest <= 0.0:
+		return size
+	return maxi(int(floor(size * width / widest)), MIN_FIT_SIZE)
 
 
 func _on_card_pressed(index: int) -> void:

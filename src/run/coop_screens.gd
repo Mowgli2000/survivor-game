@@ -92,6 +92,12 @@ class FocusFrame extends Control:
 	static func outline_of(control: Control, outline: Color, fallback: StyleBox) -> StyleBox:
 		var own := control.get_theme_stylebox(&"focus")
 		if own is StyleBoxTexture:
+			# A control smaller than the frame's two borders has no centre to leave empty:
+			# the whole frame would be drawn over its text (playtest capture: green bar).
+			var borders := Vector2(own.texture_margin_left + own.texture_margin_right,
+				own.texture_margin_top + own.texture_margin_bottom)
+			if control.size.x <= borders.x or control.size.y <= borders.y:
+				return fallback
 			var tex_copy := own.duplicate() as StyleBoxTexture
 			tex_copy.draw_center = false
 			tex_copy.modulate_color = outline
