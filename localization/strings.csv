@@ -300,6 +300,7 @@ UI_UNLOCKED_TAG,Unlocked!,Débloqué !
 UI_UNLOCK_CHARACTER,New character,Nouveau personnage
 UI_UNLOCK_WEAPON,New weapon,Nouvelle arme
 UI_UNLOCK_ITEM,New item,Nouvel objet
+UI_UNLOCK_BACKDROP,New background,Nouveau fond
 UI_PLAYER_N,Player %d,Joueur %d
 UI_PLAYER_DOWN,Down: back next wave,À terre : retour à la vague suivante
 UI_COOP,Local co-op,Coop locale

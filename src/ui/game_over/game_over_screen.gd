@@ -350,7 +350,7 @@ func _recap_row(row: Dictionary, top: float, total: float) -> Control:
 
 ## New unlocks from this run (challenges completed), one card each: the
 ## character's animated sprite or the item/weapon icon, its name, "Unlocked!".
-func show_unlocks(challenges: Array[ChallengeData]) -> void:
+func show_unlocks(challenges: Array[ChallengeData], backdrops: Array[int] = []) -> void:
 	for child in _unlocks.get_children():
 		_unlocks.remove_child(child)
 		child.queue_free()
@@ -362,6 +362,7 @@ func show_unlocks(challenges: Array[ChallengeData]) -> void:
 		has_shards = has_shards or challenge.shards > 0
 	if has_shards:
 		count_cards += 1
+	count_cards += backdrops.size()
 	_unlock_card_width = clampf((UNLOCKS_MAX_WIDTH - 18.0 * maxi(count_cards - 1, 0)) / maxi(count_cards, 1),
 		UNLOCK_CARD_MIN, UNLOCK_CARD_MAX)
 	var delay := 0.3
@@ -375,6 +376,11 @@ func show_unlocks(challenges: Array[ChallengeData]) -> void:
 		if def == null:
 			continue
 		var card := _unlock_card(def)
+		_unlocks.add_child(card)
+		UiFx.pop_in(card, delay)
+		delay += 0.12
+	for level in backdrops:
+		var card := _backdrop_card(level)
 		_unlocks.add_child(card)
 		UiFx.pop_in(card, delay)
 		delay += 0.12
@@ -449,6 +455,43 @@ func unlock_names() -> PackedStringArray:
 	for card in _unlocks.get_children():
 		names.append(card.get_meta(&"name_key"))
 	return names
+
+
+## One card for the select screen background a danger win just opened: the picture, the place, "Unlocked!".
+func _backdrop_card(level: int) -> Control:
+	var card := PanelContainer.new()
+	card.custom_minimum_size = Vector2(_unlock_card_width, 0)
+	card.add_theme_stylebox_override("panel", UiTheme.card_style(UiTheme.GOLD, 0.9))
+	card.set_meta(&"name_key", "UI_UNLOCK_BACKDROP")
+	var box := VBoxContainer.new()
+	box.alignment = BoxContainer.ALIGNMENT_CENTER
+	box.add_theme_constant_override("separation", 6)
+	card.add_child(box)
+	var picture := TextureRect.new()
+	picture.texture = SelectBackdrops.picture(level, false)
+	picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	picture.custom_minimum_size = Vector2(_unlock_card_width - 24.0, (_unlock_card_width - 24.0) * 9.0 / 16.0)
+	box.add_child(picture)
+	var name_label := Label.new()
+	name_label.text = SelectBackdrops.place_name(level)
+	name_label.theme_type_variation = &"SubtitleLabel"
+	name_label.add_theme_font_size_override("font_size", 20)
+	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	box.add_child(name_label)
+	var kind := Label.new()
+	kind.text = "UI_UNLOCK_BACKDROP"
+	kind.theme_type_variation = &"SmallLabel"
+	kind.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(kind)
+	var tag := Label.new()
+	tag.text = "UI_UNLOCKED_TAG"
+	tag.theme_type_variation = &"SmallLabel"
+	tag.add_theme_color_override("font_color", UiTheme.GOLD)
+	tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	box.add_child(tag)
+	return card
 
 
 ## One card for the portal shards the collection challenges of this run paid.

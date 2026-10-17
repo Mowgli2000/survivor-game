@@ -124,3 +124,12 @@ func test_the_victory_screen_lists_the_chest_rewards_with_their_description_on_h
 	assert_ne(screen._reward_text.text, "", "the description shows on focus")
 	screen.show_rewards([])
 	assert_false(screen._rewards_box.visible, "no chest, no recap")
+
+
+func test_a_new_danger_win_shows_a_background_card() -> void:
+	var screen := GameOverScreen.new()
+	add_child_autofree(screen)
+	screen.open(120.0, 10, 50, 20, true)
+	screen.show_unlocks([], [2] as Array[int])
+	assert_eq(screen.unlock_names(), PackedStringArray(["UI_UNLOCK_BACKDROP"]), "one card for the background")
+	assert_true(screen.is_revealing(), "shown alone before the statistics")

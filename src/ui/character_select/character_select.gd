@@ -34,7 +34,7 @@ const COMPACT_ROW_HEIGHT := 124.0
 ## The hero is shown big (dev: room for the looks and future skins).
 const STAGE_SIZE := Vector2(760, 600)
 const COMPACT_STAGE_SIZE := Vector2(0, 430)
-const ARMS_WIDTH := 680.0
+const ARMS_WIDTH := 590.0
 ## Solo screen: the hero stands on the floor seal (SealGlow, over the empty hall picture); this is
 ## the seal's center as a share of the screen (the hero's feet), its width as a share of the screen
 ## width, and the stage size around the hero.
@@ -391,7 +391,7 @@ func _build_stage_column() -> Control:
 	_hero_plate.add_theme_constant_override("separation", 6 if _compact else 8)
 	_hero_name = Label.new()
 	_hero_name.theme_type_variation = &"TitleLabel"
-	_hero_name.add_theme_font_size_override("font_size", 28 if _compact else 54)
+	_hero_name.add_theme_font_size_override("font_size", 28 if _compact else 44)
 	_hero_name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_hero_plate.add_child(_hero_name)
 	_hero_rule = Label.new()
@@ -422,20 +422,20 @@ func _build_stage_column() -> Control:
 		name_label.add_theme_font_size_override("font_size", 15 if _compact else 20)
 		name_label.add_theme_color_override("font_color", UiTheme.MUTED)
 		name_label.add_theme_constant_override("outline_size", 0)
-		name_label.custom_minimum_size.x = 0.0 if _compact else 190.0
+		name_label.custom_minimum_size.x = 0.0 if _compact else 170.0
 		grid.add_child(name_label)
 		var bar := ProgressBar.new()
 		bar.max_value = 1.0
 		bar.show_percentage = false
 		# The bars of the game's own theme (the first ones were drawn at the very start of the project).
 		# The frame is 28 px tall: smaller, its slanted ends would break (the stretched middle collapses).
-		bar.custom_minimum_size = Vector2(56 if _compact else 220, 28)
+		bar.custom_minimum_size = Vector2(56 if _compact else 170, 28)
 		bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		_style_bar(bar, STAT_COLORS[stat])
 		grid.add_child(bar)
 		var numbers := HBoxContainer.new()
 		numbers.add_theme_constant_override("separation", 6)
-		numbers.custom_minimum_size.x = 96 if _compact else 150
+		numbers.custom_minimum_size.x = 96 if _compact else 130
 		grid.add_child(numbers)
 		var value_label := Label.new()
 		value_label.add_theme_font_size_override("font_size", 16 if _compact else 22)
@@ -1325,7 +1325,7 @@ func _frame_color() -> Color:
 
 ## Weapon card: icon, name, one-line description.
 func _weapon_card(weapon: WeaponData) -> Button:
-	var height := 80.0 if _compact else 104.0
+	var height := 80.0 if _compact else 120.0
 	var button := Button.new()
 	button.custom_minimum_size = Vector2(0.0, height)
 	button.add_theme_stylebox_override("normal", SelectBackdrops.ghost(UiTheme.card_style(_frame_color(), 0.5, _hue())))
@@ -1365,7 +1365,7 @@ func _weapon_card(weapon: WeaponData) -> Button:
 		description.add_theme_font_size_override("font_size", 17)
 		description.add_theme_color_override("font_color", UiTheme.MUTED)
 		description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		description.max_lines_visible = 2
+		description.max_lines_visible = 3
 		description.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		texts.add_child(description)
 	else:

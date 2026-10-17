@@ -649,6 +649,10 @@ func _record_run(won: bool) -> void:
 	if setup == null or not record_profile:
 		return
 	var unlocks: Array[ChallengeData] = []
+	var backdrops: Array[int] = []
+	var level := setup.difficulty.level if setup.difficulty != null else 0
+	if won and not SaveService.profile.has_won_danger(level):
+		backdrops.append(level)  # the win opens this danger's select screen background
 	for rp in players:
 		var result := RunResult.new()
 		result.character_id = rp.character.id
@@ -661,7 +665,7 @@ func _record_run(won: bool) -> void:
 		for unlock in SaveService.record_run(result):
 			if not unlocks.has(unlock):
 				unlocks.append(unlock)
-	game_over_screen.show_unlocks(unlocks)
+	game_over_screen.show_unlocks(unlocks, backdrops)
 
 
 ## Boss reward: each player gets a random item of `min_tier` or higher they can still own.
