@@ -16,7 +16,7 @@ func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
 	for k in stones:
 		var at := _spot(boss, k)
 		_hurt_circle(ctx, boss, at, stone_radius)
-		_strike_fx(ctx, boss, at, stone_radius * 1.4)
+		_strike_fx(ctx, boss, at, stone_radius)
 	_shake(ctx, 0.15)
 	if repeat + 1 < repeats:
 		_mark(ctx, boss, ctx.target_position(boss.position), repeat_interval, ctx)
@@ -34,9 +34,9 @@ func _mark(ctx: BossContext, boss: Enemy, center: Vector2, life: float, _unused:
 
 ## Spot `k` of the marked volley: around `special_dir`, from the seed in `special_timer`.
 func _spot(boss: Enemy, k: int) -> Vector2:
-	var seed_value := boss.special_timer + k * 17.0
-	var angle := fmod(seed_value * 2.399963, TAU)
-	var distance := scatter * (0.25 + 0.75 * fmod(seed_value * 0.618034, 1.0))
+	# Stones sit on a ring (turned at random each volley): two stones never overlap, however the seed falls.
+	var angle := fmod(boss.special_timer * 2.399963, TAU) + TAU * k / stones
+	var distance := scatter * (0.62 + 0.12 * fmod(boss.special_timer * 0.618034 + k * 0.37, 1.0))
 	return boss.special_dir + Vector2.from_angle(angle) * distance
 
 

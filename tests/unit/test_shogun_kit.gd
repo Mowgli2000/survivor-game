@@ -84,7 +84,8 @@ func test_the_shadow_step_arc_misses_a_player_who_stepped_back() -> void:
 func test_the_blade_rain_leaves_one_lane_and_it_moves() -> void:
 	var pattern := BladeRainPattern.new()
 	var aim := Vector2(10, 0)
-	assert_eq(pattern.lane(aim, 0), pattern.strips / 2, "volley 0: the lane under the aim")
+	assert_ne(pattern.lane(aim, 0), pattern.strips / 2, "volley 0: the free lane is not the one under the aim")
+	assert_eq(absi(pattern.lane(aim, 0) - pattern.strips / 2), BladeRainPattern.LANE_OFFSET, "a few strips away")
 	assert_ne(pattern.lane(aim, 1), pattern.lane(aim, 0), "the lane slides each volley")
 	_player.global_position = Vector2(pattern.strip_x(aim, pattern.lane(aim, 0)), 0.0)
 	pattern.fire(_ctx, _boss, aim, 0)

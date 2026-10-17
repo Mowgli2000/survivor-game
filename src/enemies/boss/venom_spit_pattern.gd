@@ -9,8 +9,8 @@ extends BossPattern
 @export var blob_radius: float = 22.0
 
 
-func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
-	_warn_line(ctx, boss.position, boss.position + _dir_to(boss.position, aim) * 480.0, blob_radius * 2.0, boss.data.color)
+func telegraph(_ctx: BossContext, _boss: Enemy, _aim: Vector2) -> void:
+	pass  # no band: the blobs aim at the hero when they leave, a fixed line would lie
 
 
 func fire(ctx: BossContext, boss: Enemy, _aim: Vector2, _repeat: int) -> void:

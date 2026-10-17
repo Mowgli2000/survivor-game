@@ -15,17 +15,18 @@ func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
 		return
 	for k in stabs:
 		ctx.vfx.warning_circle(spot(aim, k), stab_radius, boss.data.color, scaled_windup(ctx))
-	ctx.vfx.warning_circle(aim, center_radius, boss.data.color, scaled_windup(ctx) + repeat_interval)
 
 
 func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
 	if repeat == 0:
 		for k in stabs:
 			_hurt_circle(ctx, boss, spot(aim, k), stab_radius)
-			_strike_fx(ctx, boss, spot(aim, k), stab_radius * 1.5)
+			_strike_fx(ctx, boss, spot(aim, k), stab_radius)
+		if ctx.vfx != null:
+			ctx.vfx.warning_circle(aim, center_radius, boss.data.color, repeat_interval)  # then the middle
 	else:
 		_hurt_circle(ctx, boss, aim, center_radius)
-		_strike_fx(ctx, boss, aim, center_radius * 1.4)
+		_strike_fx(ctx, boss, aim, center_radius)
 	_shake(ctx, 0.25)
 
 

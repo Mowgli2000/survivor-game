@@ -19,10 +19,14 @@ var _full_shop := false
 var _open_picker := false
 var _done: bool = false
 var _boss_id: StringName = &""
+## --still: the hero does not move.
+## --play=<phase>:<attack>: the boss plays that attack of that phase at once (0-based; attack audit).
 ## --bosshp=<0..1>: the boss starts at that share of its life (to see its later phases).
 var _boss_hp := 1.0
 ## --rage: the wave clock runs out 3 s after the boss appears (see the rage).
 var _rage := false
+var _still := false
+var _play := Vector2i(-1, -1)
 ## --killat=<seconds>: the boss dies at that time (to see its death animation).
 var _kill_at := -1.0
 var _killed := false
@@ -72,6 +76,11 @@ func _ready() -> void:
 			_chest_of = StringName(arg.trim_prefix("--chest="))
 		elif arg.begins_with("--killat="):
 			_kill_at = arg.trim_prefix("--killat=").to_float()
+		elif arg.begins_with("--play="):
+			var parts := arg.trim_prefix("--play=").split(":")
+			_play = Vector2i(parts[0].to_int(), parts[1].to_int())
+		elif arg == "--still":
+			_still = true
 		elif arg == "--rage":
 			_rage = true
 		elif arg.begins_with("--bosshp="):
@@ -174,6 +183,8 @@ func _ready() -> void:
 	_run.player_invincible = true
 	_run.auto_choose_upgrades = _mode not in ["--levelup", "--waveend", "--shop", "--pause", "--settings"]
 	_run.bot_input = func() -> Vector2: return Vector2.from_angle(_time * 0.5)
+	if _still:  # the hero stands still (to see how attacks read on top of him)
+		_run.bot_input = func() -> Vector2: return Vector2.ZERO
 	if coop:
 		_run.player_count = 2
 	add_child(_run)
@@ -198,6 +209,8 @@ func _ready() -> void:
 		boss.hp = boss.max_hp * clampf(_boss_hp, 0.01, 1.0)
 		if _rage:
 			_run.waves.time_left = 3.0  # the clock runs out at once: the boss rages
+		if _play.x >= 0:
+			_run.bosses.debug_play.call_deferred(boss, _play.x, _play.y)  # --play=<phase>:<attack index>: that attack at once
 
 
 func _process(delta: float) -> void:
@@ -273,7 +286,7 @@ func _process(delta: float) -> void:
 			var samples: Array[ChallengeData] = []
 			for id in [&"win_drifter", &"win_any", &"kill_ronin"]:
 				samples.append(ContentDB.get_def(&"challenges", id))
-			_run.game_over_screen.show_unlocks(samples)
+			_run.game_over_screen.show_unlocks(samples, [2] as Array[int])
 		_capture_at = _time + 0.8
 		return
 	_done = true

@@ -21,10 +21,10 @@ func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
 	for k in spots:
 		var at := spot(aim, repeat, k)
 		_hurt_circle(ctx, boss, at, column_radius)
-		_strike_fx(ctx, boss, at, column_radius * 1.6)
+		_strike_fx(ctx, boss, at, column_radius)
 	if repeat == 0:
 		_hurt_circle(ctx, boss, aim, column_radius * 0.9)
-		_strike_fx(ctx, boss, aim, column_radius * 1.5)
+		_strike_fx(ctx, boss, aim, column_radius * 0.9)
 	_shake(ctx, 0.25)
 	if repeat + 1 < repeats and ctx.vfx != null:
 		for k in spots:

@@ -17,7 +17,7 @@ func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
 func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
 	var at := spot(boss, aim, repeat)
 	_hurt_circle(ctx, boss, at, bolt_radius)
-	_strike_fx(ctx, boss, at, bolt_radius * 1.8)
+	_strike_fx(ctx, boss, at, bolt_radius)
 	_shake(ctx, 0.12)
 	if repeat + 1 < repeats:
 		_mark(ctx, boss, aim, repeat + 1, repeat_interval)

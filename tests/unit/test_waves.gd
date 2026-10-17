@@ -391,6 +391,24 @@ func test_no_steady_spawn_while_a_boss_lives_then_the_flow_comes_back() -> void:
 	assert_gt(enemies.active_count(), 5, "the boss is dead: the horde comes back")
 
 
+func test_a_final_boss_enters_an_empty_arena() -> void:
+	var parts := _boss_duel_setup(true)
+	var director: WaveDirector = parts[0]
+	var spawner: SpawnDirector = parts[1]
+	var enemies: EnemyManager = parts[2]
+	director.start_wave(1)
+	spawner.begin_wave(1)
+	var boss_event: WaveEvent = spawner._pending_events[0]
+	boss_event.at_time = 1.0
+	enemies.spawn(EnemyData.new(), Vector2(-300, 0))  # a leftover monster
+	await wait_physics_frames(20)
+	assert_eq(enemies.active_count(), 1, "before the boss enters: no steady spawn, only the leftover")
+	director.time_left -= 1.5  # the clock reaches the boss event
+	await wait_physics_frames(40)
+	assert_eq(enemies.active_count(), 1, "the boss entered and the leftover monster left: duel on an empty arena")
+	assert_true(enemies.has_living_phased())
+
+
 func test_a_mini_boss_fight_keeps_part_of_the_flow_a_final_boss_clears_it() -> void:
 	var parts := _boss_duel_setup(false)
 	var director: WaveDirector = parts[0]

@@ -9,17 +9,14 @@ extends BossPattern
 
 func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
 	for side: float in [-1.0, 1.0]:
-		var facing := (aim - boss.position).angle() + PI * 0.5 * side
-		for k in 5:
-			var angle := facing + deg_to_rad(half_degrees) * (k - 2) * 0.5
-			_warn_line(ctx, boss.position, boss.position + Vector2.from_angle(angle) * radius, radius * 0.22, boss.data.color)
+		_warn_sector(ctx, boss, boss.position, (aim - boss.position).angle() + PI * 0.5 * side, radius, deg_to_rad(half_degrees))
 
 
 func fire(ctx: BossContext, boss: Enemy, aim: Vector2, _repeat: int) -> void:
 	for side: float in [-1.0, 1.0]:
 		var facing := (aim - boss.position).angle() + PI * 0.5 * side
 		_hurt_sector(ctx, boss, boss.position, facing, radius, deg_to_rad(half_degrees))
-		_strike_fx(ctx, boss, boss.position + Vector2.from_angle(facing) * radius * 0.5, radius * 0.6, facing)
+	_strike_fx(ctx, boss, boss.position, radius, (aim - boss.position).angle())  # one painted pair of wings, up and down in its frame
 	_shake(ctx, 0.4)
 
 

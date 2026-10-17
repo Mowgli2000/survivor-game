@@ -14,6 +14,7 @@ var hp_multiplier: float = 1.0
 ## on the windup, the recovery and the projectile speed of every pattern.
 var windup_scale: float = 1.0
 var recovery_scale: float = 1.0
+var breather_scale: float = 1.0
 var speed_scale: float = 1.0
 
 

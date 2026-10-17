@@ -1,52 +1,44 @@
 class_name ShockRingsPattern
 extends BossPattern
-## Rings of broken ground spread outward from the idol one after the other (all shown at the windup, as
-## dotted bands); each ring has an opening: step through it, or jump from the gap of one ring to the next.
-
-const CHORDS := 24
+## Rings of shattered stone spread from the boss one after the other (all of them shown at the windup). Each ring
+## hurts only while it passes: stand in the free ground between two rings, then step across a ring once it is gone.
 
 @export var first_radius: float = 170.0
-@export var step: float = 120.0
-@export var band: float = 38.0
-@export var gap_degrees: float = 90.0
-@export var gap_turn_degrees: float = 70.0
+@export var step: float = 160.0
+## Half thickness of a ring as a share of its radius (the painted ring is 0.73 inner / outer), at least `min_band`.
+@export var band_share: float = 0.15
+@export var min_band: float = 28.0
 
 
-func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
-	if ctx.vfx == null:
-		return
-	for repeat in repeats:
-		var radius := first_radius + step * repeat
-		var gap := gap_angle(boss, aim, repeat)
-		for k in CHORDS:
-			var a0 := TAU * k / CHORDS
-			var a1 := TAU * (k + 1) / CHORDS
-			if not _in_gap(gap, (a0 + a1) * 0.5):
-				ctx.vfx.warning_line(boss.position + Vector2.from_angle(a0) * radius, boss.position + Vector2.from_angle(a1) * radius,
-					band * 2.0, boss.data.color, scaled_windup(ctx) + repeat * repeat_interval)
+func telegraph(ctx: BossContext, boss: Enemy, _aim: Vector2) -> void:
+	_warn_ring(ctx, boss, 0, scaled_windup(ctx))
 
 
-func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
-	var radius := first_radius + step * repeat
-	var gap := gap_angle(boss, aim, repeat)
-	for player in ctx.party.members:
-		if player.is_dead:
-			continue
-		var offset := player.global_position - boss.position
-		if absf(offset.length() - radius) <= band + player.radius and not _in_gap(gap, offset.angle()):
-			player.take_damage(_damage(boss))
-	_strike_fx(ctx, boss, boss.position, radius + band)
+func fire(ctx: BossContext, boss: Enemy, _aim: Vector2, repeat: int) -> void:
+	var radius := ring_radius(repeat)
+	var half := band(radius)
+	_hurt_ring(ctx, boss, boss.position, radius - half, radius + half)
+	_strike_fx(ctx, boss, boss.position, radius + half)
 	_shake(ctx, 0.2)
+	if repeat + 1 < repeats:
+		_warn_ring(ctx, boss, repeat + 1, repeat_interval)  # each ring is announced just before it spreads
 
 
-## Opening of ring `repeat`: first facing the player, then turning every ring.
-func gap_angle(boss: Enemy, aim: Vector2, repeat: int) -> float:
-	return (aim - boss.position).angle() + deg_to_rad(gap_turn_degrees) * repeat
+func _warn_ring(ctx: BossContext, boss: Enemy, repeat: int, seconds: float) -> void:
+	if ctx.vfx != null:
+		var radius := ring_radius(repeat)
+		var half := band(radius)
+		ctx.vfx.warning_ring(boss.position, radius - half, radius + half, boss.data.color, seconds)
+
+
+func ring_radius(repeat: int) -> float:
+	return first_radius + step * repeat
+
+
+## Half thickness of the ring of radius `radius`.
+func band(radius: float) -> float:
+	return maxf(radius * band_share, min_band)
 
 
 func validate() -> String:
-	return "rings need a band and a step" if band <= 0.0 or step <= 0.0 or gap_degrees <= 0.0 or gap_degrees >= 360.0 else super.validate()
-
-
-func _in_gap(gap: float, angle: float) -> bool:
-	return absf(angle_difference(gap, angle)) <= deg_to_rad(gap_degrees) * 0.5
+	return "rings need a band and a step" if band_share <= 0.0 or step <= 0.0 or first_radius <= 0.0 else super.validate()

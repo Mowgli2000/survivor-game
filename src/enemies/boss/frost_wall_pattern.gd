@@ -12,11 +12,7 @@ extends BossPattern
 
 
 func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
-	for repeat in repeats:
-		for piece in pieces(boss, aim, repeat):
-			var life := scaled_windup(ctx) + repeat * repeat_interval
-			if ctx.vfx != null:
-				ctx.vfx.warning_line(piece[0], piece[1], thickness * 2.0, boss.data.color, life)
+	_warn_wall(ctx, boss, aim, 0, scaled_windup(ctx))
 
 
 func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
@@ -24,10 +20,18 @@ func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
 		_hurt_segment(ctx, boss, piece[0], piece[1], thickness)
 		_strike_fx(ctx, boss, (piece[0] + piece[1]) * 0.5, piece[0].distance_to(piece[1]) * 0.5 + thickness, (aim - boss.position).angle() + PI * 0.5)
 	_shake(ctx, 0.3)
+	if repeat + 1 < repeats:
+		_warn_wall(ctx, boss, aim, repeat + 1, repeat_interval)  # the next wall is announced when this one rises
 
 
 ## The solid parts of wall `repeat` as [from, to] pairs (the wall minus its gap). The gap is left of the
 ## player's line on even walls and right of it on odd ones.
+func _warn_wall(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int, seconds: float) -> void:
+	if ctx.vfx != null:
+		for piece in pieces(boss, aim, repeat):
+			ctx.vfx.warning_line(piece[0], piece[1], thickness * 2.0, boss.data.color, seconds)
+
+
 func pieces(boss: Enemy, aim: Vector2, repeat: int) -> Array:
 	var along := _dir_to(boss.position, aim)
 	var across := along.orthogonal()

@@ -8,6 +8,9 @@ extends BossPattern
 @export var half_width: float = 42.0
 @export var reach: float = 560.0
 
+## Share of its frame the painted web band fills (measured on the baked sheet).
+const ART_THICKNESS := 0.225
+
 
 func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
 	for band in bands(aim):
@@ -17,7 +20,7 @@ func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
 func fire(ctx: BossContext, boss: Enemy, aim: Vector2, _repeat: int) -> void:
 	for band in bands(aim):
 		_hurt_segment(ctx, boss, band[0], band[1], half_width)
-		_strike_fx(ctx, boss, (band[0] + band[1]) * 0.5, reach, (band[1] - band[0]).angle())
+		_strike_line(ctx, band[0], band[1], half_width * 2.0, ART_THICKNESS)
 	_shake(ctx, 0.2)
 
 

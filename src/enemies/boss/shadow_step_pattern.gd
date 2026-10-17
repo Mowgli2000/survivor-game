@@ -23,10 +23,10 @@ func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
 		_strike_fx(ctx, boss, boss.position, boss.radius * 3.0)
 		boss.forced_velocity = Vector2.ZERO
 		boss.forced_time = repeat_interval
-		if ctx.vfx != null:
-			ctx.vfx.warning_circle(boss.position, arc_radius, boss.data.color, repeat_interval)
+		boss.special_dir = ctx.target_position(boss.position)  # the strike goes where the hero stands now: announced as such
+		_warn_sector(ctx, boss, boss.position, (boss.special_dir - boss.position).angle(), arc_radius, deg_to_rad(arc_half_degrees), repeat_interval)
 		return
-	var facing := (ctx.target_position(boss.position) - boss.position).angle()
+	var facing := (boss.special_dir - boss.position).angle()
 	_hurt_sector(ctx, boss, boss.position, facing, arc_radius, deg_to_rad(arc_half_degrees))
 	if strike_effect != null:
 		_strike_fx(ctx, boss, boss.position, arc_radius, facing, strike_effect)

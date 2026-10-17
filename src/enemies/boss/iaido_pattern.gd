@@ -6,20 +6,18 @@ extends BossPattern
 @export var radius: float = 380.0
 @export var half_degrees: float = 105.0
 
+## The painted crescent is a band: its hollow near the knight (share of the radius, measured on the sheet) is not hurt.
+const HOLLOW := 0.5
+
 
 func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
-	var facing := (aim - boss.position).angle()
-	var half := deg_to_rad(half_degrees)
-	var lines := 13
-	for k in lines:
-		var angle := facing - half + 2.0 * half * k / (lines - 1)
-		_warn_line(ctx, boss.position, boss.position + Vector2.from_angle(angle) * radius, radius * 0.3, boss.data.color)
+	_warn_sector(ctx, boss, boss.position, (aim - boss.position).angle(), radius, deg_to_rad(half_degrees), -1.0, radius * HOLLOW)
 
 
 func fire(ctx: BossContext, boss: Enemy, aim: Vector2, _repeat: int) -> void:
 	var facing := (aim - boss.position).angle()
 	var half := deg_to_rad(half_degrees)
-	_hurt_sector(ctx, boss, boss.position, facing, radius, half)
+	_hurt_sector(ctx, boss, boss.position, facing, radius, half, radius * HOLLOW)
 	if effect != null:
 		_strike_fx(ctx, boss, boss.position, radius, facing)  # the painted crescent, centered on the knight
 	else:

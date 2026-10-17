@@ -12,15 +12,14 @@ func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
 	if ctx.vfx == null:
 		return
 	for k in pools:
-		ctx.vfx.warning_circle(pool(boss, aim, k), pool_radius, boss.data.color, scaled_windup(ctx) + repeats * repeat_interval)
+		ctx.vfx.warning_circle(pool(boss, aim, k), pool_radius, boss.data.color, scaled_windup(ctx))  # gone once the pools open: the painting shows them
 
 
 func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
 	for k in pools:
 		var at := pool(boss, aim, k)
 		_hurt_circle(ctx, boss, at, pool_radius)
-		if repeat == 0:
-			_strike_fx(ctx, boss, at, pool_radius * 1.4)
+		_strike_fx(ctx, boss, at, pool_radius)
 	if repeat == 0:
 		_shake(ctx, 0.15)
 

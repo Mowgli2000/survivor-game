@@ -8,6 +8,7 @@ import math
 import sys
 from pathlib import Path
 
+import numpy as np
 from PIL import Image, ImageChops, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -74,6 +75,48 @@ SHEETS_HD = {
     "explosion_flask": (1, 1.6, 2.4, 0.0, 0.35),
     "explosion_cannon": (1, 1.6, 2.4, 0.0, 0.35),
     # Demon Knight attacks (tools/art/gen_vfx_knight.py, 2026-10-16)
+    "toon_iron_fx1": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_iron_fx2": (1, 1.3, 2.2, 0.0, 0.4),
+    "toon_iron_fx3": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_iron_fx4": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_iron_fx5": (1, 1.3, 2.2, 0.0, 0.4),
+    "toon_silver_fx1": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_silver_fx2": (1, 1.3, 2.2, 0.0, 0.4),
+    "toon_silver_fx3": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_silver_fx4": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_silver_fx5": (1, 1.3, 2.2, 0.0, 0.4),
+    "toon_gold_fx1": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_gold_fx2": (1, 1.3, 2.2, 0.0, 0.4),
+    "toon_gold_fx3": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_gold_fx4": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_gold_fx5": (1, 1.3, 2.2, 0.0, 0.4),
+    "toon_obsidian_fx1": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_obsidian_fx2": (1, 1.3, 2.2, 0.0, 0.4),
+    "toon_obsidian_fx3": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_obsidian_fx4": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_obsidian_fx5": (1, 1.3, 2.2, 0.0, 0.4),
+    "toon_astral_fx1": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_astral_fx2": (1, 1.3, 2.2, 0.0, 0.4),
+    "toon_astral_fx3": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_astral_fx4": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_astral_fx5": (1, 1.3, 2.2, 0.0, 0.4),
+    "knighttd_blade": (1, 1.3, 2.2, 0.0, 0.35),
+    "knighttd_step": (1, 1.3, 2.2, 0.0, 0.35),
+    "knighttd_flame": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_gold_wings": (1, 1.3, 2.2, 0.0, 0.4),
+    "toon_iron_ring": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_astral_ring": (1, 1.3, 2.2, 0.0, 0.45),
+    "toon_gold_chain": (1, 1.3, 1.0, 0.0, 0.4),
+    "toon_obsidian_web": (1, 1.3, 1.0, 0.0, 0.4),
+    "toon_silver_wave": (1, 1.3, 1.0, 0.0, 0.4),
+    "knighttd_strip": (1, 1.3, 1.0, 0.0, 0.4),
+    "knightt_cross": (1, 1.3, 1.7, 0.0, 0.35),
+    "knighttd_cross": (1, 1.3, 1.7, 0.0, 0.35),
+    "knighttd_iaido": (1, 1.3, 2.2, 0.0, 0.4),
+    "knightt_blade": (1, 1.3, 2.2, 0.0, 0.35),
+    "knightt_step": (1, 1.3, 2.2, 0.0, 0.35),
+    "knightt_iaido": (1, 1.3, 2.2, 0.0, 0.4),
+    "knightt_flame": (1, 1.3, 2.2, 0.0, 0.45),
     "knight_cross": (1, 1.7, 2.2, 0.0, 0.35),
     "knight_blade": (1, 1.6, 2.2, 0.0, 0.35),
     "knight_step": (1, 1.5, 2.2, 0.0, 0.35),
@@ -130,6 +173,10 @@ NO_SPECKS = {"flame_wave", "iaido_line", "steel_slash", "fang_slash", "axe_slam"
              "meteor_fall", "meteor_impact"}
 # Sheets made of dark solid matter (rock): their dark pixels stay opaque instead of fading with their brightness.
 SOLID = {"meteor_fall", "meteor_impact"}
+# Cartoon sheets (dev note 2026-10-17): hard edges, no soft halo; dark outline pixels stay opaque.
+TOON_PREFIX = ("knightt", "toon_")
+TOON_FIT = 0.82
+NO_FIT = {"knighttd_strip", "toon_gold_chain", "toon_obsidian_web", "toon_silver_wave"}  # stretched along a line: its ends are already inside the cell
 # Wider fade at the cell border (px of the baked cell): the art reaches the edge of its cell and the
 # frame would show as a hard line (the sigil's light pillar was cut flat at the top).
 SOFT_MARGIN = {"rune_sigil": 90}
@@ -247,6 +294,55 @@ X2 = {"explosion_fire", "explosion_frost", "explosion_blast", "explosion_star", 
 X2_CELL = 320
 
 
+# Sheets whose drawing points somewhere (a beam, a crescent, a cone): only their vertical offset is corrected.
+DIRECTIONAL = ("iaido", "strip", "chain", "web", "wave", "gold_fx4", "astral_fx1", "astral_fx2", "astral_fx5", "silver_fx2", "silver_fx3")
+
+
+def recentre(image: Image.Image, columns: int, rows: int, keep_x: bool) -> Image.Image:
+    """Moves the drawing of the biggest frame onto the frame center (x too unless `keep_x`), every frame by the same shift."""
+    cell_w, cell_h = image.width // columns, image.height // rows
+    gray = image.convert("L")
+    best = None
+    for k in range(columns * rows):
+        cell = gray.crop(((k % columns) * cell_w, (k // columns) * cell_h, (k % columns + 1) * cell_w, (k // columns + 1) * cell_h))
+        box = cell.point(lambda v: 255 if v > 50 else 0).getbbox()
+        if box and (best is None or (box[2] - box[0]) * (box[3] - box[1]) > best[0]):
+            best = (( box[2] - box[0]) * (box[3] - box[1]), box)
+    if best is None:
+        return image
+    box = best[1]
+    dx = 0 if keep_x else round(cell_w / 2 - (box[0] + box[2]) / 2)
+    dy = round(cell_h / 2 - (box[1] + box[3]) / 2)
+    out = Image.new("RGB", image.size)
+    for k in range(columns * rows):
+        x0, y0 = (k % columns) * cell_w, (k // columns) * cell_h
+        cell = image.crop((x0, y0, x0 + cell_w, y0 + cell_h))
+        moved = Image.new("RGB", cell.size)  # the shifted copy stays inside its own cell
+        moved.paste(cell, (dx, dy))
+        out.paste(moved, (x0, y0))
+    return out
+
+
+def extent_reach(image: Image.Image, columns: int, rows: int, circle: bool = False) -> float:
+    """How far the drawing of the biggest frame reaches from the frame center, as a share of half a frame: the painting is
+    drawn exactly as big as the damage shape it is asked for. A line or a cone: the farthest point (no overshoot at its
+    end). A round effect: the radius holding 95 % of the drawing (a few thin shards may stick out of the zone)."""
+    cell_w, cell_h = image.width // columns, image.height // rows
+    alpha = np.array(image.getchannel("A"))
+    best = None
+    for k in range(columns * rows):
+        cell = alpha[(k // columns) * cell_h:(k // columns + 1) * cell_h, (k % columns) * cell_w:(k % columns + 1) * cell_w]
+        count = int((cell > 60).sum())
+        if count and (best is None or count > best[0]):
+            best = (count, cell)
+    if best is None:
+        return 0.7
+    ys, xs = np.nonzero(best[1] > 60)
+    if circle:
+        return float(np.percentile(np.hypot(xs - cell_w / 2, ys - cell_h / 2), 95)) / (cell_w / 2)
+    return float(max(cell_w / 2 - xs.min(), xs.max() + 1 - cell_w / 2, cell_h / 2 - ys.min(), ys.max() + 1 - cell_h / 2)) / (cell_w / 2)
+
+
 def bake_sheet(name: str) -> None:
     hd = name in SHEETS_HD
     pick, boost, scale, forward, duration = SHEETS_HD[name] if hd else SHEETS[name]
@@ -258,27 +354,40 @@ def bake_sheet(name: str) -> None:
         image = image.resize((columns * HD_CELL, rows * HD_CELL), Image.LANCZOS)
     width, height = image.size
     cell_w, cell_h = width // columns, height // rows
+    if name.startswith(TOON_PREFIX) and name not in NO_FIT:  # the flat art runs to the cell border: shrink every frame inside its cell (no cut edge)
+        fitted = Image.new("RGB", image.size)
+        for row in range(rows):
+            for col in range(columns):
+                box = (col * cell_w, row * cell_h, (col + 1) * cell_w, (row + 1) * cell_h)
+                small = image.crop(box).resize((int(cell_w * TOON_FIT), int(cell_h * TOON_FIT)), Image.LANCZOS)
+                fitted.paste(small, (box[0] + (cell_w - small.width) // 2, box[1] + (cell_h - small.height) // 2))
+        image = fitted
+    if name.startswith(TOON_PREFIX):  # the drawing sits a little off the frame center: shift every frame of the sheet by the same amount
+        image = recentre(image, columns, rows, keep_x=any(tag in name for tag in DIRECTIONAL))
     source = image.load()
     out = Image.new("RGBA", image.size)
     pixels = out.load()
-    ramp = 16.0 if name in SOLID else 60.0  # dark rock must be opaque, light is additive-like
+    toon = name.startswith(TOON_PREFIX)
+    ramp = 12.0 if toon else 16.0 if name in SOLID else 60.0  # dark rock must be opaque, light is additive-like
     margin = SOFT_MARGIN.get(name, 10)  # px faded to nothing at every cell border: no grid line or neighbour bleed
     for y in range(height):
         fy = min(y % cell_h, cell_h - 1 - y % cell_h)
         for x in range(width):
             red, green, blue = source[x, y]
             m = max(red, green, blue)
-            if m < 22:
+            if m < (45 if toon else 22):
                 continue  # the generator's near-black noise must not become a visible square
             fx = min(x % cell_w, cell_w - 1 - x % cell_w)
             edge = min(1.0, min(fx, fy) / margin)
-            k = (min(1.0, (m - 22) / ramp)) * edge
+            k = (min(1.0, (m - (45 if toon else 22)) / ramp)) * edge
             pixels[x, y] = (int(red * edge), int(green * edge), int(blue * edge), min(255, int(m * boost * k)))
     if name in NO_SPECKS:
         strip_specks(out, columns, rows)
     out.save(ROOT / "assets/vfx" / (name + ".png"))
-    reach = LINES.get(name) or measure_reach(out, columns, rows)
+    reach = extent_reach(out, columns, rows, circle=not any(tag in name for tag in DIRECTIONAL)) if name.startswith(TOON_PREFIX) else LINES.get(name) or measure_reach(out, columns, rows)
     text = TRES.format(name=name, reach=round(reach, 3), duration=duration, scale=scale, forward=forward, columns=columns, rows=rows, frames=columns * rows)
+    if name.startswith(TOON_PREFIX):
+        text += "hostile = true" + chr(10)  # a boss attack: never faded around the hero
     if name in EXTRA:
         text += EXTRA[name] + "\n"
     (ROOT / "data/vfx" / (name + ".tres")).write_text(text, encoding="utf-8", newline="\n")

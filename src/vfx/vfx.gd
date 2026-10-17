@@ -7,7 +7,7 @@ extends Node2D
 
 signal shake_requested(amount: float)
 
-enum Kind { SLASH, BEAM, EXPLOSION, HIT, LIGHTNING, WARN_CIRCLE, WARN_LINE, PORTAL, DEATH, SHEET }
+enum Kind { SLASH, BEAM, EXPLOSION, HIT, LIGHTNING, WARN_CIRCLE, WARN_LINE, PORTAL, DEATH, SHEET, WARN_SECTOR, WARN_RING }
 
 const CAPACITY := 384
 const PAINT_SHADER := preload("res://src/vfx/painted_effect.gdshader")
@@ -96,6 +96,8 @@ var _glow: Node2D
 ## Painted layer (SHEET effects): premultiplied alpha, so dark parts of the art darken the floor.
 var _paint: Node2D
 var _paint_material: ShaderMaterial
+## Painted layer of the enemy attacks (EffectSheet.hostile): same look, no clearing around the hero.
+var _hostile: Node2D
 ## Ground layer (burning ground): drawn under the monsters and the hero, never cleared around a hero.
 var _ground: Node2D
 ## Heroes a painted effect must not hide (see painted_effect.gdshader), set by Run.
@@ -130,6 +132,14 @@ func _init() -> void:
 	_paint.draw.connect(_draw_paint)
 	_paint.visible = false
 	add_child(_paint)
+	_hostile = Node2D.new()
+	var hostile_material := ShaderMaterial.new()
+	hostile_material.shader = PAINT_SHADER
+	hostile_material.set_shader_parameter("floor_alpha", 1.0)
+	_hostile.material = hostile_material
+	_hostile.draw.connect(_draw_hostile)
+	_hostile.visible = false
+	add_child(_hostile)
 	_ground = Node2D.new()
 	_ground.z_as_relative = false
 	_ground.z_index = GROUND_Z
@@ -362,6 +372,24 @@ func warning_line(from: Vector2, to: Vector2, width: float, color: Color, life: 
 	_add(Kind.WARN_LINE, from, to, width, 0.0, color, life)
 
 
+## Boss telegraph: a pie slice (a breath, a wing blast, a sword arc) of `radius` around `angle`, `half_angle` each side.
+func warning_sector(origin: Vector2, angle: float, radius: float, half_angle: float, color: Color, life: float,
+		inner: float = 0.0) -> void:
+	Audio.play(Sounds.WARNING, -10.0, 0.04, 1.15)
+	var before := _count
+	_add(Kind.WARN_SECTOR, origin, Vector2.from_angle(angle), radius, half_angle, color, life)
+	if _count > before:
+		_seedv[before] = inner  # an annular slice: the hollow near the origin is not announced
+
+
+## Boss telegraph: a ring band between `inner` and `outer` (a shockwave, a tail sweep). `from_angle` / `to_angle` keep
+## only an arc of it (a ring with an opening).
+func warning_ring(center: Vector2, inner: float, outer: float, color: Color, life: float, from_angle: float = 0.0,
+		to_angle: float = TAU) -> void:
+	Audio.play(Sounds.WARNING, -10.0, 0.04, 1.15)
+	_add(Kind.WARN_RING, center, Vector2(from_angle, to_angle), outer, inner, color, life)
+
+
 func _add(kind: Kind, a: Vector2, b: Vector2, size: float, extra: float, color: Color, life: float,
 		style: int = 0, follower: Node2D = null) -> void:
 	if _count >= CAPACITY:
@@ -420,12 +448,15 @@ func _process(delta: float) -> void:
 	_glow.queue_redraw()
 	# The painted layer only exists while a SHEET effect plays (its material costs frames).
 	var has_sheet := false
+	var has_hostile := false
 	var has_ground := false
 	for i in _count:
 		if _kind[i] == Kind.SHEET:
 			if _style[i] == SheetMode.LOOP or _style[i] == SheetMode.GROUND:
 				has_ground = true
 				has_sheet = has_sheet or GROUND_FRONT_SHARE > 0.0
+			elif _sheet[i] != null and _sheet[i].hostile:
+				has_hostile = true
 			else:
 				has_sheet = true
 	if has_sheet or _paint.visible:
@@ -433,6 +464,9 @@ func _process(delta: float) -> void:
 		if has_sheet:
 			_update_guard()
 		_paint.queue_redraw()
+	if has_hostile or _hostile.visible:
+		_hostile.visible = has_hostile
+		_hostile.queue_redraw()
 	if has_ground or _ground.visible:
 		_ground.visible = has_ground
 		_ground.queue_redraw()
@@ -483,19 +517,56 @@ func _draw() -> void:
 			Kind.WARN_LINE:
 				draw_line(_a[i], _b[i], Color(color, 0.15 + 0.2 * (1.0 - t)), _size[i], true)
 				draw_line(_a[i], _b[i], Color(color, 0.8), 2.0, true)
+			Kind.WARN_SECTOR:
+				_draw_warn_sector(_a[i], _b[i].angle(), _size[i], _extra[i], color, t, _seedv[i])
+			Kind.WARN_RING:
+				_draw_warn_ring(_a[i], _b[i].x, _b[i].y, _size[i], _extra[i], color, t)
+
+
+func _draw_warn_sector(origin: Vector2, angle: float, radius: float, half_angle: float, color: Color, t: float, inner: float) -> void:
+	var points := PackedVector2Array()
+	var steps := maxi(4, ceili(half_angle * 2.0 / 0.12))
+	if inner <= 0.0:
+		points.append(origin)
+	for k in steps + 1:
+		points.append(origin + Vector2.from_angle(angle - half_angle + 2.0 * half_angle * k / steps) * radius)
+	if inner > 0.0:
+		for k in range(steps, -1, -1):
+			points.append(origin + Vector2.from_angle(angle - half_angle + 2.0 * half_angle * k / steps) * inner)
+	draw_colored_polygon(points, Color(color, 0.15 + 0.2 * (1.0 - t)))
+	var outline := points.duplicate()
+	outline.append(origin)
+	draw_polyline(outline, Color(INK, 0.6), 6.0, true)
+	draw_polyline(outline, Color(color, 0.85), 3.0, true)
+
+
+func _draw_warn_ring(center: Vector2, from_angle: float, to_angle: float, outer: float, inner: float, color: Color, t: float) -> void:
+	var middle := (outer + inner) * 0.5
+	var width := outer - inner
+	var steps := maxi(8, ceili((to_angle - from_angle) / 0.1))
+	draw_arc(center, middle, from_angle, to_angle, steps, Color(color, 0.15 + 0.2 * (1.0 - t)), width, true)
+	draw_arc(center, outer, from_angle, to_angle, steps, Color(INK, 0.6), 6.0, true)
+	draw_arc(center, outer, from_angle, to_angle, steps, Color(color, 0.85), 3.0, true)
+	draw_arc(center, inner, from_angle, to_angle, steps, Color(INK, 0.6), 6.0, true)
+	draw_arc(center, inner, from_angle, to_angle, steps, Color(color, 0.85), 3.0, true)
 
 
 ## The painted layer: SHEET effects (EffectSheet frames, premultiplied alpha).
 func _draw_paint() -> void:
-	_draw_sheets(_paint, false)
+	_draw_sheets(_paint, false, false)
+
+
+## The enemy attacks' painted layer.
+func _draw_hostile() -> void:
+	_draw_sheets(_hostile, false, true)
 
 
 ## The ground layer: looping sheets (burning ground), under the creatures.
 func _draw_ground() -> void:
-	_draw_sheets(_ground, true)
+	_draw_sheets(_ground, true, false)
 
 
-func _draw_sheets(canvas: Node2D, ground: bool) -> void:
+func _draw_sheets(canvas: Node2D, ground: bool, hostile: bool) -> void:
 	for i in _count:
 		if _kind[i] != Kind.SHEET:
 			continue
@@ -504,6 +575,8 @@ func _draw_sheets(canvas: Node2D, ground: bool) -> void:
 		if ground and not on_ground:
 			continue
 		if not ground and on_ground and GROUND_FRONT_SHARE <= 0.0:
+			continue
+		if not ground and not on_ground and (_sheet[i] != null and _sheet[i].hostile) != hostile:
 			continue
 		var t := _life[i] / _max_life[i]
 		var effect := _sheet[i]

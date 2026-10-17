@@ -14,18 +14,7 @@ const CHORDS := 20
 
 
 func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
-	if ctx.vfx == null:
-		return
-	for repeat in repeats:
-		var radius := ring_radius(repeat)
-		var gap := gap_angle(boss, aim, repeat)
-		for k in CHORDS:
-			var a0 := TAU * k / CHORDS
-			var a1 := TAU * (k + 1) / CHORDS
-			if _in_gap(gap, (a0 + a1) * 0.5):
-				continue
-			ctx.vfx.warning_line(aim + Vector2.from_angle(a0) * radius, aim + Vector2.from_angle(a1) * radius,
-				band * 2.0, boss.data.color, scaled_windup(ctx) + repeat * repeat_interval)
+	_warn_ring(ctx, boss, aim, 0, scaled_windup(ctx))
 
 
 func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
@@ -43,6 +32,18 @@ func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
 		if not _in_gap(gap, angle):
 			_strike_fx(ctx, boss, aim + Vector2.from_angle(angle) * radius, band * 2.0)
 	_shake(ctx, 0.2)
+	if repeat + 1 < repeats:
+		_warn_ring(ctx, boss, aim, repeat + 1, repeat_interval)  # each ring is announced just before it burns
+
+
+## Announces ring `repeat` with its opening (an arc of the ring band).
+func _warn_ring(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int, seconds: float) -> void:
+	if ctx.vfx == null:
+		return
+	var radius := ring_radius(repeat)
+	var gap := gap_angle(boss, aim, repeat)
+	var half_gap := deg_to_rad(gap_degrees) * 0.5
+	ctx.vfx.warning_ring(aim, maxf(radius - band, 0.0), radius + band, boss.data.color, seconds, gap + half_gap, gap - half_gap + TAU)
 
 
 func ring_radius(repeat: int) -> float:

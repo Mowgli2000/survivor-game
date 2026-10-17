@@ -13,8 +13,8 @@ func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
 
 func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
 	_hurt_circle(ctx, boss, aim, patch_radius)
+	_strike_fx(ctx, boss, aim, patch_radius)
 	if repeat == 0:
-		_strike_fx(ctx, boss, aim, patch_radius)
 		_shake(ctx, 0.2)
 
 

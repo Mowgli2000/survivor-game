@@ -58,14 +58,14 @@ func test_no_two_final_bosses_share_an_attack() -> void:
 		for j in range(i + 1, BOSSES.size()):
 			var theirs := _scripts_of(BOSSES[j])
 			for name in mine:
-				if name == &"SummonPattern":
+				if name == &"SummonPattern" or name == &"ComboPattern":
 					continue  # calling minions is a plain building block, not a signature attack
 				assert_false(theirs.has(name), "%s and %s both use %s" % [BOSSES[i], BOSSES[j], name])
 
 
-func test_every_final_boss_has_five_or_more_different_attacks() -> void:
+func test_every_final_boss_has_four_or_more_different_attacks() -> void:
 	for boss in BOSSES:
-		assert_gte(_scripts_of(boss).size(), 5, "%s has its own kit" % boss)
+		assert_gte(_scripts_of(boss).size(), 4, "%s has its own kit" % boss)  # no summons: the final boss is a duel
 
 
 func test_crack_rays_hurt_on_a_spoke_and_spare_between_two() -> void:
@@ -81,17 +81,49 @@ func test_crack_rays_hurt_on_a_spoke_and_spare_between_two() -> void:
 	assert_eq(_lost(), 0.0, "between spokes")
 
 
-func test_shock_rings_hurt_on_the_ring_and_not_in_its_opening() -> void:
+func test_every_final_boss_has_a_finale_combo_in_its_last_phase() -> void:
+	for boss in BOSSES:
+		var data := load("res://data/enemies/%s.tres" % boss) as EnemyData
+		var last: BossPhase = data.phases[data.phases.size() - 1]
+		var combos := 0
+		for pattern in last.patterns:
+			if pattern is ComboPattern:
+				combos += 1
+				assert_eq(pattern.validate(), "", "%s: the combo is valid" % boss)
+		assert_eq(combos, 1, "%s has one finale attack in its last phase" % boss)
+		for phase in data.phases.slice(0, data.phases.size() - 1):
+			for pattern in phase.patterns:
+				assert_false(pattern is ComboPattern, "%s: the finale comes only in the last phase" % boss)
+
+
+func test_a_combo_fires_all_its_parts_on_the_same_volley() -> void:
+	var data := load("res://data/enemies/iron_boss_final.tres") as EnemyData
+	var combo: ComboPattern
+	for pattern in data.phases[data.phases.size() - 1].patterns:
+		if pattern is ComboPattern:
+			combo = pattern
+	var aim := Vector2(300, 0)
+	_player.global_position = aim  # where the pillar part falls
+	combo.fire(_ctx, _boss, aim, 0)
+	assert_gt(_lost(), 0.0, "a part of the combo hurts")
+	_heal()
+	_player.global_position = _boss.position + Vector2(-2000, 0)
+	combo.fire(_ctx, _boss, aim, 0)
+	assert_eq(_lost(), 0.0, "far from every part: safe")
+
+
+func test_shock_rings_hurt_on_the_ring_and_not_between_two_rings() -> void:
 	var pattern := ShockRingsPattern.new()
-	var aim := Vector2(0, 0)
-	var gap := pattern.gap_angle(_boss, aim, 0)
-	_player.global_position = _boss.position + Vector2.from_angle(gap + PI) * pattern.first_radius
-	pattern.fire(_ctx, _boss, aim, 0)
+	_player.global_position = _boss.position + Vector2(pattern.first_radius, 0)
+	pattern.fire(_ctx, _boss, Vector2.ZERO, 0)
 	assert_gt(_lost(), 0.0, "on the ring")
 	_heal()
-	_player.global_position = _boss.position + Vector2.from_angle(gap) * pattern.first_radius
-	pattern.fire(_ctx, _boss, aim, 0)
-	assert_eq(_lost(), 0.0, "in the opening")
+	_player.global_position = _boss.position + Vector2((pattern.ring_radius(0) + pattern.ring_radius(1)) * 0.5, 0)
+	pattern.fire(_ctx, _boss, Vector2.ZERO, 0)
+	assert_eq(_lost(), 0.0, "in the free ground between two rings")
+	for repeat in 2:  # the free ground between two neighbouring rings stays wider than a hero
+		var gap := pattern.ring_radius(repeat + 1) - pattern.band(pattern.ring_radius(repeat + 1)) - pattern.ring_radius(repeat) - pattern.band(pattern.ring_radius(repeat))
+		assert_gt(gap, _player.radius * 2.0, "rings %d and %d leave room to stand" % [repeat, repeat + 1])
 
 
 func test_pillar_drop_follows_the_player_and_rune_seal_is_wide() -> void:

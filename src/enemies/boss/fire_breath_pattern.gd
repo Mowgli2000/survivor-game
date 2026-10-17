@@ -4,14 +4,13 @@ extends BossPattern
 ## repeats (the whole arc is shown at the windup). Run along behind the jet, or leave the dragon's reach.
 
 @export var length: float = 660.0
-@export var jet_half_degrees: float = 17.0
-@export var sweep_degrees: float = 110.0
+@export var jet_half_degrees: float = 24.0
+@export var sweep_degrees: float = 90.0
 
 
 func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
-	for k in 7:
-		var angle := jet_angle(boss, aim, int(round(k * (repeats - 1) / 6.0)))
-		_warn_line(ctx, boss.position, boss.position + Vector2.from_angle(angle) * length, length * 0.12, boss.data.color)
+	var fan := deg_to_rad(sweep_degrees) * 0.5 + deg_to_rad(jet_half_degrees)
+	_warn_sector(ctx, boss, boss.position, (aim - boss.position).angle(), length, fan)
 
 
 func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:

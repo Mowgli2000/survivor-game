@@ -27,6 +27,8 @@ extends Resource
 @export var art_angle: float = 0.0
 ## Overall opacity of the painting (a thick ground effect, like the frost patch, is toned down).
 @export var opacity: float = 1.0
+## An enemy attack: drawn whole, never faded around the hero (the fade is for the hero's own swings), so a hit reads as a hit.
+@export var hostile: bool = false
 
 
 func cell_size() -> Vector2:

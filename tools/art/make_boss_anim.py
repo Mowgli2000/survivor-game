@@ -33,6 +33,34 @@ MIN_PIECE = 30  # smaller pieces are specks
 CELL_PAD = 220  # a sword may cross its cell: each pose gets this margin around its cell
 
 
+def split_at_necks(solid: np.ndarray, mask: np.ndarray, box: tuple, by_cell: np.ndarray, cell_of_pixel: np.ndarray) -> None:
+    """A shape that joins two poses (their wings touch) is cut where it is narrowest, between the bodies, instead of
+    along the border of the generation grid (a straight cut across a wing, a stray piece of the neighbour). Seeds: the
+    thick core of the shape inside each cell it reaches; the pixels are flooded from them over the shape's thickness."""
+    from scipy import ndimage as ndi
+    sub = (slice(box[0].start, box[0].stop), slice(box[1].start, box[1].stop))
+    shape = mask[sub] & solid[sub]
+    if shape.sum() == 0:
+        return
+    thick = ndi.distance_transform_edt(shape)
+    cells = by_cell[sub]
+    markers = np.zeros(shape.shape, dtype=np.int32)
+    for cell in np.unique(cells[shape]):
+        inside = shape & (cells == cell)
+        if inside.sum() < MIN_BODY_PIXELS:
+            continue  # a tip of the shape that only reaches into this cell: it belongs to the others
+        peak = thick[inside].max()
+        markers[inside & (thick >= peak * 0.6)] = int(cell) + 1
+    if len(np.unique(markers)) < 3:
+        return  # one body only: nothing to split
+    cost = (255 - (thick / max(thick.max(), 1.0) * 255)).astype(np.uint8)
+    flooded = ndi.watershed_ift(cost, markers)
+    flooded[~shape] = 0
+    region = cell_of_pixel[sub]
+    region[flooded > 0] = flooded[flooded > 0] - 1
+    cell_of_pixel[sub] = region
+
+
 def cut(sheet: Image.Image) -> list:
     """The 16 poses of a sheet, each rebuilt from the pieces (connected shapes) whose center lies in
     its cell: a sword crossing the cell border stays whole, a fragment of the neighbouring pose is left out,
@@ -64,6 +92,7 @@ def cut(sheet: Image.Image) -> list:
         if width > cw * 1.3 or height > ch * 1.3:
             mask = labels == i + 1
             cell_of_pixel[mask] = by_cell[mask]
+            split_at_necks(solid, mask, box, by_cell, cell_of_pixel)
     result = []
     padded = np.pad(pixels, ((CELL_PAD, CELL_PAD), (CELL_PAD, CELL_PAD), (0, 0)))
     padded_owner = np.pad(cell_of_pixel, CELL_PAD, constant_values=-1)

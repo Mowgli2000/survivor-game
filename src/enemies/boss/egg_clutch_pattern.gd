@@ -20,7 +20,7 @@ func fire(ctx: BossContext, boss: Enemy, aim: Vector2, _repeat: int) -> void:
 	for k in eggs:
 		var at := egg(boss, aim, k)
 		_hurt_circle(ctx, boss, at, egg_radius)
-		_strike_fx(ctx, boss, at, egg_radius * 1.5)
+		_strike_fx(ctx, boss, at, egg_radius)
 		if larva != null:
 			ctx.enemies.spawn(larva, at, ctx.hp_multiplier, false, boss.damage_multiplier)
 	_shake(ctx, 0.2)

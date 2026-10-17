@@ -76,7 +76,8 @@ func _physics_process(delta: float) -> void:
 	var hp_multiplier := _stage.hp_multiplier_at(_wave)
 	var damage_multiplier := _stage.damage_multiplier_at(_wave)
 	_fire_events(_waves.wave_elapsed(), hp_multiplier, damage_multiplier)
-	var flow := 0.0 if _waves.pending_reward else _boss_flow(delta)  # the final boss is dead, its chest waits: quiet
+	# Quiet while the final boss is dead (its chest waits) and until it enters: its duel starts on an empty arena.
+	var flow := 0.0 if _waves.pending_reward or _final_boss_pending() else _boss_flow(delta)
 	_accumulator += _stage.spawn_rate_at(_wave) * delta * flow
 	var group := _stage.group_size_at(_wave)
 	while _accumulator >= group:
@@ -124,6 +125,14 @@ func _boss_flow(delta: float) -> float:
 	return maxf(ramp, MINI_BOSS_FLOW)
 
 
+## True while a final boss is scheduled in this wave and has not entered yet.
+func _final_boss_pending() -> bool:
+	for event in _pending_events:
+		if event.enemy != null and event.enemy.boss:
+			return true
+	return false
+
+
 func _fire_events(elapsed: float, hp_multiplier: float, damage_multiplier: float) -> void:
 	for i in range(_pending_events.size() - 1, -1, -1):
 		var event := _pending_events[i]
@@ -135,6 +144,8 @@ func _fire_events(elapsed: float, hp_multiplier: float, damage_multiplier: float
 		var enemy := event.pick_enemy(_state.rng)
 		if enemy.boss or not enemy.phases.is_empty():
 			hp *= _stage.boss_hp_share
+		if enemy.boss:
+			_enemies.clear_all()  # whatever still roams leaves: the final boss fights alone
 		# Scripted events ignore max_enemies: elites and hordes must always appear.
 		for k in event.count:
 			var angle := offset + TAU * k / event.count

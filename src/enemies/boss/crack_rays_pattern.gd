@@ -4,7 +4,7 @@ extends BossPattern
 ## they split open everything on a spoke is hurt. Each repeat turns the spokes by half a step, so the safe
 ## wedges of one volley are the deadly ones of the next: the player has to cross a spoke at the right time.
 
-@export var rays: int = 6
+@export var rays: int = 8
 @export var length: float = 620.0
 @export var half_width: float = 42.0
 
@@ -20,7 +20,7 @@ func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
 		var angle := ray_angle(boss, aim, repeat, k)
 		var tip := boss.position + Vector2.from_angle(angle) * length
 		_hurt_segment(ctx, boss, boss.position, tip, half_width)
-		_strike_fx(ctx, boss, boss.position.lerp(tip, 0.5), length * 0.5, angle)
+	_strike_fx(ctx, boss, boss.position, length, ray_angle(boss, aim, repeat, 0))  # one painted web: its 8 cracks are the 8 spokes
 	_shake(ctx, 0.3)
 	if repeat + 1 < repeats and ctx.vfx != null:
 		for k in rays:  # the next volley's spokes, shown in the gaps

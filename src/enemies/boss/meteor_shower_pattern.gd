@@ -20,7 +20,7 @@ func fire(ctx: BossContext, boss: Enemy, aim: Vector2, _repeat: int) -> void:
 	for k in meteors:
 		var at := crater(boss, aim, k)
 		_hurt_circle(ctx, boss, at, crater_radius)
-		_strike_fx(ctx, boss, at, crater_radius * 1.5)
+		_strike_fx(ctx, boss, at, crater_radius)
 	_shake(ctx, 0.5)
 
 

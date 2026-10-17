@@ -3,10 +3,10 @@ extends BossPattern
 ## A line of ice spikes erupts from the giant toward where the player stood at the windup, one spike after the
 ## other (each spot shown at the windup, with its own delay): sidestep the line, or time the run through it.
 
-@export var spikes: int = 7
+@export var spikes: int = 5
 @export var first_distance: float = 140.0
-@export var spacing: float = 105.0
-@export var spike_radius: float = 70.0
+@export var spacing: float = 130.0
+@export var spike_radius: float = 60.0
 
 
 func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
@@ -20,7 +20,7 @@ func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
 func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
 	var at := spot(boss, aim, repeat)
 	_hurt_circle(ctx, boss, at, spike_radius)
-	_strike_fx(ctx, boss, at, spike_radius * 1.6, (aim - boss.position).angle())
+	_strike_fx(ctx, boss, at, spike_radius, (aim - boss.position).angle())
 	if repeat % 3 == 0:
 		_shake(ctx, 0.12)
 

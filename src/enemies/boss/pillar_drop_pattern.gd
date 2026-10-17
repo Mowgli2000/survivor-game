@@ -16,7 +16,7 @@ func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
 func fire(ctx: BossContext, boss: Enemy, _aim: Vector2, repeat: int) -> void:
 	var at := boss.special_dir
 	_hurt_circle(ctx, boss, at, zone_radius)
-	_strike_fx(ctx, boss, at, zone_radius * 1.5)
+	_strike_fx(ctx, boss, at, zone_radius)
 	_shake(ctx, 0.2)
 	if repeat + 1 < repeats:
 		boss.special_dir = ctx.target_position(boss.position)

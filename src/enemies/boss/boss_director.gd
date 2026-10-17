@@ -100,6 +100,17 @@ func _on_boss_spawned(enemy: Enemy) -> void:
 		_start_pattern(state)
 
 
+## Debug (attack audit captures): the boss starts attack `index` of phase `phase` at once.
+func debug_play(enemy: Enemy, phase: int, index: int) -> void:
+	for state in _bosses:
+		if state.enemy == enemy:
+			state.phase = clampi(phase, 0, state.data.phases.size() - 1)
+			state.enemy.speed_multiplier = state.data.phases[state.phase].speed_multiplier
+			state.enemy.invulnerable_left = 0.0
+			state.pattern_index = index
+			_start_pattern(state)
+
+
 func _enter_phase(state: BossState, phase: int) -> void:
 	state.phase = phase
 	state.pattern_index = 0
@@ -159,6 +170,8 @@ func _start_pattern(state: BossState) -> void:
 const BASE_WINDUP := 0.85
 const BASE_RECOVERY := 0.55
 const BASE_SPEED := 1.1
+## Extra calm beat after every attack (the boss walks), shortened by the seal's aggression: the player reads the next one.
+const BREATHER := 1.0
 
 
 ## Past the clock the final boss rages: damage and speed up at once, the pace climbs to RAGE_AGGRESSION.
@@ -174,13 +187,14 @@ func _apply_pace() -> void:
 		aggression = lerpf(aggression, RAGE_AGGRESSION, clampf(_waves.overtime / RAGE_RAMP, 0.0, 1.0))
 	_ctx.windup_scale = BASE_WINDUP * (1.0 - 0.4 * aggression)
 	_ctx.recovery_scale = BASE_RECOVERY * (1.0 - aggression)
+	_ctx.breather_scale = 1.0 - 0.6 * aggression
 	_ctx.speed_scale = BASE_SPEED * (1.0 + 0.6 * aggression)
 
 
 func _advance(state: BossState) -> void:
 	var pattern := _pattern(state)
 	if state.step == Step.RECOVERY or pattern == null:
-		state.pattern_index += 1
+		state.pattern_index = _next_index(state)
 		_start_pattern(state)
 		return
 	if _stage != null and _waves != null:
@@ -192,4 +206,13 @@ func _advance(state: BossState) -> void:
 		state.timer += pattern.repeat_interval
 	else:
 		state.step = Step.RECOVERY
-		state.timer += pattern.recovery * _ctx.recovery_scale
+		state.timer += pattern.recovery * _ctx.recovery_scale + BREATHER * _ctx.breather_scale
+
+
+## Next attack of the phase: random, never the one just played (the loop is not a fixed rhythm).
+func _next_index(state: BossState) -> int:
+	var count := state.data.phases[state.phase].patterns.size()
+	if count < 2 or _ctx.rng == null or state.pattern_index < 0:
+		return state.pattern_index + 1
+	var current := state.pattern_index % count
+	return (current + 1 + _ctx.rng.randi_range(0, count - 2)) % count
