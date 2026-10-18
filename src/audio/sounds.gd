@@ -16,8 +16,8 @@ const ELITE_DEATH := preload("res://assets/audio/sfx/elite_death.ogg")
 const PLAYER_HURT := preload("res://assets/audio/sfx/player_hurt.ogg")
 const PICKUP := preload("res://assets/audio/sfx/pickup.ogg")
 const LEVEL_UP := preload("res://assets/audio/sfx/level_up.wav")
-## End of a wave: two warm marimba notes that resolve (synthesized, tools/audio/make_wave_clear.py; the rising jingle did not fit).
-const WAVE_CLEAR := preload("res://assets/audio/sfx/wave_clear.wav")
+## End of a wave: ElevenLabs (tools/audio/sound_list.json) replaces the synthesized two-note marimba (tools/audio/make_wave_clear.py), not satisfying enough (dev, 2026-10-18).
+const WAVE_CLEAR := preload("res://assets/audio/sfx/wave_clear.mp3")
 ## The old level-up sound, now the death of a character.
 const PLAYER_DEATH := preload("res://assets/audio/sfx/player_death.ogg")
 
@@ -54,7 +54,8 @@ const ENEMY_SHOT := preload("res://assets/audio/sfx/combat/enemy_shot.ogg")
 
 const WAVE_START := preload("res://assets/audio/sfx/wave_start.ogg")
 const WAVE_END := preload("res://assets/audio/sfx/wave_end.ogg")
-const VICTORY := preload("res://assets/audio/sfx/victory.ogg")
+## Fanfare generated with ElevenLabs (tools/audio/sound_list.json); the old CC0 jingle sounded like a defeat.
+const VICTORY := preload("res://assets/audio/sfx/victory.mp3")
 const DEFEAT := preload("res://assets/audio/sfx/defeat.ogg")
 
 const UI_BUY := preload("res://assets/audio/sfx/ui_buy.ogg")
@@ -81,3 +82,76 @@ const PORTAL_RUMBLE := preload("res://assets/audio/sfx/portal_rumble.wav")
 ## A run starts through a seal's gate ("Magic Spell SFX", OpenGameArt, CC0).
 const PORTAL_OPEN := preload("res://assets/audio/sfx/portal_open.ogg")
 const UI_NEXT := preload("res://assets/audio/sfx/ui_next.ogg")
+
+## ElevenLabs sounds (2026-10, tools/audio/sound_list.json). One sound per family of boss attacks:
+## BossDirector asks boss_attack() when a pattern fires.
+const BOSS_ENTRANCE := preload("res://assets/audio/sfx/boss/boss_entrance.mp3")
+const BOSS_PHASE_CHANGE := preload("res://assets/audio/sfx/boss/boss_phase_change.mp3")
+const BOSS_DEATH := preload("res://assets/audio/sfx/boss/boss_death.mp3")
+const MINI_BOSS_DEATH := preload("res://assets/audio/sfx/boss/mini_boss_death.mp3")
+const BOSS_SLAM := preload("res://assets/audio/sfx/boss/boss_slam.mp3")
+const BOSS_SLASH := preload("res://assets/audio/sfx/boss/boss_slash.mp3")
+const BOSS_FIRE := preload("res://assets/audio/sfx/boss/boss_fire.mp3")
+const BOSS_ICE := preload("res://assets/audio/sfx/boss/boss_ice.mp3")
+const BOSS_VENOM := preload("res://assets/audio/sfx/boss/boss_venom.mp3")
+const BOSS_PROJECTILES := preload("res://assets/audio/sfx/boss/boss_projectiles.mp3")
+const BOSS_WIND := preload("res://assets/audio/sfx/boss/boss_wind.mp3")
+const BOSS_SUMMON := preload("res://assets/audio/sfx/boss/boss_summon.mp3")
+const ENEMY_SHOT_ARROW := preload("res://assets/audio/sfx/combat/enemy_shot_arrow.mp3")
+const ENEMY_SHOT_MAGIC := preload("res://assets/audio/sfx/combat/enemy_shot_magic.mp3")
+const ENEMY_SHOT_VENOM := preload("res://assets/audio/sfx/combat/enemy_shot_venom.mp3")
+const IMPACT_FIRE := preload("res://assets/audio/sfx/impacts/impact_fire.mp3")
+const IMPACT_ICE := preload("res://assets/audio/sfx/impacts/impact_ice.mp3")
+const IMPACT_LIGHTNING := preload("res://assets/audio/sfx/impacts/impact_lightning.mp3")
+const EXPLOSION_SMALL := preload("res://assets/audio/sfx/impacts/explosion_small.mp3")
+const EXPLOSION_BIG := preload("res://assets/audio/sfx/impacts/explosion_big.mp3")
+const UI_UNLOCK := preload("res://assets/audio/sfx/ui_unlock.mp3")
+const UI_VICTORY_CARD := preload("res://assets/audio/sfx/ui_victory_card.mp3")
+
+## Boss attack script name -> sound. A pattern absent from the table is silent.
+const _BOSS_ATTACK_SOUND := {
+	&"ClubShockwavePattern": BOSS_SLAM, &"PillarDropPattern": BOSS_SLAM, &"ImpactZonesPattern": BOSS_SLAM,
+	&"ShockRingsPattern": BOSS_SLAM, &"TailSweepPattern": BOSS_SLAM,
+	&"CrossSlashPattern": BOSS_SLASH, &"BladeRainPattern": BOSS_SLASH, &"BladeWhirlPattern": BOSS_SLASH,
+	&"IaidoPattern": BOSS_SLASH, &"ThrustBarragePattern": BOSS_SLASH, &"ShadowStepPattern": BOSS_SLASH,
+	&"DashPattern": BOSS_SLASH, &"ChainLashPattern": BOSS_SLASH,
+	&"FireBeamPattern": BOSS_FIRE, &"FireBreathPattern": BOSS_FIRE, &"FlameRingPattern": BOSS_FIRE,
+	&"FlameCheckerPattern": BOSS_FIRE, &"MeteorShowerPattern": BOSS_FIRE, &"ConeBreathPattern": BOSS_FIRE,
+	&"FrostWallPattern": BOSS_ICE, &"FreezingPatchPattern": BOSS_ICE, &"HailPattern": BOSS_ICE,
+	&"IceSpikeLinePattern": BOSS_ICE,
+	&"VenomSpitPattern": BOSS_VENOM, &"VenomPoolsPattern": BOSS_VENOM, &"EggClutchPattern": BOSS_VENOM,
+	&"WebNetPattern": BOSS_VENOM,
+	&"RadialBurstPattern": BOSS_PROJECTILES, &"AimedFanPattern": BOSS_PROJECTILES, &"CrackRaysPattern": BOSS_PROJECTILES,
+	&"WingBlastPattern": BOSS_WIND, &"DragonFlybyPattern": BOSS_WIND, &"StormFrontPattern": BOSS_WIND,
+	&"SummonPattern": BOSS_SUMMON, &"RuneSealPattern": BOSS_SUMMON, &"LegCagePattern": BOSS_SUMMON,
+	&"WallPattern": BOSS_SUMMON}
+
+
+## Sounds of one boss attack (a combo gives one per distinct part). `shot_style` (the boss's
+## projectile look) tells a frost breath from a fire breath.
+static func boss_attack(pattern: BossPattern, shot_style: int = -1) -> Array[AudioStream]:
+	var found: Array[AudioStream] = []
+	if pattern is ComboPattern:
+		for part in (pattern as ComboPattern).parts:
+			for stream in boss_attack(part, shot_style):
+				if not found.has(stream):
+					found.append(stream)
+		return found
+	var script_name: StringName = pattern.get_script().get_global_name()
+	var stream: AudioStream = _BOSS_ATTACK_SOUND.get(script_name)
+	if script_name == &"ConeBreathPattern" and shot_style == WeaponData.ProjectileStyle.ENEMY_ICE:
+		stream = BOSS_ICE
+	if stream != null:
+		found.append(stream)
+	return found
+
+
+## Shot sound of an enemy projectile by its look.
+static func enemy_shot(style: int) -> AudioStream:
+	match style:
+		WeaponData.ProjectileStyle.ENEMY_ACID:
+			return ENEMY_SHOT_VENOM
+		WeaponData.ProjectileStyle.ENEMY_STONE:
+			return ENEMY_SHOT_ARROW
+		_:
+			return ENEMY_SHOT_MAGIC

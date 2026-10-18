@@ -300,8 +300,8 @@ func _ready() -> void:
 	waves.wave_started.connect(func(_wave: int) -> void: Audio.play(Sounds.WAVE_START, -6.0))
 	Audio.play_music(Sounds.MUSIC_RUN)
 	# Boss theme while a boss (or mini-boss) is alive.
-	bosses.boss_started.connect(func(_boss: Enemy) -> void:
-		Audio.play(Sounds.BOSS_ALERT, -4.0)
+	bosses.boss_started.connect(func(boss: Enemy) -> void:
+		Audio.play(Sounds.BOSS_ENTRANCE if boss.data.boss else Sounds.BOSS_ALERT, -3.0 if boss.data.boss else -4.0, 0.0)
 		Audio.play_music(Sounds.MUSIC_BOSS))
 	bosses.boss_ended.connect(func(_boss: Enemy) -> void:
 		if bosses.boss_count() == 0 and not state.is_over:
@@ -716,7 +716,7 @@ func _on_wave_ended(wave: int) -> void:
 		rp.player.heal(rp.player.stats.get_value(StatIds.MAX_HP) * stage.heal_between_waves)
 	if waves.is_last_wave():
 		return  # _on_run_won follows
-	Audio.play(Sounds.WAVE_CLEAR, -4.0)  # a soft resolving chime marks the end of a wave (dev, 2026-10-11)
+	Audio.play(Sounds.WAVE_CLEAR, 0.0, 0.0)  # a soft resolving chime marks the end of a wave (dev, 2026-10-11)
 	if not auto_choose_upgrades:
 		get_tree().paused = true
 		wave_end_screen.open(waves.wave)

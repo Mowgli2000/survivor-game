@@ -10,6 +10,11 @@ signal boss_phase_changed(enemy: Enemy, phase_index: int)
 signal boss_ended(enemy: Enemy)
 
 const PHASE_SHAKE := 0.45
+## Level of a boss attack sound (loud enough to stand out of a dense mix).
+const BOSS_ATTACK_DB := -4.0
+## Volleys at least this far apart (s) are separate strikes with their own warning: each one has its sound.
+## Faster ones (a stream of shots, a breath) make the sound once.
+const SEPARATE_STRIKE_INTERVAL := 0.35
 
 enum Step { WINDUP, FIRING, RECOVERY }
 
@@ -118,6 +123,7 @@ func _enter_phase(state: BossState, phase: int) -> void:
 	if _ctx.vfx != null:
 		_ctx.vfx.explosion(state.enemy.position, state.enemy.radius * 4.0, state.data.color, false)
 		_ctx.vfx.shake_requested.emit(PHASE_SHAKE)
+	Audio.play(Sounds.BOSS_PHASE_CHANGE, 4.0, 0.0)
 	boss_phase_changed.emit(state.enemy, phase)
 	if state.data.attack_sheet != null and state.data.attack_sheet.has_animation(&"phase"):
 		_hold(state, &"phase")
@@ -199,6 +205,9 @@ func _advance(state: BossState) -> void:
 		return
 	if _stage != null and _waves != null:
 		_ctx.hp_multiplier = _stage.hp_multiplier_at(_waves.wave)
+	if state.volleys == 0 or pattern.repeat_interval >= SEPARATE_STRIKE_INTERVAL:
+		for stream in Sounds.boss_attack(pattern, state.data.projectile_style):
+			Audio.play(stream, BOSS_ATTACK_DB, 0.03)
 	pattern.fire(_ctx, state.enemy, state.aim, state.volleys)
 	state.volleys += 1
 	if state.volleys < pattern.repeats:

@@ -78,10 +78,12 @@ var _last_pop_variant: int = 0
 ## Hit sounds: at most one per HIT_SOUND_GAP_MS (a horde is hit hundreds of times a
 ## second), the volume follows the hit strength.
 const HIT_SOUND_GAP_MS := 35
+const STATUS_SOUND_GAP_MS := 140
 ## Pitch variation of hit and kill sounds: almost none (dev: the sound of a mob taking
 ## damage must stay the same, never higher or lower; variety comes from the variants).
 const HIT_PITCH_VARIATION := 0.015
 var _next_hit_sound_ms: int = 0
+var _next_status_sound_ms: int = 0
 var _last_hit_variant: int = -1
 
 
@@ -387,7 +389,11 @@ func _lose_hp(enemy: Enemy, amount: float, crit: bool = false, silent: bool = fa
 		add_child(BossCorpse.create(enemy))  # the painted death plays on its own node
 	elif _vfx != null:
 		_vfx.death(enemy.position, enemy.radius * 1.4, enemy.data.color)
-	if enemy.elite or enemy.data.boss:
+	if enemy.data.boss:
+		Audio.play(Sounds.BOSS_DEATH, -2.0, 0.0)
+	elif not enemy.data.phases.is_empty():
+		Audio.play(Sounds.MINI_BOSS_DEATH, -3.0, 0.0)
+	elif enemy.elite:
 		Audio.play(Sounds.ELITE_DEATH, ELITE_DEATH_DB)
 	else:
 		var frame := Engine.get_physics_frames()
@@ -414,6 +420,24 @@ func _play_hit(amount: float, crit: bool, boss: bool) -> void:
 	Audio.play(_next_thud(), -2.0 + strength * 3.0, HIT_PITCH_VARIATION)
 
 
+## Elemental hit sound, at most one per STATUS_SOUND_GAP_MS (a horde is hit hundreds of times).
+func _play_status_impact(type: StatusData.Type) -> void:
+	var now := Time.get_ticks_msec()
+	if now < _next_status_sound_ms:
+		return
+	var stream: AudioStream = null
+	match type:
+		StatusData.Type.BURN:
+			stream = Sounds.IMPACT_FIRE
+		StatusData.Type.SLOW:
+			stream = Sounds.IMPACT_ICE
+		StatusData.Type.SHOCK:
+			stream = Sounds.IMPACT_LIGHTNING
+	if stream != null:
+		_next_status_sound_ms = now + STATUS_SOUND_GAP_MS
+		Audio.play(stream, -10.0, 0.05)
+
+
 ## Next death pop: never the same pitch twice in a row.
 func _next_pop() -> AudioStream:
 	var pick := randi() % (Sounds.KILL_POP.size() - 1)
@@ -434,6 +458,7 @@ func _next_thud() -> AudioStream:
 
 func _apply_status(index: int, status: StatusData, hit_damage: float) -> void:
 	var enemy := _active[index]
+	_play_status_impact(status.type)
 	match status.type:
 		StatusData.Type.BURN:
 			if enemy.is_alive():

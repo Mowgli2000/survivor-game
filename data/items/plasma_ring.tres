@@ -11,8 +11,8 @@ percent = 0.15
 
 [sub_resource type="Resource" id="Mod_2"]
 script = ExtResource("2_mod")
-stat = &"attack_speed"
-percent = 0.12
+stat = &"crit_chance"
+flat = 0.06
 
 [resource]
 script = ExtResource("1_item")

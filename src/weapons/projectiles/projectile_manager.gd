@@ -279,7 +279,7 @@ func _mini_blast(p: Projectile, at: Vector2) -> void:
 	_enemies.damage_in_radius(at, radius, p.damage * MINI_BLAST_DAMAGE, p.crit, p.knockback * 0.5, p.status, p.status_chance)
 	if _vfx != null:
 		_vfx.explosion(at, radius, p.color, false, EffectSheets.explosion_for(p.style))
-	Audio.play(Sounds.EXPLOSION, -12.0)
+	Audio.play(Sounds.EXPLOSION_SMALL, -12.0)
 
 
 func _explode(p: Projectile) -> void:
@@ -290,7 +290,7 @@ func _explode(p: Projectile) -> void:
 			p.status, p.status_chance)
 		if _vfx != null:
 			_vfx.explosion(p.position, p.explosion_radius, p.color, true, EffectSheets.explosion_for(p.style))
-		Audio.play(Sounds.EXPLOSION, -6.0)
+		Audio.play(Sounds.EXPLOSION_BIG, -6.0)
 	for k in p.fragments:
 		_spawn_fragment(p, TAU * (k + 0.5) / p.fragments)
 	if p.zone_time > 0.0:

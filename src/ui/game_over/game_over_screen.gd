@@ -381,6 +381,7 @@ func show_unlocks(challenges: Array[ChallengeData], backdrops: Array[int] = []) 
 		delay += 0.12
 	for level in backdrops:
 		var card := _backdrop_card(level)
+		Audio.play(Sounds.UI_VICTORY_CARD, -8.0, 0.0)
 		_unlocks.add_child(card)
 		UiFx.pop_in(card, delay)
 		delay += 0.12
@@ -389,6 +390,8 @@ func show_unlocks(challenges: Array[ChallengeData], backdrops: Array[int] = []) 
 		_unlocks.add_child(card)
 		UiFx.pop_in(card, delay)
 	_unlocks.visible = _unlocks.get_child_count() > 0
+	if _unlocks.visible:
+		Audio.play(Sounds.UI_UNLOCK, -5.0, 0.0)
 	if _unlocks.visible and is_victory:
 		_begin_reveal()
 

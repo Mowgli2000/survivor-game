@@ -108,7 +108,7 @@ func test_enemy_shots_make_a_sound() -> void:
 	shots.setup(Party.solo(_player), Rect2(-500, -500, 1000, 1000))
 	add_child_autofree(shots)
 	shots.spawn(Vector2.ZERO, Vector2.RIGHT * 100.0, 5.0, 8.0)
-	assert_eq(Audio.voices(Sounds.ENEMY_SHOT), 1)
+	assert_eq(Audio.voices(Sounds.ENEMY_SHOT_MAGIC), 1)
 
 
 func test_hit_sounds_never_change_pitch_with_the_number_of_hits() -> void:
@@ -137,3 +137,25 @@ func test_the_same_variant_never_plays_twice_in_a_row() -> void:
 			if Audio.voices(stream) > 0:
 				assert_ne(stream, last, "variant repeated")
 				last = stream
+
+
+func test_enemy_shot_sound_follows_the_projectile_look() -> void:
+	assert_eq(Sounds.enemy_shot(WeaponData.ProjectileStyle.ENEMY_ACID), Sounds.ENEMY_SHOT_VENOM)
+	assert_eq(Sounds.enemy_shot(WeaponData.ProjectileStyle.ENEMY_STONE), Sounds.ENEMY_SHOT_ARROW)
+	assert_eq(Sounds.enemy_shot(WeaponData.ProjectileStyle.ENEMY_FIRE), Sounds.ENEMY_SHOT_MAGIC)
+
+
+func test_every_boss_attack_has_a_sound() -> void:
+	var missing: Array[String] = []
+	for dir in ["res://data/enemies/"]:
+		for file in DirAccess.get_files_at(dir):
+			if not file.ends_with(".tres"):
+				continue
+			var data := load(dir + file) as EnemyData
+			if data == null:
+				continue
+			for phase in data.phases:
+				for pattern in phase.patterns:
+					if Sounds.boss_attack(pattern, data.projectile_style).is_empty():
+						missing.append("%s: %s" % [file, pattern.get_script().get_global_name()])
+	assert_eq(missing, [] as Array[String], "boss attacks without a sound")

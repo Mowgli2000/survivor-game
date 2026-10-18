@@ -38,3 +38,12 @@ d'environnement utilisateur `ELEVENLABS_API_KEY`, permissions Sound Effects + Mu
 4. Production par familles, normalisation du volume, remplacement dans `assets/audio/`, mise à jour de `Sounds`,
    écoute en jeu.
 5. Musique : après les conditions.
+
+## Audit du code (2026-10-18)
+- `Audio` (autoload) : 32 voix SFX, 4 voix max par son, 35 ms mini entre deux déclenchements du même son, 1 lecteur
+  de musique, boucles par id. Bus `Music` et `SFX` (limiteur sur SFX) ; volumes réglables master/music/sfx.
+- Morts normales : 1 son par frame physique (`EnemyManager`), 6 pops sans répétition consécutive. Élites et boss :
+  même son `ELITE_DEATH`. Coups : son seulement pour critique et boss (`_play_hit`).
+- Ramassages : `pickup_manager.gd` (cristal XP / pièce matériau), hauteur montante en chaîne.
+- À faire à l'intégration : bus séparés (combat, interface, ambiance) avec volumes dans les réglages ; sons de boss.
+- Outil : `tools/audio/gen_sfx.py` + `sound_list.json` (8 sons). Essai de 5 sons PAS ENCORE lancé (en attente d'accord).

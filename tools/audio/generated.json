@@ -1,0 +1,117 @@
+{
+  "credits_estimated": 588,
+  "done": {
+    "kill_pop": {
+      "file": "kill_pop.mp3",
+      "bytes": 8820
+    },
+    "xp_gem": {
+      "file": "xp_gem.mp3",
+      "bytes": 8820
+    },
+    "level_up": {
+      "file": "level_up.mp3",
+      "bytes": 17179
+    },
+    "weapon_katana": {
+      "file": "weapon_katana.mp3",
+      "bytes": 8820
+    },
+    "boss_slam": {
+      "file": "boss_slam.mp3",
+      "bytes": 20105
+    },
+    "boss_entrance": {
+      "file": "boss_entrance.mp3",
+      "bytes": 29300
+    },
+    "boss_phase_change": {
+      "file": "boss_phase_change.mp3",
+      "bytes": 21358
+    },
+    "boss_death": {
+      "file": "boss_death.mp3",
+      "bytes": 36405
+    },
+    "boss_slash": {
+      "file": "boss_slash.mp3",
+      "bytes": 13835
+    },
+    "boss_fire": {
+      "file": "boss_fire.mp3",
+      "bytes": 20105
+    },
+    "boss_ice": {
+      "file": "boss_ice.mp3",
+      "bytes": 17179
+    },
+    "boss_venom": {
+      "file": "boss_venom.mp3",
+      "bytes": 15089
+    },
+    "boss_projectiles": {
+      "file": "boss_projectiles.mp3",
+      "bytes": 13835
+    },
+    "boss_wind": {
+      "file": "boss_wind.mp3",
+      "bytes": 20105
+    },
+    "boss_summon": {
+      "file": "boss_summon.mp3",
+      "bytes": 20105
+    },
+    "enemy_shot_arrow": {
+      "file": "enemy_shot_arrow.mp3",
+      "bytes": 8820
+    },
+    "enemy_shot_magic": {
+      "file": "enemy_shot_magic.mp3",
+      "bytes": 8820
+    },
+    "enemy_shot_venom": {
+      "file": "enemy_shot_venom.mp3",
+      "bytes": 8820
+    },
+    "mini_boss_death": {
+      "file": "mini_boss_death.mp3",
+      "bytes": 23030
+    },
+    "impact_fire": {
+      "file": "impact_fire.mp3",
+      "bytes": 10492
+    },
+    "impact_ice": {
+      "file": "impact_ice.mp3",
+      "bytes": 10492
+    },
+    "impact_lightning": {
+      "file": "impact_lightning.mp3",
+      "bytes": 8820
+    },
+    "explosion_small": {
+      "file": "explosion_small.mp3",
+      "bytes": 13835
+    },
+    "explosion_big": {
+      "file": "explosion_big.mp3",
+      "bytes": 23030
+    },
+    "ui_unlock": {
+      "file": "ui_unlock.mp3",
+      "bytes": 20105
+    },
+    "ui_victory_card": {
+      "file": "ui_victory_card.mp3",
+      "bytes": 12163
+    },
+    "victory": {
+      "file": "victory.mp3",
+      "bytes": 48944
+    },
+    "wave_clear": {
+      "file": "wave_clear.mp3",
+      "bytes": 26792
+    }
+  }
+}
