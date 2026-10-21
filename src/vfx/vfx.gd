@@ -361,11 +361,9 @@ func portal(center: Vector2, radius: float, boss: bool = false) -> void:
 		shake_requested.emit(0.5)
 
 
-## Drawn outline of the next warnings (BossDirector sets it from the attack's `warn_shape`): the warning shows
-## the shape of the painted attack (a star, a puddle, a crack), not a plain disc or band.
+## Outline of the next warnings (BossDirector sets it from the attack's `warn_shape`). Only JAGGED changes the drawing
+## (a crack for a band); circles are always the plain damage disc, STAR and BLOB are kept for the saved data.
 enum WarnShape { PLAIN, JAGGED, STAR, BLOB }
-const WARN_STAR_POINTS := 8
-const WARN_STAR_DEPTH := 0.55
 var warn_shape: int = WarnShape.PLAIN
 
 
@@ -518,12 +516,10 @@ func _draw() -> void:
 			Kind.DEATH:
 				_draw_death(_a[i], _size[i], _extra[i], color, t)
 			Kind.WARN_CIRCLE:
-				if _style[i] == WarnShape.PLAIN:
-					draw_circle(_a[i], _size[i] * (1.0 - t), Color(color, 0.25))
-					draw_arc(_a[i], _size[i], 0.0, TAU, 48, Color(INK, 0.6), 6.0, true)
-					draw_arc(_a[i], _size[i], 0.0, TAU, 48, Color(color, 0.85), 3.0, true)
-				else:
-					_draw_warn_shape(_a[i], _size[i], color, t, _style[i], _seedv[i])
+				# Always the true damage disc: a star outline hid the parts of the disc that hurt too (dev playtest, 2026-10-21).
+				draw_circle(_a[i], _size[i] * (1.0 - t), Color(color, 0.25))
+				draw_arc(_a[i], _size[i], 0.0, TAU, 48, Color(INK, 0.6), 6.0, true)
+				draw_arc(_a[i], _size[i], 0.0, TAU, 48, Color(color, 0.85), 3.0, true)
 			Kind.PORTAL:
 				_draw_portal(_a[i], _size[i], color, t)
 			Kind.WARN_LINE:
@@ -536,29 +532,6 @@ func _draw() -> void:
 				_draw_warn_sector(_a[i], _b[i].angle(), _size[i], _extra[i], color, t, _seedv[i])
 			Kind.WARN_RING:
 				_draw_warn_ring(_a[i], _b[i].x, _b[i].y, _size[i], _extra[i], color, t)
-
-
-## A star or a puddle instead of a disc: the outline that grows toward the real radius, the true damage circle only
-## hinted by a thin ring (the points reach it).
-func _draw_warn_shape(center: Vector2, radius: float, color: Color, t: float, shape: int, seed_value: float) -> void:
-	var grow := 1.0 - t
-	var points := PackedVector2Array()
-	var count := WARN_STAR_POINTS * 2 if shape == WarnShape.STAR else 28
-	var phase := fmod(seed_value, TAU)
-	for k in count:
-		var angle := TAU * k / count
-		var r := radius
-		if shape == WarnShape.STAR:
-			r = radius if k % 2 == 0 else radius * WARN_STAR_DEPTH
-		else:
-			r = radius * (0.84 + 0.16 * sin(angle * 3.0 + phase) * cos(angle * 2.0 - phase * 0.7))
-		points.append(center + Vector2.from_angle(angle) * r)
-	draw_colored_polygon(points, Color(color, 0.1 + 0.2 * grow))
-	var outline := points.duplicate()
-	outline.append(points[0])
-	draw_polyline(outline, Color(INK, 0.6), 6.0, true)
-	draw_polyline(outline, Color(color, 0.85), 3.0, true)
-	draw_arc(center, radius, 0.0, TAU, 48, Color(color, 0.3), 2.0, true)
 
 
 ## A crack: the band's edges zigzag and pinch at both ends instead of two straight lines.
