@@ -42,6 +42,7 @@ area = 170.0
 arc_degrees = 200.0
 slash_sheet = ExtResource("vfx_slash")
 swing_fx = 4
+face_target = true
 hit_time = 0.2
 slash_style = 3
 fire_sound = ExtResource("9_sound")

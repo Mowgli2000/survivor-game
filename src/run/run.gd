@@ -13,6 +13,9 @@ signal retry_requested
 
 const DEFAULT_CONFIG_ID := &"default"
 const PLAYER_HIT_SHAKE := 0.35
+## Victory screen: seconds of jingle before the calm music starts, and its volume.
+const VICTORY_JINGLE_TIME := 3.5
+const VICTORY_MUSIC_DB := -6.0
 ## Under this share of max HP the heartbeat starts.
 const HEARTBEAT_BELOW := 0.3
 ## Coop: players start this far apart, side by side.
@@ -855,6 +858,10 @@ func _on_run_won() -> void:
 	state.is_over = true
 	Audio.stop_music()
 	Audio.play(Sounds.VICTORY)
+	# The jingle is short and the player reads the statistics for a while: the calm menu loop takes over after it.
+	get_tree().create_timer(VICTORY_JINGLE_TIME, true).timeout.connect(func() -> void:
+		if is_inside_tree() and state.is_over:
+			Audio.play_music(Sounds.MUSIC_MENU, VICTORY_MUSIC_DB))
 	get_tree().paused = true
 	game_over_screen.open(state.elapsed, progression.level, state.kills, waves.wave, true)
 	_show_recap()

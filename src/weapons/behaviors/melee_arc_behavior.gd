@@ -172,7 +172,7 @@ static func play_visual(vfx: Vfx, data: WeaponData, owner: Node2D, origin: Vecto
 			if data.ground_swing:
 				vfx.sheet_ground_at(sheet, where, size / HIT_SHARE, delay)
 			else:
-				vfx.sheet_at(sheet, where, 0.0, size / HIT_SHARE, delay)
+				vfx.sheet_at(sheet, where, angle if data.face_target else 0.0, size / HIT_SHARE, delay)
 		WeaponData.SwingFx.ORBIT:
 			vfx.sheet_orbit_at(sheet, origin, angle - PI * 0.5, radius * 0.4, radius * 0.6, owner)
 

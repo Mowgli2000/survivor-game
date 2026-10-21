@@ -15,6 +15,10 @@ const VICTORY_BACKGROUND := preload("res://assets/ui/backgrounds/victory.png")
 ## Rows shown in the damage summary (the biggest dealers).
 const RECAP_ROWS := 6
 const RECAP_ICON := 56.0
+## Chest reward icons on the victory screen (hover or focus shows the description).
+const REWARD_ICON := 128.0
+const REWARD_ART_MARGIN := 12
+
 const RECAP_BAR_WIDTH := 260.0
 ## The unlock cards share this width (the end screen must fit the 1920 px viewport).
 const UNLOCKS_MAX_WIDTH := 1500.0
@@ -407,9 +411,16 @@ func show_rewards(rewards: Array[Dictionary]) -> void:
 	for reward in rewards:
 		var item: ItemData = reward.item
 		var button := Button.new()
-		button.icon = item.icon
-		button.expand_icon = true
-		button.custom_minimum_size = Vector2(84, 84)
+		button.custom_minimum_size = Vector2(REWARD_ICON, REWARD_ICON)
+		# The frame's margins squeezed a Button's own icon to ~20 px: the art is a child filling the frame.
+		var art := TextureRect.new()
+		art.texture = item.icon
+		art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		art.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		art.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MODE_MINSIZE, REWARD_ART_MARGIN)
+		button.add_child(art)
 		button.focus_mode = Control.FOCUS_ALL
 		button.tooltip_text = ShopScreen.item_tooltip(item, 1)
 		var text := ShopScreen.item_tooltip(item, 1)
