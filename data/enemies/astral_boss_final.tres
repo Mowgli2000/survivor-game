@@ -30,6 +30,7 @@ projectile_damage = 9.0
 [sub_resource type="Resource" id="P_storm"]
 script = ExtResource("s_storm")
 effect = ExtResource("v_storm")
+warn_shape = 2
 windup = 1.0
 repeats = 8
 repeat_interval = 0.28
@@ -52,6 +53,7 @@ inner = 260.0
 [sub_resource type="Resource" id="P_meteors"]
 script = ExtResource("s_meteors")
 effect = ExtResource("v_meteors")
+warn_shape = 2
 windup = 1.5
 recovery = 1.5
 projectile_damage = 26.0
@@ -59,6 +61,7 @@ projectile_damage = 26.0
 [sub_resource type="Resource" id="C_cataclysm_meteors"]
 script = ExtResource("s_meteors")
 effect = ExtResource("v_cataclysm_meteors")
+warn_shape = 2
 windup = 1.5
 repeats = 1
 recovery = 1.8
@@ -118,6 +121,7 @@ attack_sheet = ExtResource("9_attack")
 attack_scale = 1.32
 attack_frame_weights = PackedFloat32Array(0.9, 0.9, 0.9, 0.35, 0.35, 0.35, 0.35, 0.35, 0.7, 0.9, 0.9, 0.9, 0.9, 0.15, 0.25, 0.3, 0.3, 0.3, 0.4, 0.4, 0.4)
 attack_strike_frame = 14
+mouth_cell = Vector2(435, 295)
 phases = Array[ExtResource("2_phase")]([SubResource("Phase_1"), SubResource("Phase_2"), SubResource("Phase_3")])
 projectile_style = 19
 chest = ExtResource("c_chest")

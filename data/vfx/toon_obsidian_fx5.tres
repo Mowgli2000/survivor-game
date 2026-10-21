@@ -12,5 +12,5 @@ frames = 12
 duration = 0.4
 scale = 2.2
 forward = 0.0
-reach = 0.634
+reach = 0.667
 hostile = true

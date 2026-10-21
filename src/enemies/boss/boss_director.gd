@@ -10,6 +10,7 @@ signal boss_phase_changed(enemy: Enemy, phase_index: int)
 signal boss_ended(enemy: Enemy)
 
 const PHASE_SHAKE := 0.45
+const RAGE_SHAKE := 0.8
 ## Level of a boss attack sound (loud enough to stand out of a dense mix).
 const BOSS_ATTACK_DB := -4.0
 ## Volleys at least this far apart (s) are separate strikes with their own warning: each one has its sound.
@@ -86,6 +87,9 @@ func update(delta: float) -> void:
 func _enrage(state: BossState) -> void:
 	var enemy := state.enemy
 	enemy.enraged = true
+	Audio.play(Sounds.BOSS_RAGE, 2.0, 0.0)
+	if _ctx.vfx != null:
+		_ctx.vfx.shake_requested.emit(RAGE_SHAKE)
 	enemy.damage_multiplier *= RAGE_DAMAGE
 	enemy.speed_multiplier *= RAGE_SPEED
 	enemy._refresh_tint()
@@ -168,6 +172,7 @@ func _start_pattern(state: BossState) -> void:
 	if windup > 0.0:
 		state.enemy.forced_velocity = Vector2.ZERO
 		state.enemy.forced_time = windup
+	_set_warn_shape(pattern)
 	pattern.telegraph(_ctx, state.enemy, state.aim)
 
 
@@ -205,9 +210,9 @@ func _advance(state: BossState) -> void:
 		return
 	if _stage != null and _waves != null:
 		_ctx.hp_multiplier = _stage.hp_multiplier_at(_waves.wave)
-	if state.volleys == 0 or pattern.repeat_interval >= SEPARATE_STRIKE_INTERVAL:
+	if state.volleys == 0 or pattern.sound_per_strike or pattern.repeat_interval >= SEPARATE_STRIKE_INTERVAL:
 		for stream in Sounds.boss_attack(pattern, state.data.projectile_style):
-			Audio.play(stream, BOSS_ATTACK_DB, 0.03)
+			Audio.play(stream, BOSS_ATTACK_DB + Sounds.BOSS_ATTACK_TRIM_DB.get(stream, 0.0), 0.03)
 	pattern.fire(_ctx, state.enemy, state.aim, state.volleys)
 	state.volleys += 1
 	if state.volleys < pattern.repeats:
@@ -216,6 +221,11 @@ func _advance(state: BossState) -> void:
 	else:
 		state.step = Step.RECOVERY
 		state.timer += pattern.recovery * _ctx.recovery_scale + BREATHER * _ctx.breather_scale
+
+
+func _set_warn_shape(pattern: BossPattern) -> void:
+	if _ctx.vfx != null:
+		_ctx.vfx.warn_shape = pattern.warn_shape
 
 
 ## Next attack of the phase: random, never the one just played (the loop is not a fixed rhythm).

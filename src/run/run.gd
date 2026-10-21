@@ -295,8 +295,7 @@ func _ready() -> void:
 	waves.overtime_started.connect(func() -> void:
 		if _boss_dying:
 			return  # the boss is already dead: no rage message over its death
-		Audio.play(Sounds.BOSS_ALERT, -2.0)
-		hud.show_toast(tr("UI_BOSS_RAGE")))
+		hud.show_toast(tr("UI_BOSS_RAGE")))  # the roar is played by BossDirector._enrage
 	waves.wave_started.connect(func(_wave: int) -> void: Audio.play(Sounds.WAVE_START, -6.0))
 	Audio.play_music(Sounds.MUSIC_RUN)
 	# Boss theme while a boss (or mini-boss) is alive.

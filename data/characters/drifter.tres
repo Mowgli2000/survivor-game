@@ -7,6 +7,32 @@
 [ext_resource type="Texture2D" path="res://assets/characters/cards/drifter_m_card.png" id="card_alt"]
 [ext_resource type="Resource" path="res://data/weapons/katana.tres" id="w0"]
 [ext_resource type="Resource" path="res://data/weapons/pulse.tres" id="w1"]
+[ext_resource type="Resource" path="res://data/weapons/alchemy_cannon.tres" id="w2"]
+[ext_resource type="Resource" path="res://data/weapons/bazooka.tres" id="w3"]
+[ext_resource type="Resource" path="res://data/weapons/bomb.tres" id="w4"]
+[ext_resource type="Resource" path="res://data/weapons/celestial_bow.tres" id="w5"]
+[ext_resource type="Resource" path="res://data/weapons/fire_flask.tres" id="w6"]
+[ext_resource type="Resource" path="res://data/weapons/fire_staff.tres" id="w7"]
+[ext_resource type="Resource" path="res://data/weapons/frost_flask.tres" id="w8"]
+[ext_resource type="Resource" path="res://data/weapons/frost_scepter.tres" id="w9"]
+[ext_resource type="Resource" path="res://data/weapons/heavy_axe.tres" id="w10"]
+[ext_resource type="Resource" path="res://data/weapons/heavy_crossbow.tres" id="w11"]
+[ext_resource type="Resource" path="res://data/weapons/javelins.tres" id="w12"]
+[ext_resource type="Resource" path="res://data/weapons/laser_pistol.tres" id="w13"]
+[ext_resource type="Resource" path="res://data/weapons/lightning_staff.tres" id="w14"]
+[ext_resource type="Resource" path="res://data/weapons/longbow.tres" id="w15"]
+[ext_resource type="Resource" path="res://data/weapons/meteor_grimoire.tres" id="w16"]
+[ext_resource type="Resource" path="res://data/weapons/rapier.tres" id="w17"]
+[ext_resource type="Resource" path="res://data/weapons/runic_blade.tres" id="w18"]
+[ext_resource type="Resource" path="res://data/weapons/scythe.tres" id="w19"]
+[ext_resource type="Resource" path="res://data/weapons/shadow_blades.tres" id="w20"]
+[ext_resource type="Resource" path="res://data/weapons/shuriken.tres" id="w21"]
+[ext_resource type="Resource" path="res://data/weapons/sling.tres" id="w22"]
+[ext_resource type="Resource" path="res://data/weapons/smg.tres" id="w23"]
+[ext_resource type="Resource" path="res://data/weapons/spear.tres" id="w24"]
+[ext_resource type="Resource" path="res://data/weapons/steel_katana.tres" id="w25"]
+[ext_resource type="Resource" path="res://data/weapons/venom_fangs.tres" id="w26"]
+[ext_resource type="Resource" path="res://data/weapons/warhammer.tres" id="w27"]
 
 [sub_resource type="Resource" id="Mod_1"]
 script = ExtResource("2_mod")
@@ -19,7 +45,7 @@ id = &"drifter"
 name_key = "CHARACTER_DRIFTER"
 description_key = "CHARACTER_DRIFTER_RULE"
 starting_weapon = ExtResource("w0")
-starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1")])
+starting_weapons = Array[ExtResource("3_weapon_script")]([ExtResource("w0"), ExtResource("w1"), ExtResource("w2"), ExtResource("w3"), ExtResource("w4"), ExtResource("w5"), ExtResource("w6"), ExtResource("w7"), ExtResource("w8"), ExtResource("w9"), ExtResource("w10"), ExtResource("w11"), ExtResource("w12"), ExtResource("w13"), ExtResource("w14"), ExtResource("w15"), ExtResource("w16"), ExtResource("w17"), ExtResource("w18"), ExtResource("w19"), ExtResource("w20"), ExtResource("w21"), ExtResource("w22"), ExtResource("w23"), ExtResource("w24"), ExtResource("w25"), ExtResource("w26"), ExtResource("w27")])
 modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1")])
 upgrade_scale = 1.3
 stat_overrides = {

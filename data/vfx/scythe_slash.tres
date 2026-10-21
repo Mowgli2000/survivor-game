@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EffectSheet" format=3]
+
+[ext_resource type="Script" path="res://src/vfx/effect_sheet.gd" id="1_sheet"]
+[ext_resource type="Texture2D" path="res://assets/vfx/scythe_slash.png" id="2_tex"]
+
+[resource]
+script = ExtResource("1_sheet")
+texture = ExtResource("2_tex")
+columns = 3
+rows = 2
+frames = 6
+duration = 0.15
+scale = 2.4
+forward = 0.12
+reach = 0.92

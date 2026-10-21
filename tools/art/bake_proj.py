@@ -16,9 +16,7 @@ OUTS = [ROOT / "art_source/ai/projectiles", ROOT / "assets_src/drawn/projectiles
 # name: (candidate, cell file name)
 SINGLES = {
     "c_fire_flask": (1, "14_fire_flask"), "c_frost_flask": (1, "15_frost_flask"), "c_bomb_flask2": (1, "23_bomb_flask"),
-    "c_shard": (2, "02_bolt"), "c_grenade": (1, "16_grenade"), "c_cannonball": (1, "17_cannonball"),
-    "e_orb": (1, "06_enemy_orb"), "e_ice": (1, "18_enemy_ice"), "e_fire": (2, "19_enemy_fire"),
-    "e_acid": (1, "20_enemy_acid"), "e_stone": (2, "21_enemy_stone"),
+    "c_shard": (2, "02_bolt"), "c_grenade": (1, "16_grenade"), "c_cannonball": (1, "17_cannonball"), "c_shuriken": (1, "05_shuriken"), "c_javelin": (1, "12_javelin"),
 }
 # name: (candidate, first cell file number, cell file prefix)
 # name: (candidate, first cell file number, cell file prefix, frames)  (12 frames = 4x3 sheet, 6 = 3x2)
@@ -33,7 +31,7 @@ LOOPS = {
 # Cells cut out of a grid image (tools/art/gen_proj.py, kind "sheet": 3 columns x 2 rows): name: list of (candidate, column,
 # row, cell file name). The art fades out at the cell border. 04_missile (the unused MISSILE style) now draws the heavy bolt.
 GRID_SINGLES = {
-    "p_ranged": [(1, 0, 0, "10_arrow"), (2, 2, 0, "03_bullet"), (2, 1, 0, "04_missile"), (1, 0, 1, "12_javelin"), (1, 1, 1, "11_stone")],
+    "p_ranged": [(1, 0, 0, "10_arrow"), (2, 2, 0, "03_bullet"), (2, 1, 0, "04_missile")],
 }
 
 
@@ -116,6 +114,12 @@ def save(image: Image.Image, file_name: str) -> None:
 def main() -> None:
     for name, (pick, file_name) in SINGLES.items():
         save(key_solid(Image.open(SRC / ("%s_%d.png" % (name, pick)))), file_name)
+    # The sling stone: a lone ball (no trail), drawn small in its cell like the other round shots.
+    ball = key_solid(Image.open(SRC / "c_sling_stone_1.png"))
+    cell = Image.new("RGBA", (1024, 1024), (0, 0, 0, 0))
+    small = ball.resize((250, 250), Image.LANCZOS)
+    cell.paste(small, (387, 387), small)
+    save(cell, "11_stone")
     for name, cells in GRID_SINGLES.items():
         for pick, column, row, file_name in cells:
             sheet = Image.open(SRC / ("%s_%d.png" % (name, pick))).convert("RGB")

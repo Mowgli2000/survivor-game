@@ -12,7 +12,6 @@ const EXPLOSION_FIRE := preload("res://data/vfx/explosion_fire.tres")
 const EXPLOSION_FROST := preload("res://data/vfx/explosion_frost.tres")
 const EXPLOSION_BLAST := preload("res://data/vfx/explosion_blast.tres")
 const EXPLOSION_STAR := preload("res://data/vfx/explosion_star.tres")
-const FRAG_BURST := preload("res://data/vfx/frag_burst.tres")
 ## One unique explosion per explosive weapon (bomb, explosive flask, cannon, fire staff).
 const EXPLOSION_BOMB := preload("res://data/vfx/explosion_bomb.tres")
 const EXPLOSION_FLASK := preload("res://data/vfx/explosion_flask.tres")
@@ -50,8 +49,6 @@ static func explosion_for(style: int) -> EffectSheet:
 			return EXPLOSION_STAR
 		WeaponData.ProjectileStyle.FROST_FLASK:
 			return EXPLOSION_FROST
-		WeaponData.ProjectileStyle.GRENADE:
-			return FRAG_BURST
 		WeaponData.ProjectileStyle.FIRE_FLASK:
 			return EXPLOSION_FIRE
 		WeaponData.ProjectileStyle.FIREBALL:

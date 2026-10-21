@@ -12,6 +12,8 @@ const UI_HOVER_DB := -16.0
 const UI_CLICK_DB := -9.0
 const MUSIC_BUS := &"Music"
 const SFX_BUS := &"SFX"
+## Place ambience loops (a layer under the music, its own volume setting).
+const AMBIENCE_BUS := &"Ambience"
 
 var _players: Array[AudioStreamPlayer] = []
 var _music: AudioStreamPlayer
@@ -81,11 +83,11 @@ func voices(stream: AudioStream) -> int:
 
 ## Starts a sound that loops until loop_stop(id) (a fire burning while it is hovered). Does nothing
 ## if the loop `id` is already running; a loop fading out comes back to full volume.
-func loop_start(id: StringName, stream: AudioStream, volume_db: float = 0.0) -> void:
+func loop_start(id: StringName, stream: AudioStream, volume_db: float = 0.0, bus: StringName = SFX_BUS) -> void:
 	var player: AudioStreamPlayer = _loops.get(id)
 	if player == null:
 		player = AudioStreamPlayer.new()
-		player.bus = SFX_BUS
+		player.bus = bus
 		add_child(player)
 		_loops[id] = player
 	if player.has_meta(&"fade"):
@@ -100,6 +102,12 @@ func loop_start(id: StringName, stream: AudioStream, volume_db: float = 0.0) -> 
 		looping.loop_begin = 0
 		looping.loop_end = looping.data.size() / (2 if looping.format == AudioStreamWAV.FORMAT_16_BITS else 1)
 		stream = looping
+	elif stream is AudioStreamMP3:
+		stream = (stream as AudioStreamMP3).duplicate() as AudioStreamMP3
+		(stream as AudioStreamMP3).loop = true
+	elif stream is AudioStreamOggVorbis:
+		stream = (stream as AudioStreamOggVorbis).duplicate() as AudioStreamOggVorbis
+		(stream as AudioStreamOggVorbis).loop = true
 	player.stream = stream
 	player.volume_db = volume_db
 	player.play()

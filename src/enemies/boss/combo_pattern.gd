@@ -9,13 +9,20 @@ extends BossPattern
 
 func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
 	for part in parts:
+		_use_shape(ctx, part)
 		part.telegraph(ctx, boss, aim)
 
 
 func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
 	for part in parts:
 		if repeat < part.repeats:
+			_use_shape(ctx, part)
 			part.fire(ctx, boss, aim, repeat)
+
+
+func _use_shape(ctx: BossContext, part: BossPattern) -> void:
+	if ctx.vfx != null:
+		ctx.vfx.warn_shape = part.warn_shape
 
 
 func validate() -> String:

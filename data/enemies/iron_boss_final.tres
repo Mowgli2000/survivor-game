@@ -22,6 +22,7 @@
 [sub_resource type="Resource" id="P_crack"]
 script = ExtResource("s_crack")
 effect = ExtResource("v_crack")
+warn_shape = 1
 windup = 1.0
 repeats = 2
 repeat_interval = 0.7
@@ -66,6 +67,7 @@ projectile_damage = 24.0
 [sub_resource type="Resource" id="C_ruin_crack"]
 script = ExtResource("s_crack")
 effect = ExtResource("v_ruin_crack")
+warn_shape = 1
 windup = 1.2
 repeats = 3
 repeat_interval = 0.6

@@ -87,6 +87,7 @@ const UI_NEXT := preload("res://assets/audio/sfx/ui_next.ogg")
 ## BossDirector asks boss_attack() when a pattern fires.
 const BOSS_ENTRANCE := preload("res://assets/audio/sfx/boss/boss_entrance.mp3")
 const BOSS_PHASE_CHANGE := preload("res://assets/audio/sfx/boss/boss_phase_change.mp3")
+const BOSS_RAGE := preload("res://assets/audio/sfx/boss/boss_rage.mp3")
 const BOSS_DEATH := preload("res://assets/audio/sfx/boss/boss_death.mp3")
 const MINI_BOSS_DEATH := preload("res://assets/audio/sfx/boss/mini_boss_death.mp3")
 const BOSS_SLAM := preload("res://assets/audio/sfx/boss/boss_slam.mp3")
@@ -107,6 +108,9 @@ const EXPLOSION_SMALL := preload("res://assets/audio/sfx/impacts/explosion_small
 const EXPLOSION_BIG := preload("res://assets/audio/sfx/impacts/explosion_big.mp3")
 const UI_UNLOCK := preload("res://assets/audio/sfx/ui_unlock.mp3")
 const UI_VICTORY_CARD := preload("res://assets/audio/sfx/ui_victory_card.mp3")
+
+## Extra level (dB) of the sounds that were too discreet in a fight (dev, 2026-10-18).
+const BOSS_ATTACK_TRIM_DB := {BOSS_ICE: 4.0}
 
 ## Boss attack script name -> sound. A pattern absent from the table is silent.
 const _BOSS_ATTACK_SOUND := {

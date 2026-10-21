@@ -11,7 +11,8 @@ const DEFAULT_PATH := "user://settings.json"
 ## Used by the GUT pre-run hook: tests never touch the player's settings.
 const TEST_PATH := "user://test_settings.json"
 const BUSES: Dictionary[StringName, StringName] = {
-	&"master_volume": &"Master", &"music_volume": &"Music", &"sfx_volume": &"SFX"}
+	&"master_volume": &"Master", &"music_volume": &"Music", &"sfx_volume": &"SFX",
+	&"ambience_volume": &"Ambience"}
 
 var path: String = DEFAULT_PATH
 var data := SettingsData.new()

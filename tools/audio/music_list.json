@@ -1,0 +1,47 @@
+{
+  "style": "Instrumental only, no vocals. Light-hearted, colorful and chill indie game soundtrack for a cartoon roguelite, playful and upbeat, bright major key, bouncy bass, pizzicato strings, marimba, glockenspiel, ukulele, soft hand percussion and warm synth pads. Relaxed groove, never dramatic or tense, no epic orchestra, no heavy drums. Clean seamless loop, steady tempo, no fade-out, no sudden stop.",
+  "tracks": [
+    {
+      "id": "combat_stone",
+      "place": "Donjon de pierre (danger 1)",
+      "seconds": 75,
+      "prompt": "Cheerful adventure groove, 110 BPM, bouncy bass and pizzicato strings, playful marimba melody, sunny and carefree."
+    },
+    {
+      "id": "combat_orange",
+      "place": "Donjon orange (danger 2)",
+      "seconds": 75,
+      "prompt": "Warm sunset groove, 112 BPM, funky bass, brass-section stabs kept soft, marimba and hand claps, feel-good."
+    },
+    {
+      "id": "combat_temple",
+      "place": "Temple turquoise (danger 3)",
+      "seconds": 75,
+      "prompt": "Dreamy magical groove, 108 BPM, kalimba, harp plucks, glockenspiel and soft flute, sparkling and relaxed."
+    },
+    {
+      "id": "combat_ice",
+      "place": "Foret gelee (danger 4)",
+      "seconds": 75,
+      "prompt": "Snowy playful groove, 106 BPM, sleigh-bell-like shakers, celesta, glockenspiel, soft piano and bouncy bass, cozy and bright."
+    },
+    {
+      "id": "combat_citadel",
+      "place": "Citadelle rouge (danger 5)",
+      "seconds": 75,
+      "prompt": "Mischievous energetic groove, 118 BPM, slap bass, playful brass, bongos and a catchy synth lead, fun and cheeky."
+    },
+    {
+      "id": "combat_hive",
+      "place": "Ruche verte (danger 6)",
+      "seconds": 75,
+      "prompt": "Quirky groove, 115 BPM, bouncy synth bass, wobbly marimba, pizzicato strings and light percussion, funny and a little mysterious but never scary."
+    },
+    {
+      "id": "boss",
+      "place": "Tous les boss",
+      "seconds": 90,
+      "prompt": "Exciting but fun boss fight, 128 BPM, driving bass, brass and synth lead, lively drums, triumphant and playful, more energy than the normal levels."
+    }
+  ]
+}

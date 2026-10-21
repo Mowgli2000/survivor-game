@@ -12,3 +12,6 @@ One file per weapon id (`data/weapons/<id>.tres` â†’ `fire_sound`), picked in se
 Melee weapons, metallic pass (playtest 2026-10-07: the old sounds read as wooden sticks):
 - StarNinjas, *20 Sword Sound Effects (Attacks and Clashes)* — https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes (katana = sword.6, steel_katana = sword.4, spear = sword.3, heavy_axe = sword_clash.5, warhammer = sword_clash.2). CC0; the author asks for a credit link to his OpenGameArt profile.
 - *RPG Sound Pack* — https://opengameart.org/content/rpg-sound-pack (rapier = sword-unsheathe2, runic_blade = sword-unsheathe5, scythe = sword-unsheathe)
+
+2026-10-18: every weapon sound above was replaced by a sound generated with ElevenLabs (tools/audio/sound_list.json,
+ids `weapon_<id>`). The CC0 originals stay in git history (branch `audio/refonte-elevenlabs`).

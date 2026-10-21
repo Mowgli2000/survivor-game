@@ -1,5 +1,5 @@
 {
-  "credits_estimated": 588,
+  "credits_estimated": 1260,
   "done": {
     "kill_pop": {
       "file": "kill_pop.mp3",
@@ -12,10 +12,6 @@
     "level_up": {
       "file": "level_up.mp3",
       "bytes": 17179
-    },
-    "weapon_katana": {
-      "file": "weapon_katana.mp3",
-      "bytes": 8820
     },
     "boss_slam": {
       "file": "boss_slam.mp3",
@@ -112,6 +108,130 @@
     "wave_clear": {
       "file": "wave_clear.mp3",
       "bytes": 26792
+    },
+    "weapon_alchemy_cannon": {
+      "file": "weapon_alchemy_cannon.mp3",
+      "bytes": 15089
+    },
+    "weapon_bazooka": {
+      "file": "weapon_bazooka.mp3",
+      "bytes": 12163
+    },
+    "weapon_bomb": {
+      "file": "weapon_bomb.mp3",
+      "bytes": 12163
+    },
+    "weapon_celestial_bow": {
+      "file": "weapon_celestial_bow.mp3",
+      "bytes": 8820
+    },
+    "weapon_fire_flask": {
+      "file": "weapon_fire_flask.mp3",
+      "bytes": 12163
+    },
+    "weapon_fire_staff": {
+      "file": "weapon_fire_staff.mp3",
+      "bytes": 12163
+    },
+    "weapon_frost_flask": {
+      "file": "weapon_frost_flask.mp3",
+      "bytes": 12163
+    },
+    "weapon_frost_scepter": {
+      "file": "weapon_frost_scepter.mp3",
+      "bytes": 13835
+    },
+    "weapon_heavy_axe": {
+      "file": "weapon_heavy_axe.mp3",
+      "bytes": 12163
+    },
+    "weapon_heavy_crossbow": {
+      "file": "weapon_heavy_crossbow.mp3",
+      "bytes": 8820
+    },
+    "weapon_javelins": {
+      "file": "weapon_javelins.mp3",
+      "bytes": 12163
+    },
+    "weapon_katana": {
+      "file": "weapon_katana.mp3",
+      "bytes": 12163
+    },
+    "weapon_laser_pistol": {
+      "file": "weapon_laser_pistol.mp3",
+      "bytes": 8820
+    },
+    "weapon_lightning_staff": {
+      "file": "weapon_lightning_staff.mp3",
+      "bytes": 10492
+    },
+    "weapon_longbow": {
+      "file": "weapon_longbow.mp3",
+      "bytes": 10492
+    },
+    "weapon_meteor_grimoire": {
+      "file": "weapon_meteor_grimoire.mp3",
+      "bytes": 17179
+    },
+    "weapon_pulse": {
+      "file": "weapon_pulse.mp3",
+      "bytes": 12163
+    },
+    "weapon_rapier": {
+      "file": "weapon_rapier.mp3",
+      "bytes": 8820
+    },
+    "weapon_runic_blade": {
+      "file": "weapon_runic_blade.mp3",
+      "bytes": 12163
+    },
+    "weapon_scythe": {
+      "file": "weapon_scythe.mp3",
+      "bytes": 12163
+    },
+    "weapon_shadow_blades": {
+      "file": "weapon_shadow_blades.mp3",
+      "bytes": 10492
+    },
+    "weapon_shuriken": {
+      "file": "weapon_shuriken.mp3",
+      "bytes": 8820
+    },
+    "weapon_sling": {
+      "file": "weapon_sling.mp3",
+      "bytes": 8820
+    },
+    "weapon_smg": {
+      "file": "weapon_smg.mp3",
+      "bytes": 8820
+    },
+    "weapon_spear": {
+      "file": "weapon_spear.mp3",
+      "bytes": 10492
+    },
+    "weapon_steel_katana": {
+      "file": "weapon_steel_katana.mp3",
+      "bytes": 8820
+    },
+    "weapon_venom_fangs": {
+      "file": "weapon_venom_fangs.mp3",
+      "bytes": 8820
+    },
+    "weapon_warhammer": {
+      "file": "weapon_warhammer.mp3",
+      "bytes": 13835
+    },
+    "level_up_b": {
+      "file": "level_up_b.mp3",
+      "bytes": 17179
+    },
+    "level_up_c": {
+      "file": "level_up_c.mp3",
+      "bytes": 17179
+    },
+    "boss_rage": {
+      "file": "boss_rage.mp3",
+      "bytes": 29300
     }
   }
 }

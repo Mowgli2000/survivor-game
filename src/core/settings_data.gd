@@ -7,7 +7,8 @@ extends RefCounted
 const VERSION := 1
 ## "" = system language.
 const LOCALES: Array[String] = ["", "en", "fr"]
-const VOLUME_KEYS: Array[StringName] = [&"master_volume", &"music_volume", &"sfx_volume"]
+const VOLUME_KEYS: Array[StringName] = [&"master_volume", &"music_volume", &"sfx_volume",
+	&"ambience_volume"]
 ## Camera zoom range (player option): below 1 shows more of the arena, above 1 less.
 const ZOOM_MIN := 0.75
 const ZOOM_MAX := 1.15
@@ -17,6 +18,7 @@ const BOOL_KEYS: Array[StringName] = [&"fullscreen", &"vsync", &"screen_shake",
 var master_volume: float = 0.8
 var music_volume: float = 0.7
 var sfx_volume: float = 0.8
+var ambience_volume: float = 0.7
 var fullscreen: bool = false
 var vsync: bool = true
 var screen_shake: bool = true

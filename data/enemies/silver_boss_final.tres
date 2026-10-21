@@ -22,9 +22,11 @@
 [sub_resource type="Resource" id="P_spikes"]
 script = ExtResource("s_spikes")
 effect = ExtResource("v_spikes")
+warn_shape = 2
 windup = 0.9
 repeats = 5
 repeat_interval = 0.18
+sound_per_strike = true
 recovery = 1.3
 projectile_damage = 15.0
 spikes = 5
@@ -48,6 +50,7 @@ projectile_damage = 18.0
 [sub_resource type="Resource" id="P_hail"]
 script = ExtResource("s_hail")
 effect = ExtResource("v_hail")
+warn_shape = 2
 windup = 0.9
 repeats = 5
 repeat_interval = 0.55
@@ -75,6 +78,7 @@ projectile_damage = 16.0
 [sub_resource type="Resource" id="C_whiteout_hail"]
 script = ExtResource("s_hail")
 effect = ExtResource("v_whiteout_hail")
+warn_shape = 2
 windup = 1.0
 repeats = 5
 repeat_interval = 0.55

@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="1_weapon"]
 [ext_resource type="Script" path="res://src/weapons/behaviors/projectile_shooter_behavior.gd" id="2_behavior"]
 [ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/javelins.wav" id="9_sound"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/javelins.mp3" id="9_sound"]
 [ext_resource type="Texture2D" path="res://assets/icons/weapons/javelins.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
@@ -25,7 +25,7 @@ projectile_count = 1
 script = ExtResource("1_weapon")
 id = &"javelins"
 name_key = "WEAPON_JAVELINS"
-locked = true
+locked = false
 description_key = "WEAPON_JAVELINS_DESC"
 behavior = SubResource("Resource_behavior")
 levels = Array[ExtResource("3_level")]([SubResource("Resource_l2"), SubResource("Resource_l3"), SubResource("Resource_l4")])
@@ -43,7 +43,7 @@ pierce = 1
 projectile_radius = 6.0
 projectile_lifetime = 0.75
 fire_sound = ExtResource("9_sound")
-fire_volume_db = -2.5
+fire_volume_db = 3.0
 color = Color(0.4, 0.88, 0.4, 1)
 icon = ExtResource("icon_tex")
 icon_diagonal = true

@@ -17,7 +17,6 @@ const ANIM := {
 	WeaponData.ProjectileStyle.BOMB: Vector2i(23, 12), WeaponData.ProjectileStyle.FIREBALL: Vector2i(35, 12),
 	WeaponData.ProjectileStyle.LIGHTNING: Vector2i(47, 12), WeaponData.ProjectileStyle.ORB: Vector2i(59, 12),
 	WeaponData.ProjectileStyle.GRENADE: Vector2i(71, 6), WeaponData.ProjectileStyle.SHADOW_BLADE: Vector2i(77, 12),
-	WeaponData.ProjectileStyle.STONE: Vector2i(89, 12),
 }
 ## Seconds one pass of a loop lasts, whatever its number of frames (so 12 frames play at 26 fps, 6 at 13 fps).
 const ANIM_CYCLE := 0.46

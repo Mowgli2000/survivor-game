@@ -28,7 +28,8 @@ func test_every_style_has_render_settings_and_a_cell() -> void:
 		var loop: Vector2i = ProjectileRenderer.ANIM[style]
 		frames += loop.y
 		assert_lte(loop.x + loop.y, ProjectileRenderer.BODY_CELLS)
-	assert_eq(ProjectileRenderer.BODY_CELLS, styles - 2 + frames)
+	# The 12 frames of the old sling loop stay in the atlas, unused (the sling stone is a still ball now).
+	assert_eq(ProjectileRenderer.BODY_CELLS, styles - 2 + frames + 12)
 	var texture := ProjectileRenderer.BODY_TEXTURE
 	var cell := texture.get_width() / ProjectileRenderer.BODY_COLUMNS
 	var rows := ceili(float(ProjectileRenderer.BODY_CELLS) / ProjectileRenderer.BODY_COLUMNS)

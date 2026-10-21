@@ -434,3 +434,23 @@ Dernière mise à jour : 2026-10-09 (nuit, session 11 : refonte visuelle « Cris
 - Fronde : projectile_radius 6 -> 4.8. Anneau arcanique : +12 % vitesse d attaque en plus de la portee.
 - Victoire : carte « Nouveau fond » (image + lieu) dans l ecran des deblocages quand le danger gagne est nouveau.
 - Mini-boss : copper (Ronin) 60 k PV a la vague 10 contre 87 k pour l astral : trop proche, a reequilibrer apres playtest.
+
+### 2026-10-18 — refonte audio ElevenLabs (branches `audio/refonte-elevenlabs` puis `audio/sons-armes`)
+- Outil : `tools/audio/gen_sfx.py` + `tools/audio/sound_list.json` (suivi dans `generated.json`, ~1 260 crédits estimés). Clé dans la variable d'environnement `ELEVENLABS_API_KEY`. Règle : annoncer et faire valider avant tout appel payant, un tirage par son.
+- Fait : sons des 6 boss (entrée, changement de phase, fureur avec tremblement de caméra, mort, une attaque par famille, un son par frappe séparée via `BossPattern.sound_per_strike`), tirs ennemis, impacts (feu, glace, éclair), explosions, interface (déblocage, carte de victoire), victoire, fin de vague, 28 sons d'armes (banc d'écoute `src/debug/weapon_sound_test.tscn`). Gardés tels quels : ramassages XP et or, kill pop. Reporté : son de montée de niveau (« pas assez Dofus »).
+- Avertissements de boss : balayages annoncés progressivement (souffle de feu, cône, faisceau), souffle du dragon depuis la bouche (`EnemyData.mouth_cell`, à vérifier en capture). Nouvelle règle : l'avertissement a la forme de l'animation (`BossPattern.warn_shape` : Plain / Jagged / Star / Blob ; fissures de l'Idole, cage et flaques de la Reine). Le remplissage de zone au moment de l'impact a été essayé et rejeté par le dev (effet « cheap »).
+- Bus `Ambience` (volume réglable dans les paramètres) et `Audio.loop_start(..., bus)` pour les boucles d'ambiance (mp3/ogg bouclés).
+- Musique : conditions Eleven Music relevées dans `docs/design/audio-musique-licence.md` (Starter, jeu Indie sous 500 000 $ de revenus cumulés). Le dev a décidé de travailler comme si la licence était acquise. 2 essais de musique générés (dramatique puis léger) : refusés par le dev, **les 3 musiques actuelles restent pour tous les lieux** (décision 2026-10-19). Ambiance par lieu : non faite, à la demande.
+- TEMPORAIRE avant fusion de `audio/sons-armes` : 28 armes de départ du chasseur novice, armes débloquées, exceptions de test.
+
+### 2026-10-20/21 — cohérence visuelle des projectiles et effets d'armes (branche `audio/sons-armes`)
+- Règle : **zone d'animation = zone de dégâts** ; deux animations d'attaque ne doivent pas se ressembler (anneau de la lame runique refusé car trop proche du marteau).
+- Projectiles : billes d'ennemis plates (`tools/art/make_enemy_shots.py`), javelot, fronde, shuriken, étoile de la ruche refaits.
+- Effets d'armes refaits en aplats à contour sombre : hache, bardeau de guerre, rapière, lame runique (épée + éclairs, sans anneau), katana d'acier (trait `iaido_line` + marque `steel_slash`), fioles de feu et de givre, sceptre de givre, pulsar, 5 explosions (`explosion_fire/frost/blast/bomb`, `impact_sling`). Garde : `meteor_impact`, `explosion_flask`, `flame_wave`. Le rouge de `explosion_blast` est gardé.
+- Arbalète lourde : plus d'animation d'impact, donc **plus de zone au sol ni de dégâts de zone** (ralentissement sur coup gardé). Test adapté.
+- Supprimées (inutilisées) : planches `frag_burst`, `frost_cone`, `planted_bolt`.
+- Outil de capture : `--weapons=a,b,c` (ne garde que ces armes, rang max) ; avec `--shapes` les zones de dégâts sont en magenta.
+- Vérifié en jeu : givre, flaques, marteau collent à leur zone. Non attrapés en capture : bombe, balayage de hache, katana d'acier, fronde. Lame runique : petite (zone = effet) ; agrandir = décision gameplay du dev.
+- Stress test : 72-79 FPS, identique à la version précédente (72-76) : machine lente ce jour, pas de régression ; à remesurer sur le PC du dev.
+- **Reste à faire** : essai en jeu de toutes les armes par le dev (2026-10-21) ; `meteor_impact` et look « flocon » de `explosion_frost` si ça déplaît ; animations d'attaque des héros en dernier.
+- TEMPORAIRE avant fusion de `audio/sons-armes` : 28 armes du chasseur novice (`drifter.tres`), exceptions `TEMP_PLAYTEST_UNLOCKED` dans `tests/data/test_content.gd` et `tests/unit/test_seal_rewards.gd`, armes débloquées.

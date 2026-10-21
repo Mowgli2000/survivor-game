@@ -32,6 +32,12 @@ func test_corrupt_file_gives_defaults() -> void:
 	assert_almost_eq(Settings.data.master_volume, 0.8, 0.0001)
 
 
+func test_ambience_volume_goes_to_its_bus() -> void:
+	Settings.set_value(&"ambience_volume", 0.4)
+	var bus := AudioServer.get_bus_index(&"Ambience")
+	assert_almost_eq(AudioServer.get_bus_volume_db(bus), linear_to_db(0.4), 0.01)
+
+
 func test_volume_goes_to_the_bus_and_zero_mutes() -> void:
 	var bus := AudioServer.get_bus_index(&"Music")
 	Settings.set_value(&"music_volume", 0.5)

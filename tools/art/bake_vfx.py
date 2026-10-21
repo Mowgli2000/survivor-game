@@ -40,26 +40,26 @@ SHEETS = {
 # Third pass (tools/art/gen_vfx_hd.py, art_tests/vfx_hd): 4 columns, 3 rows (12 frames) or 4 rows (16 frames, square image).
 # These names replace the ones above. name: (candidate 1|2, boost, scale, forward, duration)
 SHEETS_HD = {
-    "frost_shards": (1, 1.7, 1.1, 0.5, 0.3),
-    "steel_slash": (1, 1.8, 2.2, 0.0, 0.22),
+    "frost_shards": (3, 1.7, 1.1, 0.5, 0.3),
+    "steel_slash": (3, 1.8, 2.2, 0.0, 0.22),
     "fang_slash": (1, 1.8, 2.2, 0.0, 0.18),
-    "hammer_smash": (1, 1.6, 2.2, 0.0, 0.36),
+    "hammer_smash": (3, 1.6, 2.2, 0.0, 0.36),
     "impact_generic": (1, 1.5, 2.2, 0.0, 0.15),
-    "impact_sling": (1, 1.5, 2.2, 0.0, 0.16),
+    "impact_sling": (3, 1.5, 2.2, 0.0, 0.16),
     "impact_fire": (1, 1.5, 2.2, 0.0, 0.2),
     "impact_frost": (1, 1.5, 2.2, 0.0, 0.2),
     "impact_lightning": (2, 1.5, 2.2, 0.0, 0.15),
     "star_impact": (1, 1.5, 2.2, 0.0, 0.22),
-    "explosion_fire": (2, 1.6, 2.4, 0.0, 0.35),
-    "explosion_frost": (1, 1.6, 2.4, 0.0, 0.35),
-    "explosion_blast": (1, 1.6, 2.4, 0.0, 0.35),
+    "explosion_fire": (3, 1.6, 2.4, 0.0, 0.35),
+    "explosion_frost": (3, 1.6, 2.4, 0.0, 0.35),
+    "explosion_blast": (3, 1.6, 2.4, 0.0, 0.35),
     "explosion_star": (1, 1.6, 2.4, 0.0, 0.38),
     "flame_wave": (1, 1.8, 2.4, 0.0, 0.3),
-    "iaido_line": (2, 1.8, 1.3, 0.0, 0.22),
+    "iaido_line": (3, 1.8, 1.3, 0.0, 0.22),
     "rapier_slash": (2, 1.8, 1.3, 0.0, 0.16),
-    "axe_slam": (1, 1.6, 2.4, 0.0, 0.32),
+    "axe_slam": (4, 1.6, 2.4, 0.0, 0.32),
     "scythe_blade": (1, 1.8, 2.2, 0.0, 0.36),
-    "rune_sigil": (1, 1.6, 1.9, 0.0, 0.38),
+    "rune_sigil": (4, 1.6, 1.9, 0.0, 0.38),
     "rapier_prick": (1, 1.8, 2.0, 0.0, 0.15),
     "spear_pierce": (1, 1.8, 1.3, 0.0, 0.16),
     # fifth pass (2026-10-11): painted beams, chain bolt and meteor
@@ -68,10 +68,9 @@ SHEETS_HD = {
     "storm_arc": (1, 1.5, 1.0, 0.0, 0.16),
     "meteor_fall": (2, 2.6, 1.0, 0.0, 0.5),
     "meteor_impact": (1, 3.0, 2.4, 0.0, 0.38),
-    "fire_puddle": (1, 1.6, 2.4, 0.0, 0.5),
-    "frag_burst": (2, 1.6, 2.4, 0.0, 0.3),
+    "fire_puddle": (3, 1.6, 2.4, 0.0, 0.5),
     # sixth pass (2026-10-11): one unique explosion per explosive weapon
-    "explosion_bomb": (1, 1.6, 2.4, 0.0, 0.35),
+    "explosion_bomb": (3, 1.6, 2.4, 0.0, 0.35),
     "explosion_flask": (1, 1.6, 2.4, 0.0, 0.35),
     "explosion_cannon": (1, 1.6, 2.4, 0.0, 0.35),
     # Demon Knight attacks (tools/art/gen_vfx_knight.py, 2026-10-16)
@@ -94,7 +93,7 @@ SHEETS_HD = {
     "toon_obsidian_fx2": (1, 1.3, 2.2, 0.0, 0.4),
     "toon_obsidian_fx3": (1, 1.3, 2.2, 0.0, 0.45),
     "toon_obsidian_fx4": (1, 1.3, 2.2, 0.0, 0.45),
-    "toon_obsidian_fx5": (1, 1.3, 2.2, 0.0, 0.4),
+    "toon_obsidian_fx5": (3, 1.3, 2.2, 0.0, 0.4),
     "toon_astral_fx1": (1, 1.3, 2.2, 0.0, 0.45),
     "toon_astral_fx2": (1, 1.3, 2.2, 0.0, 0.4),
     "toon_astral_fx3": (1, 1.3, 2.2, 0.0, 0.45),
@@ -153,15 +152,13 @@ SHEETS_HD = {
     # seventh pass: gravity well, frost zone and cone
     "gravity_well": (1, 1.6, 2.4, 0.0, 0.9),
     "well_collapse": (1, 1.6, 2.4, 0.0, 0.5),
-    "frost_zone": (1, 1.6, 2.4, 0.0, 0.9),
-    "frost_cone": (1, 1.7, 1.1, 0.55, 0.3),
-    "planted_bolt": (1, 1.6, 2.4, 0.0, 0.9),
+    "frost_zone": (3, 1.6, 2.4, 0.0, 0.9),
 }
 # name: (candidate, cell file name)
 CELLS = {
-    "p_orb": (1, "01_orb"), "p_bullet": (1, "03_bullet"), "p_missile": (1, "04_missile"), "p_shuriken_dark": (2, "05_shuriken"),
+    "p_orb": (1, "01_orb"), "p_bullet": (1, "03_bullet"), "p_missile": (1, "04_missile"), 
     "p_fireball": (1, "07_fireball"), "p_ice_shard": (1, "08_ice_shard"), "p_lightning": (1, "09_lightning"),
-    "p_arrow": (1, "10_arrow"), "p_stone": (1, "11_stone"), "p_javelin": (1, "12_javelin"), "p_bomb": (1, "13_bomb"),
+    "p_arrow": (1, "10_arrow"),  "p_bomb": (1, "13_bomb"),
     "p_fire_flask": (1, "14_fire_flask"), "p_frost_flask": (1, "15_frost_flask"), "p_grenade": (1, "16_grenade"),
     "p_cannonball": (1, "17_cannonball"), "p_bomb_flask": (2, "23_bomb_flask"),
 }
@@ -170,7 +167,7 @@ CELLS = {
 # They are removed at bake time: every small isolated blob of a frame is erased.
 NO_SPECKS = {"flame_wave", "iaido_line", "steel_slash", "fang_slash", "axe_slam", "hammer_smash", "rune_sigil",
              "rapier_slash", "rapier_prick", "spear_pierce", "crystal_beam", "frost_beam", "storm_arc",
-             "meteor_fall", "meteor_impact"}
+             "meteor_fall", "meteor_impact", "frost_shards", "fire_puddle", "frost_zone"}
 # Sheets made of dark solid matter (rock): their dark pixels stay opaque instead of fading with their brightness.
 SOLID = {"meteor_fall", "meteor_impact"}
 # Cartoon sheets (dev note 2026-10-17): hard edges, no soft halo; dark outline pixels stay opaque.
@@ -182,9 +179,10 @@ NO_FIT = {"knighttd_strip", "toon_gold_chain", "toon_obsidian_web", "toon_silver
 SOFT_MARGIN = {"rune_sigil": 90}
 SPECK_SIDE = 96  # masks are worked on at this size per frame
 SPECK_KEEP = 0.10  # a blob smaller than this share of the frame's biggest blob is a speck
+SPECK_KEEP_BY_SHEET = {"frost_shards": 0.3, "fire_puddle": 0.3, "frost_zone": 0.3}  # dev note 2026-10-19: fewer loose particles
 
 
-def strip_specks(image: Image.Image, columns: int, rows: int) -> None:
+def strip_specks(image: Image.Image, columns: int, rows: int, keep: float = SPECK_KEEP) -> None:
     """Erases the small isolated blobs (and their halo) of every frame, in place."""
     cell_w, cell_h = image.width // columns, image.height // rows
     alpha_full = image.getchannel("A")
@@ -216,7 +214,7 @@ def strip_specks(image: Image.Image, columns: int, rows: int) -> None:
                 continue
             biggest = max(len(b) for b in blobs)
             for blob in blobs:
-                if len(blob) < biggest * SPECK_KEEP:
+                if len(blob) < biggest * keep:
                     for bx, by in blob:
                         for dx in (-1, 0, 1):
                             for dy in (-1, 0, 1):
@@ -236,7 +234,7 @@ LINES = {"iaido_line": 0.97, "spear_pierce": 0.97, "rapier_slash": 0.97, "crysta
 # Extra EffectSheet fields written after the template. squash: height of a plain sheet relative to its width (the
 # meteor impact is painted in perspective, an oval: it is stretched back to the round damage circle). head: where the
 # meteor's rock sits in its frame, as a share of the frame side from the center (it lands on the impact point).
-EXTRA = {"meteor_impact": "squash = 1.35", "fire_puddle": "squash = 1.2", "frost_zone": "squash = 1.35"+chr(10)+"opacity = 0.55", "explosion_flask": "squash = 1.4",
+EXTRA = {"meteor_impact": "squash = 1.35", "frost_zone": "opacity = 0.9", "explosion_flask": "squash = 1.4",
          "meteor_fall": "head = Vector2(0.26, 0.18)\nart_angle = 0.64"}
 
 TRES = """[gd_resource type="Resource" script_class="EffectSheet" format=3]
@@ -289,8 +287,8 @@ def measure_reach(image: Image.Image, columns: int, rows: int) -> float:
 
 # Sheets whose frames were doubled by tools/art/interpolate_sheet.py: art_tests/vfx_hd/<name>_x2.png, 8 columns of 320 px cells.
 X2 = {"explosion_fire", "explosion_frost", "explosion_blast", "explosion_star", "explosion_bomb", "explosion_flask",
-      "explosion_cannon", "explosion_staff", "hammer_smash", "axe_slam", "frag_burst", "meteor_impact", "rune_sigil",
-      "fire_puddle", "meteor_fall", "scythe_blade", "gravity_well", "well_collapse", "frost_zone", "frost_cone", "planted_bolt"}
+      "explosion_cannon", "explosion_staff", "hammer_smash", "axe_slam", "meteor_impact", "rune_sigil",
+      "fire_puddle", "meteor_fall", "scythe_blade", "gravity_well", "well_collapse", "frost_zone"}
 X2_CELL = 320
 
 
@@ -382,7 +380,7 @@ def bake_sheet(name: str) -> None:
             k = (min(1.0, (m - (45 if toon else 22)) / ramp)) * edge
             pixels[x, y] = (int(red * edge), int(green * edge), int(blue * edge), min(255, int(m * boost * k)))
     if name in NO_SPECKS:
-        strip_specks(out, columns, rows)
+        strip_specks(out, columns, rows, SPECK_KEEP_BY_SHEET.get(name, SPECK_KEEP))
     out.save(ROOT / "assets/vfx" / (name + ".png"))
     reach = extent_reach(out, columns, rows, circle=not any(tag in name for tag in DIRECTIONAL)) if name.startswith(TOON_PREFIX) else LINES.get(name) or measure_reach(out, columns, rows)
     text = TRES.format(name=name, reach=round(reach, 3), duration=duration, scale=scale, forward=forward, columns=columns, rows=rows, frames=columns * rows)

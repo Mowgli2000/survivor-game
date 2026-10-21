@@ -126,13 +126,15 @@ func test_poison_stacks_with_every_hit_and_counts_for_the_weapon() -> void:
 	assert_eq(enemy.poison_stacks, 0, "it wears off")
 
 
-func test_the_heavy_crossbow_plants_its_bolt_and_slows_the_ground_around() -> void:
+func test_the_heavy_crossbow_leaves_no_ground_zone_and_slows_on_hit() -> void:
+	# Dev decision 2026-10-19: no impact animation, so no ground zone (and no zone damage) either.
 	var s := await _setup(Vector2(400.0, 0.0))
 	var weapon: WeaponData = ContentDB.get_def(&"weapons", &"heavy_crossbow")
-	assert_gt(weapon.zone_time, 0.0)
+	assert_eq(weapon.zone_time, 0.0)
+	assert_not_null(weapon.status)
 	_fire(s, &"heavy_crossbow")
 	await wait_seconds(1.1)  # the bolt hit, pierced on and ended
-	assert_gt(s.projectiles._zones.size(), 0, "a patch is left where the bolt ended")
+	assert_eq(s.projectiles._zones.size(), 0, "no patch is left where the bolt ended")
 
 
 func test_every_weapon_has_a_painted_animation_for_its_attack() -> void:

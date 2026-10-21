@@ -2,7 +2,7 @@ class_name ConeBreathPattern
 extends BossPattern
 ## Breath (frost, fire): volleys of `count` projectiles in a `spread_degrees`
 ## cone that sweeps across `sweep_degrees` over the repeats, around the
-## direction of the player at the windup (shown by the two edge lines).
+## direction of the player at the windup (each volley's cone is announced just before it fires).
 ## Side-stepping out of the sweep is the counter.
 
 @export var count: int = 4
@@ -11,10 +11,7 @@ extends BossPattern
 
 
 func telegraph(ctx: BossContext, boss: Enemy, aim: Vector2) -> void:
-	var length := projectile_speed * ctx.speed_scale * 0.8
-	for k in 2:
-		var angle := volley_angle(boss.position, aim, k * maxi(repeats - 1, 0))
-		_warn_line(ctx, boss.position, boss.position + Vector2.from_angle(angle) * length, 6.0, boss.data.color)
+	_warn_volley(ctx, boss, aim, 0, -1.0)
 
 
 func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
@@ -23,6 +20,15 @@ func fire(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int) -> void:
 	for k in count:
 		var t := 0.5 if count == 1 else float(k) / (count - 1)
 		_shoot(ctx, boss, Vector2.from_angle(center - spread * 0.5 + spread * t))
+	if repeat + 1 < repeats:
+		_warn_volley(ctx, boss, aim, repeat + 1, repeat_interval)
+
+
+## Announces the cone of volley `repeat` for `seconds` (default: the windup).
+func _warn_volley(ctx: BossContext, boss: Enemy, aim: Vector2, repeat: int, seconds: float) -> void:
+	var length := projectile_speed * ctx.speed_scale * 0.8
+	_warn_sector(ctx, boss, boss.position, volley_angle(boss.position, aim, repeat), length,
+			deg_to_rad(spread_degrees) * 0.5, seconds)
 
 
 ## Center of volley `repeat`: from one edge of the sweep to the other.

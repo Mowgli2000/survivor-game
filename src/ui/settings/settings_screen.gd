@@ -6,7 +6,7 @@ extends Control
 
 signal closed
 
-const VOLUMES: Array[StringName] = [&"master_volume", &"music_volume", &"sfx_volume"]
+const VOLUMES: Array[StringName] = [&"master_volume", &"music_volume", &"sfx_volume", &"ambience_volume"]
 const DISPLAY: Array[StringName] = [&"fullscreen", &"vsync"]
 const GAME: Array[StringName] = [&"screen_shake", &"damage_numbers", &"reduce_motion",
 	&"show_hints", &"player_hp_bar"]

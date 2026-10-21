@@ -20,6 +20,7 @@
 [sub_resource type="Resource" id="P_checker"]
 script = ExtResource("s_checker")
 effect = ExtResource("v_checker")
+warn_shape = 2
 windup = 1.0
 repeats = 2
 repeat_interval = 0.7
@@ -54,6 +55,7 @@ projectile_damage = 22.0
 [sub_resource type="Resource" id="C_inferno_checker"]
 script = ExtResource("s_checker")
 effect = ExtResource("v_inferno_checker")
+warn_shape = 2
 windup = 1.0
 repeats = 2
 repeat_interval = 0.7

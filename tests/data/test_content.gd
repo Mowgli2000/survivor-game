@@ -1,6 +1,9 @@
 extends GutTest
 ## Validates every content definition under res://data/ (loaded through ContentDB).
 
+## TEMPORARY (2026-10-18, audio test of the weapon sounds): the novice hunter has every weapon as a starting weapon and the locked ones are unlocked. Remove with data/characters/drifter.tres.
+const TEMP_PLAYTEST_UNLOCKED: Array[StringName] = [&"alchemy_cannon", &"celestial_bow", &"heavy_crossbow", &"javelins", &"scythe", &"meteor_grimoire"]
+
 var _keys: Dictionary
 
 
@@ -115,7 +118,7 @@ func test_challenges() -> void:
 		var target := ContentDB.get_def(challenge.unlock_category, challenge.unlock_id)
 		assert_not_null(target, "%s: unknown unlock %s/%s" % [challenge.id, challenge.unlock_category, challenge.unlock_id])
 		if target != null:
-			assert_true(target.get(&"locked"), "%s unlocks %s, which is not locked" % [challenge.id, challenge.unlock_id])
+			assert_true(target.get(&"locked") or challenge.unlock_id in TEMP_PLAYTEST_UNLOCKED, "%s unlocks %s, which is not locked" % [challenge.id, challenge.unlock_id])
 		if challenge.kind == ChallengeData.Kind.WIN_WITH:
 			assert_true(ContentDB.has_def(&"characters", challenge.character_id), "%s: unknown character" % challenge.id)
 		if challenge.kind == ChallengeData.Kind.KILL_ENEMY:
@@ -274,7 +277,7 @@ func test_every_class_and_family_has_enough_weapons() -> void:
 ## Each class offers exactly two starting weapons (dev's rule, session 8).
 func test_every_class_has_two_starting_weapons() -> void:
 	for character: CharacterData in ContentDB.get_all(&"characters"):
-		assert_eq(character.starting_weapons.size(), 2, String(character.id))
+		assert_eq(character.starting_weapons.size(), 2 if character.id != &"drifter" else character.starting_weapons.size(), String(character.id))
 		for weapon in character.starting_weapons:
 			assert_true(character.allows_weapon(weapon), "%s can use %s" % [character.id, weapon.id])
 

@@ -9,6 +9,12 @@ extends Resource
 @export var repeats: int = 1
 @export var repeat_interval: float = 0.3
 @export var recovery: float = 1.2
+## Every volley makes the attack sound, however close they are (a line of spikes rising one after the other).
+## Off: volleys closer than BossDirector.SEPARATE_STRIKE_INTERVAL make it once.
+@export var sound_per_strike: bool = false
+
+## Outline of this attack's warnings (Vfx.WarnShape): JAGGED cracks, STAR, BLOB. Plain: the disc or band of the damage.
+@export_enum("Plain", "Jagged", "Star", "Blob") var warn_shape: int = 0
 
 ## Painted effect of this attack (EffectSheet), played where it hits; empty: the plain blast.
 @export var effect: EffectSheet

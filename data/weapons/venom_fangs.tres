@@ -4,7 +4,7 @@
 [ext_resource type="Resource" path="res://data/vfx/fang_slash.tres" id="vfx_slash"]
 [ext_resource type="Script" path="res://src/weapons/behaviors/melee_arc_behavior.gd" id="2_behavior"]
 [ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/rapier.wav" id="9_sound"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/venom_fangs.mp3" id="9_sound"]
 [ext_resource type="Texture2D" path="res://assets/icons/weapons/venom_fangs.png" id="icon_tex"]
 [ext_resource type="Script" path="res://src/weapons/status_data.gd" id="4_status"]
 
@@ -53,7 +53,7 @@ slash_style = 1
 status = SubResource("Resource_poison")
 status_chance = 1.0
 fire_sound = ExtResource("9_sound")
-fire_volume_db = -4.0
+fire_volume_db = 3.0
 color = Color(0.72, 0.4, 1.0, 1)
 icon = ExtResource("icon_tex")
 float_scale = 1.0

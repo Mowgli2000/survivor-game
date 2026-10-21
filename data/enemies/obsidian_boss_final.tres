@@ -21,6 +21,7 @@
 [sub_resource type="Resource" id="P_pools"]
 script = ExtResource("s_pools")
 effect = ExtResource("v_pools")
+warn_shape = 3
 windup = 1.0
 repeats = 5
 repeat_interval = 0.5
@@ -45,6 +46,7 @@ projectile_damage = 16.0
 [sub_resource type="Resource" id="P_eggs"]
 script = ExtResource("s_eggs")
 effect = ExtResource("v_eggs")
+warn_shape = 3
 windup = 1.2
 recovery = 1.4
 projectile_damage = 14.0
@@ -52,6 +54,7 @@ projectile_damage = 14.0
 [sub_resource type="Resource" id="P_cage"]
 script = ExtResource("s_cage")
 effect = ExtResource("v_cage")
+warn_shape = 2
 windup = 1.0
 repeats = 2
 repeat_interval = 0.6
@@ -61,6 +64,7 @@ projectile_damage = 18.0
 [sub_resource type="Resource" id="C_brood_pools"]
 script = ExtResource("s_pools")
 effect = ExtResource("v_brood_pools")
+warn_shape = 3
 windup = 1.0
 repeats = 5
 repeat_interval = 0.5
@@ -70,6 +74,7 @@ projectile_damage = 6.0
 [sub_resource type="Resource" id="C_brood_cage"]
 script = ExtResource("s_cage")
 effect = ExtResource("v_brood_cage")
+warn_shape = 2
 windup = 1.0
 repeats = 2
 repeat_interval = 0.5

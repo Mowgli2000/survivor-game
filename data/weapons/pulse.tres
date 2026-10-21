@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://src/weapons/weapon_data.gd" id="1_weapon"]
 [ext_resource type="Script" path="res://src/weapons/behaviors/projectile_shooter_behavior.gd" id="2_behavior"]
 [ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/pulse.ogg" id="9_sound"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/pulse.mp3" id="9_sound"]
 [ext_resource type="Texture2D" path="res://assets/icons/weapons/pulse.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/vfx/gravity_well.tres" id="10_well"]
 [ext_resource type="Resource" path="res://data/vfx/well_collapse.tres" id="11_end"]
@@ -54,7 +54,7 @@ pull_speed = 200.0
 projectile_stat_applies = false
 landing_blast = false
 fire_sound = ExtResource("9_sound")
-fire_volume_db = -1.0
+fire_volume_db = 0.0
 color = Color(1, 0.9, 0.5, 1)
 icon = ExtResource("icon_tex")
 float_scale = 0.6

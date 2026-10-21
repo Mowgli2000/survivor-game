@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://src/weapons/behaviors/projectile_shooter_behavior.gd" id="2_behavior"]
 [ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
 [ext_resource type="Script" path="res://src/weapons/status_data.gd" id="4_status"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/fire_flask.wav" id="9_sound"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/bomb.mp3" id="9_sound"]
 [ext_resource type="Texture2D" path="res://assets/icons/weapons/fire_flask.png" id="icon_tex"]
 [ext_resource type="Resource" path="res://data/vfx/fire_puddle.tres" id="10_puddle"]
 
@@ -54,7 +54,7 @@ explosion_radius = 80.0
 status = SubResource("Resource_status")
 status_chance = 1.0
 fire_sound = ExtResource("9_sound")
-fire_volume_db = 0.0
+fire_volume_db = 5.0
 color = Color(1.0, 0.5, 0.15, 1)
 icon = ExtResource("icon_tex")
 float_scale = 0.72

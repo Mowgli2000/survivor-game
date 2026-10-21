@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://src/weapons/behaviors/melee_arc_behavior.gd" id="2_behavior"]
 [ext_resource type="Script" path="res://src/weapons/weapon_level.gd" id="3_level"]
 [ext_resource type="Script" path="res://src/weapons/status_data.gd" id="4_status"]
-[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/katana.ogg" id="9_sound"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/weapons/katana.mp3" id="9_sound"]
 [ext_resource type="Texture2D" path="res://assets/icons/weapons/katana.png" id="icon_tex"]
 
 [sub_resource type="Resource" id="Resource_behavior"]
@@ -53,7 +53,7 @@ slash_style = 5
 status = SubResource("Resource_burn")
 status_chance = 1.0
 fire_sound = ExtResource("9_sound")
-fire_volume_db = 5.0
+fire_volume_db = 3.0
 color = Color(1, 0.54, 0.17, 1)
 icon = ExtResource("icon_tex")
 float_scale = 1.15

@@ -12,4 +12,4 @@ frames = 24
 duration = 0.9
 scale = 2.4
 forward = 0.0
-reach = 0.9
+reach = 0.83

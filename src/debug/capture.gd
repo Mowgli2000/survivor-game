@@ -1,7 +1,7 @@
 extends Node
 ## Plays a run with a bot and saves a screenshot, so visuals can be checked
 ## without a human at the keyboard (used by Claude Code).
-## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--shapes] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--boss=shogun|ronin] [--coop] [--arrival] [--pickweapon] [--character=<id>] [--mouse=x,y] [--clean]
+## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--weapons=a,b] [--shapes] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--boss=shogun|ronin] [--coop] [--arrival] [--pickweapon] [--character=<id>] [--mouse=x,y] [--clean]
 ## --clean: store-quality capture (no debug overlay, no gamepad hint bars). For 1920x1080 add Godot's `--resolution 1920x1080`.
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
@@ -55,6 +55,7 @@ func _ready() -> void:
 	var arrival := false
 	var pick_weapon := false
 	var shapes := false
+	var only_weapons: Array[String] = []
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--time="):
 			_capture_at = arg.trim_prefix("--time=").to_float()
@@ -110,6 +111,8 @@ func _ready() -> void:
 			shapes = true
 		elif arg == "--allweapons":
 			all_weapons = true
+		elif arg.begins_with("--weapons="):
+			only_weapons.assign(arg.trim_prefix("--weapons=").split(","))
 		elif arg == "--fullshop":
 			_full_shop = true
 	if _mode in ["--menu", "--characters", "--coopselect", "--progression"]:
@@ -199,6 +202,13 @@ func _ready() -> void:
 			_run.pickups.spawn_material(Vector2(-420 + i * 120, -230), 0.5 + i * 3.0)
 	if shapes:
 		_run.vfx.show_shapes = true  # outlines of the real damage shapes (F4 in game)
+	if not only_weapons.is_empty():
+		# Only these weapons, at their top rank: a readable sheet of a few effects at once.
+		while _run.player.weapons.slot_count() > 0:
+			_run.player.weapons.remove_weapon(0)
+		for id in only_weapons:
+			var weapon := ContentDB.get_def(&"weapons", StringName(id)) as WeaponData
+			_run.player.weapons.add_weapon(weapon, weapon.max_level())
 	if all_weapons:
 		for def in ContentDB.get_all(&"weapons"):
 			var weapon := def as WeaponData

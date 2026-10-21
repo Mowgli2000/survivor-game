@@ -139,6 +139,26 @@ JOBS["i_rune_grenade"] = ("icon", ["art_source/ai/weapons/bomb.png", "art_source
     "NO military grenade, NO pin ring, NO lever. Centered, tilted slightly, filling about 80 percent of the image. Transparent background.")
 
 
+# Twelfth pass (dev, 2026-10-19): the five hostile shots become 12-frame loops, brighter and easy to spot (a bright hot core, vivid
+# color per family, thick black outline). One generation each (--n 1). Baked by bake_proj.py.
+_ENEMY_LOOP = ("A sprite sheet of ONE looping animation in a grid of 4 columns by 3 rows, 12 equal square cells read left to right then top to "
+    "bottom, nothing crossing the cell borders, no grid lines, pure black background (#000000). In every cell the SAME HOSTILE enemy "
+    "projectile {what}, pointing exactly to the RIGHT, centered, identical size and place, with a short painted trail streaming to the LEFT. "
+    "It must be easy to spot at a glance on a busy battlefield: a big bright almost white core, very vivid saturated colors, a thick "
+    "BLACK outline around the whole shape, a few sparkles. Only the flames, glow, crackle and trail flicker and shift from cell to cell so "
+    "the sequence loops smoothly (cell 12 flows into cell 1). Keep everything well inside its cell with a black margin. ")
+JOBS["a12_enemy_fire"] = ("sheet12", FIRE_REFS[:1] + ["art_source/ai/projectiles/19_enemy_fire.png"],
+    _ENEMY_LOOP.format(what="is a blazing fireball copied in shape from the SECOND reference image but much brighter: a white-yellow core, vivid orange and hot red flame tongues"))
+JOBS["a12_enemy_ice"] = ("sheet12", SPARK_REFS[:1] + ["art_source/ai/projectiles/18_enemy_ice.png"],
+    _ENEMY_LOOP.format(what="is a spiky shard of ice copied in shape from the SECOND reference image but much brighter: a white-cyan core, vivid electric cyan and sky blue crystal facets, frost sparkles"))
+JOBS["a12_enemy_acid"] = ("sheet12", MAGIC_REFS[:1] + ["art_source/ai/projectiles/20_enemy_acid.png"],
+    _ENEMY_LOOP.format(what="is a blob of toxic acid copied in shape from the SECOND reference image but much brighter: a pale lime core, vivid neon green and yellow goo, dripping drops"))
+JOBS["a12_enemy_stone"] = ("sheet12", FIRE_REFS[:1] + ["art_source/ai/projectiles/21_enemy_stone.png"],
+    _ENEMY_LOOP.format(what="is a jagged flaming boulder copied in shape from the SECOND reference image but much brighter: a bright yellow-white molten core showing through cracks, vivid orange-red rock edges"))
+JOBS["a12_enemy_orb"] = ("sheet12", MAGIC_REFS[:1] + ["art_source/ai/projectiles/06_enemy_orb.png"],
+    _ENEMY_LOOP.format(what="is a round dark-magic energy orb copied in shape from the SECOND reference image but much brighter: a white-pink core, vivid magenta and hot pink swirling aura, sparks"))
+
+
 def main() -> None:
     OUT.mkdir(exist_ok=True)
     names = sys.argv[1:] or list(JOBS)

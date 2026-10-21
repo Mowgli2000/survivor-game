@@ -360,16 +360,24 @@ func portal(center: Vector2, radius: float, boss: bool = false) -> void:
 		shake_requested.emit(0.5)
 
 
+## Drawn outline of the next warnings (BossDirector sets it from the attack's `warn_shape`): the warning shows
+## the shape of the painted attack (a star, a puddle, a crack), not a plain disc or band.
+enum WarnShape { PLAIN, JAGGED, STAR, BLOB }
+const WARN_STAR_POINTS := 8
+const WARN_STAR_DEPTH := 0.55
+var warn_shape: int = WarnShape.PLAIN
+
+
 ## Boss telegraph: a ring that fills up during `life` seconds.
 func warning_circle(center: Vector2, radius: float, color: Color, life: float) -> void:
 	Audio.play(Sounds.WARNING, -10.0, 0.04)
-	_add(Kind.WARN_CIRCLE, center, Vector2.ZERO, radius, 0.0, color, life)
+	_add(Kind.WARN_CIRCLE, center, Vector2.ZERO, radius, 0.0, color, life, warn_shape)
 
 
 ## Boss telegraph: a band showing a dash path or an aimed shot.
 func warning_line(from: Vector2, to: Vector2, width: float, color: Color, life: float) -> void:
 	Audio.play(Sounds.WARNING, -10.0, 0.04, 1.15)
-	_add(Kind.WARN_LINE, from, to, width, 0.0, color, life)
+	_add(Kind.WARN_LINE, from, to, width, 0.0, color, life, warn_shape)
 
 
 ## Boss telegraph: a pie slice (a breath, a wing blast, a sword arc) of `radius` around `angle`, `half_angle` each side.
@@ -509,18 +517,76 @@ func _draw() -> void:
 			Kind.DEATH:
 				_draw_death(_a[i], _size[i], _extra[i], color, t)
 			Kind.WARN_CIRCLE:
-				draw_circle(_a[i], _size[i] * (1.0 - t), Color(color, 0.25))
-				draw_arc(_a[i], _size[i], 0.0, TAU, 48, Color(INK, 0.6), 6.0, true)
-				draw_arc(_a[i], _size[i], 0.0, TAU, 48, Color(color, 0.85), 3.0, true)
+				if _style[i] == WarnShape.PLAIN:
+					draw_circle(_a[i], _size[i] * (1.0 - t), Color(color, 0.25))
+					draw_arc(_a[i], _size[i], 0.0, TAU, 48, Color(INK, 0.6), 6.0, true)
+					draw_arc(_a[i], _size[i], 0.0, TAU, 48, Color(color, 0.85), 3.0, true)
+				else:
+					_draw_warn_shape(_a[i], _size[i], color, t, _style[i], _seedv[i])
 			Kind.PORTAL:
 				_draw_portal(_a[i], _size[i], color, t)
 			Kind.WARN_LINE:
-				draw_line(_a[i], _b[i], Color(color, 0.15 + 0.2 * (1.0 - t)), _size[i], true)
-				draw_line(_a[i], _b[i], Color(color, 0.8), 2.0, true)
+				if _style[i] == WarnShape.JAGGED:
+					_draw_warn_crack(_a[i], _b[i], _size[i], color, t, _seedv[i])
+				else:
+					draw_line(_a[i], _b[i], Color(color, 0.15 + 0.2 * (1.0 - t)), _size[i], true)
+					draw_line(_a[i], _b[i], Color(color, 0.8), 2.0, true)
 			Kind.WARN_SECTOR:
 				_draw_warn_sector(_a[i], _b[i].angle(), _size[i], _extra[i], color, t, _seedv[i])
 			Kind.WARN_RING:
 				_draw_warn_ring(_a[i], _b[i].x, _b[i].y, _size[i], _extra[i], color, t)
+
+
+## A star or a puddle instead of a disc: the outline that grows toward the real radius, the true damage circle only
+## hinted by a thin ring (the points reach it).
+func _draw_warn_shape(center: Vector2, radius: float, color: Color, t: float, shape: int, seed_value: float) -> void:
+	var grow := 1.0 - t
+	var points := PackedVector2Array()
+	var count := WARN_STAR_POINTS * 2 if shape == WarnShape.STAR else 28
+	var phase := fmod(seed_value, TAU)
+	for k in count:
+		var angle := TAU * k / count
+		var r := radius
+		if shape == WarnShape.STAR:
+			r = radius if k % 2 == 0 else radius * WARN_STAR_DEPTH
+		else:
+			r = radius * (0.84 + 0.16 * sin(angle * 3.0 + phase) * cos(angle * 2.0 - phase * 0.7))
+		points.append(center + Vector2.from_angle(angle) * r)
+	draw_colored_polygon(points, Color(color, 0.1 + 0.2 * grow))
+	var outline := points.duplicate()
+	outline.append(points[0])
+	draw_polyline(outline, Color(INK, 0.6), 6.0, true)
+	draw_polyline(outline, Color(color, 0.85), 3.0, true)
+	draw_arc(center, radius, 0.0, TAU, 48, Color(color, 0.3), 2.0, true)
+
+
+## A crack: the band's edges zigzag and pinch at both ends instead of two straight lines.
+func _draw_warn_crack(from: Vector2, to: Vector2, width: float, color: Color, t: float, seed_value: float) -> void:
+	var along := to - from
+	var length := along.length()
+	if length < 1.0:
+		return
+	var dir := along / length
+	var normal := dir.orthogonal()
+	var steps := maxi(6, ceili(length / 48.0))
+	var upper := PackedVector2Array()
+	var lower := PackedVector2Array()
+	for k in steps + 1:
+		var f := float(k) / steps
+		var taper := clampf(minf(f, 1.0 - f) * 5.0, 0.15, 1.0)
+		var jag := 0.55 if k % 2 == 0 else 1.0
+		var shift := sin(seed_value * 7.0 + k * 2.3) * width * 0.08
+		var half := width * 0.5 * taper * jag
+		var p := from + dir * length * f
+		upper.append(p + normal * (half + shift))
+		lower.append(p - normal * (half - shift))
+	var shape := upper.duplicate()
+	for k in range(steps, -1, -1):
+		shape.append(lower[k])
+	draw_colored_polygon(shape, Color(color, 0.1 + 0.2 * (1.0 - t)))
+	shape.append(upper[0])
+	draw_polyline(shape, Color(INK, 0.6), 6.0, true)
+	draw_polyline(shape, Color(color, 0.85), 3.0, true)
 
 
 func _draw_warn_sector(origin: Vector2, angle: float, radius: float, half_angle: float, color: Color, t: float, inner: float) -> void:

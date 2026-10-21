@@ -195,6 +195,18 @@ func foot_offset() -> float:
 	return sprite_height() * HIP_SHARE
 
 
+## World position of the mouth (EnemyData.mouth_cell on the attack frames, mirrored with the facing); the body
+## center when the data does not tell where the mouth is.
+func mouth_position() -> Vector2:
+	if data.mouth_cell == Vector2.ZERO or data.attack_sheet == null:
+		return position
+	var cell := Vector2(data.attack_sheet.cell_size)
+	var unit := sprite_height() * data.attack_scale / cell.y
+	var local := Vector2((data.mouth_cell.x - cell.x * 0.5) * unit * signf(animator.facing),
+		foot_offset() - (cell.y - data.mouth_cell.y) * unit)
+	return position + local
+
+
 ## Plays the attack frames over `length` seconds (no sheet: nothing happens).
 func start_attack(length: float) -> void:
 	start_anim(&"attack", length)

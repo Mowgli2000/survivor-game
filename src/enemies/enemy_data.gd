@@ -83,6 +83,9 @@ enum Movement {
 @export var attack_frame_weights: PackedFloat32Array = PackedFloat32Array()
 ## The frame where the blow lands: it starts as the pattern's windup ends (-1: half way through).
 @export var attack_strike_frame: int = -1
+## Where the mouth is on an attack frame (px of the frame, facing right), for breath attacks that must start there.
+## Zero: the attacks start at the body center.
+@export var mouth_cell: Vector2 = Vector2.ZERO
 
 
 ## Share (0..1) of the attack animation that comes before the strike frame.
