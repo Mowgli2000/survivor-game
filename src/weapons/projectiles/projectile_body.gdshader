@@ -18,7 +18,7 @@ const float CELL_CODE = 256.0;
 const float RIPPLE_FIRST = 35.0;
 const float RIPPLE_END = 59.0;
 // Ripple: how far (share of the cell) the trail waves, and how fast.
-const float RIPPLE = 0.035;
+const float RIPPLE = 0.0;
 const float RIPPLE_SPEED = 13.0;
 
 varying vec2 uv_a;
