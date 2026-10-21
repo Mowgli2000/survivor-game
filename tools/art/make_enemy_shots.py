@@ -33,10 +33,13 @@ def draw_ball(edge: tuple, body: tuple, core: tuple) -> Image.Image:
     outer = big * BALL / 2
     # Soft halo outside the outline: the shot also reads on a busy floor.
     halo = Image.new("RGBA", (big, big), (0, 0, 0, 0))
-    ImageDraw.Draw(halo).ellipse((center - outer * 1.25, center - outer * 1.25, center + outer * 1.25, center + outer * 1.25),
-        fill=body + (150,))
+    ImageDraw.Draw(halo).ellipse((center - outer * 1.5, center - outer * 1.5, center + outer * 1.5, center + outer * 1.5),
+        fill=body + (235,))
     image.alpha_composite(halo.filter(ImageFilter.GaussianBlur(big * 0.03)))
-    draw.ellipse((center - outer, center - outer, center + outer, center + outer), fill=(8, 6, 10, 255))
+    # Pale rim outside the dark outline: no player shot has one, so enemy shots stand apart at a glance.
+    draw.ellipse((center - outer, center - outer, center + outer, center + outer), fill=(255, 255, 255, 255))
+    dark = outer * 0.9
+    draw.ellipse((center - dark, center - dark, center + dark, center + dark), fill=(8, 6, 10, 255))
     inner = outer * 0.82
     steps = 40
     for k in range(steps):  # radial gradient: dark edge -> vivid body -> white core

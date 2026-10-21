@@ -291,9 +291,9 @@ func sheet_stretch(effect: EffectSheet, from: Vector2, to: Vector2, height: floa
 ## A painted object falling onto `impact` from `distance` px away along `angle`, over its whole life.
 ## `size`: side of its frame. `delay`: seconds before it starts.
 func sheet_fall(effect: EffectSheet, impact: Vector2, angle: float, size: float, distance: float,
-		delay: float = 0.0) -> void:
+		delay: float = 0.0, tint: Color = Color.WHITE) -> void:
 	var direction := Vector2.from_angle(angle)
-	_add_sheet(effect, impact - direction * distance, angle, size * coop_scale, null, Color.WHITE, SheetMode.FALL,
+	_add_sheet(effect, impact - direction * distance, angle, size * coop_scale, null, tint, SheetMode.FALL,
 		distance, delay)
 
 
@@ -321,10 +321,11 @@ func beam(from: Vector2, to: Vector2, width: float, color: Color, follower: Node
 	_add(Kind.BEAM, from, to, minf(shown_size(width, BEAM_FULL), BEAM_MAX), 0.0, color, 0.14, 0, follower)
 
 
-func explosion(center: Vector2, radius: float, color: Color, shake: bool, painted: EffectSheet = null) -> void:
+func explosion(center: Vector2, radius: float, color: Color, shake: bool, painted: EffectSheet = null,
+		tint: Color = Color.WHITE) -> void:
 	if painted != null:
 		# Fitted: the painted blast spans (about) the radius that really hurts.
-		_add_sheet(painted, center, 0.0, painted.size_for(radius * PAINTED_BLAST_SHARE), null)
+		_add_sheet(painted, center, 0.0, painted.size_for(radius * PAINTED_BLAST_SHARE), null, tint)
 	else:
 		_add(Kind.EXPLOSION, center, Vector2.ZERO, shown_size(radius, BLAST_FULL), _next_seed(), color, BLAST_LIFE)
 	if shake:

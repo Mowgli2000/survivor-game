@@ -17,6 +17,8 @@ const SPREAD_RADII := 1.6
 const SPREAD_TRIES := 8
 ## Fall time without a painted rock (drawn streak), seconds.
 const FALL_TIME := 0.35
+## Opacity of the rock and the impact while a boss is alive: they must not hide it (dev playtest, 2026-10-21).
+const BOSS_FADE := 0.35
 
 ## Painted rock (EffectSheet, Vfx.sheet_fall); null: a streak drawn by code.
 @export var fall_sheet: EffectSheet
@@ -35,6 +37,7 @@ func fire(slot: WeaponSlot, ctx: WeaponContext) -> bool:
 	var knockback := s.knockback * stats.get_value(StatIds.KNOCKBACK)
 	var count := s.projectile_count + int(stats.get_value(StatIds.PROJECTILE_COUNT))
 	var fall := fall_sheet.duration if fall_sheet != null else FALL_TIME
+	var tint := Color(1, 1, 1, BOSS_FADE) if ctx.enemies.has_living_phased() else Color.WHITE
 	var landed: Array[Vector2] = []
 	for i in count:
 		var target := _pick_spread_target(ctx, origin, reach, landed, radius * SPREAD_RADII)
@@ -48,13 +51,13 @@ func fire(slot: WeaponSlot, ctx: WeaponContext) -> bool:
 		if ctx.vfx != null:
 			if fall_sheet != null:
 				ctx.vfx.sheet_fall(fall_sheet, point, (-FALL_FROM).angle(), radius * ROCK_SIDE_PER_RADIUS,
-					FALL_FROM.length(), lag)
+					FALL_FROM.length(), lag, tint)
 			else:
 				ctx.vfx.beam(point + FALL_FROM, point, radius * 0.35, s.color)
 		var land := func() -> void:
 			if not is_instance_valid(ctx.owner) or not ctx.owner.is_inside_tree():
 				return
-			_land(slot.data, ctx, point, radius, amount, crit, knockback, s)
+			_land(slot.data, ctx, point, radius, amount, crit, knockback, s, tint)
 		var seconds := lag + fall
 		if seconds > 0.0 and ctx.owner.is_inside_tree():
 			ctx.owner.get_tree().create_timer(seconds, false).timeout.connect(land)
@@ -65,7 +68,7 @@ func fire(slot: WeaponSlot, ctx: WeaponContext) -> bool:
 
 ## The rock lands: everything in the radius is hurt, the impact is painted.
 func _land(data: WeaponData, ctx: WeaponContext, point: Vector2, radius: float, amount: float, crit: bool,
-		knockback: float, s: WeaponStats) -> void:
+		knockback: float, s: WeaponStats, tint: Color = Color.WHITE) -> void:
 	var enemies := ctx.enemies
 	var previous: Array = [enemies.damage_source, enemies.damage_weapon]
 	enemies.damage_source = ctx.source
@@ -74,7 +77,7 @@ func _land(data: WeaponData, ctx: WeaponContext, point: Vector2, radius: float, 
 	enemies.damage_source = previous[0]
 	enemies.damage_weapon = previous[1]
 	if ctx.vfx != null:
-		ctx.vfx.explosion(point, radius, s.color, false, impact_sheet if impact_sheet != null else EffectSheets.EXPLOSION_FIRE)
+		ctx.vfx.explosion(point, radius, s.color, false, impact_sheet if impact_sheet != null else EffectSheets.EXPLOSION_FIRE, tint)
 
 
 ## A target for the next meteor: picks random spots until one is `gap` px from every earlier impact; if none is,
