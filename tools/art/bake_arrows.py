@@ -1,6 +1,7 @@
 """Cuts the arrow sheet (art_tests/proj/arrows_flat_1.png: 3 columns x 2 rows, flat cartoon style, a short trail behind
 each shot) into the five projectile cells that tools/art/bake_map.gd packs into assets/sprites/projectiles.png.
 Each shot is scaled to fill the width of its 1024 px cell, head at the right edge, on the horizontal axis.
+The sling stone (art_tests/proj/sling_flat_1.png, one shot alone) is cut the same way into 11_stone.
 Usage: python tools/art/bake_arrows.py, then powershell tools/bake_sprites.ps1"""
 import sys
 from pathlib import Path
@@ -24,11 +25,16 @@ CELLS = {
 }
 
 
+SLING = ROOT / "art_tests/proj/sling_flat_1.png"
+
+
 def main() -> None:
     sheet = Image.open(SHEET).convert("RGB")
     width, height = sheet.width // 3, sheet.height // 2
-    for (column, row), name in CELLS.items():
-        part = key_solid(sheet.crop((column * width, row * height, (column + 1) * width, (row + 1) * height)))
+    parts = {name: sheet.crop((c * width, r * height, (c + 1) * width, (r + 1) * height)) for (c, r), name in CELLS.items()}
+    parts["11_stone"] = Image.open(SLING).convert("RGB")  # the Fronde
+    for name, crop in parts.items():
+        part = key_solid(crop)
         box = part.getchannel("A").point(lambda v: 255 if v > 24 else 0).getbbox()
         shot = part.crop(box)
         scale = min(CELL * FILL / shot.width, CELL * 0.9 / shot.height)
