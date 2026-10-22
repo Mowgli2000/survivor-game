@@ -224,7 +224,7 @@ func _make_card(offer: UpgradeOffer) -> Button:
 	var texts := describe_offer(offer)
 
 	var button := Button.new()
-	button.custom_minimum_size = _card_size
+	button.custom_minimum_size = Vector2(_card_size.x, _card_size.y * maxf(UiTheme.text_scale, 1.0))  # bigger text, taller card
 	button.add_theme_stylebox_override("normal", UiTheme.card_style(accent, 0.6))
 	button.add_theme_stylebox_override("hover", UiTheme.card_style(accent, 1.0))
 	button.add_theme_stylebox_override("pressed", UiTheme.card_style(accent, 1.0))

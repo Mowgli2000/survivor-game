@@ -93,6 +93,11 @@ static func scaled(size: int) -> int:
 	return roundi(size * text_scale)
 
 
+## Like `scaled`, for crowded panels (the stats list) that must still fit the screen: grows at 40 % of the rate.
+static func scaled_dense(size: int) -> int:
+	return roundi(size * (1.0 + (text_scale - 1.0) * 0.4))
+
+
 ## Changes the text size and resizes the fonts of every theme already built (screens keep their Theme object).
 static func set_text_scale(scale: float) -> void:
 	if is_equal_approx(scale, text_scale):

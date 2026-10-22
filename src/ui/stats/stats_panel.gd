@@ -38,7 +38,7 @@ func _init() -> void:
 	_title.text = "UI_STATS"
 	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_title.theme_type_variation = &"SubtitleLabel"
-	_title.add_theme_font_size_override("font_size", UiTheme.scaled(28))
+	_title.add_theme_font_size_override("font_size", UiTheme.scaled_dense(28))
 	_title.add_theme_color_override("font_color", UiTheme.ACCENT)
 	box.add_child(_title)
 	_grid = GridContainer.new()
@@ -56,7 +56,7 @@ func set_dense() -> void:
 	_font_size = 19
 	_detail_size = 14
 	_grid.add_theme_constant_override("v_separation", 0)
-	_title.add_theme_font_size_override("font_size", UiTheme.scaled(28))
+	_title.add_theme_font_size_override("font_size", UiTheme.scaled_dense(28))
 	custom_minimum_size.x = 360.0
 
 
@@ -198,7 +198,7 @@ func _refresh(stat: StringName) -> void:
 ## Detail line under a family; wraps so it never widens the panel.
 func _detail_label(color: Color) -> Label:
 	var label := _label(color)
-	label.add_theme_font_size_override("font_size", UiTheme.scaled(_detail_size))
+	label.add_theme_font_size_override("font_size", UiTheme.scaled_dense(_detail_size))
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_family_box.add_child(label)
 	return label
@@ -211,6 +211,6 @@ func _set_detail(label: Label, text: String) -> void:
 
 func _label(color: Color) -> Label:
 	var label := Label.new()
-	label.add_theme_font_size_override("font_size", UiTheme.scaled(_font_size))
+	label.add_theme_font_size_override("font_size", UiTheme.scaled_dense(_font_size))
 	label.add_theme_color_override("font_color", color)
 	return label
