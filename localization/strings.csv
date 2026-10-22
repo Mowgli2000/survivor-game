@@ -544,3 +544,14 @@ SET_FPS_UNLIMITED,Unlimited,Illimitée
 SET_RESOLUTION,Window size,Taille de la fenêtre
 SET_RESOLUTION_AUTO,Unchanged,Inchangée
 SET_LIGHT_MODE,Light mode (fewer effects),Mode léger (moins d'effets)
+SET_SECTION_ACCESSIBILITY,ACCESSIBILITY,ACCESSIBILITÉ
+SET_TEXT_SIZE,Text size,Taille du texte
+SET_TEXT_SIZE_NORMAL,Normal,Normale
+SET_TEXT_SIZE_LARGE,Large,Grande
+SET_TEXT_SIZE_XLARGE,Very large,Très grande
+SET_COLORBLIND,Colorblind mode,Mode daltonien
+SET_COLORBLIND_OFF,Off,Désactivé
+SET_COLORBLIND_PROTAN,Protanopia (red),Protanopie (rouge)
+SET_COLORBLIND_DEUTAN,Deuteranopia (green),Deutéranopie (vert)
+SET_COLORBLIND_TRITAN,Tritanopia (blue),Tritanopie (bleu)
+SET_REDUCE_FLASHES,Reduce flashes,Réduire les flashs

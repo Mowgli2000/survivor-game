@@ -63,3 +63,19 @@ func test_unknown_fps_cap_and_out_of_range_resolution_are_corrected() -> void:
 	assert_eq(s.fps_cap, 0, "a cap that is not offered means no cap")
 	assert_eq(s.resolution, SettingsData.RESOLUTIONS.size(), "clamped to the biggest size")
 	assert_false(s.set_value(&"fps_cap", "fast"), "wrong type rejected")
+
+
+func test_accessibility_options_default_to_off_clamp_and_round_trip() -> void:
+	var s := SettingsData.new()
+	assert_eq(s.text_size, 0)
+	assert_eq(s.colorblind, 0)
+	assert_false(s.reduce_flashes)
+	s.set_value(&"text_size", 2)
+	s.set_value(&"colorblind", 3)
+	s.set_value(&"reduce_flashes", true)
+	var back := SettingsData.from_dict(JSON.parse_string(JSON.stringify(s.to_dict())))
+	assert_eq(back.text_size, 2)
+	assert_eq(back.colorblind, 3)
+	assert_true(back.reduce_flashes)
+	assert_eq(SettingsData.from_dict({"text_size": 9, "colorblind": -4}).text_size, SettingsData.TEXT_SCALES.size() - 1)
+	assert_eq(SettingsData.from_dict({"colorblind": -4}).colorblind, 0)

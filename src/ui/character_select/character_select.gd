@@ -215,7 +215,7 @@ func _init(p_compact: bool = false) -> void:
 	_title = Label.new()
 	_title.text = "UI_CHOOSE_CHARACTER"
 	_title.theme_type_variation = &"TitleLabel"
-	_title.add_theme_font_size_override("font_size", 44 if _compact else 60)
+	_title.add_theme_font_size_override("font_size", UiTheme.scaled(44 if _compact else 60))
 	top.add_child(_title)
 	_devices = Label.new()
 	_devices.theme_type_variation = &"SmallLabel"
@@ -290,7 +290,7 @@ func _section_label(key: String, size: int = 28) -> Label:
 	var label := Label.new()
 	label.text = key
 	label.theme_type_variation = &"SubtitleLabel"
-	label.add_theme_font_size_override("font_size", size)
+	label.add_theme_font_size_override("font_size", UiTheme.scaled(size))
 	label.add_theme_color_override("font_color", UiTheme.MUTED)
 	return label
 
@@ -299,7 +299,7 @@ func _column_title(key: String) -> Label:
 	var label := Label.new()
 	label.text = key
 	label.theme_type_variation = &"TitleLabel"
-	label.add_theme_font_size_override("font_size", 30 if _compact else 36)
+	label.add_theme_font_size_override("font_size", UiTheme.scaled(30 if _compact else 36))
 	return label
 
 
@@ -391,11 +391,11 @@ func _build_stage_column() -> Control:
 	_hero_plate.add_theme_constant_override("separation", 6 if _compact else 8)
 	_hero_name = Label.new()
 	_hero_name.theme_type_variation = &"TitleLabel"
-	_hero_name.add_theme_font_size_override("font_size", 28 if _compact else 44)
+	_hero_name.add_theme_font_size_override("font_size", UiTheme.scaled(28 if _compact else 44))
 	_hero_name.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_hero_plate.add_child(_hero_name)
 	_hero_rule = Label.new()
-	_hero_rule.add_theme_font_size_override("font_size", 16 if _compact else 20)
+	_hero_rule.add_theme_font_size_override("font_size", UiTheme.scaled(16 if _compact else 20))
 	_hero_rule.add_theme_color_override("font_color", UiTheme.MUTED)
 	_hero_rule.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	# The class rule (passive) is shown in coop too (playtest: the berserker's was not).
@@ -419,7 +419,7 @@ func _build_stage_column() -> Control:
 		var stat: StringName = entry[0]
 		var name_label := Label.new()
 		name_label.text = entry[2] if _compact else entry[1]
-		name_label.add_theme_font_size_override("font_size", 15 if _compact else 20)
+		name_label.add_theme_font_size_override("font_size", UiTheme.scaled(15 if _compact else 20))
 		name_label.add_theme_color_override("font_color", UiTheme.MUTED)
 		name_label.add_theme_constant_override("outline_size", 0)
 		name_label.custom_minimum_size.x = 0.0 if _compact else 170.0
@@ -438,12 +438,12 @@ func _build_stage_column() -> Control:
 		numbers.custom_minimum_size.x = 96 if _compact else 130
 		grid.add_child(numbers)
 		var value_label := Label.new()
-		value_label.add_theme_font_size_override("font_size", 16 if _compact else 22)
+		value_label.add_theme_font_size_override("font_size", UiTheme.scaled(16 if _compact else 22))
 		value_label.add_theme_color_override("font_color", STAT_COLORS[stat])
 		value_label.add_theme_constant_override("outline_size", 0)
 		numbers.add_child(value_label)
 		var delta_label := Label.new()
-		delta_label.add_theme_font_size_override("font_size", 13 if _compact else 18)
+		delta_label.add_theme_font_size_override("font_size", UiTheme.scaled(13 if _compact else 18))
 		delta_label.add_theme_constant_override("outline_size", 0)
 		numbers.add_child(delta_label)
 		_hero_bars[stat] = bar
@@ -480,7 +480,7 @@ func _arrow(text: String, direction: int) -> Button:
 	var empty := StyleBoxEmpty.new()
 	for state in ["normal", "hover", "pressed", "disabled", "focus"]:
 		button.add_theme_stylebox_override(state, empty)
-	button.add_theme_font_size_override("font_size", 46 if _compact else 60)
+	button.add_theme_font_size_override("font_size", UiTheme.scaled(46 if _compact else 60))
 	button.add_theme_color_override("font_color", _accent())
 	button.add_theme_color_override("font_hover_color", Color.WHITE)
 	button.add_theme_color_override("font_pressed_color", Color.WHITE)
@@ -752,7 +752,7 @@ func _row(character: CharacterData) -> Button:
 	_row_heads[character.id] = head as TextureRect if head is TextureRect else null
 	var name_label := Label.new()
 	name_label.text = character.name_key_for(look) if unlocked else LOCK + " ???"
-	name_label.add_theme_font_size_override("font_size", 17 if _compact else 28)
+	name_label.add_theme_font_size_override("font_size", UiTheme.scaled(17 if _compact else 28))
 	name_label.add_theme_color_override("font_color", UiTheme.TEXT if unlocked else UiTheme.MUTED)
 	# Two lines at most, never a cut inside a word.
 	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD
@@ -865,7 +865,7 @@ func _show_hero(character: CharacterData) -> void:
 		for i in looks:
 			var dot := Label.new()
 			dot.text = "●" if i == look else "○"
-			dot.add_theme_font_size_override("font_size", 18)
+			dot.add_theme_font_size_override("font_size", UiTheme.scaled(18))
 			dot.add_theme_color_override("font_color", _accent() if i == look else UiTheme.MUTED)
 			_dots.add_child(dot)
 	_hero_name.text = character.name_key_for(look)
@@ -1119,7 +1119,7 @@ func _chip(text: String) -> Label:
 	var bad := text.begins_with("-")
 	var label := Label.new()
 	label.text = ("▼ " if bad else "▲ ") + text
-	label.add_theme_font_size_override("font_size", 16 if _compact else 20)
+	label.add_theme_font_size_override("font_size", UiTheme.scaled(16 if _compact else 20))
 	label.add_theme_color_override("font_color", UiTheme.BAD if bad else UiTheme.GOOD)
 	label.add_theme_constant_override("outline_size", 0)
 	return label
@@ -1355,14 +1355,14 @@ func _weapon_card(weapon: WeaponData) -> Button:
 	line.add_child(texts)
 	var name_label := Label.new()
 	name_label.text = weapon.name_key
-	name_label.add_theme_font_size_override("font_size", 22 if _compact else 26)
+	name_label.add_theme_font_size_override("font_size", UiTheme.scaled(22 if _compact else 26))
 	name_label.add_theme_color_override("font_color", Tiers.color(1))
 	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texts.add_child(name_label)
 	if not _compact:
 		var description := Label.new()
 		description.text = weapon.description_key
-		description.add_theme_font_size_override("font_size", 17)
+		description.add_theme_font_size_override("font_size", UiTheme.scaled(17))
 		description.add_theme_color_override("font_color", UiTheme.MUTED)
 		description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		description.max_lines_visible = 3

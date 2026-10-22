@@ -33,7 +33,7 @@ static func create(items: Array, top_right: bool = false) -> ButtonHints:
 		glyph.custom_minimum_size = Vector2(40, 40)
 		glyph.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		glyph.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		glyph.add_theme_font_size_override("font_size", 24)
+		glyph.add_theme_font_size_override("font_size", UiTheme.scaled(24))
 		glyph.add_theme_color_override("font_color", Color("10102a"))
 		glyph.add_theme_constant_override("outline_size", 0)
 		var color: Color = GLYPH_COLORS.get(StringName(item[0]), UiTheme.ACCENT)
@@ -45,7 +45,7 @@ static func create(items: Array, top_right: bool = false) -> ButtonHints:
 		var action := Label.new()
 		action.text = String(item[1])
 		action.theme_type_variation = &"SmallLabel"
-		action.add_theme_font_size_override("font_size", 24)
+		action.add_theme_font_size_override("font_size", UiTheme.scaled(24))
 		pair.add_child(action)
 		bar.add_child(pair)
 	bar._pad_present = not Input.get_connected_joypads().is_empty()

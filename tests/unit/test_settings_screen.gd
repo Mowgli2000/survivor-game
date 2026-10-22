@@ -3,6 +3,7 @@ extends GutTest
 
 
 func after_each() -> void:
+	UiTheme.set_text_scale(1.0)
 	SafeFile.remove(Settings.TEST_PATH)
 	Settings.load_settings()
 	TranslationServer.set_locale("en")
@@ -49,3 +50,20 @@ func test_the_graphics_options_write_the_settings() -> void:
 	assert_eq(Settings.data.resolution, 3)
 	screen._checks[&"light_mode"].button_pressed = true
 	assert_true(Settings.data.light_mode)
+
+
+func test_the_accessibility_options_apply_at_once() -> void:
+	var screen := SettingsScreen.new()
+	add_child_autofree(screen)
+	screen.open()
+	var normal := UiTheme.get_theme().default_font_size
+	screen._text_size.item_selected.emit(2)
+	assert_eq(UiTheme.get_theme().default_font_size, roundi(normal * 1.3), "the theme every screen holds is resized")
+	assert_eq(UiTheme.scaled(20), 26)
+	screen._colorblind.item_selected.emit(1)
+	assert_eq(Settings.data.colorblind, 1)
+	assert_true(Settings._color_filter._rect.visible, "the screen filter is on")
+	screen._colorblind.item_selected.emit(0)
+	assert_false(Settings._color_filter._rect.visible, "and off again")
+	screen._checks[&"reduce_flashes"].button_pressed = true
+	assert_true(Settings.data.reduce_flashes)

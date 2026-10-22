@@ -10,6 +10,8 @@ const VOLUMES: Array[StringName] = [&"master_volume", &"music_volume", &"sfx_vol
 const DISPLAY: Array[StringName] = [&"fullscreen", &"vsync", &"light_mode"]
 const GAME: Array[StringName] = [&"screen_shake", &"damage_numbers", &"reduce_motion",
 	&"show_hints", &"player_hp_bar"]
+## Height of the scrolling list of settings, px.
+const LIST_HEIGHT := 640.0
 ## Same order as SettingsData.LOCALES.
 const LANGUAGE_KEYS: Array[String] = ["LANG_SYSTEM", "LANG_EN", "LANG_FR"]
 
@@ -19,6 +21,8 @@ var _checks: Dictionary[StringName, CheckButton] = {}
 var _language: OptionButton
 var _fps_cap: OptionButton
 var _resolution: OptionButton
+var _text_size: OptionButton
+var _colorblind: OptionButton
 var _back: Button
 var _panel: PanelContainer
 var _grid: GridContainer
@@ -45,14 +49,20 @@ func _init() -> void:
 	var title := Label.new()
 	title.text = "UI_SETTINGS"
 	title.theme_type_variation = &"TitleLabel"
-	title.add_theme_font_size_override("font_size", 72)
+	title.add_theme_font_size_override("font_size", UiTheme.scaled(72))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
+	# The rows scroll: the list is longer than a 720p screen (focus scrolls it into view).
+	var scroll := ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.custom_minimum_size = Vector2(0, LIST_HEIGHT)
+	box.add_child(scroll)
 	_grid = GridContainer.new()
 	_grid.columns = 2
 	_grid.add_theme_constant_override("h_separation", 40)
 	_grid.add_theme_constant_override("v_separation", 10)
-	box.add_child(_grid)
+	_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(_grid)
 
 	_section("SET_SECTION_AUDIO")
 	for key in VOLUMES:
@@ -66,6 +76,11 @@ func _init() -> void:
 	_add_slider(&"camera_zoom", SettingsData.ZOOM_MIN, SettingsData.ZOOM_MAX)
 	for key in GAME:
 		_add_check(key)
+	_section("SET_SECTION_ACCESSIBILITY")
+	_text_size = _add_option(&"text_size", ["SET_TEXT_SIZE_NORMAL", "SET_TEXT_SIZE_LARGE", "SET_TEXT_SIZE_XLARGE"], range(3))
+	_colorblind = _add_option(&"colorblind", ["SET_COLORBLIND_OFF", "SET_COLORBLIND_PROTAN", "SET_COLORBLIND_DEUTAN",
+		"SET_COLORBLIND_TRITAN"], range(SettingsData.COLORBLIND_MODES))
+	_add_check(&"reduce_flashes")
 	_row_label("SET_LANGUAGE")
 	_language = OptionButton.new()
 	for text in LANGUAGE_KEYS:
@@ -83,7 +98,26 @@ func _init() -> void:
 	add_child(ButtonHints.create([[&"A", "UI_HINT_ADJUST"], [&"B", "UI_HINT_BACK"]]))
 
 
+## Up and down walk the rows in order, then the Back button (the list scrolls, so the position of a row says
+## little about its neighbours).
+func _link_focus() -> void:
+	var chain: Array[Control] = []
+	for node in _grid.get_children():
+		if node is Control and (node as Control).focus_mode == Control.FOCUS_ALL:
+			chain.append(node)
+		elif node is HBoxContainer:
+			chain.append(node.get_child(0))  # the slider of a slider row
+	chain.append(_back)
+	for i in chain.size():
+		var above := chain[maxi(i - 1, 0)]
+		var below := chain[mini(i + 1, chain.size() - 1)]
+		chain[i].focus_neighbor_top = chain[i].get_path_to(above)
+		chain[i].focus_neighbor_bottom = chain[i].get_path_to(below)
+
+
 func open() -> void:
+	if _grid.get_child_count() > 0 and _sliders[VOLUMES[0]].focus_neighbor_bottom.is_empty():
+		_link_focus()
 	for key in _sliders:
 		_sliders[key].set_value_no_signal(Settings.data.get(key))
 		_update_slider_label(key)
@@ -92,6 +126,8 @@ func open() -> void:
 	_language.select(maxi(SettingsData.LOCALES.find(Settings.data.locale), 0))
 	_fps_cap.select(maxi(SettingsData.FPS_CAPS.find(Settings.data.fps_cap), 0))
 	_resolution.select(Settings.data.resolution)
+	_text_size.select(Settings.data.text_size)
+	_colorblind.select(Settings.data.colorblind)
 	visible = true
 	UiFx.pop_in(_panel)
 	_sliders[VOLUMES[0]].grab_focus()
@@ -115,7 +151,7 @@ func _section(key: String) -> void:
 	label.text = key
 	label.theme_type_variation = &"SmallLabel"
 	label.add_theme_color_override("font_color", UiTheme.VIOLET)
-	label.add_theme_font_size_override("font_size", 20)
+	label.add_theme_font_size_override("font_size", UiTheme.scaled(20))
 	_grid.add_child(label)
 	_grid.add_child(Control.new())
 

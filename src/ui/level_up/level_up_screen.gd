@@ -70,7 +70,7 @@ func _init(p_compact: bool = false) -> void:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.theme_type_variation = &"TitleLabel"
 	if _compact:
-		title.add_theme_font_size_override("font_size", 52)
+		title.add_theme_font_size_override("font_size", UiTheme.scaled(52))
 	box.add_child(title)
 	_title = title
 
@@ -274,7 +274,7 @@ func _card_label(text: String, variation: StringName, size: int, color: Color) -
 	if _compact:
 		var font := UiTheme.get_theme().get_font(&"font", variation if variation != &"" else &"Label")
 		size = fit_font_size(text, font, size, label.custom_minimum_size.x)
-	label.add_theme_font_size_override("font_size", size)
+	label.add_theme_font_size_override("font_size", UiTheme.scaled(size))
 	label.add_theme_color_override("font_color", color)
 	return label
 

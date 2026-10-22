@@ -309,7 +309,7 @@ func _process(_delta: float) -> void:
 			_raging = true
 			_timer_label.text = text
 			_timer_label.add_theme_color_override("font_color", UiTheme.GOLD if _waves.pending_reward else UiTheme.BAD)
-			_timer_label.add_theme_font_size_override("font_size", TIMER_FONT_SIZE)
+			_timer_label.add_theme_font_size_override("font_size", UiTheme.scaled(TIMER_FONT_SIZE))
 			_timer_label.reset_size()
 			_timer_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE)
 			_timer_label.offset_top = 72
@@ -331,7 +331,7 @@ func _process(_delta: float) -> void:
 ## Last seconds of a wave: the timer grows a step and bounces each second, in a hotter color.
 func _update_timer_warning(seconds: int) -> void:
 	var size := timer_font_size(seconds)
-	_timer_label.add_theme_font_size_override("font_size", size)
+	_timer_label.add_theme_font_size_override("font_size", UiTheme.scaled(size))
 	# Re-centered on its new size (a Label does not shrink back by itself).
 	_timer_label.reset_size()
 	_timer_label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP, Control.PRESET_MODE_MINSIZE)
@@ -405,5 +405,5 @@ func _make_bar(fill_color: Color) -> ProgressBar:
 func _make_label(variation: StringName, size: int) -> Label:
 	var label := Label.new()
 	label.theme_type_variation = variation
-	label.add_theme_font_size_override("font_size", size)
+	label.add_theme_font_size_override("font_size", UiTheme.scaled(size))
 	return label

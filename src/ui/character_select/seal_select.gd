@@ -223,14 +223,14 @@ func _build_panel() -> Control:
 	line.add_child(texts)
 	_name = Label.new()
 	_name.theme_type_variation = &"TitleLabel"
-	_name.add_theme_font_size_override("font_size", 36)
+	_name.add_theme_font_size_override("font_size", UiTheme.scaled(36))
 	texts.add_child(_name)
 	_effects = Label.new()
-	_effects.add_theme_font_size_override("font_size", 18)
+	_effects.add_theme_font_size_override("font_size", UiTheme.scaled(18))
 	_effects.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	texts.add_child(_effects)
 	_place = Label.new()
-	_place.add_theme_font_size_override("font_size", 16)
+	_place.add_theme_font_size_override("font_size", UiTheme.scaled(16))
 	_place.add_theme_color_override("font_color", UiTheme.MUTED)
 	_place.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	texts.add_child(_place)
@@ -238,7 +238,7 @@ func _build_panel() -> Control:
 	right.add_theme_constant_override("separation", 8)
 	line.add_child(right)
 	_rewards_title = Label.new()
-	_rewards_title.add_theme_font_size_override("font_size", 16)
+	_rewards_title.add_theme_font_size_override("font_size", UiTheme.scaled(16))
 	_rewards_title.add_theme_color_override("font_color", UiTheme.GOLD)
 	right.add_child(_rewards_title)
 	_rewards = HBoxContainer.new()
@@ -511,7 +511,7 @@ func _reward_box(icon: Texture2D, won: bool) -> Control:
 		var mark := Label.new()
 		mark.text = "?"
 		mark.theme_type_variation = &"TitleLabel"
-		mark.add_theme_font_size_override("font_size", 26)
+		mark.add_theme_font_size_override("font_size", UiTheme.scaled(26))
 		mark.add_theme_color_override("font_color", UiTheme.GOLD)
 		mark.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		mark.vertical_alignment = VERTICAL_ALIGNMENT_CENTER

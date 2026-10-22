@@ -119,7 +119,7 @@ func _make_item(id: String, hue: float) -> Button:
 		var mark := Label.new()
 		mark.text = "?"
 		mark.theme_type_variation = &"TitleLabel"
-		mark.add_theme_font_size_override("font_size", 44)
+		mark.add_theme_font_size_override("font_size", UiTheme.scaled(44))
 		mark.set_anchors_preset(Control.PRESET_FULL_RECT)
 		mark.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		mark.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -149,7 +149,7 @@ func _make_item(id: String, hue: float) -> Button:
 		if not unlocked:
 			var lock := Label.new()
 			lock.text = "🔒"
-			lock.add_theme_font_size_override("font_size", 30)
+			lock.add_theme_font_size_override("font_size", UiTheme.scaled(30))
 			lock.set_anchors_preset(Control.PRESET_FULL_RECT)
 			lock.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			lock.vertical_alignment = VERTICAL_ALIGNMENT_CENTER

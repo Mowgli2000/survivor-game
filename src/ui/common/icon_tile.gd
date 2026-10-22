@@ -30,7 +30,7 @@ static func create(texture: Texture2D, tier: int, size: float, badge_text: Strin
 	tile.badge.visible = badge_text != ""
 	tile.badge.size_flags_horizontal = Control.SIZE_SHRINK_END
 	tile.badge.size_flags_vertical = Control.SIZE_SHRINK_END
-	tile.badge.add_theme_font_size_override("font_size", maxi(14, roundi(size * 0.3)))
+	tile.badge.add_theme_font_size_override("font_size", UiTheme.scaled(maxi(14, roundi(size * 0.3))))
 	tile.badge.add_theme_constant_override("outline_size", 6)
 	tile.badge.add_theme_color_override("font_outline_color", Color.BLACK)
 	tile.badge.mouse_filter = Control.MOUSE_FILTER_IGNORE

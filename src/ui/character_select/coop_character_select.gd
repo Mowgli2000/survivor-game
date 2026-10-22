@@ -210,7 +210,7 @@ func _build_look_controls(i: int) -> void:
 		var empty := StyleBoxEmpty.new()
 		for state in ["normal", "hover", "pressed", "disabled", "focus"]:
 			arrow.add_theme_stylebox_override(state, empty)
-		arrow.add_theme_font_size_override("font_size", 52)
+		arrow.add_theme_font_size_override("font_size", UiTheme.scaled(52))
 		arrow.add_theme_color_override("font_color", RunPlayer.COLORS[i])
 		arrow.add_theme_color_override("font_hover_color", Color.WHITE)
 		arrow.add_theme_color_override("font_pressed_color", Color.WHITE)
@@ -244,7 +244,7 @@ func _build_plate(i: int) -> Control:
 	column.add_child(tag_row)
 	var tag := Label.new()
 	tag.theme_type_variation = &"SubtitleLabel"
-	tag.add_theme_font_size_override("font_size", 26)
+	tag.add_theme_font_size_override("font_size", UiTheme.scaled(26))
 	tag.add_theme_color_override("font_color", RunPlayer.COLORS[i])
 	tag_row.add_child(tag)
 	_tag.append(tag)
@@ -255,12 +255,12 @@ func _build_plate(i: int) -> Control:
 	_devices.append(devices)
 	var name_label := Label.new()
 	name_label.theme_type_variation = &"TitleLabel"
-	name_label.add_theme_font_size_override("font_size", 30)
+	name_label.add_theme_font_size_override("font_size", UiTheme.scaled(30))
 	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(name_label)
 	_name.append(name_label)
 	var rule := Label.new()
-	rule.add_theme_font_size_override("font_size", 16)
+	rule.add_theme_font_size_override("font_size", UiTheme.scaled(16))
 	rule.add_theme_color_override("font_color", UiTheme.MUTED)
 	rule.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(rule)
@@ -272,7 +272,7 @@ func _build_plate(i: int) -> Control:
 	column.add_child(chips)
 	_chips.append(chips)
 	var stats := Label.new()
-	stats.add_theme_font_size_override("font_size", 15)
+	stats.add_theme_font_size_override("font_size", UiTheme.scaled(15))
 	stats.add_theme_color_override("font_color", UiTheme.MUTED)
 	stats.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	column.add_child(stats)
@@ -280,7 +280,7 @@ func _build_plate(i: int) -> Control:
 	var weapons_title := Label.new()
 	weapons_title.text = "UI_SELECT_WEAPONS"
 	weapons_title.theme_type_variation = &"SubtitleLabel"
-	weapons_title.add_theme_font_size_override("font_size", 22)
+	weapons_title.add_theme_font_size_override("font_size", UiTheme.scaled(22))
 	weapons_title.add_theme_color_override("font_color", UiTheme.MUTED)
 	column.add_child(weapons_title)
 	var weapons := VBoxContainer.new()
@@ -291,7 +291,7 @@ func _build_plate(i: int) -> Control:
 	var ready := Label.new()
 	ready.text = "UI_COOP_READY"
 	ready.theme_type_variation = &"SubtitleLabel"
-	ready.add_theme_font_size_override("font_size", 20)
+	ready.add_theme_font_size_override("font_size", UiTheme.scaled(20))
 	ready.add_theme_color_override("font_color", UiTheme.GOOD)
 	ready.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	ready.visible = false
@@ -745,7 +745,7 @@ func _refresh(player: int) -> void:
 		for k in looks:
 			var dot := Label.new()
 			dot.text = "●" if k == look else "○"
-			dot.add_theme_font_size_override("font_size", 18)
+			dot.add_theme_font_size_override("font_size", UiTheme.scaled(18))
 			dot.add_theme_color_override("font_color", RunPlayer.COLORS[player] if k == look else UiTheme.MUTED)
 			_dots[player].add_child(dot)
 	_dots[player].reset_size()
@@ -819,13 +819,13 @@ func _weapon_card(player: int, index: int, weapon: WeaponData, on_cursor: bool, 
 	line.add_child(texts)
 	var name_label := Label.new()
 	name_label.text = weapon.name_key
-	name_label.add_theme_font_size_override("font_size", 21)
+	name_label.add_theme_font_size_override("font_size", UiTheme.scaled(21))
 	name_label.add_theme_color_override("font_color", Tiers.color(1))
 	name_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	texts.add_child(name_label)
 	var description := Label.new()
 	description.text = weapon.description_key
-	description.add_theme_font_size_override("font_size", 14)
+	description.add_theme_font_size_override("font_size", UiTheme.scaled(14))
 	description.add_theme_color_override("font_color", UiTheme.MUTED)
 	description.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	description.max_lines_visible = 2
@@ -851,7 +851,7 @@ func _chip(text: String) -> Label:
 	var bad := text.begins_with("-")
 	var label := Label.new()
 	label.text = ("▼ " if bad else "▲ ") + text
-	label.add_theme_font_size_override("font_size", 16)
+	label.add_theme_font_size_override("font_size", UiTheme.scaled(16))
 	label.add_theme_color_override("font_color", UiTheme.BAD if bad else UiTheme.GOOD)
 	label.add_theme_constant_override("outline_size", 0)
 	return label

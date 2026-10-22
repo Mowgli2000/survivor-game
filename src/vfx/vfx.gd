@@ -371,6 +371,11 @@ var warn_shape: int = WarnShape.PLAIN
 var busy_count: int = BUSY_COUNT
 
 
+## "Reduce flashes" (Settings): the additive layer (glows, sparks, flashes) is drawn dimmer.
+func set_reduce_flashes(on: bool) -> void:
+	_glow.modulate.a = 0.4 if on else 1.0
+
+
 ## Boss telegraph: a ring that fills up during `life` seconds.
 func warning_circle(center: Vector2, radius: float, color: Color, life: float) -> void:
 	Audio.play(Sounds.WARNING, -10.0, 0.04)

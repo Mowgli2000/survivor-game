@@ -17,8 +17,12 @@ const FPS_CAPS: Array[int] = [0, 30, 60, 120, 144, 240]
 ## Window sizes offered; the setting `resolution` is 0 (leave the window alone) or 1 + the index here.
 const RESOLUTIONS: Array[Vector2i] = [Vector2i(1280, 720), Vector2i(1600, 900), Vector2i(1920, 1080),
 	Vector2i(2560, 1440)]
+## Text sizes offered (multiplies every font size, UiTheme.text_scale).
+const TEXT_SCALES: Array[float] = [1.0, 1.15, 1.3]
+## Colorblind modes: 0 off, 1 protanopia, 2 deuteranopia, 3 tritanopia (ColorFilter).
+const COLORBLIND_MODES := 4
 const BOOL_KEYS: Array[StringName] = [&"fullscreen", &"vsync", &"screen_shake",
-	&"damage_numbers", &"reduce_motion", &"show_hints", &"player_hp_bar", &"light_mode"]
+	&"damage_numbers", &"reduce_motion", &"show_hints", &"player_hp_bar", &"light_mode", &"reduce_flashes"]
 
 var master_volume: float = 0.8
 var music_volume: float = 0.7
@@ -32,6 +36,11 @@ var fps_cap: int = 0
 var resolution: int = 0
 ## Fewer cosmetic effects at once, for weak PCs (Vfx.LIGHT_BUSY_COUNT).
 var light_mode: bool = false
+## Index in TEXT_SCALES.
+var text_size: int = 0
+var colorblind: int = 0
+## No white hit flashes, dimmer glows (photosensitivity).
+var reduce_flashes: bool = false
 var screen_shake: bool = true
 var damage_numbers: bool = true
 var reduce_motion: bool = false
@@ -82,6 +91,11 @@ func set_value(key: StringName, value: Variant) -> bool:
 			return false
 		resolution = clampi(int(value), 0, RESOLUTIONS.size())
 		return true
+	if key == &"text_size" or key == &"colorblind":
+		if typeof(value) != TYPE_FLOAT and typeof(value) != TYPE_INT:
+			return false
+		set(key, clampi(int(value), 0, (TEXT_SCALES.size() if key == &"text_size" else COLORBLIND_MODES) - 1))
+		return true
 	if key == &"select_background":
 		if typeof(value) != TYPE_STRING:
 			return false
@@ -97,7 +111,8 @@ func set_value(key: StringName, value: Variant) -> bool:
 
 func to_dict() -> Dictionary:
 	var result := {"version": VERSION, "locale": locale, "select_background": select_background,
-		"camera_zoom": camera_zoom, "fps_cap": fps_cap, "resolution": resolution}
+		"camera_zoom": camera_zoom, "fps_cap": fps_cap, "resolution": resolution,
+		"text_size": text_size, "colorblind": colorblind}
 	for key in VOLUME_KEYS + BOOL_KEYS:
 		result[String(key)] = get(key)
 	return result

@@ -1,7 +1,7 @@
 extends Node
 ## Plays a run with a bot and saves a screenshot, so visuals can be checked
 ## without a human at the keyboard (used by Claude Code).
-## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--weapons=a,b] [--shapes] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--boss=shogun|ronin] [--coop] [--arrival] [--pickweapon] [--character=<id>] [--mouse=x,y] [--clean]
+## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--weapons=a,b] [--shapes] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--boss=shogun|ronin] [--coop] [--arrival] [--pickweapon] [--character=<id>] [--mouse=x,y] [--clean] [--textsize=0..2] [--colorblind=0..3]
 ## --clean: store-quality capture (no debug overlay, no gamepad hint bars). For 1920x1080 add Godot's `--resolution 1920x1080`.
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
@@ -99,6 +99,10 @@ func _ready() -> void:
 			for level in 6:
 				SaveService.profile.record_danger_win(level)
 			Settings.data.select_background = arg.trim_prefix("--bg=")
+		elif arg.begins_with("--textsize=") or arg.begins_with("--colorblind="):
+			# Accessibility settings (index as in SettingsData), applied at once.
+			Settings.data.set_value(&"text_size" if arg.begins_with("--textsize=") else &"colorblind", arg.split("=")[1].to_int())
+			Settings.apply()
 		elif arg == "--picker":
 			_open_picker = true
 		elif arg == "--arrival":

@@ -89,7 +89,7 @@ func _init() -> void:
 	_title.text = "UI_GAME_OVER"
 	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_title.theme_type_variation = &"TitleLabel"
-	_title.add_theme_font_size_override("font_size", 72)
+	_title.add_theme_font_size_override("font_size", UiTheme.scaled(72))
 	box.add_child(_title)
 
 	var middle := HBoxContainer.new()
@@ -101,7 +101,7 @@ func _init() -> void:
 	_summary.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_summary.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	_summary.theme_type_variation = &"ValueLabel"
-	_summary.add_theme_font_size_override("font_size", 32)
+	_summary.add_theme_font_size_override("font_size", UiTheme.scaled(32))
 	middle.add_child(_summary)
 	_recap = HBoxContainer.new()
 	_recap.add_theme_constant_override("separation", 48)
@@ -332,7 +332,7 @@ func _recap_row(row: Dictionary, top: float, total: float) -> Control:
 	line.add_child(info)
 	var name_label := Label.new()
 	name_label.text = row.name
-	name_label.add_theme_font_size_override("font_size", 20)
+	name_label.add_theme_font_size_override("font_size", UiTheme.scaled(20))
 	info.add_child(name_label)
 	var bar := ProgressBar.new()
 	bar.show_percentage = false
@@ -346,7 +346,7 @@ func _recap_row(row: Dictionary, top: float, total: float) -> Control:
 	var value := Label.new()
 	value.text = "%s  (%d%%)" % [compact(row.damage), roundi(100.0 * row.damage / maxf(total, 1.0))]
 	value.theme_type_variation = &"ValueLabel"
-	value.add_theme_font_size_override("font_size", 22)
+	value.add_theme_font_size_override("font_size", UiTheme.scaled(22))
 	value.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	line.add_child(value)
 	return line
@@ -490,7 +490,7 @@ func _backdrop_card(level: int) -> Control:
 	var name_label := Label.new()
 	name_label.text = SelectBackdrops.place_name(level)
 	name_label.theme_type_variation = &"SubtitleLabel"
-	name_label.add_theme_font_size_override("font_size", 20)
+	name_label.add_theme_font_size_override("font_size", UiTheme.scaled(20))
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(name_label)
@@ -526,13 +526,13 @@ func _shards_card(shards: int, challenges: int) -> Control:
 	var amount := Label.new()
 	amount.text = "+%d" % shards
 	amount.theme_type_variation = &"TitleLabel"
-	amount.add_theme_font_size_override("font_size", 40)
+	amount.add_theme_font_size_override("font_size", UiTheme.scaled(40))
 	amount.add_theme_color_override("font_color", UiTheme.VIOLET)
 	line.add_child(amount)
 	var name_label := Label.new()
 	name_label.text = "UI_SHARDS_EARNED"
 	name_label.theme_type_variation = &"SubtitleLabel"
-	name_label.add_theme_font_size_override("font_size", 22)
+	name_label.add_theme_font_size_override("font_size", UiTheme.scaled(22))
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(name_label)
 	var count := Label.new()
@@ -562,7 +562,7 @@ func _unlock_card(def: Resource) -> Control:
 	var name_label := Label.new()
 	name_label.text = def.get(&"name_key")
 	name_label.theme_type_variation = &"SubtitleLabel"
-	name_label.add_theme_font_size_override("font_size", 20)
+	name_label.add_theme_font_size_override("font_size", UiTheme.scaled(20))
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	# Long names wrap inside the card instead of widening it.
 	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART

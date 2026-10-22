@@ -464,11 +464,14 @@ func _resume_from_pause() -> void:
 func _apply_settings() -> void:
 	damage_numbers.enabled = Settings.data.damage_numbers
 	camera.shake_enabled = Settings.data.screen_shake
+	enemies.hit_flash = not Settings.data.reduce_flashes
+	vfx.set_reduce_flashes(Settings.data.reduce_flashes)
 	vfx.busy_count = Vfx.LIGHT_BUSY_COUNT if Settings.data.light_mode else Vfx.BUSY_COUNT
 	camera.base_zoom = config.camera_zoom * Settings.data.camera_zoom  # eased in by GameCamera
 	for rp in players:
 		if rp.player.health_bar != null:
 			rp.player.health_bar.visible = Settings.data.player_hp_bar
+		rp.player.hit_flash = not Settings.data.reduce_flashes
 
 
 func _on_player_damaged(amount: float) -> void:

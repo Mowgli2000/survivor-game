@@ -68,6 +68,9 @@ static var shift_saturation: float = 1.0
 static var shift_value: float = 1.0
 ## Themes by hue shift (see get_theme).
 static var _themes: Dictionary = {}
+## Text size set in the settings (SettingsData.TEXT_SCALES): every font size of the theme and of the screens' own
+## overrides (`scaled`) is multiplied by it.
+static var text_scale: float = 1.0
 static var _fonts: Dictionary = {}
 static var _textures: Dictionary = {}
 
@@ -83,6 +86,33 @@ static func get_theme(hue_shift: float = 0.0) -> Theme:
 	if not _themes.has(key):
 		_themes[key] = _build(hue_shift)
 	return _themes[key]
+
+
+## `size` px at the player's text size.
+static func scaled(size: int) -> int:
+	return roundi(size * text_scale)
+
+
+## Changes the text size and resizes the fonts of every theme already built (screens keep their Theme object).
+static func set_text_scale(scale: float) -> void:
+	if is_equal_approx(scale, text_scale):
+		return
+	text_scale = scale
+	for theme: Theme in _themes.values():
+		_apply_sizes(theme)
+
+
+## All the font sizes of the theme, at the current text size.
+static func _apply_sizes(theme: Theme) -> void:
+	theme.default_font_size = scaled(22)
+	theme.set_font_size("font_size", &"TitleLabel", scaled(76))
+	theme.set_font_size("font_size", &"SubtitleLabel", scaled(30))
+	theme.set_font_size("font_size", &"ValueLabel", scaled(28))
+	theme.set_font_size("font_size", &"SmallLabel", scaled(17))
+	theme.set_font_size("font_size", "Button", scaled(25))
+	theme.set_font_size("font_size", &"BigButton", scaled(34))
+	theme.set_font_size("font_size", &"CtaButton", scaled(38))
+	theme.set_font_size("font_size", "PopupMenu", scaled(22))
 
 
 ## The accent color after a hue shift (texts and tints that are not part of a baked frame).
@@ -265,18 +295,16 @@ static func _button_style(frame_name: String, tint: Color = Color.WHITE, hue_shi
 static func _build(hue_shift: float = 0.0) -> Theme:
 	var theme := Theme.new()
 	theme.default_font = font(700)
-	theme.default_font_size = 22
 
 	theme.set_color("font_color", "Label", TEXT)
 	theme.set_color("font_outline_color", "Label", OUTLINE)
 	theme.set_constant("outline_size", "Label", 4)
-	_label_variation(theme, &"TitleLabel", CINZEL_DECO, 76, 8, Color.WHITE)
-	_label_variation(theme, &"SubtitleLabel", font(700, true), 30, 5, TEXT)
-	_label_variation(theme, &"ValueLabel", font(700, true), 28, 5, TEXT)
-	_label_variation(theme, &"SmallLabel", font(800), 17, 3, MUTED)
+	_label_variation(theme, &"TitleLabel", CINZEL_DECO, 8, Color.WHITE)
+	_label_variation(theme, &"SubtitleLabel", font(700, true), 5, TEXT)
+	_label_variation(theme, &"ValueLabel", font(700, true), 5, TEXT)
+	_label_variation(theme, &"SmallLabel", font(800), 3, MUTED)
 
 	theme.set_font("font", "Button", font(700, true))
-	theme.set_font_size("font_size", "Button", 25)
 	theme.set_color("font_color", "Button", TEXT)
 	theme.set_color("font_hover_color", "Button", Color.WHITE)
 	theme.set_color("font_focus_color", "Button", Color.WHITE)
@@ -292,10 +320,8 @@ static func _build(hue_shift: float = 0.0) -> Theme:
 	# Keyboard / gamepad focus is shown by the lit style (hover), not an extra frame.
 	theme.set_stylebox("focus", "Button", _button_style("button_hover", Color.WHITE, hue_shift))
 	theme.set_type_variation(&"BigButton", &"Button")
-	theme.set_font_size("font_size", &"BigButton", 34)
 	# Main action: bright blue with gold frame in every state.
 	theme.set_type_variation(&"CtaButton", &"Button")
-	theme.set_font_size("font_size", &"CtaButton", 38)
 	theme.set_font("font", &"CtaButton", font(800, true))
 	for state in ["normal", "hover", "focus"]:
 		theme.set_stylebox(state, &"CtaButton", _button_style("button_cta", Color.WHITE, hue_shift))
@@ -324,18 +350,17 @@ static func _build(hue_shift: float = 0.0) -> Theme:
 	theme.set_stylebox("focus", "HSlider", focus_style(ACCENT, 10))
 	theme.set_stylebox("panel", "PopupMenu", accent_frame("card", 36, ACCENT, 0.7, 12.0, hue_shift))
 	theme.set_font("font", "PopupMenu", font(700))
-	theme.set_font_size("font_size", "PopupMenu", 22)
 	# Toggles: only the switch icon, no button frame (the frame read as a big empty button).
 	for state in ["normal", "hover", "pressed", "hover_pressed", "disabled"]:
 		theme.set_stylebox(state, "CheckButton", StyleBoxEmpty.new())
 	theme.set_stylebox("focus", "CheckButton", focus_style(ACCENT, 10))
+	_apply_sizes(theme)
 	return theme
 
 
-static func _label_variation(theme: Theme, variation: StringName, label_font: Font, size: int,
+static func _label_variation(theme: Theme, variation: StringName, label_font: Font,
 		outline: int, color: Color) -> void:
 	theme.set_type_variation(variation, &"Label")
 	theme.set_font("font", variation, label_font)
-	theme.set_font_size("font_size", variation, size)
 	theme.set_constant("outline_size", variation, outline)
 	theme.set_color("font_color", variation, color)

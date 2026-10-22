@@ -32,6 +32,8 @@ var stats: StatBlock
 var hp: float = 1.0
 var radius: float = 16.0
 var is_dead: bool = false
+## Off with the "reduce flashes" setting: the hero no longer flashes white when hit.
+var hit_flash: bool = true
 ## Debug/tests: ignore all damage.
 var invincible: bool = false
 ## Debug/tests: when valid, replaces the player input. Must return a Vector2.
@@ -148,8 +150,9 @@ func enter_from(origin: Vector2, seconds: float = ARRIVAL_SECONDS, wait: float =
 
 func _physics_process(delta: float) -> void:
 	if rig != null:
-		rig.flash = motion.flash
-		rig.animate(delta, 0.0 if is_dead else motion.speed_ratio, motion.flash)
+		var flash := motion.flash if hit_flash else 0.0
+		rig.flash = flash
+		rig.animate(delta, 0.0 if is_dead else motion.speed_ratio, flash)
 		_place_rig()
 	if _arrival_left > 0.0:
 		if _arrival_wait > 0.0:
@@ -329,7 +332,7 @@ func _update_sprite_material() -> void:
 	if shader_material == null:
 		return
 	shader_material.set_shader_parameter(&"sway", motion.speed_ratio)
-	shader_material.set_shader_parameter(&"flash", motion.flash)
+	shader_material.set_shader_parameter(&"flash", motion.flash if hit_flash else 0.0)
 
 
 ## Dust, then the body leaning around its feet.

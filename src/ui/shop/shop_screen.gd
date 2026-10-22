@@ -545,7 +545,7 @@ func _make_card(index: int, offer: ShopOffer) -> Control:
 	lock.tooltip_text = "UI_SHOP_UNLOCK" if offer.locked else "UI_SHOP_LOCK"
 	lock.pressed.connect(_on_lock.bind(index))
 	if _compact:
-		lock.add_theme_font_size_override("font_size", 20)
+		lock.add_theme_font_size_override("font_size", UiTheme.scaled(20))
 	box.add_child(lock)
 	_controls["lock:%d" % index] = lock
 	return panel
@@ -859,7 +859,7 @@ func _label(size: int, color: Color, variation: StringName = &"") -> Label:
 	var label := Label.new()
 	label.theme_type_variation = variation
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override("font_size", size)
+	label.add_theme_font_size_override("font_size", UiTheme.scaled(size))
 	label.add_theme_color_override("font_color", color)
 	return label
 
@@ -879,5 +879,5 @@ func _button(text: String, size: int) -> Button:
 	var button := Button.new()
 	button.text = text
 	if size > 0:
-		button.add_theme_font_size_override("font_size", size)
+		button.add_theme_font_size_override("font_size", UiTheme.scaled(size))
 	return button

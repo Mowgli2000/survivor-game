@@ -29,7 +29,7 @@ func _build(item: ItemData) -> void:
 	_label.text = TranslationServer.translate(item.name_key)
 	_label.theme_type_variation = &"SubtitleLabel"
 	_label.add_theme_color_override("font_color", Tiers.color(item.tier))
-	_label.add_theme_font_size_override("font_size", 26)
+	_label.add_theme_font_size_override("font_size", UiTheme.scaled(26))
 	_label.position = Vector2(-120, 8)
 	_label.size = Vector2(240, 36)
 	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

@@ -43,6 +43,8 @@ const KILL_POP_DB := 2.0
 const ELITE_DEATH_DB := 1.0
 ## Size multiplier of elites (set by Run from StageData.elite_scale).
 var elite_scale: float = 1.6
+## Off with the "reduce flashes" setting: a hit enemy no longer turns white for a moment.
+var hit_flash: bool = true
 ## Tallest an elite may be drawn, px: under the smallest boss (radius 40, scale 1.3 = 260).
 const ELITE_MAX_HEIGHT := 240.0
 ## Spawner enemies never push the count above this (Run sets StageData.max_enemies).
@@ -225,7 +227,7 @@ func damage_enemy(index: int, amount: float, crit: bool, direction: Vector2, kno
 	if not enemy.is_alive() or enemy.invulnerable_left > 0.0:
 		return
 	var damage := CombatMath.apply_armor(amount, enemy.data.armor)
-	if enemy.data.phases.is_empty():  # a boss does not turn white: it would hide the painting
+	if enemy.data.phases.is_empty() and hit_flash:  # a boss does not turn white: it would hide the painting
 		enemy.set_flash(Enemy.FLASH_TIME)
 	enemy.knockback += direction * knockback_force * enemy.data.knockback_taken
 	enemy_damaged.emit(enemy.position, damage, crit)

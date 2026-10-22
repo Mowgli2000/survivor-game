@@ -16,6 +16,7 @@ const BUSES: Dictionary[StringName, StringName] = {
 
 var path: String = DEFAULT_PATH
 var data := SettingsData.new()
+var _color_filter := ColorFilter.new()
 ## Last window size preset applied: the window is only resized when the choice changes.
 var _applied_resolution: int = 0
 
@@ -23,6 +24,7 @@ var _applied_resolution: int = 0
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	MenuInput.install()
+	add_child(_color_filter)
 	load_settings()
 
 
@@ -63,6 +65,8 @@ func apply() -> void:
 		AudioServer.set_bus_volume_db(bus, linear_to_db(maxf(volume, 0.0001)))
 	TranslationServer.set_locale(data.locale if data.locale != "" else OS.get_locale_language())
 	UiFx.reduce_motion = data.reduce_motion
+	UiTheme.set_text_scale(SettingsData.TEXT_SCALES[data.text_size])
+	_color_filter.set_mode(data.colorblind)
 	_apply_window()
 
 

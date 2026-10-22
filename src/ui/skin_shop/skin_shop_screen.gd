@@ -180,7 +180,7 @@ func _card(skin: SkinData) -> Control:
 	var name_label := Label.new()
 	name_label.text = skin.name_key
 	name_label.theme_type_variation = &"SubtitleLabel"
-	name_label.add_theme_font_size_override("font_size", 26)
+	name_label.add_theme_font_size_override("font_size", UiTheme.scaled(26))
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(name_label)
 	var buy := Button.new()

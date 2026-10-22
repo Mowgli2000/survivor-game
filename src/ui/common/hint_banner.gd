@@ -54,7 +54,7 @@ func _ready() -> void:
 	text.text = text_key(key)
 	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	text.add_theme_font_size_override("font_size", 24)
+	text.add_theme_font_size_override("font_size", UiTheme.scaled(24))
 	text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(text)
 	anchor_left = at.x

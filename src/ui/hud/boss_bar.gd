@@ -107,4 +107,4 @@ func _layout() -> void:
 	var multi := _rows.size() > 1
 	for row in _rows:
 		row.bar.custom_minimum_size = BAR_SIZE_MULTI if multi else BAR_SIZE
-		row.name_label.add_theme_font_size_override("font_size", 16 if multi else 20)
+		row.name_label.add_theme_font_size_override("font_size", UiTheme.scaled(16 if multi else 20))
