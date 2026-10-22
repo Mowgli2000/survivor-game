@@ -35,6 +35,9 @@ var _stack: Control
 ## "action:slot" -> the button of that binding slot, and the slot being captured ({} when none).
 var _bind_buttons: Dictionary[String, Button] = {}
 var _capture: Dictionary = {}
+var _device: OptionButton
+var _keys_grid: GridContainer
+var _pad_grid: GridContainer
 var _tab_group := ButtonGroup.new()
 
 
@@ -199,35 +202,66 @@ func _unhandled_input(event: InputEvent) -> void:
 		close()
 
 
-## The controls page: a row per action with its two keys and its pad button, then the reset button.
+## The controls page: a drop-down picks the device (keyboard or gamepad), under it a row per action with that
+## device's slots, then the reset button.
 func _build_controls() -> void:
-	_grid.columns = 4
-	_grid.add_child(Control.new())
-	for key in ["SET_COL_KEY", "SET_COL_KEY2", "SET_COL_PAD"]:
-		var head := Label.new()
-		head.text = key
-		head.theme_type_variation = &"SmallLabel"
-		head.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		_grid.add_child(head)
-	for action in InputBindings.ACTIONS:
-		var label := Label.new()
-		label.text = "SET_ACTION_" + String(action).to_upper()
-		_grid.add_child(label)
-		for slot in InputBindings.KEY_SLOTS + 1:
-			var button := Button.new()
-			button.custom_minimum_size = Vector2(150, 52)
-			button.pressed.connect(_begin_capture.bind(action, slot))
-			_grid.add_child(button)
-			_bind_buttons["%s:%d" % [action, slot]] = button
-	for i in 3:
-		_grid.add_child(Control.new())
+	_grid.columns = 1
+	_grid.add_theme_constant_override("v_separation", 14)
+	_device = OptionButton.new()
+	_device.add_item("SET_DEVICE_KEYBOARD")
+	_device.add_item("SET_DEVICE_PAD")
+	_device.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_device.custom_minimum_size.x = 340
+	_device.item_selected.connect(_show_device)
+	_grid.add_child(_device)
+	_keys_grid = _controls_grid(["SET_COL_KEY", "SET_COL_KEY2"], 0, InputBindings.KEY_SLOTS)
+	_pad_grid = _controls_grid(["SET_COL_PAD"], InputBindings.PAD_SLOT, 1)
 	var reset := Button.new()
 	reset.text = "SET_CONTROLS_RESET"
+	reset.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	reset.pressed.connect(func() -> void:
 		Settings.set_value(&"bindings", {})
 		_capture = {}
 		_refresh_bindings())
 	_grid.add_child(reset)
+	_show_device(0)
+
+
+## One block of the controls page: a heading row, then a row per action with `count` slots from `first_slot`.
+func _controls_grid(headings: Array[String], first_slot: int, count: int) -> GridContainer:
+	var grid := GridContainer.new()
+	grid.columns = count + 1
+	grid.add_theme_constant_override("h_separation", 24)
+	grid.add_theme_constant_override("v_separation", 10)
+	grid.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	grid.add_child(Control.new())
+	for key in headings:
+		var head := Label.new()
+		head.text = key
+		head.theme_type_variation = &"SmallLabel"
+		head.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		grid.add_child(head)
+	for action in InputBindings.ACTIONS:
+		var label := Label.new()
+		label.text = "SET_ACTION_" + String(action).to_upper()
+		label.custom_minimum_size.x = 260
+		grid.add_child(label)
+		for slot in range(first_slot, first_slot + count):
+			var button := Button.new()
+			button.custom_minimum_size = Vector2(220, 52)
+			button.pressed.connect(_begin_capture.bind(action, slot))
+			grid.add_child(button)
+			_bind_buttons["%s:%d" % [action, slot]] = button
+	_grid.add_child(grid)
+	return grid
+
+
+## Shows the slots of the keyboard (0) or of the gamepad (1).
+func _show_device(index: int) -> void:
+	_keys_grid.visible = index == 0
+	_pad_grid.visible = index == 1
+	_capture = {}
+	_refresh_bindings()
 
 
 func _begin_capture(action: StringName, slot: int) -> void:

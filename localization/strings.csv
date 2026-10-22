@@ -565,3 +565,5 @@ SET_ACTION_MOVE_LEFT,Move left,Aller à gauche
 SET_ACTION_MOVE_RIGHT,Move right,Aller à droite
 SET_ACTION_PAUSE,Pause,Pause
 SET_CONTROLS_RESET,Reset controls,Rétablir les commandes
+SET_DEVICE_KEYBOARD,Keyboard,Clavier
+SET_DEVICE_PAD,Gamepad,Manette
