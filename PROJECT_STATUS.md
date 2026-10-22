@@ -454,3 +454,29 @@ Dernière mise à jour : 2026-10-09 (nuit, session 11 : refonte visuelle « Cris
 - Stress test : 72-79 FPS, identique à la version précédente (72-76) : machine lente ce jour, pas de régression ; à remesurer sur le PC du dev.
 - **Reste à faire** : essai en jeu de toutes les armes par le dev (2026-10-21) ; `meteor_impact` et look « flocon » de `explosion_frost` si ça déplaît ; animations d'attaque des héros en dernier.
 - TEMPORAIRE avant fusion de `audio/sons-armes` : 28 armes du chasseur novice (`drifter.tres`), exceptions `TEMP_PLAYTEST_UNLOCKED` dans `tests/data/test_content.gd` et `tests/unit/test_seal_rewards.gd`, armes débloquées.
+
+### 2026-10-21 — manques pour un jeu complet (vérifiés dans le code, hors ce qui existe déjà)
+Déjà en place (ne pas refaire) : fr/en, volumes, plein écran, vsync, zoom caméra, secousse d'écran et chiffres de dégâts désactivables, mouvement réduit, astuces (`HintBanner`), manette + coop, sauvegarde atomique avec copie `.bak`, coffres, méta-progression, défis, mode infini, logo.
+Manquants :
+1. Remappage des touches et de la manette.
+2. Écran de crédits (CC0, ElevenLabs, outils IA).
+3. Options graphiques : qualité des effets, plafond FPS, résolution ; mode léger pour PC faibles.
+4. Accessibilité : daltonisme, taille du texte, réduction des flashs.
+5. Reprise d'une partie interrompue (quitter en plein run).
+6. Pause automatique à la perte de focus et à la déconnexion d'une manette.
+7. Succès Steam, sauvegarde cloud, Steam Input (derrière `Platform`, Phase 10).
+8. Bestiaire / encyclopédie des armes, objets, ennemis rencontrés.
+9. Événements aléatoires pendant un run (seuls les coffres existent).
+10. Journal d'erreurs dans `user://` (non trouvé). Le numéro de version est déjà dans le menu.
+11. Page Steam, bande-annonce, démo, déclaration d'IA, playtests externes, test Steam Deck.
+
+### 2026-10-21/22 — retours du premier game test (branche `audio/sons-armes`)
+- Hache lourde : le coup se tourne vers l'ennemi touché (`WeaponData.face_target`). Sphère du Puits de gravité et Shuriken : tailles ajustées (`BODY_SCALE`).
+- Écran de victoire : icônes de récompense 128 px, musique du menu lancée après un jingle de 3,5 s (`run.gd`).
+- Flèches (Arc long, Arc céleste, Arbalète à répétition, Arbalète lourde, Javelot) et pierre de Fronde : **un seul style plat** (contour bleu nuit, une courte traînée derrière), cuits depuis des planches IA validées par le dev (`tools/art/bake_arrows.py`). Ondulation de traînée du shader supprimée (`RIPPLE = 0.0`, plainte du Bâton de feu).
+- Projectiles ennemis : anneau blanc + halo vif (`make_enemy_shots.py`), sprite 4.0 au lieu de 3.6 ; le rayon de dégâts ne change pas.
+- Grimoire de météores : roche et impact à 35 % d'opacité tant qu'un boss ou mini-boss est en vie (`StrikeBehavior.BOSS_FADE`).
+- PV des mini-boss −25 % (une seule révision ; phases gardées). **Les PV des boss finaux ne changent pas** : le `max_hp` est multiplié par la courbe de vague (~×4 à la vague 10, ~×110 à la vague 20), donc comparer les bases ne veut rien dire.
+- Zones d'avertissement des boss : les cercles sont toujours le disque réel de dégâts (l'étoile cachait des zones dangereuses). `warn_shape` STAR/BLOB gardés dans les données mais sans effet sur les cercles.
+- Son de la Lame runique refait (ElevenLabs, variante F : balayage puis impact), l'ancien sonnait comme des pièces d'or. Essais gardés dans `art_tests/audio/`.
+- **Reste** : boss final trop facile pour le dev (build très fort) : regarder phases, dégâts, rythme, pas les PV ; vérifier en jeu Bâton de feu sans ondulation, Javelot, écran de victoire ; réponse sur les tirs en arc ; sens de « opacité du Shuriken » (question sans réponse).
