@@ -7,7 +7,7 @@ extends Control
 signal closed
 
 const VOLUMES: Array[StringName] = [&"master_volume", &"music_volume", &"sfx_volume", &"ambience_volume"]
-const DISPLAY: Array[StringName] = [&"fullscreen", &"vsync"]
+const DISPLAY: Array[StringName] = [&"fullscreen", &"vsync", &"light_mode"]
 const GAME: Array[StringName] = [&"screen_shake", &"damage_numbers", &"reduce_motion",
 	&"show_hints", &"player_hp_bar"]
 ## Same order as SettingsData.LOCALES.
@@ -17,6 +17,8 @@ var _sliders: Dictionary[StringName, HSlider] = {}
 var _slider_values: Dictionary[StringName, Label] = {}
 var _checks: Dictionary[StringName, CheckButton] = {}
 var _language: OptionButton
+var _fps_cap: OptionButton
+var _resolution: OptionButton
 var _back: Button
 var _panel: PanelContainer
 var _grid: GridContainer
@@ -58,6 +60,8 @@ func _init() -> void:
 	_section("SET_SECTION_DISPLAY")
 	for key in DISPLAY:
 		_add_check(key)
+	_fps_cap = _add_option(&"fps_cap", _fps_labels(), SettingsData.FPS_CAPS)
+	_resolution = _add_option(&"resolution", _resolution_labels(), range(SettingsData.RESOLUTIONS.size() + 1))
 	_section("SET_SECTION_GAME")
 	_add_slider(&"camera_zoom", SettingsData.ZOOM_MIN, SettingsData.ZOOM_MAX)
 	for key in GAME:
@@ -86,6 +90,8 @@ func open() -> void:
 	for key in _checks:
 		_checks[key].set_pressed_no_signal(Settings.data.get(key))
 	_language.select(maxi(SettingsData.LOCALES.find(Settings.data.locale), 0))
+	_fps_cap.select(maxi(SettingsData.FPS_CAPS.find(Settings.data.fps_cap), 0))
+	_resolution.select(Settings.data.resolution)
 	visible = true
 	UiFx.pop_in(_panel)
 	_sliders[VOLUMES[0]].grab_focus()
@@ -150,6 +156,32 @@ func _add_check(key: StringName) -> void:
 	check.toggled.connect(func(on: bool) -> void: Settings.set_value(key, on))
 	_grid.add_child(check)
 	_checks[key] = check
+
+
+## A drop-down row for an integer setting: item `i` writes `values[i]`.
+func _add_option(key: StringName, labels: Array[String], values: Array) -> OptionButton:
+	_row_label("SET_" + String(key).to_upper())
+	var option := OptionButton.new()
+	for text in labels:
+		option.add_item(text)
+	option.item_selected.connect(func(index: int) -> void:
+		Settings.set_value(key, values[index]))
+	_grid.add_child(option)
+	return option
+
+
+func _fps_labels() -> Array[String]:
+	var labels: Array[String] = []
+	for cap in SettingsData.FPS_CAPS:
+		labels.append("SET_FPS_UNLIMITED" if cap == 0 else str(cap))
+	return labels
+
+
+func _resolution_labels() -> Array[String]:
+	var labels: Array[String] = ["SET_RESOLUTION_AUTO"]
+	for size in SettingsData.RESOLUTIONS:
+		labels.append("%d × %d" % [size.x, size.y])
+	return labels
 
 
 func _update_slider_label(key: StringName) -> void:

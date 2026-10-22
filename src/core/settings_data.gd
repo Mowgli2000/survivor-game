@@ -12,8 +12,13 @@ const VOLUME_KEYS: Array[StringName] = [&"master_volume", &"music_volume", &"sfx
 ## Camera zoom range (player option): below 1 shows more of the arena, above 1 less.
 const ZOOM_MIN := 0.75
 const ZOOM_MAX := 1.15
+## Frame-rate caps offered (0 = none).
+const FPS_CAPS: Array[int] = [0, 30, 60, 120, 144, 240]
+## Window sizes offered; the setting `resolution` is 0 (leave the window alone) or 1 + the index here.
+const RESOLUTIONS: Array[Vector2i] = [Vector2i(1280, 720), Vector2i(1600, 900), Vector2i(1920, 1080),
+	Vector2i(2560, 1440)]
 const BOOL_KEYS: Array[StringName] = [&"fullscreen", &"vsync", &"screen_shake",
-	&"damage_numbers", &"reduce_motion", &"show_hints", &"player_hp_bar"]
+	&"damage_numbers", &"reduce_motion", &"show_hints", &"player_hp_bar", &"light_mode"]
 
 var master_volume: float = 0.8
 var music_volume: float = 0.7
@@ -21,6 +26,12 @@ var sfx_volume: float = 0.8
 var ambience_volume: float = 0.7
 var fullscreen: bool = false
 var vsync: bool = true
+## Cap on frames per second, one of FPS_CAPS (0 = none).
+var fps_cap: int = 0
+## Window size when not fullscreen: 0 = untouched, else 1 + index in RESOLUTIONS.
+var resolution: int = 0
+## Fewer cosmetic effects at once, for weak PCs (Vfx.LIGHT_BUSY_COUNT).
+var light_mode: bool = false
 var screen_shake: bool = true
 var damage_numbers: bool = true
 var reduce_motion: bool = false
@@ -61,6 +72,16 @@ func set_value(key: StringName, value: Variant) -> bool:
 			return false
 		set(key, value)
 		return true
+	if key == &"fps_cap":
+		if typeof(value) != TYPE_FLOAT and typeof(value) != TYPE_INT:
+			return false
+		fps_cap = int(value) if int(value) in FPS_CAPS else 0
+		return true
+	if key == &"resolution":
+		if typeof(value) != TYPE_FLOAT and typeof(value) != TYPE_INT:
+			return false
+		resolution = clampi(int(value), 0, RESOLUTIONS.size())
+		return true
 	if key == &"select_background":
 		if typeof(value) != TYPE_STRING:
 			return false
@@ -76,7 +97,7 @@ func set_value(key: StringName, value: Variant) -> bool:
 
 func to_dict() -> Dictionary:
 	var result := {"version": VERSION, "locale": locale, "select_background": select_background,
-		"camera_zoom": camera_zoom}
+		"camera_zoom": camera_zoom, "fps_cap": fps_cap, "resolution": resolution}
 	for key in VOLUME_KEYS + BOOL_KEYS:
 		result[String(key)] = get(key)
 	return result

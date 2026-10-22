@@ -41,6 +41,8 @@ const BEAM_HEIGHT_PER_WIDTH := 18.0
 const OVERSIZE_SHARE := 0.5
 ## Past this many live effects, new swings, beams and blasts fade sooner (visual noise).
 const BUSY_COUNT := 40
+## Light mode (Settings): the same threshold, much lower, so a weak PC drops cosmetic effects early.
+const LIGHT_BUSY_COUNT := 12
 ## How far a painted blast reaches, as a share of the damage radius (its glow goes a little beyond).
 const PAINTED_BLAST_SHARE := 1.05
 const BUSY_LIFE := 0.6
@@ -239,7 +241,7 @@ func slash(center: Vector2, angle: float, radius: float, half_angle: float, colo
 ## radius it covers. `delay`: seconds before it starts; `follower`: node it moves with.
 func sheet(effect: EffectSheet, pos: Vector2, angle: float, size: float, tint: Color = Color.WHITE,
 		optional: bool = false, delay: float = 0.0, follower: Node2D = null) -> void:
-	if optional and _count > BUSY_COUNT:
+	if optional and _count > busy_count:
 		return  # a hit burst is not worth a frame when the screen is already full of effects
 	_add_sheet(effect, pos, angle, shown_size(size, BLAST_FULL), follower, tint, SheetMode.PLAIN, 0.0, delay)
 
@@ -248,7 +250,7 @@ func sheet(effect: EffectSheet, pos: Vector2, angle: float, size: float, tint: C
 ## from its center, so what is drawn is what hurts. `delay`: seconds before it starts.
 func sheet_at(effect: EffectSheet, pos: Vector2, angle: float, half_extent: float, delay: float = 0.0,
 		follower: Node2D = null, optional: bool = false) -> void:
-	if optional and _count > BUSY_COUNT:
+	if optional and _count > busy_count:
 		return
 	_add_sheet(effect, pos, angle, effect.size_for(half_extent), follower, Color.WHITE, SheetMode.PLAIN, 0.0, delay)
 
@@ -365,6 +367,8 @@ func portal(center: Vector2, radius: float, boss: bool = false) -> void:
 ## (a crack for a band); circles are always the plain damage disc, STAR and BLOB are kept for the saved data.
 enum WarnShape { PLAIN, JAGGED, STAR, BLOB }
 var warn_shape: int = WarnShape.PLAIN
+## Live effects past which cosmetic ones are trimmed (BUSY_COUNT, or LIGHT_BUSY_COUNT in light mode).
+var busy_count: int = BUSY_COUNT
 
 
 ## Boss telegraph: a ring that fills up during `life` seconds.
@@ -401,7 +405,7 @@ func _add(kind: Kind, a: Vector2, b: Vector2, size: float, extra: float, color: 
 		style: int = 0, follower: Node2D = null) -> void:
 	if _count >= CAPACITY:
 		return  # Dropping a cosmetic effect is better than a frame spike.
-	if _count > BUSY_COUNT and (kind == Kind.SLASH or kind == Kind.EXPLOSION or kind == Kind.BEAM):
+	if _count > busy_count and (kind == Kind.SLASH or kind == Kind.EXPLOSION or kind == Kind.BEAM):
 		life *= BUSY_LIFE
 	var i := _count
 	_kind[i] = kind
@@ -502,7 +506,7 @@ func _remove(i: int) -> void:
 func _draw() -> void:
 	if not _debug_shapes.is_empty():
 		_draw_debug_shapes()
-	var busy := _count > BUSY_COUNT
+	var busy := _count > busy_count
 	for i in _count:
 		var t := _life[i] / _max_life[i]  # 1 -> 0
 		if t > 1.0:
@@ -666,7 +670,7 @@ func _draw_sheets(canvas: Node2D, ground: bool, hostile: bool) -> void:
 
 ## The additive layer: glows, auras, sparks and flashes of every effect.
 func _draw_additive() -> void:
-	var busy := _count > BUSY_COUNT
+	var busy := _count > busy_count
 	for i in _count:
 		var t := _life[i] / _max_life[i]
 		if t > 1.0:
@@ -680,7 +684,7 @@ func _draw_additive() -> void:
 			Kind.EXPLOSION:
 				_art.explosion_glow(_glow, _a[i], _size[i], _extra[i], color, 1.0 - t, busy)
 			Kind.DEATH:
-				if _count <= BUSY_COUNT * 3:
+				if _count <= busy_count * 3:
 					_art.death_motes(_glow, _a[i], _size[i], _extra[i], color, t, 3 if not busy else 2)
 			Kind.HIT:
 				_art.hit_glow(_glow, _a[i], _size[i], _extra[i], color, t)
@@ -714,7 +718,7 @@ func _draw_death(center: Vector2, radius: float, noise_seed: float, color: Color
 	var fade := clampf(t * 1.6, 0.0, 1.0)
 	puff_color.a = 0.95 * fade
 	_puff(center, radius * (0.5 + 0.45 * out), puff_color)
-	var puffs := 4 if _count <= BUSY_COUNT else 2
+	var puffs := 4 if _count <= busy_count else 2
 	for k in puffs:
 		var angle := noise_seed * TAU + k * TAU / puffs + sin(noise_seed * 40.0 + k) * 0.25
 		var spread := radius * (0.2 + 0.85 * out) * (0.85 + 0.3 * fposmod(noise_seed * 7.0 + k * 0.37, 1.0))

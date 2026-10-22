@@ -42,3 +42,24 @@ func test_camera_zoom_defaults_to_one_is_clamped_and_round_trips() -> void:
 	assert_eq(s.camera_zoom, SettingsData.ZOOM_MIN)
 	assert_false(s.set_value(&"camera_zoom", "far"), "wrong type rejected")
 
+
+
+func test_fps_cap_and_resolution_default_to_untouched_and_round_trip() -> void:
+	var s := SettingsData.new()
+	assert_eq(s.fps_cap, 0, "no cap by default")
+	assert_eq(s.resolution, 0, "window left alone by default")
+	assert_false(s.light_mode)
+	s.set_value(&"fps_cap", 60)
+	s.set_value(&"resolution", 3)
+	s.set_value(&"light_mode", true)
+	var back := SettingsData.from_dict(JSON.parse_string(JSON.stringify(s.to_dict())))
+	assert_eq(back.fps_cap, 60, "JSON turns ints into floats: still read as 60")
+	assert_eq(back.resolution, 3)
+	assert_true(back.light_mode)
+
+
+func test_unknown_fps_cap_and_out_of_range_resolution_are_corrected() -> void:
+	var s := SettingsData.from_dict({"fps_cap": 77, "resolution": 99})
+	assert_eq(s.fps_cap, 0, "a cap that is not offered means no cap")
+	assert_eq(s.resolution, SettingsData.RESOLUTIONS.size(), "clamped to the biggest size")
+	assert_false(s.set_value(&"fps_cap", "fast"), "wrong type rejected")

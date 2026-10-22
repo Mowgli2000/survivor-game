@@ -16,6 +16,8 @@ const BUSES: Dictionary[StringName, StringName] = {
 
 var path: String = DEFAULT_PATH
 var data := SettingsData.new()
+## Last window size preset applied: the window is only resized when the choice changes.
+var _applied_resolution: int = 0
 
 
 func _ready() -> void:
@@ -77,6 +79,21 @@ func _apply_window() -> void:
 			else DisplayServer.WINDOW_MODE_WINDOWED)
 	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if data.vsync
 		else DisplayServer.VSYNC_DISABLED)
+	if is_debug_run():
+		return
+	Engine.max_fps = data.fps_cap
+	if data.resolution != _applied_resolution:
+		_applied_resolution = data.resolution
+		if data.resolution > 0 and not fullscreen:
+			_set_window_size(SettingsData.RESOLUTIONS[data.resolution - 1])
+
+
+## Resizes the window and keeps it on the same screen, centered.
+func _set_window_size(size: Vector2i) -> void:
+	var screen := DisplayServer.window_get_current_screen()
+	var area := DisplayServer.screen_get_usable_rect(screen)
+	DisplayServer.window_set_size(size)
+	DisplayServer.window_set_position(area.position + (area.size - size) / 2)
 
 
 ## True when the game was started on a debug scene or tool script (src/debug/, tools/).

@@ -539,3 +539,8 @@ UI_SKIN_RARITY_2,Rare,Rare
 UI_SKIN_RARITY_3,Legendary,Légendaire
 UI_SKIN_RARITY_4,Prestige,Prestige
 UI_SKIN_PRESTIGE_HINT,Win the %s with this class,Gagne le %s avec cette classe
+SET_FPS_CAP,Frame rate limit,Limite d'images par seconde
+SET_FPS_UNLIMITED,Unlimited,Illimitée
+SET_RESOLUTION,Window size,Taille de la fenêtre
+SET_RESOLUTION_AUTO,Unchanged,Inchangée
+SET_LIGHT_MODE,Light mode (fewer effects),Mode léger (moins d'effets)

@@ -37,3 +37,15 @@ func test_back_closes() -> void:
 	screen._back.pressed.emit()
 	assert_false(screen.visible)
 	assert_signal_emitted(screen, "closed")
+
+
+func test_the_graphics_options_write_the_settings() -> void:
+	var screen := SettingsScreen.new()
+	add_child_autofree(screen)
+	screen.open()
+	screen._fps_cap.item_selected.emit(2)  # 60 fps
+	assert_eq(Settings.data.fps_cap, 60)
+	screen._resolution.item_selected.emit(3)  # 1920 x 1080
+	assert_eq(Settings.data.resolution, 3)
+	screen._checks[&"light_mode"].button_pressed = true
+	assert_true(Settings.data.light_mode)
