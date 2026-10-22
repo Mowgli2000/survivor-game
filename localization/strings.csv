@@ -567,3 +567,4 @@ SET_ACTION_PAUSE,Pause,Pause
 SET_CONTROLS_RESET,Reset controls,Rétablir les commandes
 SET_DEVICE_KEYBOARD,Keyboard,Clavier
 SET_DEVICE_PAD,Gamepad,Manette
+SET_AUTO_PAUSE,Auto-pause (window or pad lost),Pause automatique (fenêtre ou manette perdue)

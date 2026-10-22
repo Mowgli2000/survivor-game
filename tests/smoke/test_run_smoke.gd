@@ -322,3 +322,21 @@ func _ui_root(screen: CanvasLayer) -> Control:
 func test_starting_weapon_counts_for_its_family() -> void:
 	var weapon := _run.config.character.starting_weapon
 	assert_eq(_run.weapon_families.count(weapon.families[0]), 1)
+
+
+func test_the_run_pauses_by_itself_when_the_window_loses_focus_or_a_pad_is_unplugged() -> void:
+	var run := _swap_run(true, false)
+	await wait_physics_frames(2)
+	run._on_joy_connection_changed(0, false)
+	assert_false(get_tree().paused, "a keyboard player does not care about a pad")
+	Settings.data.auto_pause = false
+	run.notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
+	assert_false(get_tree().paused, "the setting can turn it off")
+	Settings.data.auto_pause = true
+	run.notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
+	assert_true(get_tree().paused, "the window lost focus")
+	run._resume_from_pause()
+	run._pad_used = true
+	run._on_joy_connection_changed(0, false)
+	assert_true(get_tree().paused, "the pad in use was unplugged")
+	run._resume_from_pause()

@@ -9,7 +9,7 @@ signal closed
 const VOLUMES: Array[StringName] = [&"master_volume", &"music_volume", &"sfx_volume", &"ambience_volume"]
 const DISPLAY: Array[StringName] = [&"fullscreen", &"vsync", &"light_mode"]
 const GAME: Array[StringName] = [&"screen_shake", &"damage_numbers", &"reduce_motion",
-	&"show_hints", &"player_hp_bar"]
+	&"show_hints", &"player_hp_bar", &"auto_pause"]
 ## Tabs, in order: the key is also the tab's title.
 const TABS: Array[String] = ["SET_SECTION_AUDIO", "SET_SECTION_DISPLAY", "SET_SECTION_GAME",
 	"SET_SECTION_ACCESSIBILITY", "SET_SECTION_CONTROLS"]

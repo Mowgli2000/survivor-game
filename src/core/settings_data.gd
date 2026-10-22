@@ -22,7 +22,7 @@ const TEXT_SCALES: Array[float] = [1.0, 1.15, 1.3]
 ## Colorblind modes: 0 off, 1 protanopia, 2 deuteranopia, 3 tritanopia (ColorFilter).
 const COLORBLIND_MODES := 4
 const BOOL_KEYS: Array[StringName] = [&"fullscreen", &"vsync", &"screen_shake",
-	&"damage_numbers", &"reduce_motion", &"show_hints", &"player_hp_bar", &"light_mode", &"reduce_flashes"]
+	&"damage_numbers", &"reduce_motion", &"show_hints", &"player_hp_bar", &"light_mode", &"reduce_flashes", &"auto_pause"]
 
 var master_volume: float = 0.8
 var music_volume: float = 0.7
@@ -43,6 +43,8 @@ var colorblind: int = 0
 var bindings: Dictionary = {}
 ## No white hit flashes, dimmer glows (photosensitivity).
 var reduce_flashes: bool = false
+## The run pauses by itself when the window loses focus or a pad is unplugged.
+var auto_pause: bool = true
 var screen_shake: bool = true
 var damage_numbers: bool = true
 var reduce_motion: bool = false

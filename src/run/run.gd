@@ -37,6 +37,8 @@ const DEATH_SLOWMO := 0.5
 @export_range(1, 2) var player_count: int = 1
 ## When valid, drives the players instead of the input (bots, tests, stress test).
 var bot_input: Callable
+## True once a gamepad was used in this run.
+var _pad_used := false
 ## Balance simulator (ADR 0019): picks level-up cards and plays the shop when
 ## auto_choose_upgrades is on. Duck-typed: choose_upgrade(offers, rp) -> UpgradeOffer
 ## and shop_turn(rp, wave). Null: first card, first affordable offer.
@@ -289,6 +291,7 @@ func _ready() -> void:
 	pause_menu.main_menu_requested.connect(SceneRouter.goto_main_menu)
 	pause_menu.quit_requested.connect(SceneRouter.quit)
 	Settings.changed.connect(_apply_settings)
+	Input.joy_connection_changed.connect(_on_joy_connection_changed)
 	_apply_settings()
 	waves.wave_started.connect(spawner.begin_wave)
 	waves.wave_started.connect(_update_material_scale)
@@ -437,6 +440,27 @@ func _physics_process(delta: float) -> void:
 	if not state.is_over and waves.in_wave:
 		state.elapsed += delta
 		_update_heartbeat(delta)
+
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventJoypadButton or (event is InputEventJoypadMotion and absf(event.axis_value) > 0.5):
+		_pad_used = true
+
+
+## The run pauses by itself when the window loses focus (Settings `auto_pause`).
+func _notification(what: int) -> void:
+	if (what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT) and _may_auto_pause():
+		open_pause()
+
+
+## A pad unplugged mid-wave pauses the run when someone plays with a pad (coop, or a pad was used in this run).
+func _on_joy_connection_changed(_device: int, connected: bool) -> void:
+	if not connected and (is_coop() or _pad_used) and _may_auto_pause():
+		open_pause()
+
+
+func _may_auto_pause() -> bool:
+	return Settings.data.auto_pause and not Settings.is_debug_run() and can_pause()
 
 
 func _unhandled_input(event: InputEvent) -> void:
