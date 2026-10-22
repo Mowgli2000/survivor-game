@@ -1,5 +1,5 @@
 {
-  "credits_estimated": 1260,
+  "credits_estimated": 1358,
   "done": {
     "kill_pop": {
       "file": "kill_pop.mp3",
@@ -232,6 +232,30 @@
     "boss_rage": {
       "file": "boss_rage.mp3",
       "bytes": 29300
+    },
+    "weapon_runic_blade_a": {
+      "file": "weapon_runic_blade_a.mp3",
+      "bytes": 12163
+    },
+    "weapon_runic_blade_b": {
+      "file": "weapon_runic_blade_b.mp3",
+      "bytes": 12163
+    },
+    "weapon_runic_blade_c": {
+      "file": "weapon_runic_blade_c.mp3",
+      "bytes": 17179
+    },
+    "weapon_runic_blade_d": {
+      "file": "weapon_runic_blade_d.mp3",
+      "bytes": 10492
+    },
+    "weapon_runic_blade_e": {
+      "file": "weapon_runic_blade_e.mp3",
+      "bytes": 10492
+    },
+    "weapon_runic_blade_f": {
+      "file": "weapon_runic_blade_f.mp3",
+      "bytes": 10492
     }
   }
 }
