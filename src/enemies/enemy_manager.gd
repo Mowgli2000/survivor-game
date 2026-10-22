@@ -14,6 +14,8 @@ signal enemy_killed(data: EnemyData, position: Vector2, elite: bool)
 signal boss_spawned(enemy: Enemy)
 
 const GRID_CELL_SIZE := 64.0
+## HP a phased enemy stops below a phase threshold (so the threshold is surely reached despite float rounding).
+const PHASE_GATE_MARGIN := 0.01
 ## Upper bound for an enemy radius (grid padding, data validation).
 const MAX_ENEMY_RADIUS := 48.0
 const SEPARATION_STRENGTH := 0.5
@@ -374,10 +376,24 @@ func clear_all() -> void:
 	grid.rebuild(_positions, 0)
 
 
+## A phased enemy cannot skip a phase: a hit that would carry it past the next threshold stops just under it, so
+## every phase is played however hard the build hits (the excess damage is lost).
+func _gate_phase(enemy: Enemy, amount: float) -> float:
+	var phases := enemy.data.phases
+	if phases.size() < 2:
+		return amount
+	var next := enemy.data.phase_index_for(enemy.hp / enemy.max_hp) + 1
+	if next >= phases.size():
+		return amount
+	var floor_hp := phases[next].hp_ratio * enemy.max_hp - PHASE_GATE_MARGIN
+	return clampf(enemy.hp - floor_hp, 0.0, amount) if enemy.hp - amount < floor_hp else amount
+
+
 ## `crit`: the hit was critical (its own sound). `silent`: damage over time (no hit sound).
 func _lose_hp(enemy: Enemy, amount: float, crit: bool = false, silent: bool = false) -> void:
 	if enemy.invulnerable_left > 0.0:
 		return
+	amount = _gate_phase(enemy, amount)
 	_record_damage(minf(amount, maxf(enemy.hp, 0.0)))
 	enemy.hp -= amount
 	if enemy.is_alive():

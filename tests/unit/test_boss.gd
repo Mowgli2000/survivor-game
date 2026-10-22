@@ -62,6 +62,41 @@ func test_phase_follows_hp_ratio() -> void:
 	assert_eq(data.phase_index_for(0.1), 1)
 
 
+func _three_phase_boss() -> EnemyData:
+	var data := _boss([_radial(4)], [_radial(8)])
+	var third := BossPhase.new()
+	third.hp_ratio = 0.2
+	third.patterns = [_radial(12)]
+	data.phases.append(third)
+	return data
+
+
+func test_a_huge_hit_cannot_skip_a_phase() -> void:
+	var boss := _enemies.spawn(_three_phase_boss(), Vector2(300, 0))
+	_enemies.damage_enemy(0, 95.0, false, Vector2.RIGHT, 0.0)
+	assert_eq(_enemies.get_enemy(0).data.phase_index_for(boss.hp / boss.max_hp), 1, "stops in phase 2, not phase 3")
+	assert_almost_eq(boss.hp, 50.0, 0.1, "it stops at the threshold of the next phase")
+
+
+func test_the_boss_is_unhurtable_just_after_a_phase_change_and_then_goes_on() -> void:
+	var boss := _enemies.spawn(_three_phase_boss(), Vector2(300, 0))
+	_enemies.damage_enemy(0, 95.0, false, Vector2.RIGHT, 0.0)
+	_director.update(0.016)  # the director sees phase 2
+	var hp := boss.hp
+	_enemies.damage_enemy(0, 10.0, false, Vector2.RIGHT, 0.0)
+	assert_eq(boss.hp, hp, "no damage during the grace")
+	_director.update(BossDirector.PHASE_GRACE + 0.1)
+	_enemies.damage_enemy(0, 95.0, false, Vector2.RIGHT, 0.0)
+	assert_almost_eq(boss.hp, 20.0, 0.1, "then it stops at the next threshold: phase 3 is played too")
+
+
+func test_a_boss_still_dies_from_its_last_phase() -> void:
+	var boss := _enemies.spawn(_three_phase_boss(), Vector2(300, 0))
+	boss.hp = 15.0
+	_enemies.damage_enemy(0, 500.0, false, Vector2.RIGHT, 0.0)
+	assert_false(boss.is_alive())
+
+
 func test_radial_burst_waits_for_the_windup_then_fires() -> void:
 	watch_signals(_director)
 	_enemies.spawn(_boss([_radial(12)]), Vector2(300, 0))
@@ -127,6 +162,7 @@ func test_phase_change_and_end_signals() -> void:
 	_director.update(0.01)
 	assert_signal_emitted_with_parameters(_director, "boss_phase_changed", [boss, 1])
 	assert_almost_eq(boss.speed_multiplier, 1.0, 0.001)
+	boss.invulnerable_left = 0.0  # the grace after the phase change is over
 	_enemies.damage_enemy(0, 100.0, false, Vector2.ZERO, 0.0)
 	_director.update(0.01)
 	assert_signal_emitted(_director, "boss_ended")
@@ -446,6 +482,7 @@ func test_a_dying_boss_leaves_a_painted_corpse_that_plays_its_death() -> void:
 	var shogun: EnemyData = ContentDB.get_def(&"enemies", &"shogun")
 	var boss := _enemies.spawn(shogun, Vector2(300, 0))
 	boss.invulnerable_left = 0.0
+	boss.hp = 1.0  # in its last phase: a boss cannot skip a phase on its way down
 	_enemies.damage_enemy(0, 1.0e9, false, Vector2.RIGHT, 0.0)
 	var corpses := _enemies.get_children().filter(func(n: Node) -> bool: return n is BossCorpse)
 	assert_eq(corpses.size(), 1, "the death animation has its own node")

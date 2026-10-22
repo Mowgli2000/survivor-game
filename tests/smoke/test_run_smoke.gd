@@ -226,6 +226,7 @@ func test_killing_the_boss_wins_before_the_timer() -> void:
 		if run.enemies.get_enemy(i) == boss:
 			index = i
 	boss.invulnerable_left = 0.0  # its entrance animation protects it
+	boss.hp = 1.0  # in its last phase: a boss cannot skip a phase on its way down
 	run.enemies.damage_enemy(index, 1.0e9, false, Vector2.RIGHT, 0.0)
 	await wait_physics_frames(3)
 	assert_false(run.state.is_over, "the painted death plays first")
@@ -252,6 +253,7 @@ func test_a_final_boss_killed_after_the_clock_still_gets_its_death_animation() -
 	for i in run.enemies.active_count():
 		if run.enemies.get_enemy(i) == boss:
 			index = i
+	boss.hp = 1.0  # in its last phase: a boss cannot skip a phase on its way down
 	run.enemies.damage_enemy(index, 1.0e9, false, Vector2.RIGHT, 0.0)
 	Engine.time_scale = 1.0
 	await wait_physics_frames(5)

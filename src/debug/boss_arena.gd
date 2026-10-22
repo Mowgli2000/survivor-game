@@ -152,6 +152,7 @@ func _kill(enemy: Enemy) -> void:
 	if _run == null or not is_instance_valid(enemy) or not enemy.is_alive():
 		return
 	enemy.invulnerable_left = 0.0
+	enemy.hp = minf(enemy.hp, 1.0)  # a boss cannot skip phases: go straight to the last one
 	for i in _run.enemies.active_count():
 		if _run.enemies.get_enemy(i) == enemy:
 			_run.enemies.damage_enemy(i, enemy.max_hp * 2.0, false, Vector2.RIGHT, 0.0)

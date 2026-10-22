@@ -11,6 +11,8 @@ signal boss_ended(enemy: Enemy)
 
 const PHASE_SHAKE := 0.45
 const RAGE_SHAKE := 0.8
+## Seconds a boss without a painted phase animation cannot be hurt after a phase change: the change must be seen.
+const PHASE_GRACE := 1.2
 ## Level of a boss attack sound (loud enough to stand out of a dense mix).
 const BOSS_ATTACK_DB := -4.0
 ## Volleys at least this far apart (s) are separate strikes with their own warning: each one has its sound.
@@ -132,6 +134,7 @@ func _enter_phase(state: BossState, phase: int) -> void:
 	if state.data.attack_sheet != null and state.data.attack_sheet.has_animation(&"phase"):
 		_hold(state, &"phase")
 	else:
+		state.enemy.invulnerable_left = PHASE_GRACE
 		_start_pattern(state)
 
 
