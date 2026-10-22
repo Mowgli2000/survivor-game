@@ -39,6 +39,7 @@ crit_chance = 0.05
 knockback = 300.0
 projectile_speed = 700.0
 projectile_count = 1
+spread_deg = 4.0
 projectile_radius = 9.0
 projectile_lifetime = 1.0
 explosion_radius = 90.0
