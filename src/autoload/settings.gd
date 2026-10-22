@@ -67,6 +67,7 @@ func apply() -> void:
 	UiFx.reduce_motion = data.reduce_motion
 	UiTheme.set_text_scale(SettingsData.TEXT_SCALES[data.text_size])
 	_color_filter.set_mode(data.colorblind)
+	InputBindings.apply(data.bindings)
 	_apply_window()
 
 

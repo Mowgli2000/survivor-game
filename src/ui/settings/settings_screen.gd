@@ -12,7 +12,9 @@ const GAME: Array[StringName] = [&"screen_shake", &"damage_numbers", &"reduce_mo
 	&"show_hints", &"player_hp_bar"]
 ## Tabs, in order: the key is also the tab's title.
 const TABS: Array[String] = ["SET_SECTION_AUDIO", "SET_SECTION_DISPLAY", "SET_SECTION_GAME",
-	"SET_SECTION_ACCESSIBILITY"]
+	"SET_SECTION_ACCESSIBILITY", "SET_SECTION_CONTROLS"]
+## Index of the controls tab: its page is a grid of buttons that the pad walks by position.
+const CONTROLS_TAB := 4
 ## Same order as SettingsData.LOCALES.
 const LANGUAGE_KEYS: Array[String] = ["LANG_SYSTEM", "LANG_EN", "LANG_FR"]
 
@@ -30,6 +32,9 @@ var _grid: GridContainer  # the page being filled while the screen is built
 var _pages: Array[GridContainer] = []
 var _tab_buttons: Array[Button] = []
 var _stack: Control
+## "action:slot" -> the button of that binding slot, and the slot being captured ({} when none).
+var _bind_buttons: Dictionary[String, Button] = {}
+var _capture: Dictionary = {}
 var _tab_group := ButtonGroup.new()
 
 
@@ -88,6 +93,8 @@ func _init() -> void:
 	_colorblind = _add_option(&"colorblind", ["SET_COLORBLIND_OFF", "SET_COLORBLIND_PROTAN", "SET_COLORBLIND_DEUTAN",
 		"SET_COLORBLIND_TRITAN"], range(SettingsData.COLORBLIND_MODES))
 	_add_check(&"reduce_flashes")
+	_add_page(tab_row, CONTROLS_TAB)
+	_build_controls()
 
 	_back = Button.new()
 	_back.text = "UI_BACK"
@@ -102,6 +109,8 @@ func _init() -> void:
 ## button in order.
 func _link_focus() -> void:
 	for tab in _pages.size():
+		if tab == CONTROLS_TAB:
+			continue
 		var chain: Array[Control] = [_tab_buttons[tab]]
 		for node in _pages[tab].get_children():
 			if node is Control and (node as Control).focus_mode == Control.FOCUS_ALL:
@@ -144,6 +153,8 @@ func open() -> void:
 	_fps_cap.select(maxi(SettingsData.FPS_CAPS.find(Settings.data.fps_cap), 0))
 	_resolution.select(Settings.data.resolution)
 	_text_size.select(Settings.data.text_size)
+	_capture = {}
+	_refresh_bindings()
 	_colorblind.select(Settings.data.colorblind)
 	visible = true
 	UiFx.pop_in(_panel)
@@ -159,10 +170,78 @@ func close() -> void:
 	closed.emit()
 
 
+## While a slot waits for its new key or button, the next one pressed is taken (Escape gives up).
+func _input(event: InputEvent) -> void:
+	if _capture.is_empty() or not visible:
+		return
+	var slot: int = _capture["slot"]
+	var code := -1
+	if event is InputEventKey and event.pressed and not event.echo and slot < InputBindings.KEY_SLOTS:
+		if (event as InputEventKey).physical_keycode == InputBindings.RESERVED_KEY:
+			_capture = {}
+			_refresh_bindings()
+		else:
+			code = int((event as InputEventKey).physical_keycode)
+	elif event is InputEventJoypadButton and event.pressed and slot == InputBindings.PAD_SLOT:
+		code = (event as InputEventJoypadButton).button_index
+	elif not (event is InputEventKey or event is InputEventJoypadButton):
+		return
+	get_viewport().set_input_as_handled()  # a key pressed here is not a menu command
+	if code >= 0:
+		Settings.set_value(&"bindings", InputBindings.assign(Settings.data.bindings, _capture["action"], slot, code))
+		_capture = {}
+		_refresh_bindings()
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if visible and (event.is_action_pressed("cancel") or event.is_action_pressed("pause")):
 		get_viewport().set_input_as_handled()
 		close()
+
+
+## The controls page: a row per action with its two keys and its pad button, then the reset button.
+func _build_controls() -> void:
+	_grid.columns = 4
+	_grid.add_child(Control.new())
+	for key in ["SET_COL_KEY", "SET_COL_KEY2", "SET_COL_PAD"]:
+		var head := Label.new()
+		head.text = key
+		head.theme_type_variation = &"SmallLabel"
+		head.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_grid.add_child(head)
+	for action in InputBindings.ACTIONS:
+		var label := Label.new()
+		label.text = "SET_ACTION_" + String(action).to_upper()
+		_grid.add_child(label)
+		for slot in InputBindings.KEY_SLOTS + 1:
+			var button := Button.new()
+			button.custom_minimum_size = Vector2(150, 52)
+			button.pressed.connect(_begin_capture.bind(action, slot))
+			_grid.add_child(button)
+			_bind_buttons["%s:%d" % [action, slot]] = button
+	for i in 3:
+		_grid.add_child(Control.new())
+	var reset := Button.new()
+	reset.text = "SET_CONTROLS_RESET"
+	reset.pressed.connect(func() -> void:
+		Settings.set_value(&"bindings", {})
+		_capture = {}
+		_refresh_bindings())
+	_grid.add_child(reset)
+
+
+func _begin_capture(action: StringName, slot: int) -> void:
+	_capture = {"action": action, "slot": slot}
+	_refresh_bindings()
+	_bind_buttons["%s:%d" % [action, slot]].text = "..."
+
+
+func _refresh_bindings() -> void:
+	var slots := InputBindings.resolved(Settings.data.bindings)
+	for action in InputBindings.ACTIONS:
+		for slot in InputBindings.KEY_SLOTS:
+			_bind_buttons["%s:%d" % [action, slot]].text = InputBindings.key_text(int(slots[action][slot]))
+		_bind_buttons["%s:%d" % [action, InputBindings.PAD_SLOT]].text = InputBindings.pad_text(int(slots[action][InputBindings.PAD_SLOT]))
 
 
 ## A tab and its page of rows; the rows added next go to this page.

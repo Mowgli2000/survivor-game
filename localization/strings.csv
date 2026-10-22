@@ -555,3 +555,13 @@ SET_COLORBLIND_PROTAN,Protanopia (red),Protanopie (rouge)
 SET_COLORBLIND_DEUTAN,Deuteranopia (green),Deutéranopie (vert)
 SET_COLORBLIND_TRITAN,Tritanopia (blue),Tritanopie (bleu)
 SET_REDUCE_FLASHES,Reduce flashes,Réduire les flashs
+SET_SECTION_CONTROLS,CONTROLS,COMMANDES
+SET_COL_KEY,Key,Touche
+SET_COL_KEY2,Alt. key,Touche 2
+SET_COL_PAD,Gamepad,Manette
+SET_ACTION_MOVE_UP,Move up,Aller en haut
+SET_ACTION_MOVE_DOWN,Move down,Aller en bas
+SET_ACTION_MOVE_LEFT,Move left,Aller à gauche
+SET_ACTION_MOVE_RIGHT,Move right,Aller à droite
+SET_ACTION_PAUSE,Pause,Pause
+SET_CONTROLS_RESET,Reset controls,Rétablir les commandes

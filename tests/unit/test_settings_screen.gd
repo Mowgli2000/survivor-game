@@ -67,3 +67,24 @@ func test_the_accessibility_options_apply_at_once() -> void:
 	assert_false(Settings._color_filter._rect.visible, "and off again")
 	screen._checks[&"reduce_flashes"].button_pressed = true
 	assert_true(Settings.data.reduce_flashes)
+
+
+func test_the_controls_tab_captures_the_next_key_and_escape_gives_up() -> void:
+	var screen := SettingsScreen.new()
+	add_child_autofree(screen)
+	screen.open()
+	screen._bind_buttons["pause:0"].pressed.emit()
+	var escape := InputEventKey.new()
+	escape.physical_keycode = KEY_ESCAPE
+	escape.pressed = true
+	screen._input(escape)
+	assert_true(screen._capture.is_empty(), "Escape gives up")
+	assert_true(Settings.data.bindings.is_empty(), "and changes nothing")
+	screen._bind_buttons["pause:0"].pressed.emit()
+	var key := InputEventKey.new()
+	key.physical_keycode = KEY_O
+	key.pressed = true
+	screen._input(key)
+	assert_eq(int(InputBindings.resolved(Settings.data.bindings)[&"pause"][0]), int(KEY_O))
+	assert_eq(screen._bind_buttons["pause:0"].text, InputBindings.key_text(KEY_O))
+	InputBindings.apply({})

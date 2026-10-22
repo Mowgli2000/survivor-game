@@ -16,6 +16,7 @@ var _mode: String = ""
 ## --fullshop: 6 weapons and 30 items in the shop (layout worst case).
 var _full_shop := false
 ## --picker: the background picker of the select screens is opened.
+var _settings_tab: int = -1
 var _open_picker := false
 var _done: bool = false
 var _boss_id: StringName = &""
@@ -99,6 +100,8 @@ func _ready() -> void:
 			for level in 6:
 				SaveService.profile.record_danger_win(level)
 			Settings.data.select_background = arg.trim_prefix("--bg=")
+		elif arg.begins_with("--settingstab="):
+			_settings_tab = arg.split("=")[1].to_int()
 		elif arg.begins_with("--textsize=") or arg.begins_with("--colorblind="):
 			# Accessibility settings (index as in SettingsData), applied at once.
 			Settings.data.set_value(&"text_size" if arg.begins_with("--textsize=") else &"colorblind", arg.split("=")[1].to_int())
@@ -285,6 +288,8 @@ func _process(delta: float) -> void:
 		_run.open_pause()
 		if _mode == "--settings":
 			_run.pause_menu._open_settings()
+			if _settings_tab >= 0:
+				_run.pause_menu._settings._tab_buttons[_settings_tab].button_pressed = true
 		_capture_at = _time + 0.5
 		return
 	if _mode == "--waveend" and not get_tree().paused:

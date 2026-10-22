@@ -39,6 +39,8 @@ var light_mode: bool = false
 ## Index in TEXT_SCALES.
 var text_size: int = 0
 var colorblind: int = 0
+## Controls chosen by the player (InputBindings): only what differs from the defaults.
+var bindings: Dictionary = {}
 ## No white hit flashes, dimmer glows (photosensitivity).
 var reduce_flashes: bool = false
 var screen_shake: bool = true
@@ -96,6 +98,11 @@ func set_value(key: StringName, value: Variant) -> bool:
 			return false
 		set(key, clampi(int(value), 0, (TEXT_SCALES.size() if key == &"text_size" else COLORBLIND_MODES) - 1))
 		return true
+	if key == &"bindings":
+		if not value is Dictionary:
+			return false
+		bindings = InputBindings.sanitize(value)
+		return true
 	if key == &"select_background":
 		if typeof(value) != TYPE_STRING:
 			return false
@@ -112,7 +119,8 @@ func set_value(key: StringName, value: Variant) -> bool:
 func to_dict() -> Dictionary:
 	var result := {"version": VERSION, "locale": locale, "select_background": select_background,
 		"camera_zoom": camera_zoom, "fps_cap": fps_cap, "resolution": resolution,
-		"text_size": text_size, "colorblind": colorblind}
+		"text_size": text_size, "colorblind": colorblind,
+		"bindings": bindings}
 	for key in VOLUME_KEYS + BOOL_KEYS:
 		result[String(key)] = get(key)
 	return result
