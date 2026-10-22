@@ -10,8 +10,9 @@ const VOLUMES: Array[StringName] = [&"master_volume", &"music_volume", &"sfx_vol
 const DISPLAY: Array[StringName] = [&"fullscreen", &"vsync", &"light_mode"]
 const GAME: Array[StringName] = [&"screen_shake", &"damage_numbers", &"reduce_motion",
 	&"show_hints", &"player_hp_bar"]
-## Height of the scrolling list of settings, px.
-const LIST_HEIGHT := 640.0
+## Tabs, in order: the key is also the tab's title.
+const TABS: Array[String] = ["SET_SECTION_AUDIO", "SET_SECTION_DISPLAY", "SET_SECTION_GAME",
+	"SET_SECTION_ACCESSIBILITY"]
 ## Same order as SettingsData.LOCALES.
 const LANGUAGE_KEYS: Array[String] = ["LANG_SYSTEM", "LANG_EN", "LANG_FR"]
 
@@ -25,7 +26,11 @@ var _text_size: OptionButton
 var _colorblind: OptionButton
 var _back: Button
 var _panel: PanelContainer
-var _grid: GridContainer
+var _grid: GridContainer  # the page being filled while the screen is built
+var _pages: Array[GridContainer] = []
+var _tab_buttons: Array[Button] = []
+var _stack: Control
+var _tab_group := ButtonGroup.new()
 
 
 func _init() -> void:
@@ -52,35 +57,25 @@ func _init() -> void:
 	title.add_theme_font_size_override("font_size", UiTheme.scaled(72))
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	box.add_child(title)
-	# The rows scroll: the list is longer than a 720p screen (focus scrolls it into view).
-	var scroll := ScrollContainer.new()
-	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	scroll.custom_minimum_size = Vector2(0, LIST_HEIGHT)
-	box.add_child(scroll)
-	_grid = GridContainer.new()
-	_grid.columns = 2
-	_grid.add_theme_constant_override("h_separation", 40)
-	_grid.add_theme_constant_override("v_separation", 10)
-	_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	scroll.add_child(_grid)
+	var tab_row := HBoxContainer.new()
+	tab_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	tab_row.add_theme_constant_override("separation", 10)
+	box.add_child(tab_row)
+	_stack = Control.new()
+	box.add_child(_stack)
 
-	_section("SET_SECTION_AUDIO")
+	_add_page(tab_row, 0)
 	for key in VOLUMES:
 		_add_slider(key)
-	_section("SET_SECTION_DISPLAY")
+	_add_page(tab_row, 1)
 	for key in DISPLAY:
 		_add_check(key)
 	_fps_cap = _add_option(&"fps_cap", _fps_labels(), SettingsData.FPS_CAPS)
 	_resolution = _add_option(&"resolution", _resolution_labels(), range(SettingsData.RESOLUTIONS.size() + 1))
-	_section("SET_SECTION_GAME")
+	_add_page(tab_row, 2)
 	_add_slider(&"camera_zoom", SettingsData.ZOOM_MIN, SettingsData.ZOOM_MAX)
 	for key in GAME:
 		_add_check(key)
-	_section("SET_SECTION_ACCESSIBILITY")
-	_text_size = _add_option(&"text_size", ["SET_TEXT_SIZE_NORMAL", "SET_TEXT_SIZE_LARGE", "SET_TEXT_SIZE_XLARGE"], range(3))
-	_colorblind = _add_option(&"colorblind", ["SET_COLORBLIND_OFF", "SET_COLORBLIND_PROTAN", "SET_COLORBLIND_DEUTAN",
-		"SET_COLORBLIND_TRITAN"], range(SettingsData.COLORBLIND_MODES))
-	_add_check(&"reduce_flashes")
 	_row_label("SET_LANGUAGE")
 	_language = OptionButton.new()
 	for text in LANGUAGE_KEYS:
@@ -88,6 +83,11 @@ func _init() -> void:
 	_language.item_selected.connect(func(index: int) -> void:
 		Settings.set_value(&"locale", SettingsData.LOCALES[index]))
 	_grid.add_child(_language)
+	_add_page(tab_row, 3)
+	_text_size = _add_option(&"text_size", ["SET_TEXT_SIZE_NORMAL", "SET_TEXT_SIZE_LARGE", "SET_TEXT_SIZE_XLARGE"], range(3))
+	_colorblind = _add_option(&"colorblind", ["SET_COLORBLIND_OFF", "SET_COLORBLIND_PROTAN", "SET_COLORBLIND_DEUTAN",
+		"SET_COLORBLIND_TRITAN"], range(SettingsData.COLORBLIND_MODES))
+	_add_check(&"reduce_flashes")
 
 	_back = Button.new()
 	_back.text = "UI_BACK"
@@ -98,26 +98,43 @@ func _init() -> void:
 	add_child(ButtonHints.create([[&"A", "UI_HINT_ADJUST"], [&"B", "UI_HINT_BACK"]]))
 
 
-## Up and down walk the rows in order, then the Back button (the list scrolls, so the position of a row says
-## little about its neighbours).
+## The tab buttons sit side by side; down enters the page of the tab, up and down then walk its rows and the Back
+## button in order.
 func _link_focus() -> void:
-	var chain: Array[Control] = []
-	for node in _grid.get_children():
-		if node is Control and (node as Control).focus_mode == Control.FOCUS_ALL:
-			chain.append(node)
-		elif node is HBoxContainer:
-			chain.append(node.get_child(0))  # the slider of a slider row
-	chain.append(_back)
-	for i in chain.size():
-		var above := chain[maxi(i - 1, 0)]
-		var below := chain[mini(i + 1, chain.size() - 1)]
-		chain[i].focus_neighbor_top = chain[i].get_path_to(above)
-		chain[i].focus_neighbor_bottom = chain[i].get_path_to(below)
+	for tab in _pages.size():
+		var chain: Array[Control] = [_tab_buttons[tab]]
+		for node in _pages[tab].get_children():
+			if node is Control and (node as Control).focus_mode == Control.FOCUS_ALL:
+				chain.append(node)
+			elif node is HBoxContainer:
+				chain.append(node.get_child(0))  # the slider of a slider row
+		chain.append(_back)
+		for i in range(1, chain.size()):
+			chain[i].focus_neighbor_top = chain[i].get_path_to(chain[i - 1])
+			if i + 1 < chain.size():
+				chain[i].focus_neighbor_bottom = chain[i].get_path_to(chain[i + 1])
+		_tab_buttons[tab].focus_neighbor_bottom = _tab_buttons[tab].get_path_to(chain[1])
+	_back.focus_neighbor_top = _back.get_path_to(_tab_buttons[0])
+
+
+## Shows the page of tab `index`; Back goes up into that page.
+func _show_tab(index: int) -> void:
+	for i in _pages.size():
+		_pages[i].visible = i == index
+	var rows := _pages[index].get_children().filter(func(n: Node) -> bool: return n is Control and (n as Control).focus_mode == Control.FOCUS_ALL or n is HBoxContainer)
+	if not rows.is_empty():
+		var last: Control = rows[-1] if rows[-1].focus_mode == Control.FOCUS_ALL else rows[-1].get_child(0)
+		_back.focus_neighbor_top = _back.get_path_to(last)
+		last.focus_neighbor_bottom = last.get_path_to(_back)
 
 
 func open() -> void:
-	if _grid.get_child_count() > 0 and _sliders[VOLUMES[0]].focus_neighbor_bottom.is_empty():
+	if _tab_buttons[0].focus_neighbor_bottom.is_empty():
 		_link_focus()
+	var tallest := 0.0
+	for page in _pages:
+		tallest = maxf(tallest, page.get_combined_minimum_size().y)
+	_stack.custom_minimum_size = Vector2(0, tallest)  # the panel keeps one height from tab to tab
 	for key in _sliders:
 		_sliders[key].set_value_no_signal(Settings.data.get(key))
 		_update_slider_label(key)
@@ -130,7 +147,9 @@ func open() -> void:
 	_colorblind.select(Settings.data.colorblind)
 	visible = true
 	UiFx.pop_in(_panel)
-	_sliders[VOLUMES[0]].grab_focus()
+	_tab_buttons[0].button_pressed = true
+	_show_tab(0)
+	_tab_buttons[0].grab_focus()
 
 
 func close() -> void:
@@ -146,14 +165,26 @@ func _unhandled_input(event: InputEvent) -> void:
 		close()
 
 
-func _section(key: String) -> void:
-	var label := Label.new()
-	label.text = key
-	label.theme_type_variation = &"SmallLabel"
-	label.add_theme_color_override("font_color", UiTheme.VIOLET)
-	label.add_theme_font_size_override("font_size", UiTheme.scaled(20))
-	_grid.add_child(label)
-	_grid.add_child(Control.new())
+## A tab and its page of rows; the rows added next go to this page.
+func _add_page(tab_row: HBoxContainer, index: int) -> void:
+	var button := Button.new()
+	button.text = TABS[index]
+	button.toggle_mode = true
+	button.button_group = _tab_group
+	button.toggled.connect(func(on: bool) -> void:
+		if on:
+			_show_tab(index))
+	button.focus_entered.connect(func() -> void: button.button_pressed = true)  # on a pad, moving onto a tab opens it
+	tab_row.add_child(button)
+	_tab_buttons.append(button)
+	_grid = GridContainer.new()
+	_grid.columns = 2
+	_grid.add_theme_constant_override("h_separation", 40)
+	_grid.add_theme_constant_override("v_separation", 10)
+	_grid.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	_grid.visible = index == 0
+	_stack.add_child(_grid)
+	_pages.append(_grid)
 
 
 func _row_label(key: String) -> void:
