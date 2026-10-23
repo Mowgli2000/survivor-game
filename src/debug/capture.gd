@@ -1,7 +1,7 @@
 extends Node
 ## Plays a run with a bot and saves a screenshot, so visuals can be checked
 ## without a human at the keyboard (used by Claude Code).
-## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--weapons=a,b] [--shapes] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--boss=shogun|ronin] [--coop] [--arrival] [--pickweapon] [--character=<id>] [--mouse=x,y] [--clean] [--textsize=0..2] [--colorblind=0..3]
+## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--weapons=a,b] [--shapes] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--credits] [--boss=shogun|ronin] [--coop] [--arrival] [--pickweapon] [--character=<id>] [--mouse=x,y] [--clean] [--textsize=0..2] [--colorblind=0..3]
 ## --clean: store-quality capture (no debug overlay, no gamepad hint bars). For 1920x1080 add Godot's `--resolution 1920x1080`.
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
@@ -66,7 +66,7 @@ func _ready() -> void:
 			stress = true
 		elif arg == "--clean":
 			_clean = true
-		elif arg in ["--levelup", "--die", "--unlocks", "--waveend", "--shop", "--pause", "--settings", "--menu", "--characters", "--coopselect", "--progression"]:
+		elif arg in ["--levelup", "--die", "--unlocks", "--waveend", "--shop", "--pause", "--settings", "--menu", "--characters", "--coopselect", "--progression", "--credits"]:
 			_mode = arg
 		elif arg == "--coop":
 			coop = true
@@ -122,7 +122,7 @@ func _ready() -> void:
 			only_weapons.assign(arg.trim_prefix("--weapons=").split(","))
 		elif arg == "--fullshop":
 			_full_shop = true
-	if _mode in ["--menu", "--characters", "--coopselect", "--progression"]:
+	if _mode in ["--menu", "--characters", "--coopselect", "--progression", "--credits"]:
 		var menu: MainMenu = MENU_SCENE.instantiate()
 		add_child(menu)
 		if _mode in ["--characters", "--coopselect"]:
@@ -158,6 +158,8 @@ func _ready() -> void:
 					var buttons := menu._character_select._seals.seal_buttons()
 					if danger < buttons.size():
 						buttons[danger].grab_focus()
+		elif _mode == "--credits":
+			menu._open_credits()
 		elif _mode == "--progression":
 			menu._open_progression()
 			# The seal rewards are at the bottom of the list.

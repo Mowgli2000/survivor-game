@@ -12,8 +12,8 @@ const LOGO := preload("res://assets/branding/title.png")
 ## Left panel: position and size; x of the logo and buttons, their width, y of the first button.
 const PANEL_RECT := Rect2(48.0, 36.0, 640.0, 944.0)
 const COLUMN_X := 108.0
-const BUTTON_SIZE := Vector2(520.0, 70.0)
-const FIRST_BUTTON_Y := 424.0
+const BUTTON_SIZE := Vector2(520.0, 62.0)
+const FIRST_BUTTON_Y := 400.0
 const LOGO_WIDTH := 520.0
 
 var _hints: ButtonHints
@@ -30,6 +30,8 @@ var _character_select: CharacterSelect
 var _coop_select: CoopCharacterSelect
 var _progression: ProgressionScreen
 var _skin_shop: SkinShopScreen
+var _credits_button: Button
+var _credits: CreditsScreen
 
 
 func _ready() -> void:
@@ -68,7 +70,7 @@ func _ready() -> void:
 	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(title)
 	_buttons = VBoxContainer.new()
-	_buttons.add_theme_constant_override("separation", 18)
+	_buttons.add_theme_constant_override("separation", 14)
 	_buttons.position = Vector2(COLUMN_X, FIRST_BUTTON_Y)
 	root.add_child(_buttons)
 	_play = _button("UI_PLAY", _open_character_select.bind(false))
@@ -76,6 +78,7 @@ func _ready() -> void:
 	_progression_button = _button("UI_PROGRESSION", _open_progression)
 	_skins_button = _button("UI_SKIN_SHOP", _open_skin_shop)
 	_settings_button = _button("UI_SETTINGS", _open_settings)
+	_credits_button = _button("UI_CREDITS", _open_credits)
 	_quit = _button("UI_QUIT", SceneRouter.quit)
 
 	# Version in a corner: playtesters quote it in their bug reports.
@@ -106,6 +109,9 @@ func _ready() -> void:
 	_skin_shop = SkinShopScreen.new()
 	_skin_shop.closed.connect(_on_overlay_closed.bind(_skins_button))
 	root.add_child(_skin_shop)
+	_credits = CreditsScreen.new()
+	_credits.closed.connect(_on_overlay_closed.bind(_credits_button))
+	root.add_child(_credits)
 
 	_hints = ButtonHints.create([[&"A", "UI_HINT_CONFIRM"], [&"B", "UI_HINT_BACK"]])
 	root.add_child(_hints)
@@ -159,6 +165,12 @@ func _open_skin_shop() -> void:
 	_buttons.visible = false
 	_hints.visible = false
 	_skin_shop.open()
+
+
+func _open_credits() -> void:
+	_buttons.visible = false
+	_hints.visible = false
+	_credits.open()
 
 
 func _on_overlay_closed(focus: Button) -> void:

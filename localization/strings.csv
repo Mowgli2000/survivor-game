@@ -568,3 +568,16 @@ SET_CONTROLS_RESET,Reset controls,Rétablir les commandes
 SET_DEVICE_KEYBOARD,Keyboard,Clavier
 SET_DEVICE_PAD,Gamepad,Manette
 SET_AUTO_PAUSE,Auto-pause (window or pad lost),Pause automatique (fenêtre ou manette perdue)
+UI_CREDITS,Credits,Crédits
+CREDITS_DEVELOPMENT,Development,Développement
+CREDITS_GAME_BY,A game by,Un jeu de
+CREDITS_MUSIC,Music,Musique
+CREDITS_SOUNDS,Sound effects,Effets sonores
+CREDITS_SOUNDS_ELEVENLABS,Weapon and combat sounds generated with ElevenLabs,Sons des armes et du combat générés avec ElevenLabs
+CREDITS_FONTS,Fonts,Polices
+CREDITS_FONTS_LICENSE,SIL Open Font License 1.1,Licence SIL Open Font 1.1
+CREDITS_AI,Use of AI,Utilisation de l'IA
+CREDITS_AI_TEXT,"Part of the images and sound effects were generated with AI tools (images, ElevenLabs), and the code was written with the help of Claude (Anthropic). All results were reviewed and chosen by the developer.","Une partie des images et des effets sonores a été générée avec des outils d'IA (images, ElevenLabs), et le code a été écrit avec l'aide de Claude (Anthropic). Tous les résultats ont été relus et choisis par le développeur."
+CREDITS_TOOLS,Tools,Outils
+CREDITS_THANKS,Thanks,Remerciements
+CREDITS_THANKS_TEXT,Thank you for playing!,Merci d'avoir joué !
