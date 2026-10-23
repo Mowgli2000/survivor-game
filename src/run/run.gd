@@ -49,6 +49,8 @@ var record_profile: bool = true
 var unlock_all: bool = false
 ## True while a final boss's death animation plays: the wave (and the run) must not end under it.
 var _boss_dying: bool = false
+## Brief freeze on heavy kills; also owns the time scale during the boss death slow-motion.
+var hit_stop: HitStop
 ## The treasure chests on the ground (a mini-boss's, a final boss's).
 var _chests: Array[TreasureChest] = []
 ## True while the end of a wave opens the chests nobody opened (no reward screen then).
@@ -172,6 +174,9 @@ func _ready() -> void:
 	camera = GameCamera.new()
 	camera.name = "Camera"
 	add_child(camera)
+	hit_stop = HitStop.new()
+	hit_stop.name = "HitStop"
+	add_child(hit_stop)
 	camera.follow(party, config.camera_zoom * Settings.data.camera_zoom)
 	add_child(enemy_projectiles)
 	add_child(vfx)
@@ -488,6 +493,7 @@ func _resume_from_pause() -> void:
 func _apply_settings() -> void:
 	damage_numbers.enabled = Settings.data.damage_numbers
 	camera.shake_enabled = Settings.data.screen_shake
+	hit_stop.enabled = not Settings.data.reduce_flashes
 	enemies.hit_flash = not Settings.data.reduce_flashes
 	vfx.set_reduce_flashes(Settings.data.reduce_flashes)
 	vfx.busy_count = Vfx.LIGHT_BUSY_COUNT if Settings.data.light_mode else Vfx.BUSY_COUNT
@@ -541,11 +547,16 @@ func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
 		xp * stage.material_rate_at(waves.wave), killer)
 	if data.boss or not data.phases.is_empty():
 		_killed_special.append(data.id)
+	if not data.boss and EnemyManager.is_priority(data):
+		hit_stop.request(HitStop.MINI_BOSS)
+	elif elite and not data.boss:
+		hit_stop.request(HitStop.ELITE)
 	if data.reward_item_tier > 0 and data.chest == null:
 		_grant_reward(data.reward_item_tier)
 	if data.chest != null and not data.boss:
 		_drop_chest(data, pos)  # a mini-boss's chest: walk on it before the wave ends
 	if data.boss and not enemies.has_living_boss():
+		hit_stop.request(HitStop.BOSS_DEATH, true)
 		var death_time := BossCorpse.duration_of(data)
 		if death_time <= 0.0 and data.chest == null:
 			waves.finish_wave()
@@ -556,7 +567,7 @@ func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
 		_clear_arena.call_deferred()  # whatever was still on the field (not inside the hit that killed the boss)
 		var wait := 0.0
 		if death_time > 0.0:
-			Engine.time_scale = DEATH_SLOWMO
+			hit_stop.set_base_scale(DEATH_SLOWMO)
 			wait = death_time + BossCorpse.FADE_TIME * 0.5
 		get_tree().create_timer(maxf(wait, 0.05), true, false, true).timeout.connect(_after_boss_death.bind(data, pos))
 
@@ -570,7 +581,7 @@ func _clear_arena() -> void:
 ## The death animation is over: the final boss's chest drops (the run is won when it is opened),
 ## or the wave simply ends.
 func _after_boss_death(data: EnemyData, pos: Vector2) -> void:
-	Engine.time_scale = 1.0
+	hit_stop.set_base_scale(1.0)
 	if state.is_over:
 		return
 	if data.chest == null:
