@@ -1,16 +1,15 @@
 class_name HitStop
 extends Node
-## Hit-stop: the game almost freezes for a few tens of milliseconds on a heavy kill (an elite, a mini-boss,
-## the final boss), to give the blow some weight. Uses Engine.time_scale, restored by a real-time timer.
+## Hit-stop: the game almost freezes for a few tens of milliseconds on a heavy kill (a mini-boss, the final boss),
+## to give the blow some weight. Uses Engine.time_scale, restored by a real-time timer.
 ## Whoever else sets the time scale (the boss death slow-motion) goes through set_base_scale().
 
 ## Freeze lengths, in real seconds.
-const ELITE := 0.04
 const MINI_BOSS := 0.06
 const BOSS_DEATH := 0.08
 ## Time scale while frozen (not 0: timers and tweens keep a valid delta).
 const FROZEN_SCALE := 0.02
-## Two freezes are never closer than this, in real seconds (a horde of elites must not stutter).
+## Two freezes are never closer than this, in real seconds (two mini-bosses dying together must not stutter).
 const MIN_GAP := 0.6
 
 ## Off for players who reduce flashes (accessibility).

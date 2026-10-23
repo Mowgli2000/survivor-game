@@ -549,8 +549,6 @@ func _on_enemy_killed(data: EnemyData, pos: Vector2, elite: bool) -> void:
 		_killed_special.append(data.id)
 	if not data.boss and EnemyManager.is_priority(data):
 		hit_stop.request(HitStop.MINI_BOSS)
-	elif elite and not data.boss:
-		hit_stop.request(HitStop.ELITE)
 	if data.reward_item_tier > 0 and data.chest == null:
 		_grant_reward(data.reward_item_tier)
 	if data.chest != null and not data.boss:
