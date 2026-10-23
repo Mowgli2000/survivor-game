@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="ItemData" format=3]
+
+[ext_resource type="Script" path="res://src/items/item_data.gd" id="1_item"]
+[ext_resource type="Script" path="res://src/core/stat_modifier.gd" id="2_mod"]
+[ext_resource type="Texture2D" path="res://assets/icons/items/unstable_idol.png" id="icon_tex"]
+
+[sub_resource type="Resource" id="Mod_1"]
+script = ExtResource("2_mod")
+stat = &"attack_speed"
+percent = 0.3
+
+[sub_resource type="Resource" id="Mod_2"]
+script = ExtResource("2_mod")
+stat = &"damage"
+percent = 0.2
+
+[sub_resource type="Resource" id="Mod_3"]
+script = ExtResource("2_mod")
+stat = &"max_hp"
+percent = -0.35
+
+[sub_resource type="Resource" id="Mod_4"]
+script = ExtResource("2_mod")
+stat = &"move_speed"
+percent = -0.15
+
+[resource]
+script = ExtResource("1_item")
+id = &"unstable_idol"
+name_key = "ITEM_UNSTABLE_IDOL"
+locked = true
+tier = 4
+base_price = 110
+max_count = 1
+modifiers = Array[ExtResource("2_mod")]([SubResource("Mod_1"), SubResource("Mod_2"), SubResource("Mod_3"), SubResource("Mod_4")])
+icon = ExtResource("icon_tex")

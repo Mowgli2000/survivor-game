@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ChallengeData" format=3]
+
+[ext_resource type="Script" path="res://src/meta/challenge_data.gd" id="1_challenge"]
+
+[resource]
+script = ExtResource("1_challenge")
+id = &"seal3_ronin_lead_armor"
+name_key = "CHALLENGE_LEAD_ARMOR"
+description_key = "CHALLENGE_LEAD_ARMOR_DESC"
+kind = 7
+character_id = &"ronin"
+threshold = 3
+unlock_category = &"items"
+unlock_id = &"lead_armor"

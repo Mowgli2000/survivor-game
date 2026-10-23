@@ -1,7 +1,7 @@
 extends Node
 ## Plays a run with a bot and saves a screenshot, so visuals can be checked
 ## without a human at the keyboard (used by Claude Code).
-## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--weapons=a,b] [--shapes] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--credits] [--boss=shogun|ronin] [--coop] [--arrival] [--pickweapon] [--character=<id>] [--mouse=x,y] [--clean] [--textsize=0..2] [--colorblind=0..3]
+## Usage: Godot.exe --path . res://src/debug/capture.tscn -- --time=20 --out=user://capture.png [--stress] [--allweapons] [--weapons=a,b] [--shapes] [--levelup] [--waveend] [--shop] [--die] [--unlocks] [--pause] [--settings] [--menu] [--characters] [--coopselect] [--progression] [--progscroll=N] [--credits] [--boss=shogun|ronin] [--coop] [--arrival] [--pickweapon] [--character=<id>] [--mouse=x,y] [--clean] [--textsize=0..2] [--colorblind=0..3]
 ## --clean: store-quality capture (no debug overlay, no gamepad hint bars). For 1920x1080 add Godot's `--resolution 1920x1080`.
 
 const RUN_SCENE := preload("res://src/run/run.tscn")
@@ -10,6 +10,8 @@ const STRESS_CONFIG := preload("res://src/debug/stress/stress_run.tres")
 
 var _run: Run
 var _time: float = 0.0
+## --progscroll=N: scroll of the progression list (default: the bottom, where the seal rewards are).
+var _progression_scroll: int = 100000
 var _capture_at: float = 10.0
 var _out: String = "user://capture.png"
 var _mode: String = ""
@@ -100,6 +102,8 @@ func _ready() -> void:
 			for level in 6:
 				SaveService.profile.record_danger_win(level)
 			Settings.data.select_background = arg.trim_prefix("--bg=")
+		elif arg.begins_with("--progscroll="):
+			_progression_scroll = int(arg.trim_prefix("--progscroll="))
 		elif arg.begins_with("--settingstab="):
 			_settings_tab = arg.split("=")[1].to_int()
 		elif arg.begins_with("--textsize=") or arg.begins_with("--colorblind="):
@@ -164,7 +168,7 @@ func _ready() -> void:
 			menu._open_progression()
 			# The seal rewards are at the bottom of the list.
 			get_tree().create_timer(0.5).timeout.connect(func() -> void:
-				menu._progression._scroll.scroll_vertical = 100000)
+				menu._progression._scroll.scroll_vertical = _progression_scroll)
 		return
 	_run = RUN_SCENE.instantiate()
 	if stress:

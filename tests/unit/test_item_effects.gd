@@ -295,3 +295,38 @@ func test_missing_hp_effect_grows_with_damage_taken() -> void:
 	assert_almost_eq(_player.stats.get_value(StatIds.DAMAGE), base * 1.4, 0.0001, "40 % HP missing: +40 %")
 	_player.heal(max_hp)
 	assert_almost_eq(_player.stats.get_value(StatIds.DAMAGE), base, 0.0001, "full HP: no bonus")
+
+
+## HP lost by the enemy standing at `pos` after one hit of 100 from player `source`.
+func _hit_loss(enemy: Enemy, source: int) -> float:
+	var before := enemy.hp
+	_enemies.damage_source = source
+	_enemies.damage_enemy(_enemies.find_nearest(enemy.position, 5.0), 100.0, false, Vector2.RIGHT, 0.0)
+	return before - enemy.hp
+
+
+func test_target_damage_effect_boosts_elites_and_bosses_and_cuts_the_rest() -> void:
+	var effect := TargetDamageEffect.new()
+	effect.vs_priority = 1.5
+	effect.vs_common = 0.8
+	var effects: Array[ItemEffect] = [effect]
+	_effects.add_effects(effects)
+	var common := _enemies.spawn(_enemy(100000.0), Vector2(300, 0))
+	var elite := _enemies.spawn(_enemy(100000.0), Vector2(300, 100), 1.0, true)
+	var boss_data := _enemy(100000.0)
+	boss_data.boss = true
+	var boss := _enemies.spawn(boss_data, Vector2(300, 200))
+	await wait_physics_frames(1)  # the grid is filled on the physics frame
+	assert_almost_eq(_hit_loss(common, 0), 80.0, 0.01, "-20 % against a common enemy")
+	assert_almost_eq(_hit_loss(elite, 0), 150.0, 0.01, "+50 % against an elite")
+	assert_almost_eq(_hit_loss(boss, 0), 150.0, 0.01, "+50 % against a boss")
+
+
+func test_target_damage_effect_only_affects_its_owner() -> void:
+	var effect := TargetDamageEffect.new()
+	effect.vs_common = 0.5
+	var effects: Array[ItemEffect] = [effect]
+	_effects.add_effects(effects)
+	var enemy := _enemies.spawn(_enemy(100000.0), Vector2(300, 0))
+	await wait_physics_frames(1)
+	assert_almost_eq(_hit_loss(enemy, 1), 100.0, 0.01, "player 2 is not scaled")

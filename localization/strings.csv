@@ -581,3 +581,16 @@ CREDITS_AI_TEXT,"Part of the images and sound effects were generated with AI too
 CREDITS_TOOLS,Tools,Outils
 CREDITS_THANKS,Thanks,Remerciements
 CREDITS_THANKS_TEXT,Thank you for playing!,Merci d'avoir joué !
+ITEM_LEAD_ARMOR,Lead armor,Armure de plomb
+ITEM_BLOOD_PACT,Blood pact,Pacte du sang
+ITEM_UNSTABLE_IDOL,Unstable idol,Idole instable
+ITEM_EXECUTIONER_MASK,Executioner's mask,Masque du bourreau
+ITEM_EXECUTIONER_MASK_EFFECT,"+50% damage to elites and bosses, -20% to other enemies","+50 % de dégâts contre les élites et les boss, −20 % contre les autres ennemis"
+CHALLENGE_LEAD_ARMOR,Heavy steel,Acier lourd
+CHALLENGE_LEAD_ARMOR_DESC,Win at the Gold seal or higher as the Swordswoman,Gagner au sceau d'Or ou plus avec l'Épéiste
+CHALLENGE_EXECUTIONER_MASK,Hangman's pride,La fierté du bourreau
+CHALLENGE_EXECUTIONER_MASK_DESC,Win at the Obsidian seal or higher as the Assassin,Gagner au sceau d'Obsidienne ou plus avec l'Assassin
+CHALLENGE_UNSTABLE_IDOL,Playing with fire,Jouer avec le feu
+CHALLENGE_UNSTABLE_IDOL_DESC,Win at the Obsidian seal or higher as the Archeress,Gagner au sceau d'Obsidienne ou plus avec l'Archère
+CHALLENGE_BLOOD_PACT,Bound in blood,Lié par le sang
+CHALLENGE_BLOOD_PACT_DESC,Win at the Astral seal or higher as the Berserker,Gagner au sceau Astral ou plus avec le Berserker

@@ -204,6 +204,33 @@ func find_nth_nearest(from: Vector2, max_distance: float, rank: int) -> int:
 
 # --- Damage API -------------------------------------------------------------
 
+## Per player (damage_source): damage multipliers by kind of target, 2 floats each: against elites and bosses, then
+## against the rest. Empty until an item sets one (Executioner's mask), so the common case costs one check.
+var _target_scales := PackedFloat32Array()
+
+
+## Sets how player `source`'s damage is scaled against elites and bosses (`vs_priority`) and the other enemies (`vs_common`).
+func set_target_damage_scales(source: int, vs_priority: float, vs_common: float) -> void:
+	if source < 0:
+		return
+	if _target_scales.size() < (source + 1) * 2:
+		var old := _target_scales.size()
+		_target_scales.resize((source + 1) * 2)
+		for i in range(old, _target_scales.size()):
+			_target_scales[i] = 1.0
+	_target_scales[source * 2] = vs_priority
+	_target_scales[source * 2 + 1] = vs_common
+
+
+## Damage multiplier of the current damage source against `enemy`.
+func target_damage_scale(enemy: Enemy) -> float:
+	var source := maxi(damage_source, 0)
+	if source * 2 + 1 >= _target_scales.size():
+		return 1.0
+	var priority := enemy.elite or is_priority(enemy.data)
+	return _target_scales[source * 2 + (0 if priority else 1)]
+
+
 ## Hits one enemy. `status` is applied with probability `status_chance`.
 const ITEMS_TAG := &"items"
 const BURN_TAG := &"burn"
@@ -226,6 +253,8 @@ func damage_enemy(index: int, amount: float, crit: bool, direction: Vector2, kno
 	var enemy := _active[index]
 	if not enemy.is_alive() or enemy.invulnerable_left > 0.0:
 		return
+	if not _target_scales.is_empty():
+		amount *= target_damage_scale(enemy)
 	var damage := CombatMath.apply_armor(amount, enemy.data.armor)
 	if enemy.data.phases.is_empty() and hit_flash:  # a boss does not turn white: it would hide the painting
 		enemy.set_flash(Enemy.FLASH_TIME)
