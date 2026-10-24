@@ -17,7 +17,7 @@ Statuts : `à créer` · `en cours` · `prêt` · `à vérifier`.
 | Scène du menu principal (1920x1080, peinte) | `assets/ui/backgrounds/menu.png` | arrière-plan de page, hero |
 | Montage et sources du logo | `art_tests/logo/` (non versionné) | `compose.py` |
 
-Illustration maîtresse validée par le dev (2026-10-25) : `source_artwork/key_art_a1.png` (Épéiste de dos devant le portail, boss et horde ; 1536 x 1024). Les images sont produites par `python tools/art/make_steam_capsules.py`.
+Illustration maîtresse validée par le dev (2026-10-25) : `source_artwork/key_art_a1.png` (Épéiste de dos devant le portail, boss et horde). **Une image IA par format** (`source_artwork/capsule_<nom>.png`, composée pour le bon ratio, même héroïne, même style), recadrée au ratio exact + logo par `python tools/art/make_steam_capsules.py`. Règles Valve (doc Steamworks « Store Graphical Assets ») : Header, Main et Vertical = même visuel et même logo, aucun texte autre que le titre ; la Small Capsule peut avoir une autre image, le logo doit presque la remplir.
 
 ## Capsules de la boutique (`capsules/`)
 | Asset | Taille | Format | Statut | Contenu / règle |
@@ -33,7 +33,7 @@ Illustration maîtresse validée par le dev (2026-10-25) : `source_artwork/key_a
 |---|---|---|---|---|
 | Library Capsule | 600 x 900 | PNG | à valider | variante verticale de l'illustration maîtresse + logo |
 | Library Header | 920 x 430 | PNG | à valider (copie du Header) | identique au Header Capsule |
-| Library Hero | 3840 x 1240 | PNG | à créer : le key art 3:2 ne se recadre pas en 3:1 sans couper l'héroïne ; demande une image large dédiée | illustration seule, **sans logo** (le logo est posé dessus par Steam) ; garder le sujet au centre-gauche |
+| Library Hero | 3840 x 1240 | PNG | à valider (image 1536 px agrandie 2,5x : un peu douce) | illustration seule, **sans logo** (le logo est posé dessus par Steam) ; garder le sujet au centre-gauche |
 | Library Logo | 1280 de large et/ou 720 de haut | PNG transparent | à valider | `assets/branding/title.png` ou `logo_vertical.png` détouré, marge de sécurité 5 % |
 
 ## Icônes (`icons/`)
