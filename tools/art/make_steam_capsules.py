@@ -16,7 +16,6 @@ OUT = ROOT / "steam_assets"
 JOBS = {
     "header_capsule": ("capsules", (920, 430), (0, 110, 1536, 828), "title.png", 300, (752, 128)),
     "main_capsule": ("capsules", (1232, 706), (0, 50, 1536, 930), "title.png", 440, (990, 200)),
-    "small_capsule": ("capsules", (462, 174), (430, 230, 1330, 796), "title.png", 150, (231, 87)),
     "vertical_capsule": ("capsules", (748, 896), (110, 0, 965, 1024), "title.png", 440, (330, 140)),
     "library_capsule": ("library", (600, 900), (190, 0, 873, 1024), "title.png", 380, (255, 125)),
     "page_background": ("capsules", (1438, 810), (0, 80, 1536, 944), None, 0, (0, 0)),
@@ -49,6 +48,25 @@ def build(name, folder, size, crop, logo_name, logo_w, centre, art):
     return dest / f"{name}.png"
 
 
+def small_capsule(art):
+    """Small capsule: big logo on the left, the hero's head and the portal glow on the right (calm, readable at 231 x 87)."""
+    w, h = 462, 174
+    crop = art.crop((60, 150, 720, 150 + round(660 * h / w))).resize((w, h), Image.LANCZOS).convert("RGBA")
+    fade = Image.new("L", (w, h))
+    d = ImageDraw.Draw(fade)
+    for x in range(w):
+        d.line([(x, 0), (x, h)], fill=int(max(0.0, min(1.0, (0.62 - x / w) / 0.35)) * 200))
+    shade = Image.new("RGBA", (w, h), (6, 8, 20, 255))
+    shade.putalpha(fade)
+    img = Image.alpha_composite(crop, shade)
+    logo = Image.open(BRAND / "title.png").convert("RGBA")
+    lw = 205
+    lh = round(logo.height * lw / logo.width)
+    img.alpha_composite(logo.resize((lw, lh), Image.LANCZOS), (18, (h - lh) // 2))
+    (OUT / "capsules").mkdir(parents=True, exist_ok=True)
+    img.convert("RGB").save(OUT / "capsules" / "small_capsule.png")
+
+
 def extras():
     """Library header (= header capsule), library logo, app icon (jpg, solid background) and shortcut icon."""
     lib = OUT / "library"
@@ -74,6 +92,7 @@ def main():
     art = Image.open(ART).convert("RGB")
     for name, (folder, size, crop, logo, logo_w, centre) in JOBS.items():
         print(build(name, folder, size, crop, logo, logo_w, centre, art))
+    small_capsule(art)
     extras()
 
 
