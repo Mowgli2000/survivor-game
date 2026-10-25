@@ -55,3 +55,6 @@ Illustration maîtresse validée par le dev (2026-10-25) : `source_artwork/key_a
 - Logo lisible en 231 x 87 : tester chaque capsule réduite.
 - Illustration maîtresse = base unique recadrée par format (cohérence), jamais de mélange de styles.
 - Les images générées par IA ne remplacent jamais les captures de gameplay ; chaque génération est annoncée et validée par le dev.
+
+Brouillons et anciennes générations (non versionnés) : `art_tests/steam_keyart/` (voir son `LISEZMOI.md`). Ici, seulement les versions validées.
+Captures d'écran du vrai jeu : en attente des tests du dev (projectiles, animations d'attaque, tailles).
