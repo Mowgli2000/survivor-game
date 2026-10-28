@@ -50,12 +50,12 @@ func test_locked_items_never_reach_the_shop_pool() -> void:
 
 func test_a_menu_run_is_recorded_when_it_ends() -> void:
 	var run := _run(_setup(&"drifter", &"pulse"))
-	run.state.kills = 2100
+	run.waves.wave = 10
 	run.player.invincible = false
 	run.player.take_damage(1e9)
 	assert_eq(SaveService.profile.runs_played, 1)
-	assert_true(SaveService.profile.is_unlocked(&"characters", &"gunslinger"), "2 000 kills challenge")
-	assert_true(run.game_over_screen.unlock_names().has("CHARACTER_GUNSLINGER"), "unlock shown as a card")
+	assert_true(SaveService.profile.is_unlocked(&"items", &"chain_reactor"), "wave 10 challenge")
+	assert_true(run.game_over_screen.unlock_names().has("ITEM_CHAIN_REACTOR"), "unlock shown as a card")
 
 
 func test_runs_without_setup_are_not_recorded() -> void:
@@ -113,7 +113,7 @@ func test_each_seal_is_one_challenge_row_with_its_three_rewards() -> void:
 	var groups := ProgressionScreen.grouped(seals)
 	assert_eq(groups.size(), 6, "six seals")
 	for group in groups:
-		assert_eq(group.size(), 3, "three rewards per seal")
+		assert_gte(group.size(), 3, "at least three rewards per seal (a character joins seals 1 and 2)")
 
 
 func test_character_cards_show_the_card_illustration() -> void:

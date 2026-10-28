@@ -39,7 +39,10 @@ func _win(level: int) -> Array[ChallengeData]:
 
 func test_every_seal_rewards_a_weapon_and_two_locked_items() -> void:
 	for level in 6:
-		var challenges := _seal_challenges(level)
+		var challenges: Array[ChallengeData] = []
+		for challenge in _seal_challenges(level):
+			if challenge.unlock_category != &"characters":  # seals 1 and 2 also open a hunter
+				challenges.append(challenge)
 		assert_eq(challenges.size(), 3, "seal %d" % level)
 		var weapons := 0
 		for challenge in challenges:

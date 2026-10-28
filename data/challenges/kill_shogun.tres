@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_challenge")
 id = &"kill_shogun"
-name_key = "CHALLENGE_KILL_SHOGUN"
-description_key = "CHALLENGE_KILL_SHOGUN_DESC"
-kind = 5
-enemy_id = &"shogun"
+name_key = "CHALLENGE_SEAL_2"
+description_key = "CHALLENGE_SEAL_2_DESC"
+kind = 6
+threshold = 2
 unlock_category = &"characters"
 unlock_id = &"berserker"

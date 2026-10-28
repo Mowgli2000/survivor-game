@@ -256,10 +256,8 @@ CHARACTER_MERCHANT_ALT,Gate Smuggler,Contrebandier
 CHARACTER_MERCHANT_RULE,"Black market: shop prices -20%, rerolls +50%. End of wave: +10% of your gold (max 25).","Marché noir : prix de la boutique -20 %, relances +50 %. Fin de vague : +10 % de ton or (max 25)."
 CHALLENGE_WIN_DRIFTER,Novice's road,La route du novice
 CHALLENGE_WIN_DRIFTER_DESC,Win a run with the Novice Hunter,Gagner une partie avec le Chasseur novice
-CHALLENGE_KILLS_2000,Sharpshooter,Tireur d'élite
-CHALLENGE_KILLS_2000_DESC,Kill 2000 enemies (all runs),Tuer 2 000 ennemis (toutes parties)
 CHALLENGE_MATERIALS_300,Hoarder,Thésauriseur
-CHALLENGE_MATERIALS_300_DESC,Hold 300 gold at once,Détenir 300 pièces d'or en même temps
+CHALLENGE_MATERIALS_300_DESC,Hold 1000 gold at once,Détenir 1 000 pièces d'or en même temps
 CHALLENGE_REACH_WAVE_10,Halfway there,À mi-chemin
 CHALLENGE_REACH_WAVE_10_DESC,Reach wave 10,Atteindre la vague 10
 CHALLENGE_KILL_RONIN,Serpent slayer,Tueur de serpent
@@ -267,13 +265,11 @@ CHALLENGE_KILL_RONIN_DESC,Defeat the Venom Serpent (wave 10),Vaincre le Serpent 
 CHALLENGE_WIN_ANY,Survivor,Survivant
 CHALLENGE_WIN_ANY_DESC,Win a run,Gagner une partie
 CHALLENGE_KILLS_5000,Exterminator,Exterminateur
-CHALLENGE_KILLS_5000_DESC,Kill 5000 enemies (all runs),Tuer 5 000 ennemis (toutes parties)
+CHALLENGE_KILLS_5000_DESC,Kill 75000 enemies (all runs),Tuer 75 000 ennemis (toutes parties)
 CHALLENGE_WIN_RONIN,Way of the blade,La voie de la lame
 CHALLENGE_WIN_RONIN_DESC,Win a run with the Swordswoman,Gagner une partie avec l'Épéiste
 CHALLENGE_WIN_GUNSLINGER,Eagle eye,Œil de faucon
 CHALLENGE_WIN_GUNSLINGER_DESC,Win a run with the Archer,Gagner une partie avec l'Archer
-CHALLENGE_KILL_SHOGUN,Knight breaker,Briseur de chevalier
-CHALLENGE_KILL_SHOGUN_DESC,Defeat the Demon Knight (wave 20),Vaincre le Chevalier démon (vague 20)
 CHARACTER_MAGE,Mage,Mage
 CHARACTER_MAGE_ALT,Mage,Mage
 CHARACTER_MAGE_RULE,Arcane affinity: +8% damage per Magic weapon. Other weapons: -25% damage.,Affinité arcanique : +8 % de dégâts par arme de Magie. Autres armes : -25 % de dégâts.
@@ -518,12 +514,12 @@ COLLECT_WAVE_10,Survivor: wave 10,Survivant : vague 10
 COLLECT_WAVE_10_DESC,Reach wave 10 in a single run,Atteindre la vague 10 en une seule partie
 COLLECT_WAVE_15,Survivor: wave 15,Survivant : vague 15
 COLLECT_WAVE_15_DESC,Reach wave 15 in a single run,Atteindre la vague 15 en une seule partie
-COLLECT_KILLS_1000,Slayer: 1 000 kills,Pourfendeur : 1 000 victimes
-COLLECT_KILLS_1000_DESC,Defeat 1 000 monsters in total,Vaincre 1 000 monstres au total
-COLLECT_KILLS_10000,Slayer: 10 000 kills,Pourfendeur : 10 000 victimes
-COLLECT_KILLS_10000_DESC,Defeat 10 000 monsters in total,Vaincre 10 000 monstres au total
-COLLECT_KILLS_25000,Slayer: 25 000 kills,Pourfendeur : 25 000 victimes
-COLLECT_KILLS_25000_DESC,Defeat 25 000 monsters in total,Vaincre 25 000 monstres au total
+COLLECT_KILLS_1000,Slayer: 25 000 kills,Pourfendeur : 25 000 victimes
+COLLECT_KILLS_1000_DESC,Defeat 25 000 monsters in total,Vaincre 25 000 monstres au total
+COLLECT_KILLS_10000,Slayer: 100 000 kills,Pourfendeur : 100 000 victimes
+COLLECT_KILLS_10000_DESC,Defeat 100 000 monsters in total,Vaincre 100 000 monstres au total
+COLLECT_KILLS_25000,Slayer: 250 000 kills,Pourfendeur : 250 000 victimes
+COLLECT_KILLS_25000_DESC,Defeat 250 000 monsters in total,Vaincre 250 000 monstres au total
 UI_SKIN_SHOP,Skin shop,Boutique de skins
 UI_SKIN_SHOP_EMPTY,No skin for this class yet,Aucun skin pour cette classe pour l'instant
 UI_SKIN_OWNED,Owned,Possédé

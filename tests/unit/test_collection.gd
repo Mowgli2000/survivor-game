@@ -94,7 +94,7 @@ func test_past_statistics_pay_the_collection_at_load() -> void:
 	SaveService.profile.best_difficulty_by_character[&"mage"] = 2
 	SaveService.profile.runs_won = 2
 	SaveService.profile.best_wave = 20
-	SaveService.profile.total_kills = 1500
+	SaveService.profile.total_kills = 30000
 	SaveService.save_profile()
 	SaveService.load_profile()
 	var profile := SaveService.profile

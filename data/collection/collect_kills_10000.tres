@@ -8,6 +8,6 @@ id = &"collect_kills_10000"
 name_key = "COLLECT_KILLS_10000"
 description_key = "COLLECT_KILLS_10000_DESC"
 kind = 2
-threshold = 10000
+threshold = 100000
 unlock_id = &""
 shards = 100

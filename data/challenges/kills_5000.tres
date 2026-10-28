@@ -8,6 +8,6 @@ id = &"kills_5000"
 name_key = "CHALLENGE_KILLS_5000"
 description_key = "CHALLENGE_KILLS_5000_DESC"
 kind = 2
-threshold = 5000
+threshold = 75000
 unlock_category = &"items"
 unlock_id = &"med_drone"
