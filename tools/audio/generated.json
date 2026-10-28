@@ -1,5 +1,5 @@
 {
-  "credits_estimated": 1358,
+  "credits_estimated": 1394,
   "done": {
     "kill_pop": {
       "file": "kill_pop.mp3",
@@ -195,7 +195,7 @@
     },
     "weapon_shuriken": {
       "file": "weapon_shuriken.mp3",
-      "bytes": 8820
+      "bytes": 10492
     },
     "weapon_sling": {
       "file": "weapon_sling.mp3",

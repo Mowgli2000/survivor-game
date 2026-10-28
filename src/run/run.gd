@@ -15,7 +15,7 @@ const DEFAULT_CONFIG_ID := &"default"
 const PLAYER_HIT_SHAKE := 0.35
 ## Victory screen: seconds of jingle before the calm music starts, and its volume.
 const VICTORY_JINGLE_TIME := 3.5
-const VICTORY_MUSIC_DB := -6.0
+const VICTORY_MUSIC_DB := 0.0
 ## Under this share of max HP the heartbeat starts.
 const HEARTBEAT_BELOW := 0.3
 ## Coop: players start this far apart, side by side.
