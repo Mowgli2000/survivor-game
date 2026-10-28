@@ -42,7 +42,7 @@ SHEETS = {
 SHEETS_HD = {
     "frost_shards": (3, 1.7, 1.1, 0.5, 0.3),
     "steel_slash": (3, 1.8, 2.2, 0.0, 0.22),
-    "fang_slash": (1, 1.8, 2.2, 0.0, 0.18),
+    "fang_slash": (3, 1.8, 2.2, 0.3, 0.18),  # 3 = the flat crossing daggers (gen_vfx_toon.py, 2026-10-28)
     "hammer_smash": (3, 1.6, 2.2, 0.0, 0.36),
     "impact_generic": (1, 1.5, 2.2, 0.0, 0.15),
     "impact_sling": (3, 1.5, 2.2, 0.0, 0.16),
@@ -71,7 +71,7 @@ SHEETS_HD = {
     "fire_puddle": (3, 1.6, 2.4, 0.0, 0.5),
     # sixth pass (2026-10-11): one unique explosion per explosive weapon
     "explosion_bomb": (3, 1.6, 2.4, 0.0, 0.35),
-    "explosion_flask": (1, 1.6, 2.4, 0.0, 0.35),
+    "explosion_flask": (4, 1.6, 1.9, 0.0, 0.35),  # 4 = the painted orange burst with few particles (2026-10-28), 16 frames not doubled
     "explosion_cannon": (1, 1.6, 2.4, 0.0, 0.35),
     # Demon Knight attacks (tools/art/gen_vfx_knight.py, 2026-10-16)
     "toon_iron_fx1": (1, 1.3, 2.2, 0.0, 0.45),
@@ -234,7 +234,7 @@ LINES = {"iaido_line": 0.97, "spear_pierce": 0.97, "rapier_slash": 0.97, "crysta
 # Extra EffectSheet fields written after the template. squash: height of a plain sheet relative to its width (the
 # meteor impact is painted in perspective, an oval: it is stretched back to the round damage circle). head: where the
 # meteor's rock sits in its frame, as a share of the frame side from the center (it lands on the impact point).
-EXTRA = {"meteor_impact": "squash = 1.35", "frost_zone": "opacity = 0.9", "explosion_flask": "squash = 1.4",
+EXTRA = {"meteor_impact": "squash = 1.35", "frost_zone": "opacity = 0.9",
          "meteor_fall": "head = Vector2(0.26, 0.18)\nart_angle = 0.64"}
 
 TRES = """[gd_resource type="Resource" script_class="EffectSheet" format=3]
@@ -286,7 +286,7 @@ def measure_reach(image: Image.Image, columns: int, rows: int) -> float:
 
 
 # Sheets whose frames were doubled by tools/art/interpolate_sheet.py: art_tests/vfx_hd/<name>_x2.png, 8 columns of 320 px cells.
-X2 = {"explosion_fire", "explosion_frost", "explosion_blast", "explosion_star", "explosion_bomb", "explosion_flask",
+X2 = {"explosion_fire", "explosion_frost", "explosion_blast", "explosion_star", "explosion_bomb",
       "explosion_cannon", "explosion_staff", "hammer_smash", "axe_slam", "meteor_impact", "rune_sigil",
       "fire_puddle", "meteor_fall", "scythe_blade", "gravity_well", "well_collapse", "frost_zone"}
 X2_CELL = 320

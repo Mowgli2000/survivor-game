@@ -23,7 +23,7 @@ const RECAP_BAR_WIDTH := 260.0
 ## The unlock cards share this width (the end screen must fit the 1920 px viewport).
 const UNLOCKS_MAX_WIDTH := 1500.0
 const UNLOCK_CARD_MAX := 170.0
-const UNLOCK_CARD_MIN := 116.0
+const UNLOCK_CARD_MIN := 150.0
 var _unlock_card_width: float = UNLOCK_CARD_MAX
 const RECAP_ROW_SEPARATION := 8
 ## Right-stick / page keys scroll the list when there are more rows than RECAP_ROWS.
@@ -41,7 +41,7 @@ var _summary: Label
 var _recap: HBoxContainer
 ## Scrolling lists of the recap columns (only the ones with more than RECAP_ROWS rows).
 var _recap_scrolls: Array[ScrollContainer] = []
-var _unlocks: HBoxContainer
+var _unlocks: HFlowContainer
 ## Rewards of the boss chests: icons to hover (mouse) or focus (gamepad); the description appears below.
 var _rewards_box: VBoxContainer
 var _rewards_row: HBoxContainer
@@ -127,9 +127,11 @@ func _init() -> void:
 	_reward_text.custom_minimum_size = Vector2(900, 90)
 	_rewards_box.add_child(_reward_text)
 
-	_unlocks = HBoxContainer.new()
-	_unlocks.alignment = BoxContainer.ALIGNMENT_CENTER
-	_unlocks.add_theme_constant_override("separation", 18)
+	# Cards wrap onto several rows (many unlocks at once used to run past the window frame).
+	_unlocks = HFlowContainer.new()
+	_unlocks.alignment = FlowContainer.ALIGNMENT_CENTER
+	_unlocks.add_theme_constant_override("h_separation", 18)
+	_unlocks.add_theme_constant_override("v_separation", 12)
 	_unlocks.visible = false
 	box.add_child(_unlocks)
 
@@ -367,8 +369,11 @@ func show_unlocks(challenges: Array[ChallengeData], backdrops: Array[int] = []) 
 	if has_shards:
 		count_cards += 1
 	count_cards += backdrops.size()
-	_unlock_card_width = clampf((UNLOCKS_MAX_WIDTH - 18.0 * maxi(count_cards - 1, 0)) / maxi(count_cards, 1),
-		UNLOCK_CARD_MIN, UNLOCK_CARD_MAX)
+	# Full-size cards while they fit on one row, else a readable minimum width and a second row.
+	var fits_one_row := count_cards * (UNLOCK_CARD_MAX + 18.0) - 18.0 <= UNLOCKS_MAX_WIDTH
+	_unlock_card_width = UNLOCK_CARD_MAX if fits_one_row else UNLOCK_CARD_MIN
+	var per_row := maxi(int((UNLOCKS_MAX_WIDTH + 18.0) / (_unlock_card_width + 18.0)), 1)
+	_unlocks.custom_minimum_size.x = minf(count_cards, per_row) * (_unlock_card_width + 18.0) - 18.0
 	var delay := 0.3
 	var shards := 0
 	var collected := 0
@@ -562,7 +567,7 @@ func _unlock_card(def: Resource) -> Control:
 	var name_label := Label.new()
 	name_label.text = def.get(&"name_key")
 	name_label.theme_type_variation = &"SubtitleLabel"
-	name_label.add_theme_font_size_override("font_size", UiTheme.scaled(20))
+	name_label.add_theme_font_size_override("font_size", UiTheme.scaled(20 if _unlock_card_width >= UNLOCK_CARD_MAX else 16))
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	# Long names wrap inside the card instead of widening it.
 	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART

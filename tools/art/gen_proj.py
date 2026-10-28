@@ -159,16 +159,32 @@ JOBS["a12_enemy_orb"] = ("sheet12", MAGIC_REFS[:1] + ["art_source/ai/projectiles
     _ENEMY_LOOP.format(what="is a round dark-magic energy orb copied in shape from the SECOND reference image but much brighter: a white-pink core, vivid magenta and hot pink swirling aura, sparks"))
 
 
+# Thirteenth pass (dev, 2026-10-28): the plain colored balls say nothing about who shoots. One shaped, flat shot per enemy
+# family (single cell, pointing right, short trail), thick dark outline plus a thin dark crimson rim so that it never reads as a
+# player shot. One candidate each (ONE). Baked by bake_proj.py (SINGLES).
+_ENEMY_FLAT = ("Flat 2D cartoon game projectile in the same flat style as the reference image (thick dark navy outline, flat saturated "
+    "cel-shaded colors, one simple highlight). A single HOSTILE enemy projectile, seen from above, pointing exactly to the RIGHT, centered "
+    "vertically, a SHORT trail to the LEFT: {what} A thin dark crimson rim runs just inside the outline so it reads as hostile. "
+    "NO particles, NO sparks, NO glow haze, nothing else. Pure black background (#000000) everywhere else, nothing else in the image. ")
+_FLAT_REF = ["art_source/ai/projectiles/10_arrow.png"]
+JOBS["c_enemy_orb"] = ("cell", _FLAT_REF, _ENEMY_FLAT.format(what="a dark-magic orb: a dark crimson sphere with a bright magenta core and a swirl, a short tail of dark red embers."))
+JOBS["c_enemy_ice"] = ("cell", _FLAT_REF, _ENEMY_FLAT.format(what="a jagged pointed icicle shard of pale blue ice with white facets, tip pointing right, a short cold blue streak."))
+JOBS["c_enemy_fire"] = ("cell", _FLAT_REF, _ENEMY_FLAT.format(what="a spat fireball: a round orange fireball with a yellow core and a short tail of flame tongues streaming left."))
+JOBS["c_enemy_acid"] = ("cell", _FLAT_REF, _ENEMY_FLAT.format(what="a glob of toxic acid: a neon green blob with a lime highlight and two dripping drops trailing to the left."))
+JOBS["c_enemy_stone"] = ("cell", _FLAT_REF, _ENEMY_FLAT.format(what="a rough grey rock chunk with a few cracks and a darker shadow side, a small puff of grey dust trailing to the left."))
+ONE = {"c_enemy_orb", "c_enemy_ice", "c_enemy_fire", "c_enemy_acid", "c_enemy_stone"}
+
+
 def main() -> None:
     OUT.mkdir(exist_ok=True)
     names = sys.argv[1:] or list(JOBS)
     for name in names:
         kind, refs, text = JOBS[name]
-        if (OUT / (name + "_2.png")).exists():
+        if (OUT / (name + ("_1.png" if name in ONE else "_2.png"))).exists():
             continue
         size = {"sheet": "1536x1024", "sheet12": "2048x1536", "icon": "1536x1024"}.get(kind, "1024x1024")
         prompt = text if kind == "icon" else STYLE + text
-        command = [sys.executable, "tools/art/gen_image.py", "--out", "art_tests/proj/%s.png" % name, "--n", "2", "--size", size,
+        command = [sys.executable, "tools/art/gen_image.py", "--out", "art_tests/proj/%s.png" % name, "--n", "1" if name in ONE else "2", "--size", size,
                    "--quality", "high", *([] if kind == "icon" else ["--opaque"]), "--image", *refs, "--prompt", prompt]
         result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
         print(name, result.returncode, result.stderr[-200:].replace("\n", " "), flush=True)

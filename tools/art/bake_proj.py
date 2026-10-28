@@ -15,8 +15,11 @@ OUTS = [ROOT / "art_source/ai/projectiles", ROOT / "assets_src/drawn/projectiles
 
 # name: (candidate, cell file name)
 SINGLES = {
-    "c_fire_flask": (1, "14_fire_flask"), "c_frost_flask": (1, "15_frost_flask"), "c_bomb_flask2": (1, "23_bomb_flask"),
-    "c_shard": (2, "02_bolt"), "c_grenade": (1, "16_grenade"), "c_cannonball": (1, "17_cannonball"), "c_shuriken": (1, "05_shuriken"), "c_javelin": (1, "12_javelin"),
+    # The flask cells (14, 15, 23) come from tools/art/make_flask_cells.py and the javelin cell (12) was fixed by hand: not baked here.
+    "c_shard": (2, "02_bolt"), "c_grenade": (1, "16_grenade"), "c_cannonball": (1, "17_cannonball"),
+    "c_enemy_orb": (1, "06_enemy_orb"), "c_enemy_ice": (1, "18_enemy_ice"), "c_enemy_fire": (1, "19_enemy_fire"),
+    "c_enemy_acid": (1, "20_enemy_acid"), "c_enemy_stone": (1, "21_enemy_stone"),  # flat shaped enemy shots (2026-10-28)
+    "c_shuriken": (1, "05_shuriken"),
 }
 # name: (candidate, first cell file number, cell file prefix)
 # name: (candidate, first cell file number, cell file prefix, frames)  (12 frames = 4x3 sheet, 6 = 3x2)
@@ -75,6 +78,16 @@ def key_solid(image: Image.Image) -> Image.Image:
     return out
 
 
+def hostile_rim(image: Image.Image) -> Image.Image:
+    """Enemy shots: a dark crimson rim around the whole shape, so that every hostile shot reads as such next to the player's
+    (a flat orange fireball vs the fire staff's, an ice shard vs the frost scepter's) whatever its color."""
+    alpha = image.getchannel("A")
+    grown = alpha.filter(ImageFilter.MaxFilter(41)).filter(ImageFilter.GaussianBlur(3))
+    rim = Image.new("RGBA", image.size, (200, 20, 45, 0))
+    rim.putalpha(grown.point(lambda v: int(v * 0.9)))
+    return Image.alpha_composite(rim, image)
+
+
 def stabilize(frames: list) -> list:
     """The generator lets a rigid object drift between frames (a dagger stepping 7 px up from one row of the sheet to the
     next shows as a jump in the loop). Every frame is shifted so its solid body (alpha > 200: the smoke and sparks are
@@ -113,7 +126,8 @@ def save(image: Image.Image, file_name: str) -> None:
 
 def main() -> None:
     for name, (pick, file_name) in SINGLES.items():
-        save(key_solid(Image.open(SRC / ("%s_%d.png" % (name, pick)))), file_name)
+        cell = key_solid(Image.open(SRC / ("%s_%d.png" % (name, pick))))
+        save(hostile_rim(cell) if name.startswith("c_enemy") else cell, file_name)
     # The sling stone: a lone ball (no trail), drawn small in its cell like the other round shots.
     ball = key_solid(Image.open(SRC / "c_sling_stone_1.png"))
     cell = Image.new("RGBA", (1024, 1024), (0, 0, 0, 0))

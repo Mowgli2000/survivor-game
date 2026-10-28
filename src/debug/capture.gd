@@ -13,6 +13,7 @@ var _time: float = 0.0
 ## --progscroll=N: scroll of the progression list (default: the bottom, where the seal rewards are).
 var _progression_scroll: int = 100000
 var _capture_at: float = 10.0
+var _capture_delay: float = 0.8
 var _out: String = "user://capture.png"
 var _mode: String = ""
 ## --fullshop: 6 weapons and 30 items in the shop (layout worst case).
@@ -307,12 +308,17 @@ func _process(delta: float) -> void:
 			rp.player.invincible = false
 			rp.player.take_damage(1e9)
 		if _mode == "--unlocks":
-			# Sample unlock cards: a character and two items.
+			# Sample unlock cards: a character and two items (--manyunlocks: eleven, to check the cards wrap).
 			var samples: Array[ChallengeData] = []
 			for id in [&"win_drifter", &"win_any", &"kill_ronin"]:
 				samples.append(ContentDB.get_def(&"challenges", id))
+			if "--manyunlocks" in OS.get_cmdline_user_args():
+				for challenge: ChallengeData in ContentDB.get_all(&"challenges"):
+					if samples.size() < 11 and not samples.has(challenge) and challenge.unlock_id != &"":
+						samples.append(challenge)
+				_capture_delay = 3.0
 			_run.game_over_screen.show_unlocks(samples, [2] as Array[int])
-		_capture_at = _time + 0.8
+		_capture_at = _time + _capture_delay
 		return
 	_done = true
 	if _clean:

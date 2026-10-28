@@ -11,5 +11,5 @@ rows = 3
 frames = 12
 duration = 0.18
 scale = 2.2
-forward = 0.0
+forward = 0.3
 reach = 0.77

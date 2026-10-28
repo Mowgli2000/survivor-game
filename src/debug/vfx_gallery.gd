@@ -71,6 +71,13 @@ func _show_projectiles() -> void:
 		label.text = String(w.id)
 		label.position = p.position + Vector2(-60, 40)
 		add_child(label)
+	# The hostile shots (EnemyData default radius 9) in a row under the weapons, to compare with the player's.
+	var enemy_styles := [WeaponData.ProjectileStyle.ENEMY_ORB, WeaponData.ProjectileStyle.ENEMY_ICE,
+		WeaponData.ProjectileStyle.ENEMY_FIRE, WeaponData.ProjectileStyle.ENEMY_ACID, WeaponData.ProjectileStyle.ENEMY_STONE]
+	for i in enemy_styles.size():
+		var p := Projectile.new()
+		p.reset_basic(Vector2(-700 + i * 200, 180), Vector2.RIGHT * 100.0, 1.0, 9.0, 1.0, Color.WHITE, enemy_styles[i])
+		list.append(p)
 	_renderer.render(list)
 
 

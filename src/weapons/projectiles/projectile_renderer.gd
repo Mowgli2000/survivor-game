@@ -33,8 +33,8 @@ const CELL_CODE := 256.0
 ## vs. the hitbox diameter (painted projectiles: the head sits at the right of a long trail, so
 ## their cells are about 2.4 times bigger than the old code-drawn ones). The art (AI, pointing right, trail on the left) keeps
 ## its own proportions inside the cell and its own colors (no tint).
-const BODY_SCALE: Array[float] = [0.0, 2.0, 3.2, 10.0, 9.5, 1.5, 4.0, 6.4, 9.5, 8.0, 12.0, 8.4, 12.0,
-	2.6, 3.75, 3.75, 3.0, 3.7, 4.0, 4.0, 4.0, 4.0, 11.0, 3.4, 2.1]
+const BODY_SCALE: Array[float] = [0.0, 2.0, 3.2, 10.0, 8.1, 1.5, 7.5, 6.4, 9.5, 8.0, 12.0, 8.4, 9.6,
+	2.6, 2.8, 2.8, 3.0, 3.7, 7.0, 7.5, 7.5, 7.0, 8.8, 2.8, 2.1]
 ## Shuriken spin, radians per second of flight.
 const SPIN_SPEED := 18.0
 

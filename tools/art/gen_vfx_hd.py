@@ -86,16 +86,23 @@ JOBS = {
 }
 
 
+# Dev note 2026-10-28: the explosive flask burst must stay consistent with the other painted explosions but carry far fewer
+# particles. One candidate (ONE), same painted style as the other blasts, orange like the flask.
+FLASK_REFS = ["a_supprimer/image-59.png", "a_supprimer/image-61.png", "a_supprimer/image-57.png"]
+JOBS["explosion_flask_v2"] = ("g16", FLASK_REFS, BURST + "A volatile explosive chemical flask bursting, orange only: a white-hot flash; a compact round blast of vivid orange and amber liquid fire with a white core, one crisp bright shock ring at its biggest around frame 6-7; at most SIX large chunky curved glass shards thrown out. NO small droplets, NO sparks, NO embers, NO bubbles, NO smoke cloud, NO scattered debris: very few elements, clean readable shapes. In the last frames the blast breaks into a thin orange ring and fades cleanly to nothing. ")
+ONE = {"explosion_flask_v2"}
+
+
 def main() -> None:
     OUT.mkdir(exist_ok=True)
     names = sys.argv[1:] or list(JOBS)
     for name in names:
         kind, refs, text = JOBS[name]
-        if (OUT / (name + "_2.png")).exists():
+        if (OUT / (name + ("_1.png" if name in ONE else "_2.png"))).exists() or (OUT / (name + ".png")).exists():
             continue
         grid, size = (GRID16, "2048x2048") if kind == "g16" else (GRID12, "2048x1536")
         prompt = STYLE + " " + grid + text
-        command = [sys.executable, "tools/art/gen_image.py", "--out", "art_tests/vfx_hd/%s.png" % name, "--n", "2", "--size", size,
+        command = [sys.executable, "tools/art/gen_image.py", "--out", "art_tests/vfx_hd/%s.png" % name, "--n", "1" if name in ONE else "2", "--size", size,
                    "--quality", "high", "--opaque", "--image", *refs, "--prompt", prompt]
         result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
         print(name, result.returncode, result.stderr[-200:].replace("\n", " "), flush=True)

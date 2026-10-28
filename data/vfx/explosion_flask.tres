@@ -6,11 +6,10 @@
 [resource]
 script = ExtResource("1_sheet")
 texture = ExtResource("2_tex")
-columns = 8
+columns = 4
 rows = 4
-frames = 32
+frames = 16
 duration = 0.35
-scale = 2.4
+scale = 1.9
 forward = 0.0
-reach = 0.94
-squash = 1.4
+reach = 0.89

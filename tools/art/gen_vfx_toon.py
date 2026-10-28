@@ -33,17 +33,41 @@ DETAIL = ("Flat 2D cartoon / manga action effect with a bit more craft: bold gra
           "a darker blood-red inner shade band, a bright orange-red edge and a white-hot core, a thin dark outline and a few clean "
           "brush-stroke streaks inside the shape. ABSOLUTELY NO particles, no sparks, no embers, no smoke, no glow haze, no gradients, "
           "no scattered debris. No characters, no text, no border, no floor.")
+# Dev notes 2026-10-28: the venom fangs read as three parallel lines and too many particles; the explosive flask burst
+# was too busy. One candidate each (SINGLE), the flat style with the weapon's own colors.
+FANG_STYLE = ("Flat 2D cartoon / manga action effect, like a hand-drawn anime or classic arcade beat'em up impact: bold shapes in flat "
+              "solid cel-shaded colors (deep violet blade shapes with a white core and a toxic-green edge), clean sharp edges, thick "
+              "graphic silhouette. ABSOLUTELY NO particles, no sparks, no embers, no smoke, no glow haze, no gradients, no tiny "
+              "details, no scattered debris. No characters, no text, no border, no floor.")
+FLASK_STYLE = ("Flat 2D cartoon / manga action effect, like a hand-drawn anime or classic arcade beat'em up impact: bold shapes in flat "
+               "solid cel-shaded colors (bright yellow-orange, a darker orange band, a white core), clean sharp edges, thick graphic "
+               "silhouette. ABSOLUTELY NO particles, no sparks, no embers, no smoke, no glow haze, no gradients, no tiny details, "
+               "no scattered debris. No characters, no text, no border, no floor.")
+GRID16 = ("A sprite sheet of ONE smooth animation in a grid of 4 columns by 4 rows, 16 equal square cells read left to right then "
+          "top to bottom. Every cell is a consecutive moment of the same motion, each slightly further along than the previous one. "
+          "Keep the whole effect well inside its cell with a margin of black on every side (the largest frame must not touch the "
+          "cell edge), nothing crossing the cell borders, no grid lines, pure black background (#000000). ")
+JOBS["fang_daggers"] = (SEEN + "TWO short straight DAGGERS (a simple blade with a small crossguard) slashing in two fast crossing cuts "
+    "toward the RIGHT in front of the attacker: each dagger leaves one clean tapered slash stroke, the second crossing the first like "
+    "an X. At most ONE green venom droplet on a blade tip. Timeline: cells 1-2 the first dagger appears; cells 3-5 the first cut; "
+    "cells 6-8 the second cut crossing it, the full shape; cells 9-12 the shapes thin out cleanly to nothing. ")
+JOBS["explosion_flask_toon"] = (SEEN + "A potion flask bursting: ONE simple round splash burst of liquid with a bold clean ring at its "
+    "biggest, 5 or 6 chunky curved glass shards as flat solid shapes (no tiny pieces), no smoke, no bubbles, no vapor, no scattered "
+    "debris. Cells 1-2 a white flash; cells 3-6 it expands fast; cells 7-9 the full burst with its ring; cells 10-16 it shrinks and "
+    "thins out cleanly to nothing. ")
+SINGLE = {"fang_daggers": (GRID12, "2048x1536"), "explosion_flask_toon": (GRID16, "2048x2048")}
 JOBS["knighttd_cross"] = JOBS["knightt_cross"]
 JOBS["knighttd_iaido"] = JOBS["knightt_iaido"]
-STYLES = {"knighttd_cross": DETAIL, "knighttd_iaido": DETAIL}
+STYLES = {"knighttd_cross": DETAIL, "knighttd_iaido": DETAIL, "fang_daggers": FANG_STYLE, "explosion_flask_toon": FLASK_STYLE}
 
 
 def main() -> None:
     for name in sys.argv[1:] or [n for n in JOBS if n not in STYLES]:
-        if (OUT / (name + "_2.png")).exists():
+        grid, size, count = (*SINGLE[name], 1) if name in SINGLE else (GRID12, "2048x1536", 2)
+        if (OUT / (name + ("_1.png" if count == 1 else "_2.png"))).exists() or (OUT / (name + ".png")).exists():
             continue
-        command = [sys.executable, "tools/art/gen_image.py", "--out", "art_tests/vfx_hd/%s.png" % name, "--n", "2", "--size", "2048x1536",
-                   "--quality", "high", "--opaque", "--prompt", STYLES.get(name, STYLE) + " " + GRID12 + JOBS[name]]
+        command = [sys.executable, "tools/art/gen_image.py", "--out", "art_tests/vfx_hd/%s.png" % name, "--n", str(count), "--size", size,
+                   "--quality", "high", "--opaque", "--prompt", STYLES.get(name, STYLE) + " " + grid + JOBS[name]]
         result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
         print(name, result.returncode, result.stderr[-200:].replace("\n", " "), flush=True)
     print("ALLDONE", flush=True)
